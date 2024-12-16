@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace OrbiNom
@@ -7,74 +8,129 @@ namespace OrbiNom
   {
     public class Telemetry { public string decoder; }
 
+
+
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public string sat_id { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public int? norad_cat_id { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public int? norad_follow_id { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public string name { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public string names { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public string image { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public string status { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public DateTime? decayed { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public DateTime? launched { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public DateTime? deployed { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public string website { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public string @operator { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public string countries { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public List<Telemetry> telemetries { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public DateTime? updated { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public string citation { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public bool is_frequency_violator { get; set; }
 
     [ReadOnly(true)]
+    [Category("SatNOGS Database")]
     public List<string> associated_satellites { get; set; }
+
+
+
+    // other sources
+
+    [ReadOnly(true)]
+    [Category("JE9PEL")]
+    [DisplayName("Names")]
+    [TypeConverter(typeof(CsvTypeConverter))] 
+    public List<string> JE9PEL_Names { get; set; } = new();
+
+    [ReadOnly(true)]
+    [Category("JE9PEL")]
+    [DisplayName("Callsigns")]
+    [TypeConverter(typeof(CsvTypeConverter))]
+    public List<string> JE9PEL_Callsigns { get; set; } = new();
+
+    [ReadOnly(true)]
+    [Category("LoTW")]
+    [DisplayName("Name")]
+    public string LotwName { get; set; }
+
+
+
+    // orbit
+
+    [ReadOnly(true)]
+    [Category("Orbit")]
+    [DisplayName("Period, min")]
+    public int Period { get; set; }
+
+    [ReadOnly(true)]
+    [Category("Orbit")]
+    [DisplayName("Elevation, km")]
+    public int Elevation { get; set; }
+
+    [ReadOnly(true)]
+    [Category("Orbit")]
+    [DisplayName("Footprint, km")]
+    public int Footprint { get; set; }
+
+
+
+    // non-browsable
 
     [Browsable(false)]
     public List<SatnogsDbTransmitter> Transmitters = new();
 
     [Browsable(false)]
     public SatnogsDbTle Tle;
-
-    [ReadOnly(true)]
-    public List<string> JE9PEL_Names { get; set; } = new();
-
-    [ReadOnly(true)]
-    public List<string> JE9PEL_Callsigns { get; set; } = new ();
-
-    [ReadOnly(true)]
-    public string LotwName { get; set; }
 
     [Browsable(false)]
     public string SearchText;
@@ -84,6 +140,9 @@ namespace OrbiNom
 
     [Browsable(false)]
     public SatelliteFlags Flags;
+
+
+
 
     internal void BuildAllNames()
     {
@@ -136,5 +195,16 @@ namespace OrbiNom
   }
 
 
+
+
+
   public class SatnogsDbSatelliteList : List<SatnogsDbSatellite> { }
+
+  public class CsvTypeConverter : StringConverter
+  {
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    {
+      return string.Join(", ", (List<string>)value);
+    }
+  }
 }

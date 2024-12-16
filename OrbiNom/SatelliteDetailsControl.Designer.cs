@@ -48,8 +48,8 @@
       // 
       // splitContainer1.Panel1
       // 
-      splitContainer1.Panel1.Controls.Add(SatAkaLabel);
       splitContainer1.Panel1.Controls.Add(SatellitePropertyGrid);
+      splitContainer1.Panel1.Controls.Add(SatAkaLabel);
       splitContainer1.Panel1.Controls.Add(SatNameLabel);
       // 
       // splitContainer1.Panel2
@@ -74,10 +74,10 @@
       SatellitePropertyGrid.DisabledItemForeColor = SystemColors.WindowText;
       SatellitePropertyGrid.Dock = DockStyle.Fill;
       SatellitePropertyGrid.HelpVisible = false;
-      SatellitePropertyGrid.Location = new Point(0, 23);
+      SatellitePropertyGrid.Location = new Point(0, 46);
       SatellitePropertyGrid.Name = "SatellitePropertyGrid";
-      SatellitePropertyGrid.PropertySort = PropertySort.Alphabetical;
-      SatellitePropertyGrid.Size = new Size(346, 256);
+      SatellitePropertyGrid.PropertySort = PropertySort.Categorized;
+      SatellitePropertyGrid.Size = new Size(346, 233);
       SatellitePropertyGrid.TabIndex = 2;
       SatellitePropertyGrid.ToolbarVisible = false;
       // 

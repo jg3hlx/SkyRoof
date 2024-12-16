@@ -235,8 +235,8 @@ namespace OrbiNom
         if (sat.norad_cat_id != null)
         {
           var norad = (int)sat.norad_cat_id;
-          if (names.ContainsKey(norad)) sat.JE9PEL_Names = names[norad];
-          if (calls.ContainsKey(norad)) sat.JE9PEL_Callsigns = calls[norad];
+          if (names.ContainsKey(norad)) sat.JE9PEL_Names = names[norad].Distinct().ToList();
+          if (calls.ContainsKey(norad)) sat.JE9PEL_Callsigns = calls[norad].Distinct().ToList();
         }
     }
 
