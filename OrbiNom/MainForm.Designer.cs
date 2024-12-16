@@ -40,8 +40,11 @@
       viewToolStripMenuItem = new ToolStripMenuItem();
       WaterfallMNU = new ToolStripMenuItem();
       toolsToolStripMenuItem = new ToolStripMenuItem();
+      SatelliteGroupsMNU = new ToolStripMenuItem();
+      toolStripMenuItem1 = new ToolStripSeparator();
       SdrDevicesMNU = new ToolStripMenuItem();
       SettingsMNU = new ToolStripMenuItem();
+      UpdateSatelliteListMNU = new ToolStripMenuItem();
       helpToolStripMenuItem = new ToolStripMenuItem();
       OnlineHelpMNU = new ToolStripMenuItem();
       toolStripMenuItem2 = new ToolStripSeparator();
@@ -138,22 +141,41 @@
       // 
       // toolsToolStripMenuItem
       // 
-      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SdrDevicesMNU, SettingsMNU });
+      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, toolStripMenuItem1, SdrDevicesMNU, SettingsMNU, UpdateSatelliteListMNU });
       toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
       toolsToolStripMenuItem.Size = new Size(46, 20);
       toolsToolStripMenuItem.Text = "Tools";
       // 
+      // SatelliteGroupsMNU
+      // 
+      SatelliteGroupsMNU.Name = "SatelliteGroupsMNU";
+      SatelliteGroupsMNU.Size = new Size(192, 22);
+      SatelliteGroupsMNU.Text = "Satellite Groups...";
+      SatelliteGroupsMNU.Click += SatelliteGroupsMNU_Click;
+      // 
+      // toolStripMenuItem1
+      // 
+      toolStripMenuItem1.Name = "toolStripMenuItem1";
+      toolStripMenuItem1.Size = new Size(189, 6);
+      // 
       // SdrDevicesMNU
       // 
       SdrDevicesMNU.Name = "SdrDevicesMNU";
-      SdrDevicesMNU.Size = new Size(147, 22);
+      SdrDevicesMNU.Size = new Size(192, 22);
       SdrDevicesMNU.Text = "SDR Devices...";
       // 
       // SettingsMNU
       // 
       SettingsMNU.Name = "SettingsMNU";
-      SettingsMNU.Size = new Size(147, 22);
+      SettingsMNU.Size = new Size(192, 22);
       SettingsMNU.Text = "Settings...";
+      // 
+      // UpdateSatelliteListMNU
+      // 
+      UpdateSatelliteListMNU.Name = "UpdateSatelliteListMNU";
+      UpdateSatelliteListMNU.Size = new Size(192, 22);
+      UpdateSatelliteListMNU.Text = "Update Satellite Data...";
+      UpdateSatelliteListMNU.Click += UpdateSatelliteListMNU_Click;
       // 
       // helpToolStripMenuItem
       // 
@@ -221,5 +243,8 @@
     private ToolStripMenuItem AboutMNU;
     private Panel ClockPanel;
     private VE3NEA.Clock.Clock Clock;
+    private ToolStripMenuItem SatelliteGroupsMNU;
+    private ToolStripSeparator toolStripMenuItem1;
+    private ToolStripMenuItem UpdateSatelliteListMNU;
   }
 }

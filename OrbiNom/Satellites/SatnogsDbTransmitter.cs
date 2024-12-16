@@ -1,4 +1,4 @@
-﻿namespace SatNOGS
+﻿namespace OrbiNom
 {
   public class SatnogsDbTransmitter
   {

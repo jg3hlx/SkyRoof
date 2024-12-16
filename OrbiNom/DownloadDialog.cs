@@ -8,7 +8,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SatNOGS;
 using Serilog;
 
 namespace OrbiNom
@@ -26,10 +25,9 @@ namespace OrbiNom
     public static void Download(Form parent, Context ctx)
     {
       var dlg = new DownloadDialog();
-   //   dlg.Parent = parent;
       dlg.ctx = ctx;
 
-      dlg.ShowDialog();
+      dlg.ShowDialog(parent);
     }
 
     private void Button_Click(object sender, EventArgs e)

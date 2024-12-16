@@ -7,7 +7,7 @@ using Serilog;
 using System.ComponentModel;
 using VE3NEA;
 
-namespace SatNOGS
+namespace OrbiNom
 {
   public class SatnogsDb
   {
@@ -163,9 +163,14 @@ namespace SatNOGS
         ImportSatnogsTransmitters();
         ImportSatnogsTle();
         ImportJE9PEL();
-        ParseLotwSatList();
 
         foreach (var sat in Satellites) sat.BuildAllNames();
+
+        ParseLotwSatList();
+        //again, with lotw added
+        foreach (var sat in Satellites) sat.BuildAllNames();
+
+        foreach (var sat in Satellites) sat.SetFlags();
 
         SaveToFile();
       }
@@ -180,7 +185,6 @@ namespace SatNOGS
     {
       string json = File.ReadAllText(Path.Combine(DownloadsFolder, "satellites.json"));
       SatnogsDbSatelliteList satellites = JsonConvert.DeserializeObject<SatnogsDbSatelliteList>(json);
-      foreach (var sat in satellites) sat.BuildAllNames();
       SatelliteList = satellites.ToDictionary(s => s.sat_id);
     }
 
@@ -256,7 +260,7 @@ namespace SatNOGS
         if (sat == null) continue;
 
         sat.LotwName = sat.name = name;
-        sat.AllNames.Add(m.Groups[2].Value);
+        sat.names += ", " + m.Groups[2].Value;
       }
     }
   }

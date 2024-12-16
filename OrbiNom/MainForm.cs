@@ -38,7 +38,7 @@ namespace OrbiNom
       // download if needed
       if (!ctx.SatnogsDb.Loaded || DateTime.UtcNow > ctx.Settings.SatList.LastDownloadTime.AddDays(LIST_DOWNLOAD_DAYS))
         DownloadDialog.Download(this, ctx);
-      
+
       if (DateTime.UtcNow > ctx.Settings.SatList.LastTleTime.AddDays(TLE_DOWNLOAD_DAYS))
         try
         {
@@ -48,7 +48,7 @@ namespace OrbiNom
         catch { }
 
       // no satellite data, cannot proceed
-      if (!ctx.SatnogsDb.Loaded) Environment.Exit(1); 
+      if (!ctx.SatnogsDb.Loaded) Environment.Exit(1);
     }
 
     private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
@@ -81,6 +81,11 @@ namespace OrbiNom
       Close();
     }
 
+    private void UpdateSatelliteListMNU_Click(object sender, EventArgs e)
+    {
+      DownloadDialog.Download(this, ctx);
+    }
+
 
 
 
@@ -103,6 +108,13 @@ namespace OrbiNom
         //   case "JTSkimmer.MessagesPanel": return new MessagesPanel(ctx);
         default: return null;
       }
+    }
+
+    private void SatelliteGroupsMNU_Click(object sender, EventArgs e)
+    {
+      var dlg = new SatGroupsForm();
+      dlg.SatellitesListView.SetList(ctx.SatnogsDb.Satellites, ctx.Settings.SatList.LastDownloadTime);
+      dlg.ShowDialog(this);
     }
   }
 }
