@@ -252,5 +252,19 @@ namespace OrbiNom
         sat.names += ", " + m.Groups[2].Value;
       }
     }
+
+    internal void Customize(Dictionary<string, SatelliteCustomization> satelliteCustomizations)
+    {
+      foreach (var cust in satelliteCustomizations.Values)
+      {
+        if (!SatelliteList.TryGetValue(cust.sat_id, out SatnogsDbSatellite? sat)) return;
+
+        if (!string.IsNullOrEmpty(cust.Name))
+        {
+          sat.name = cust.Name;
+          sat.BuildAllNames();
+        }
+      }
+    }
   }
 }

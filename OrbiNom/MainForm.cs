@@ -32,7 +32,10 @@ namespace OrbiNom
       // load from file
       ctx.SatnogsDb = new();
       ctx.SatnogsDb.LoadFromFile();
-      ctx.SatnogsDb.ListUpdated += SatnogsDb_ListUpdated;
+      ctx.SatnogsDb.Customize(ctx.Settings.Customization.SatelliteCustomizations);
+
+      // {!} fired before customization
+      ctx.SatnogsDb.ListUpdated += SatnogsDb_ListUpdated; 
       ctx.SatnogsDb.TleUpdated += SatnogsDb_TleUpdated;
 
       // download if needed

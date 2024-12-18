@@ -1,12 +1,22 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using static OrbiNom.SatnogsDbSatellite;
 
 namespace OrbiNom
 {
   public class SatnogsDbSatellite
   {
-    public class Telemetry { public string decoder; }
+    public class Telemetry 
+    { 
+      public string decoder;
+      public override string ToString() => decoder;
+    }
+
+    public class Telemetries : List<Telemetry>
+    {
+      public override string ToString() => string.Join(", ", this.Select(t => t.decoder));
+    }
 
 
 
@@ -64,7 +74,8 @@ namespace OrbiNom
 
     [ReadOnly(true)]
     [Category("SatNOGS Database")]
-    public List<Telemetry> telemetries { get; set; }
+    [TypeConverter(typeof(TelemetriesTypeConverter))]    
+    public Telemetries telemetries { get; set; }
 
     [ReadOnly(true)]
     [Category("SatNOGS Database")]
@@ -213,6 +224,14 @@ namespace OrbiNom
     public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
     {
       return string.Join(", ", (List<string>)value);
+    }
+  }
+
+  public class TelemetriesTypeConverter : StringConverter
+  {
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    {
+      return ((Telemetries)value).ToString();
     }
   }
 }

@@ -141,7 +141,7 @@
       // 
       // toolsToolStripMenuItem
       // 
-      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, toolStripMenuItem1, SdrDevicesMNU, SettingsMNU, UpdateSatelliteListMNU });
+      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, UpdateSatelliteListMNU });
       toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
       toolsToolStripMenuItem.Size = new Size(46, 20);
       toolsToolStripMenuItem.Text = "Tools";
@@ -149,31 +149,31 @@
       // SatelliteGroupsMNU
       // 
       SatelliteGroupsMNU.Name = "SatelliteGroupsMNU";
-      SatelliteGroupsMNU.Size = new Size(192, 22);
-      SatelliteGroupsMNU.Text = "Satellite Groups...";
+      SatelliteGroupsMNU.Size = new Size(193, 22);
+      SatelliteGroupsMNU.Text = "Satellites and Groups...";
       SatelliteGroupsMNU.Click += SatelliteGroupsMNU_Click;
       // 
       // toolStripMenuItem1
       // 
       toolStripMenuItem1.Name = "toolStripMenuItem1";
-      toolStripMenuItem1.Size = new Size(189, 6);
+      toolStripMenuItem1.Size = new Size(190, 6);
       // 
       // SdrDevicesMNU
       // 
       SdrDevicesMNU.Name = "SdrDevicesMNU";
-      SdrDevicesMNU.Size = new Size(192, 22);
+      SdrDevicesMNU.Size = new Size(193, 22);
       SdrDevicesMNU.Text = "SDR Devices...";
       // 
       // SettingsMNU
       // 
       SettingsMNU.Name = "SettingsMNU";
-      SettingsMNU.Size = new Size(192, 22);
+      SettingsMNU.Size = new Size(193, 22);
       SettingsMNU.Text = "Settings...";
       // 
       // UpdateSatelliteListMNU
       // 
       UpdateSatelliteListMNU.Name = "UpdateSatelliteListMNU";
-      UpdateSatelliteListMNU.Size = new Size(192, 22);
+      UpdateSatelliteListMNU.Size = new Size(193, 22);
       UpdateSatelliteListMNU.Text = "Update Satellite Data...";
       UpdateSatelliteListMNU.Click += UpdateSatelliteListMNU_Click;
       // 

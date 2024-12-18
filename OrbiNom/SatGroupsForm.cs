@@ -92,9 +92,9 @@ namespace OrbiNom
       if (sat.Flags.HasFlag(SatelliteFlags.Uhf)) item.BackColor = Color.LightCyan;
       else if (sat.Flags.HasFlag(SatelliteFlags.Vhf)) item.BackColor = Color.LightGoldenrodYellow;
 
+      if (sat.Flags.HasFlag(SatelliteFlags.Ham)) item.Font = new(item.Font, FontStyle.Bold);
       if (!sat.status.StartsWith("alive")) item.ForeColor = Color.Silver;
-      else if (sat.Flags.HasFlag(SatelliteFlags.Ham)) item.Font = new(item.Font, FontStyle.Bold);
-      if (sat.Tle == null) item.Font = new(item.Font, FontStyle.Strikeout);
+      else if (sat.Tle == null) item.Font = new(item.Font, FontStyle.Strikeout);
 
       // tooltip
 
@@ -198,11 +198,13 @@ namespace OrbiNom
       // to sat object
       var sat = (SatnogsDbSatellite)FilteredItems[listView1.SelectedIndices[0]].Tag;
       sat.name = newName;
-      sat.AllNames.Add(newName);
-      sat.AllNames = sat.AllNames.Distinct().ToList();
+      sat.BuildAllNames();
 
       // to customization storage
-
+      var casts = ctx.Settings.Customization.SatelliteCustomizations;
+      casts.TryAdd(sat.sat_id, new());
+      casts[sat.sat_id].sat_id = sat.sat_id;
+      casts[sat.sat_id].Name = newName;
     }
   }
 }

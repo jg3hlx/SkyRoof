@@ -13,6 +13,10 @@ namespace OrbiNom
   {
     public UiSettings Ui = new();
     public SatListSettings SatList = new();
+    public Customization Customization = new();
+
+
+
 
 
     //    [TypeConverter(typeof(ExpandableObjectConverter))]
