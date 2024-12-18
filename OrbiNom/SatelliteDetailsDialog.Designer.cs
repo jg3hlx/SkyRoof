@@ -38,15 +38,15 @@
       // 
       panel1.Controls.Add(button1);
       panel1.Dock = DockStyle.Bottom;
-      panel1.Location = new Point(0, 453);
+      panel1.Location = new Point(0, 575);
       panel1.Name = "panel1";
-      panel1.Size = new Size(392, 33);
+      panel1.Size = new Size(471, 33);
       panel1.TabIndex = 0;
       // 
       // button1
       // 
       button1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      button1.Location = new Point(305, 5);
+      button1.Location = new Point(384, 5);
       button1.Name = "button1";
       button1.Size = new Size(75, 23);
       button1.TabIndex = 0;
@@ -58,7 +58,7 @@
       satelliteDetailsControl1.Dock = DockStyle.Fill;
       satelliteDetailsControl1.Location = new Point(0, 0);
       satelliteDetailsControl1.Name = "satelliteDetailsControl1";
-      satelliteDetailsControl1.Size = new Size(392, 453);
+      satelliteDetailsControl1.Size = new Size(471, 575);
       satelliteDetailsControl1.TabIndex = 1;
       // 
       // SatelliteDetailsDialog
@@ -66,7 +66,7 @@
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       CancelButton = button1;
-      ClientSize = new Size(392, 486);
+      ClientSize = new Size(471, 608);
       Controls.Add(satelliteDetailsControl1);
       Controls.Add(panel1);
       FormBorderStyle = FormBorderStyle.SizableToolWindow;

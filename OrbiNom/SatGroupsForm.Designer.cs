@@ -353,6 +353,7 @@
       HamCheckbox.AutoSize = true;
       HamCheckbox.Checked = true;
       HamCheckbox.CheckState = CheckState.Checked;
+      HamCheckbox.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
       HamCheckbox.Location = new Point(56, 3);
       HamCheckbox.Name = "HamCheckbox";
       HamCheckbox.Size = new Size(52, 19);
@@ -401,6 +402,7 @@
       // VhfCheckbox
       // 
       VhfCheckbox.AutoSize = true;
+      VhfCheckbox.BackColor = Color.Yellow;
       VhfCheckbox.Checked = true;
       VhfCheckbox.CheckState = CheckState.Checked;
       VhfCheckbox.Location = new Point(51, 3);
@@ -408,12 +410,13 @@
       VhfCheckbox.Size = new Size(48, 19);
       VhfCheckbox.TabIndex = 6;
       VhfCheckbox.Text = "VHF";
-      VhfCheckbox.UseVisualStyleBackColor = true;
+      VhfCheckbox.UseVisualStyleBackColor = false;
       VhfCheckbox.CheckedChanged += FilterChanged;
       // 
       // UhfCheckbox
       // 
       UhfCheckbox.AutoSize = true;
+      UhfCheckbox.BackColor = Color.Aquamarine;
       UhfCheckbox.Checked = true;
       UhfCheckbox.CheckState = CheckState.Checked;
       UhfCheckbox.Location = new Point(105, 3);
@@ -421,7 +424,7 @@
       UhfCheckbox.Size = new Size(49, 19);
       UhfCheckbox.TabIndex = 7;
       UhfCheckbox.Text = "UHF";
-      UhfCheckbox.UseVisualStyleBackColor = true;
+      UhfCheckbox.UseVisualStyleBackColor = false;
       UhfCheckbox.CheckedChanged += FilterChanged;
       // 
       // OtherBandsCheckbox

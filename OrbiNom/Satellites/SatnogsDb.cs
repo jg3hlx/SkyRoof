@@ -208,36 +208,25 @@ namespace OrbiNom
     // example: RS-44;44909;145.935-145.995;435.670-435.610;435.605 ;SSB CW;RS44;Operational
     private void ImportJE9PEL()
     {
-      Dictionary<int, List<string>> calls = new();
-      Dictionary<int, List<string>> names = new();
+      Dictionary<int, List<JE9PELtransmitter>> dict = new();
 
-      // read sat name and callsign from je9pel file, the rest of the fields are not useful
       foreach (string line in File.ReadAllLines(Path.Combine(DownloadsFolder, "JE9PEL.csv")))
       {
-        var cols = line.Split([';']);
-        if (!int.TryParse(cols[1], out int norad)) continue;
-
-        if (cols[0] != "")
-        {
-          names.TryAdd(norad, new());
-          names[norad].AddRange(cols[0].Split(' '));
-        }
-
-        if (cols[6] != "")
-        {
-          calls.TryAdd(norad, new());
-          calls[norad].AddRange(cols[6].Split(' '));
-        }
+        JE9PELtransmitter tx = new(line);
+        if (tx.NoradId == 0) continue;
+        dict.TryAdd(tx.NoradId, new());
+        dict[tx.NoradId].Add(tx);
       }
 
       // insert in satnogs db
       foreach (var sat in Satellites)
         if (sat.norad_cat_id != null)
-        {
-          var norad = (int)sat.norad_cat_id;
-          if (names.ContainsKey(norad)) sat.JE9PEL_Names = names[norad].Distinct().ToList();
-          if (calls.ContainsKey(norad)) sat.JE9PEL_Callsigns = calls[norad].Distinct().ToList();
-        }
+          if (dict.ContainsKey((int)sat.norad_cat_id))
+          {
+            sat.JE9PELtransmitters = dict[(int)sat.norad_cat_id];
+            sat.JE9PEL_Callsigns = sat.JE9PELtransmitters.SelectMany(t => t.Call.Split(' ')).Where(c => c != "").Distinct().ToList();
+            sat.JE9PEL_Names = sat.JE9PELtransmitters.SelectMany(t => t.Name.Split(' ')).Where(c => c != "").Distinct().ToList();
+          }
     }
 
 

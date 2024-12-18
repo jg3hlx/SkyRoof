@@ -21,8 +21,8 @@ namespace OrbiNom
     Uhf = 64,
     OtherBands = 128,
 
-    Transponder = 256,
+    Transmitter = 256,
     Transceiver = 512,
-    Transmitter = 1024,
+    Transponder = 1024,
   }
 }

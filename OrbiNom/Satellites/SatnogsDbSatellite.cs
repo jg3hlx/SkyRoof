@@ -80,6 +80,7 @@ namespace OrbiNom
 
     [ReadOnly(true)]
     [Category("SatNOGS Database")]
+    [TypeConverter(typeof(CsvTypeConverter))]
     public List<string> associated_satellites { get; set; }
 
 
@@ -110,17 +111,22 @@ namespace OrbiNom
     [ReadOnly(true)]
     [Category("Orbit")]
     [DisplayName("Period, min")]
-    public int Period { get; set; }
+    public int? Period { get; set; }
+
+    [ReadOnly(true)]
+    [Category("Orbit")]
+    [DisplayName("Inclination, deg.")]
+    public int? Inclination { get; set; }
 
     [ReadOnly(true)]
     [Category("Orbit")]
     [DisplayName("Elevation, km")]
-    public int Elevation { get; set; }
+    public int? Elevation { get; set; }
 
     [ReadOnly(true)]
     [Category("Orbit")]
     [DisplayName("Footprint, km")]
-    public int Footprint { get; set; }
+    public int? Footprint { get; set; }
 
 
 
@@ -141,6 +147,8 @@ namespace OrbiNom
     [Browsable(false)]
     public SatelliteFlags Flags;
 
+    [Browsable(false)]
+    public List<JE9PELtransmitter> JE9PELtransmitters { get; set; } = new();
 
 
 

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SGPdotNET.Observation;
+using SGPdotNET.TLE;
 
 namespace OrbiNom
 {
@@ -67,23 +69,45 @@ namespace OrbiNom
 
     private ListViewItem ItemFromSat(SatnogsDbSatellite sat)
     {
-      var item = new ListViewItem(new string[] {
+      var item = new ListViewItem([
         sat.name,
         sat.norad_cat_id.ToString(),
         $"{sat.launched:yyyy-mm-dd}",
         string.Join(", ", sat.Transmitters.Select(t => t.service).Where(s=>s != "Unknown").Distinct().Order()),
-        });
+        ]);
 
       item.Tag = sat;
-      item.Checked = sat.Tle != null;
+
+      if (sat.Tle != null)
+      {
+        float v;
+        string s = sat.Tle.tle2.Substring(8, 8);
+        if (float.TryParse(s, out v)) sat.Inclination = (int)v;
+        s = sat.Tle.tle2.Substring(52, 10);
+        if (float.TryParse(s, out v)) sat.Period = (int)(1440f / v);
+      }
+
+      // highlighting
+
+      if (sat.Flags.HasFlag(SatelliteFlags.Uhf)) item.BackColor = Color.LightCyan;
+      else if (sat.Flags.HasFlag(SatelliteFlags.Vhf)) item.BackColor = Color.LightGoldenrodYellow;
 
       if (!sat.status.StartsWith("alive")) item.ForeColor = Color.Silver;
-      else if (!string.IsNullOrEmpty(sat.LotwName)) item.Font = new(item.Font, FontStyle.Bold);
+      else if (sat.Flags.HasFlag(SatelliteFlags.Ham)) item.Font = new(item.Font, FontStyle.Bold);
+      if (sat.Tle == null) item.Font = new(item.Font, FontStyle.Strikeout);
+
+      // tooltip
 
       string names = string.Join(", ", sat.AllNames);
-      item.ToolTipText = $"{names}\nstatus: {sat.status}";
-      if (sat.Tle != null) item.ToolTipText += "\nTLE available";
+      string radio = "Transmitter";
+      if (sat.Flags.HasFlag(SatelliteFlags.Transponder)) radio = "Transponder";
+      else if (sat.Flags.HasFlag(SatelliteFlags.Transceiver)) radio = "Transceiver";
+
+      item.ToolTipText = $"{names}\nstatus: {sat.status}\ncountries: {sat.countries}";
+      if (sat.Tle != null) item.ToolTipText += $"\nTLE: available\nperiod: {sat.Period} min.\ninclination: {sat.Inclination}°";
+      item.ToolTipText += $"\nradio: {radio}";
       if (!string.IsNullOrEmpty(sat.LotwName)) item.ToolTipText += "\nAccepted by LoTW";
+      item.ToolTipText += $"\nupdated: {sat.updated:yyyy-mm-dd}";
 
       return item;
     }
@@ -105,7 +129,6 @@ namespace OrbiNom
         (VhfCheckbox.Checked && sat.Flags.HasFlag(SatelliteFlags.Vhf)) ||
         (UhfCheckbox.Checked && sat.Flags.HasFlag(SatelliteFlags.Uhf)) ||
         (OtherBandsCheckbox.Checked && sat.Flags.HasFlag(SatelliteFlags.OtherBands));
-
 
       bool txOk =
       (TransponderCheckbox.Checked && sat.Flags.HasFlag(SatelliteFlags.Transponder)) ||
@@ -148,10 +171,20 @@ namespace OrbiNom
     private void PropertiesSatMNU_Click(object sender, EventArgs e)
     {
       var item = FilteredItems[listView1.SelectedIndices[0]];
-      var satellite = (SatnogsDbSatellite)item.Tag;
-      Point location = listView1.GetItemRect(listView1.SelectedIndices[0]).Location;
-      location.Offset(listView1.Columns[0].Width, 0);
-      SatelliteDetailsDialog.ShowSatellite(satellite, ParentForm, location);
+      var sat = (SatnogsDbSatellite)item.Tag;
+
+      // compute sat location only when needed for display
+      if (sat.Tle != null)
+        try
+        {
+          var satellite = new Satellite(sat.Tle.tle0, sat.Tle.tle1, sat.Tle.tle2);
+          sat.Footprint = (int)satellite.Predict().ToGeodetic().GetFootprint();
+          sat.Elevation = (int)satellite.Predict().ToGeodetic().Altitude;
+        }
+        catch { }
+
+
+      SatelliteDetailsDialog.ShowSatellite(sat, ParentForm);
     }
 
     private void listView1_AfterLabelEdit(object sender, LabelEditEventArgs e)
