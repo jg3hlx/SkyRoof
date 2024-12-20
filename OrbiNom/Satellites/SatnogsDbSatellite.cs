@@ -7,8 +7,8 @@ namespace OrbiNom
 {
   public class SatnogsDbSatellite
   {
-    public class Telemetry 
-    { 
+    public class Telemetry
+    {
       public string decoder;
       public override string ToString() => decoder;
     }
@@ -74,7 +74,7 @@ namespace OrbiNom
 
     [ReadOnly(true)]
     [Category("SatNOGS Database")]
-    [TypeConverter(typeof(TelemetriesTypeConverter))]    
+    [TypeConverter(typeof(TelemetriesTypeConverter))]
     public Telemetries telemetries { get; set; }
 
     [ReadOnly(true)]
@@ -101,7 +101,7 @@ namespace OrbiNom
     [ReadOnly(true)]
     [Category("JE9PEL")]
     [DisplayName("Names")]
-    [TypeConverter(typeof(CsvTypeConverter))] 
+    [TypeConverter(typeof(CsvTypeConverter))]
     public List<string> JE9PEL_Names { get; set; } = new();
 
     [ReadOnly(true)]
@@ -211,9 +211,24 @@ namespace OrbiNom
     }
 
     public static string MakeSearchText(string s) { return Regex.Replace(s, "[^a-zA-Z0-9|]", "").ToLower(); }
+
+    public string GetTooltipText()
+    {
+      string names = string.Join(", ", AllNames);
+      string radio = "Transmitter";
+      if (Flags.HasFlag(SatelliteFlags.Transponder)) radio = "Transponder";
+      else if (Flags.HasFlag(SatelliteFlags.Transceiver)) radio = "Transceiver";
+
+      string tooltipText = $"{names}\nstatus: {status}\ncountries: {countries}";
+      if (Tle != null) tooltipText += $"\nTLE: available\nperiod: {Period} min.\ninclination: {Inclination}°";
+      tooltipText += $"\nradio: {radio}";
+      if (!string.IsNullOrEmpty(LotwName)) tooltipText += "\nAccepted by LoTW";
+      tooltipText += $"\nupdated: {updated:yyyy-mm-dd}";
+
+      return tooltipText;
+    }
+
   }
-
-
 
 
 

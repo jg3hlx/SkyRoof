@@ -15,11 +15,8 @@ namespace OrbiNom
     public SatListSettings SatList = new();
     public Customization Customization = new();
 
-
-
-
-
     //    [TypeConverter(typeof(ExpandableObjectConverter))]
+
 
 
     private static string GetFileName()
@@ -41,6 +38,7 @@ namespace OrbiNom
 
     private void SetDefaults()
     {
+      Customization.SatelliteGroups.SetDefaultIfEmpty();
     }
   }
 }

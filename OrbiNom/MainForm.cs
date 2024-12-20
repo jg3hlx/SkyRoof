@@ -115,7 +115,7 @@ namespace OrbiNom
 
     private void SatelliteGroupsMNU_Click(object sender, EventArgs e)
     {
-      var dlg = new SatGroupsForm();
+      var dlg = new SatelliteGroupsForm();
       dlg.SetList(ctx);
       dlg.ShowDialog(this);
     }

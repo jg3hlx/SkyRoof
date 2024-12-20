@@ -61,7 +61,10 @@ namespace OrbiNom
       ListUpdated?.Invoke(this, EventArgs.Empty);
     }
 
-
+    public SatnogsDbSatellite GetSatellite(string satId)
+    {
+      return SatelliteList.GetValueOrDefault(satId);
+    }
 
 
     //----------------------------------------------------------------------------------------------

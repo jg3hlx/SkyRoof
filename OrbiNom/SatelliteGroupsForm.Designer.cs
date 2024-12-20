@@ -1,6 +1,6 @@
 ﻿namespace OrbiNom
 {
-  partial class SatGroupsForm
+  partial class SatelliteGroupsForm
   {
     /// <summary>
     /// Required designer variable.
@@ -29,31 +29,40 @@
     private void InitializeComponent()
     {
       components = new System.ComponentModel.Container();
-      bindingSource1 = new BindingSource(components);
       panel1 = new Panel();
+      treeView2 = new TreeView();
+      panel8 = new Panel();
+      AddGroupBtn = new Button();
+      DeleteSatBtn = new Button();
+      AddSatBtn = new Button();
       panel2 = new Panel();
       treeView1 = new TreeView();
-      panel4 = new Panel();
+      GroupsTreePopupMenu = new ContextMenuStrip(components);
+      RenameMNU2 = new ToolStripMenuItem();
+      DeleteMNU2 = new ToolStripMenuItem();
+      PropertiesMNU2 = new ToolStripMenuItem();
+      ClearGroupMNU = new ToolStripMenuItem();
       panel3 = new Panel();
-      button2 = new Button();
-      button1 = new Button();
+      CancelBtn = new Button();
+      OkBtn = new Button();
       label2 = new Label();
+      SatelliteListPopupMenu = new ContextMenuStrip(components);
+      RenameSatMNU = new ToolStripMenuItem();
+      AddToGroupMNU = new ToolStripMenuItem();
+      PropertiesSatMNU = new ToolStripMenuItem();
       panel5 = new Panel();
       listView1 = new ListView();
       columnHeader1 = new ColumnHeader();
       columnHeader2 = new ColumnHeader();
       columnHeader3 = new ColumnHeader();
       columnHeader4 = new ColumnHeader();
-      SatelliteListPopupMenu = new ContextMenuStrip(components);
-      RenameSatMNU = new ToolStripMenuItem();
-      PropertiesSatMNU = new ToolStripMenuItem();
       panel7 = new Panel();
       CountLabel = new Label();
       panel6 = new Panel();
       flowLayoutPanel5 = new FlowLayoutPanel();
       label3 = new Label();
       FilterTextbox = new TextBox();
-      button3 = new Button();
+      ClearSearchBtn = new Button();
       UpdatedDateLabel = new Label();
       flowLayoutPanel4 = new FlowLayoutPanel();
       label5 = new Label();
@@ -75,11 +84,14 @@
       FutureCheckbox = new CheckBox();
       ReEnteredCheckbox = new CheckBox();
       label1 = new Label();
-      ((System.ComponentModel.ISupportInitialize)bindingSource1).BeginInit();
+      toolTip1 = new ToolTip(components);
+      panel1.SuspendLayout();
+      panel8.SuspendLayout();
       panel2.SuspendLayout();
+      GroupsTreePopupMenu.SuspendLayout();
       panel3.SuspendLayout();
-      panel5.SuspendLayout();
       SatelliteListPopupMenu.SuspendLayout();
+      panel5.SuspendLayout();
       panel7.SuspendLayout();
       panel6.SuspendLayout();
       flowLayoutPanel5.SuspendLayout();
@@ -91,65 +103,170 @@
       // 
       // panel1
       // 
+      panel1.Controls.Add(treeView2);
+      panel1.Controls.Add(panel8);
       panel1.Dock = DockStyle.Left;
-      panel1.Location = new Point(559, 0);
+      panel1.Location = new Point(564, 0);
       panel1.Name = "panel1";
-      panel1.Size = new Size(6, 822);
+      panel1.Size = new Size(33, 822);
       panel1.TabIndex = 1;
+      // 
+      // treeView2
+      // 
+      treeView2.Dock = DockStyle.Fill;
+      treeView2.Location = new Point(32, 0);
+      treeView2.Name = "treeView2";
+      treeView2.Size = new Size(1, 822);
+      treeView2.TabIndex = 3;
+      // 
+      // panel8
+      // 
+      panel8.Controls.Add(AddGroupBtn);
+      panel8.Controls.Add(DeleteSatBtn);
+      panel8.Controls.Add(AddSatBtn);
+      panel8.Dock = DockStyle.Left;
+      panel8.Location = new Point(0, 0);
+      panel8.Name = "panel8";
+      panel8.Size = new Size(32, 822);
+      panel8.TabIndex = 4;
+      // 
+      // AddGroupBtn
+      // 
+      AddGroupBtn.Font = new Font("Segoe UI", 9F);
+      AddGroupBtn.Location = new Point(2, 162);
+      AddGroupBtn.Name = "AddGroupBtn";
+      AddGroupBtn.Size = new Size(27, 25);
+      AddGroupBtn.TabIndex = 3;
+      AddGroupBtn.Text = "+";
+      toolTip1.SetToolTip(AddGroupBtn, "Add Group");
+      AddGroupBtn.UseVisualStyleBackColor = true;
+      AddGroupBtn.Click += AddGroupBtn_Click;
+      // 
+      // DeleteSatBtn
+      // 
+      DeleteSatBtn.Font = new Font("Segoe UI", 9F);
+      DeleteSatBtn.Location = new Point(2, 224);
+      DeleteSatBtn.Name = "DeleteSatBtn";
+      DeleteSatBtn.Size = new Size(27, 25);
+      DeleteSatBtn.TabIndex = 2;
+      DeleteSatBtn.Text = "<";
+      toolTip1.SetToolTip(DeleteSatBtn, "Remove Satellite");
+      DeleteSatBtn.UseVisualStyleBackColor = true;
+      DeleteSatBtn.Click += DeleteSatBtn_Click;
+      // 
+      // AddSatBtn
+      // 
+      AddSatBtn.Font = new Font("Segoe UI", 9F);
+      AddSatBtn.Location = new Point(2, 193);
+      AddSatBtn.Name = "AddSatBtn";
+      AddSatBtn.Size = new Size(27, 25);
+      AddSatBtn.TabIndex = 1;
+      AddSatBtn.Text = ">";
+      toolTip1.SetToolTip(AddSatBtn, "Add Satellite");
+      AddSatBtn.UseVisualStyleBackColor = true;
+      AddSatBtn.Click += AddSatBtn_Click;
       // 
       // panel2
       // 
       panel2.Controls.Add(treeView1);
-      panel2.Controls.Add(panel4);
       panel2.Controls.Add(panel3);
       panel2.Controls.Add(label2);
       panel2.Dock = DockStyle.Fill;
-      panel2.Location = new Point(565, 0);
+      panel2.Location = new Point(597, 0);
       panel2.Name = "panel2";
-      panel2.Size = new Size(291, 822);
+      panel2.Size = new Size(219, 822);
       panel2.TabIndex = 2;
       // 
       // treeView1
       // 
+      treeView1.AllowDrop = true;
+      treeView1.ContextMenuStrip = GroupsTreePopupMenu;
       treeView1.Dock = DockStyle.Fill;
-      treeView1.Location = new Point(0, 69);
+      treeView1.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+      treeView1.HideSelection = false;
+      treeView1.Location = new Point(0, 26);
       treeView1.Name = "treeView1";
-      treeView1.Size = new Size(291, 729);
+      treeView1.ShowNodeToolTips = true;
+      treeView1.Size = new Size(219, 766);
       treeView1.TabIndex = 1;
+      treeView1.AfterLabelEdit += treeView1_AfterLabelEdit;
+      treeView1.ItemDrag += treeView1_ItemDrag;
+      treeView1.NodeMouseDoubleClick += treeView1_NodeMouseDoubleClick;
+      treeView1.DragDrop += treeView1_DragDrop;
+      treeView1.DragEnter += treeView1_DragEnter;
+      treeView1.DragOver += treeView1_DragOver;
+      treeView1.MouseDown += treeView1_MouseDown;
       // 
-      // panel4
+      // GroupsTreePopupMenu
       // 
-      panel4.Dock = DockStyle.Bottom;
-      panel4.Location = new Point(0, 798);
-      panel4.Name = "panel4";
-      panel4.Size = new Size(291, 24);
-      panel4.TabIndex = 2;
+      GroupsTreePopupMenu.Items.AddRange(new ToolStripItem[] { RenameMNU2, DeleteMNU2, PropertiesMNU2, ClearGroupMNU });
+      GroupsTreePopupMenu.Name = "SatelliteListPopupMenu";
+      GroupsTreePopupMenu.Size = new Size(183, 92);
+      GroupsTreePopupMenu.Opening += contextMenuStrip1_Opening;
+      // 
+      // RenameMNU2
+      // 
+      RenameMNU2.Name = "RenameMNU2";
+      RenameMNU2.ShortcutKeyDisplayString = "";
+      RenameMNU2.ShortcutKeys = Keys.F2;
+      RenameMNU2.Size = new Size(182, 22);
+      RenameMNU2.Text = "Rename";
+      RenameMNU2.Click += RenameMNU2_Click;
+      // 
+      // DeleteMNU2
+      // 
+      DeleteMNU2.Name = "DeleteMNU2";
+      DeleteMNU2.ShortcutKeys = Keys.Delete;
+      DeleteMNU2.Size = new Size(182, 22);
+      DeleteMNU2.Text = "Delete";
+      DeleteMNU2.Click += DeleteMNU2_Click;
+      // 
+      // PropertiesMNU2
+      // 
+      PropertiesMNU2.Name = "PropertiesMNU2";
+      PropertiesMNU2.ShortcutKeyDisplayString = "Space";
+      PropertiesMNU2.Size = new Size(182, 22);
+      PropertiesMNU2.Text = "Properties...";
+      PropertiesMNU2.Click += PropertiesMNU2_Click;
+      // 
+      // ClearGroupMNU
+      // 
+      ClearGroupMNU.Name = "ClearGroupMNU";
+      ClearGroupMNU.ShortcutKeys = Keys.Control | Keys.W;
+      ClearGroupMNU.Size = new Size(182, 22);
+      ClearGroupMNU.Text = "Clear Group";
+      ClearGroupMNU.Click += ClearGroupMNU_Click;
       // 
       // panel3
       // 
-      panel3.Controls.Add(button2);
-      panel3.Controls.Add(button1);
-      panel3.Dock = DockStyle.Top;
-      panel3.Location = new Point(0, 26);
+      panel3.Controls.Add(CancelBtn);
+      panel3.Controls.Add(OkBtn);
+      panel3.Dock = DockStyle.Bottom;
+      panel3.Location = new Point(0, 792);
       panel3.Name = "panel3";
-      panel3.Size = new Size(291, 43);
+      panel3.Size = new Size(219, 30);
       panel3.TabIndex = 0;
       // 
-      // button2
+      // CancelBtn
       // 
-      button2.Location = new Point(59, 3);
-      button2.Name = "button2";
-      button2.Size = new Size(38, 36);
-      button2.TabIndex = 1;
-      button2.UseVisualStyleBackColor = true;
+      CancelBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      CancelBtn.Location = new Point(136, 3);
+      CancelBtn.Name = "CancelBtn";
+      CancelBtn.Size = new Size(75, 23);
+      CancelBtn.TabIndex = 1;
+      CancelBtn.Text = "Cancel";
+      CancelBtn.UseVisualStyleBackColor = true;
       // 
-      // button1
+      // OkBtn
       // 
-      button1.Location = new Point(11, 3);
-      button1.Name = "button1";
-      button1.Size = new Size(38, 36);
-      button1.TabIndex = 0;
-      button1.UseVisualStyleBackColor = true;
+      OkBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      OkBtn.Location = new Point(55, 3);
+      OkBtn.Name = "OkBtn";
+      OkBtn.Size = new Size(75, 23);
+      OkBtn.TabIndex = 0;
+      OkBtn.Text = "OK";
+      OkBtn.UseVisualStyleBackColor = true;
+      OkBtn.Click += OkBtn_Click;
       // 
       // label2
       // 
@@ -157,9 +274,41 @@
       label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
       label2.Location = new Point(0, 0);
       label2.Name = "label2";
-      label2.Size = new Size(291, 26);
+      label2.Size = new Size(219, 26);
       label2.TabIndex = 3;
-      label2.Text = " Groups";
+      label2.Text = " Satellite Groups";
+      // 
+      // SatelliteListPopupMenu
+      // 
+      SatelliteListPopupMenu.Items.AddRange(new ToolStripItem[] { RenameSatMNU, AddToGroupMNU, PropertiesSatMNU });
+      SatelliteListPopupMenu.Name = "SatelliteListPopupMenu";
+      SatelliteListPopupMenu.Size = new Size(183, 70);
+      // 
+      // RenameSatMNU
+      // 
+      RenameSatMNU.Name = "RenameSatMNU";
+      RenameSatMNU.ShortcutKeyDisplayString = "";
+      RenameSatMNU.ShortcutKeys = Keys.F2;
+      RenameSatMNU.Size = new Size(182, 22);
+      RenameSatMNU.Text = "Rename";
+      RenameSatMNU.Click += RenameSatMNU_Click;
+      // 
+      // AddToGroupMNU
+      // 
+      AddToGroupMNU.Name = "AddToGroupMNU";
+      AddToGroupMNU.ShortcutKeyDisplayString = "";
+      AddToGroupMNU.ShortcutKeys = Keys.Insert;
+      AddToGroupMNU.Size = new Size(182, 22);
+      AddToGroupMNU.Text = "Add to Group";
+      AddToGroupMNU.Click += AddSatBtn_Click;
+      // 
+      // PropertiesSatMNU
+      // 
+      PropertiesSatMNU.Name = "PropertiesSatMNU";
+      PropertiesSatMNU.ShortcutKeyDisplayString = "Space";
+      PropertiesSatMNU.Size = new Size(182, 22);
+      PropertiesSatMNU.Text = "Properties...";
+      PropertiesSatMNU.Click += PropertiesSatMNU_Click;
       // 
       // panel5
       // 
@@ -170,24 +319,24 @@
       panel5.Dock = DockStyle.Left;
       panel5.Location = new Point(0, 0);
       panel5.Name = "panel5";
-      panel5.Size = new Size(559, 822);
-      panel5.TabIndex = 3;
+      panel5.Size = new Size(564, 822);
+      panel5.TabIndex = 1;
       // 
       // listView1
       // 
       listView1.Activation = ItemActivation.OneClick;
+      listView1.AllowDrop = true;
       listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
       listView1.ContextMenuStrip = SatelliteListPopupMenu;
       listView1.Dock = DockStyle.Fill;
       listView1.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
       listView1.FullRowSelect = true;
       listView1.LabelEdit = true;
-      listView1.Location = new Point(0, 124);
-      listView1.MultiSelect = false;
+      listView1.Location = new Point(0, 127);
       listView1.Name = "listView1";
       listView1.ShowGroups = false;
       listView1.ShowItemToolTips = true;
-      listView1.Size = new Size(559, 675);
+      listView1.Size = new Size(564, 665);
       listView1.Sorting = SortOrder.Ascending;
       listView1.TabIndex = 7;
       listView1.UseCompatibleStateImageBehavior = false;
@@ -195,8 +344,9 @@
       listView1.VirtualMode = true;
       listView1.AfterLabelEdit += listView1_AfterLabelEdit;
       listView1.ColumnClick += listView1_ColumnClick;
+      listView1.ItemDrag += listView1_ItemDrag;
       listView1.RetrieveVirtualItem += listView1_RetrieveVirtualItem;
-      listView1.DoubleClick += PropertiesSatMNU_Click;
+      listView1.DoubleClick += AddSatBtn_Click;
       // 
       // columnHeader1
       // 
@@ -218,42 +368,19 @@
       columnHeader4.Text = "Service";
       columnHeader4.Width = 170;
       // 
-      // SatelliteListPopupMenu
-      // 
-      SatelliteListPopupMenu.Items.AddRange(new ToolStripItem[] { RenameSatMNU, PropertiesSatMNU });
-      SatelliteListPopupMenu.Name = "SatelliteListPopupMenu";
-      SatelliteListPopupMenu.Size = new Size(179, 48);
-      // 
-      // RenameSatMNU
-      // 
-      RenameSatMNU.Name = "RenameSatMNU";
-      RenameSatMNU.ShortcutKeyDisplayString = "";
-      RenameSatMNU.ShortcutKeys = Keys.F2;
-      RenameSatMNU.Size = new Size(178, 22);
-      RenameSatMNU.Text = "Rename";
-      RenameSatMNU.Click += RenameSatMNU_Click;
-      // 
-      // PropertiesSatMNU
-      // 
-      PropertiesSatMNU.Name = "PropertiesSatMNU";
-      PropertiesSatMNU.ShortcutKeys = Keys.Control | Keys.D;
-      PropertiesSatMNU.Size = new Size(178, 22);
-      PropertiesSatMNU.Text = "Properties...";
-      PropertiesSatMNU.Click += PropertiesSatMNU_Click;
-      // 
       // panel7
       // 
       panel7.Controls.Add(CountLabel);
       panel7.Dock = DockStyle.Bottom;
-      panel7.Location = new Point(0, 799);
+      panel7.Location = new Point(0, 792);
       panel7.Name = "panel7";
-      panel7.Size = new Size(559, 23);
+      panel7.Size = new Size(564, 30);
       panel7.TabIndex = 6;
       // 
       // CountLabel
       // 
       CountLabel.AutoSize = true;
-      CountLabel.Location = new Point(11, 4);
+      CountLabel.Location = new Point(11, 7);
       CountLabel.Name = "CountLabel";
       CountLabel.Size = new Size(13, 15);
       CountLabel.TabIndex = 0;
@@ -267,10 +394,10 @@
       panel6.Controls.Add(flowLayoutPanel2);
       panel6.Controls.Add(flowLayoutPanel1);
       panel6.Dock = DockStyle.Top;
-      panel6.Location = new Point(0, 18);
+      panel6.Location = new Point(0, 21);
       panel6.Name = "panel6";
-      panel6.Size = new Size(559, 106);
-      panel6.TabIndex = 4;
+      panel6.Size = new Size(564, 106);
+      panel6.TabIndex = 1;
       // 
       // flowLayoutPanel5
       // 
@@ -278,12 +405,12 @@
       flowLayoutPanel5.BorderStyle = BorderStyle.FixedSingle;
       flowLayoutPanel5.Controls.Add(label3);
       flowLayoutPanel5.Controls.Add(FilterTextbox);
-      flowLayoutPanel5.Controls.Add(button3);
+      flowLayoutPanel5.Controls.Add(ClearSearchBtn);
       flowLayoutPanel5.Controls.Add(UpdatedDateLabel);
       flowLayoutPanel5.Location = new Point(7, 69);
       flowLayoutPanel5.Name = "flowLayoutPanel5";
       flowLayoutPanel5.Size = new Size(546, 30);
-      flowLayoutPanel5.TabIndex = 17;
+      flowLayoutPanel5.TabIndex = 1;
       // 
       // label3
       // 
@@ -301,20 +428,21 @@
       FilterTextbox.Location = new Point(54, 3);
       FilterTextbox.Name = "FilterTextbox";
       FilterTextbox.Size = new Size(167, 23);
-      FilterTextbox.TabIndex = 10;
+      FilterTextbox.TabIndex = 1;
       FilterTextbox.TextChanged += FilterChanged;
       // 
-      // button3
+      // ClearSearchBtn
       // 
-      button3.Font = new Font("Wingdings 2", 9F, FontStyle.Regular, GraphicsUnit.Point, 2);
-      button3.ForeColor = SystemColors.ControlDarkDark;
-      button3.Location = new Point(227, 3);
-      button3.Name = "button3";
-      button3.Size = new Size(23, 22);
-      button3.TabIndex = 12;
-      button3.Text = "Ò";
-      button3.UseVisualStyleBackColor = true;
-      button3.Click += button3_Click;
+      ClearSearchBtn.Font = new Font("Wingdings 2", 9F, FontStyle.Regular, GraphicsUnit.Point, 2);
+      ClearSearchBtn.ForeColor = SystemColors.ControlDarkDark;
+      ClearSearchBtn.Location = new Point(227, 3);
+      ClearSearchBtn.Name = "ClearSearchBtn";
+      ClearSearchBtn.Size = new Size(23, 22);
+      ClearSearchBtn.TabIndex = 12;
+      ClearSearchBtn.Text = "Ò";
+      toolTip1.SetToolTip(ClearSearchBtn, "Clear Search String");
+      ClearSearchBtn.UseVisualStyleBackColor = true;
+      ClearSearchBtn.Click += ClearSearchBtn_Click;
       // 
       // UpdatedDateLabel
       // 
@@ -410,6 +538,7 @@
       VhfCheckbox.Size = new Size(48, 19);
       VhfCheckbox.TabIndex = 6;
       VhfCheckbox.Text = "VHF";
+      toolTip1.SetToolTip(VhfCheckbox, "Downlink on 2m Band");
       VhfCheckbox.UseVisualStyleBackColor = false;
       VhfCheckbox.CheckedChanged += FilterChanged;
       // 
@@ -424,6 +553,7 @@
       UhfCheckbox.Size = new Size(49, 19);
       UhfCheckbox.TabIndex = 7;
       UhfCheckbox.Text = "UHF";
+      toolTip1.SetToolTip(UhfCheckbox, "Downlink on 70cm band");
       UhfCheckbox.UseVisualStyleBackColor = false;
       UhfCheckbox.CheckedChanged += FilterChanged;
       // 
@@ -570,30 +700,36 @@
       label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
       label1.Location = new Point(0, 0);
       label1.Name = "label1";
-      label1.Size = new Size(559, 18);
+      label1.Size = new Size(564, 21);
       label1.TabIndex = 2;
       label1.Text = " Satellites";
       // 
-      // SatGroupsForm
+      // SatelliteGroupsForm
       // 
+      AcceptButton = OkBtn;
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(856, 822);
+      CancelButton = CancelBtn;
+      ClientSize = new Size(816, 822);
       Controls.Add(panel2);
       Controls.Add(panel1);
       Controls.Add(panel5);
+      KeyPreview = true;
       MaximizeBox = false;
       MinimizeBox = false;
-      Name = "SatGroupsForm";
+      Name = "SatelliteGroupsForm";
       ShowIcon = false;
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterParent;
-      Text = "Edit Satellite Groups";
-      ((System.ComponentModel.ISupportInitialize)bindingSource1).EndInit();
+      Text = "Satellites and Groups";
+      FormClosing += SatelliteGroupsForm_FormClosing;
+      panel1.ResumeLayout(false);
+      panel8.ResumeLayout(false);
       panel2.ResumeLayout(false);
+      GroupsTreePopupMenu.ResumeLayout(false);
       panel3.ResumeLayout(false);
-      panel5.ResumeLayout(false);
       SatelliteListPopupMenu.ResumeLayout(false);
+      panel5.ResumeLayout(false);
       panel7.ResumeLayout(false);
       panel7.PerformLayout();
       panel6.ResumeLayout(false);
@@ -611,24 +747,19 @@
     }
 
     #endregion
-
-    private BindingSource bindingSource1;
     //private SatnogsSatListControl satnogsSatListControl1;
     private Panel panel1;
     private Panel panel2;
     private TreeView treeView1;
-    private Panel panel4;
     private Panel panel3;
     private Panel panel5;
     private Label label1;
     private Label label2;
-    private Button button2;
-    private Button button1;
     private Panel panel6;
     private FlowLayoutPanel flowLayoutPanel5;
     private Label label3;
     private TextBox FilterTextbox;
-    private Button button3;
+    private Button ClearSearchBtn;
     private Label UpdatedDateLabel;
     private FlowLayoutPanel flowLayoutPanel4;
     private Label label5;
@@ -659,5 +790,19 @@
     private ContextMenuStrip SatelliteListPopupMenu;
     private ToolStripMenuItem RenameSatMNU;
     private ToolStripMenuItem PropertiesSatMNU;
+    private Button CancelBtn;
+    private Button OkBtn;
+    private TreeView treeView2;
+    private Panel panel8;
+    private Button AddGroupBtn;
+    private Button DeleteSatBtn;
+    private Button AddSatBtn;
+    private ToolTip toolTip1;
+    private ContextMenuStrip GroupsTreePopupMenu;
+    private ToolStripMenuItem RenameMNU2;
+    private ToolStripMenuItem PropertiesMNU2;
+    private ToolStripMenuItem DeleteMNU2;
+    private ToolStripMenuItem ClearGroupMNU;
+    private ToolStripMenuItem AddToGroupMNU;
   }
 }
