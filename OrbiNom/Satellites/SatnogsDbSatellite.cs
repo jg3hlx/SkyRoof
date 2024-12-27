@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using SGPdotNET.Observation;
 using static OrbiNom.SatnogsDbSatellite;
 
 namespace OrbiNom
@@ -237,6 +238,20 @@ namespace OrbiNom
       if (float.TryParse(s, out v)) Inclination = (int)v;
       s = Tle.tle2.Substring(52, 10);
       if (float.TryParse(s, out v)) Period = (int)(1440f / v);
+    }
+
+    internal void SetElevationAndFootPrint()
+    {
+      if (Tle == null) return;
+      try
+      {
+        var satellite = new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);
+        Footprint = (int)satellite.Predict().ToGeodetic().GetFootprint();
+        Elevation = (int)satellite.Predict().ToGeodetic().Altitude;
+      }
+      catch
+      {
+      }
     }
   }
 

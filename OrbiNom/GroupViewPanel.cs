@@ -37,12 +37,6 @@ namespace OrbiNom
       ctx.MainForm.GroupViewMNU.Checked = false;
     }
 
-    private void GroupViewPanel_FormClosed(object sender, FormClosedEventArgs e)
-    {
-      ctx.GroupViewPanel = null;
-      ctx.MainForm.GroupViewMNU.Checked = false;
-    }
-
     public void LoadGroup()
     {
       // select group or default
@@ -104,6 +98,7 @@ namespace OrbiNom
       ShowSelectedSat();
 
       ctx.SatelliteSelector.SetSelectedSatellite();
+      ctx.SatelliteSelector.OnSelectedSatelliteChanged();
     }
   }
 }

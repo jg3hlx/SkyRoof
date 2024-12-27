@@ -105,7 +105,6 @@
       Name = "GroupViewPanel";
       Text = "Current Satellite Group";
       FormClosing += GroupViewPanel_FormClosing;
-      FormClosed += GroupViewPanel_FormClosed;
       ResumeLayout(false);
     }
 

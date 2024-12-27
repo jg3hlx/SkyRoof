@@ -210,7 +210,7 @@
 
     #endregion
 
-    private SplitContainer splitContainer1;
+    public SplitContainer splitContainer1;
     private Label label2;
     public PropertyGrid SatellitePropertyGrid;
     public Label SatNameLabel;

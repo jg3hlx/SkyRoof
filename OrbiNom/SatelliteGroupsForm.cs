@@ -395,16 +395,9 @@ namespace OrbiNom
     private void ShowSatelliteDetails(SatnogsDbSatellite sat)
     {
       // compute sat location only when needed for display
-      if (sat.Tle != null)
-        try
-        {
-          var satellite = new Satellite(sat.Tle.tle0, sat.Tle.tle1, sat.Tle.tle2);
-          sat.Footprint = (int)satellite.Predict().ToGeodetic().GetFootprint();
-          sat.Elevation = (int)satellite.Predict().ToGeodetic().Altitude;
-        }
-        catch { }
+      sat.SetElevationAndFootPrint();
 
-      SatelliteDetailsDialog.ShowSatellite(sat, ParentForm);
+      SatelliteDetailsForm.ShowSatellite(sat, ParentForm);
     }
 
     private void RenameSat(SatnogsDbSatellite sat, string name)

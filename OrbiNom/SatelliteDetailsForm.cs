@@ -10,16 +10,16 @@ using System.Windows.Forms;
 
 namespace OrbiNom
 {
-  public partial class SatelliteDetailsDialog : Form
+  public partial class SatelliteDetailsForm : Form
   {
-    public SatelliteDetailsDialog()
+    public SatelliteDetailsForm()
     {
       InitializeComponent();
     }
 
     internal static void ShowSatellite(SatnogsDbSatellite? satellite, Form parent)
     {
-      var dlg = new SatelliteDetailsDialog();
+      var dlg = new SatelliteDetailsForm();
       dlg.satelliteDetailsControl1.ShowSatellite(satellite);
       dlg.ShowDialog(parent);
     }

@@ -9,6 +9,9 @@ namespace OrbiNom
     public Point MainWindowLocation { get; set; }
     public string? DockingLayoutString { get; set; }
     public bool ClockUtcMode { get; set; }
+    public SatelliteGroupsFormSettings SatelliteGroupsForm { get; set; } = new();
+    public SatelliteDetailsFormSettings SatelliteDetailsForm { get; set; } = new();
+    public SatelliteDetailsPanelSettings SatelliteDetailsPanel { get; set; } = new();
 
     public void StoreWindowPosition(Form form)
     {
@@ -52,5 +55,21 @@ namespace OrbiNom
 
       return true;
     }
+  }
+
+  public class SatelliteDetailsPanelSettings
+  {
+    public int SplitterDistance { get; set; }
+  }
+
+  public class SatelliteDetailsFormSettings
+  {
+  public Size Size { get; set; }
+  public int SplitterPos { get; set; }
+  }
+
+  public class SatelliteGroupsFormSettings
+  {
+    public Size Size { get; set; }
   }
 }

@@ -14,5 +14,6 @@ namespace OrbiNom
     internal MainForm MainForm;
     internal SatelliteSelector SatelliteSelector;
     internal GroupViewPanel? GroupViewPanel;
+    public SatelliteDetailsPanel? SatelliteDetailsPanel;
   }
 }

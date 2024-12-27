@@ -98,7 +98,7 @@ namespace OrbiNom
       toolTip1.SetToolTip(TransmitterComboBox, tx.GetTooltipText());
       changing = false;
 
-      SelectedTransmitterChanged?.Invoke(this, EventArgs.Empty);
+      OnSelectedTransmitterChanged();
     }
 
 
@@ -116,8 +116,9 @@ namespace OrbiNom
       ctx.Settings.SatelliteSettings.SelectedGroup = group.Id;
       SetSatellites();
 
-      SelectedGroupChanged?.Invoke(this, EventArgs.Empty);
+      OnSelectedGroupChanged();
     }
+
 
     private void SatelliteComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -129,7 +130,7 @@ namespace OrbiNom
       toolTip1.SetToolTip(SatelliteComboBox, sat.GetTooltipText());
       SetTransmitters();
 
-      SelectedSatelliteChanged?.Invoke(this, EventArgs.Empty);
+      OnSelectedSatelliteChanged();
     }
 
     private void TransmitterComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -143,6 +144,24 @@ namespace OrbiNom
 
       cust.SelectedTransmitter = tx.uuid;
       toolTip1.SetToolTip(TransmitterComboBox, tx.GetTooltipText());
+    }
+
+    private void OnSelectedGroupChanged()
+    {
+      SelectedGroupChanged?.Invoke(this, EventArgs.Empty);
+      SelectedSatelliteChanged?.Invoke(this, EventArgs.Empty);
+      SelectedTransmitterChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void OnSelectedSatelliteChanged()
+    {
+      SelectedSatelliteChanged?.Invoke(this, EventArgs.Empty);
+      SelectedTransmitterChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void OnSelectedTransmitterChanged()
+    {
+      SelectedTransmitterChanged?.Invoke(this, EventArgs.Empty);
     }
 
 

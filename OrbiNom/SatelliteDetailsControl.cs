@@ -41,9 +41,10 @@ namespace OrbiNom
     private void CreateTransmitterItems()
     {
       listView1.BeginUpdate();
+      listView1.Items.Clear();
+      listView1.Groups.Clear();
       listView1.Groups.Add(new ListViewGroup("SatNOGS"));
       listView1.Groups.Add(new ListViewGroup("JE9PEL"));
-
 
       // satnogs transmitters
       foreach (var tx in Satellite.Transmitters)

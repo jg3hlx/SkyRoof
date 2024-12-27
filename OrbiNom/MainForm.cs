@@ -125,7 +125,10 @@ namespace OrbiNom
 
     private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
     {
-
+      if (ctx.SatelliteDetailsPanel == null)
+        new SatelliteDetailsPanel(ctx).Show(DockHost, DockState.DockLeft);
+      else
+        ctx.SatelliteDetailsPanel.Close();
     }
 
 
@@ -143,6 +146,7 @@ namespace OrbiNom
       switch (persistString)
       {
         case "OrbiNom.GroupViewPanel": return new GroupViewPanel(ctx);
+        case "OrbiNom.SatelliteDetailsPanel": return new SatelliteDetailsPanel(ctx);
         default: return null;
       }
     }
@@ -158,6 +162,7 @@ namespace OrbiNom
     private void SatelliteSelector_SelectedSatelliteChanged(object sender, EventArgs e)
     {
       ctx.GroupViewPanel?.ShowSelectedSat();
+      ctx.SatelliteDetailsPanel?.LoadSatelliteDetails();
     }
   }
 }
