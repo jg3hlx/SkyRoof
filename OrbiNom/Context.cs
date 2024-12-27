@@ -10,5 +10,9 @@ namespace OrbiNom
   {
     public Settings Settings = new();
     public SatnogsDb SatnogsDb;
+
+    internal MainForm MainForm;
+    internal SatelliteSelector SatelliteSelector;
+    internal GroupViewPanel? GroupViewPanel;
   }
 }

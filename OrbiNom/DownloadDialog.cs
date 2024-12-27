@@ -59,7 +59,7 @@ namespace OrbiNom
       {
         db.ImportAll();
         ctx.SatnogsDb.UpdateSatelliteList(db);
-        ctx.SatnogsDb.Customize(ctx.Settings.Customization.SatelliteCustomizations);
+        ctx.SatnogsDb.Customize(ctx.Settings.SatelliteSettings.SatelliteCustomizations);
         ctx.Settings.SatList.LastDownloadTime = DateTime.UtcNow;
         ctx.Settings.SatList.LastTleTime = ctx.Settings.SatList.LastDownloadTime;
         Close();

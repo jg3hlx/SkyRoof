@@ -46,26 +46,24 @@ namespace OrbiNom
 
 
       // satnogs transmitters
-      foreach (var t in Satellite.Transmitters)
+      foreach (var tx in Satellite.Transmitters)
       {
         // columns
         var item = new ListViewItem([
-          t.description,
-          FormatRange(t.uplink_low, t.uplink_high),
-          FormatRange(t.downlink_low, t.downlink_high),
+          tx.description,
+          SatnogsDbTransmitter.FormatRange(tx.uplink_low, tx.uplink_high),
+          SatnogsDbTransmitter.FormatRange(tx.downlink_low, tx.downlink_high),
         ]);
         item.Group = listView1.Groups[0];
 
         // highlighting
-        if (t.downlink_low >= 144000000 && t.downlink_low <= 148000000) item.BackColor = Color.LightGoldenrodYellow;
-        if (t.downlink_low >= 430000000 && t.downlink_low <= 440000000) item.BackColor = Color.LightCyan;
-        if (t.service == "Amateur") item.Font = new(item.Font, FontStyle.Bold);
-        if (!t.alive || t.status != "active") item.ForeColor = Color.Silver; //item.Font = new(item.Font, FontStyle.Strikeout);
+        if (tx.downlink_low >= 144000000 && tx.downlink_low <= 148000000) item.BackColor = Color.LightGoldenrodYellow;
+        if (tx.downlink_low >= 430000000 && tx.downlink_low <= 440000000) item.BackColor = Color.LightCyan;
+        if (tx.service == "Amateur") item.Font = new(item.Font, FontStyle.Bold);
+        if (!tx.alive || tx.status != "active") item.ForeColor = Color.Silver; //item.Font = new(item.Font, FontStyle.Strikeout);
         
         // tooltip
-        string mode = t.mode;
-        if (t.baud != null && t.baud != 0) mode = $"{mode} {t.baud} Bd";
-        item.ToolTipText = $"type: {t.type}\nmode: {mode}\nservice: {t.service}\nupdated: {t.updated:yyyy-mm-dd}";
+        item.ToolTipText = tx.GetTooltipText();
 
         listView1.Items.Add(item);
       }
@@ -88,13 +86,6 @@ namespace OrbiNom
       }
 
       listView1.EndUpdate();
-    }
-
-    private string FormatRange(long? low, long? high)
-    {
-      if (low == null) return "";
-      if (high == null) return $"{low / 1000:N0}";
-      return $"{low / 1000:N0} - {high / 1000:N0}";
     }
 
     private void ImageLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

@@ -29,6 +29,29 @@
     public ItuNotification itu_notification { get; set; }
     public bool frequency_violation { get; set; }
     public bool unconfirmed { get; set; }
+
+    public string GetTooltipText()
+    {
+      string mode = this.mode;
+      if (baud != null && baud != 0) mode = $"{mode} {baud} Bd";
+      string uplink = FormatRange(uplink_low, uplink_high);
+      string downlink = FormatRange(downlink_low, downlink_high);
+      
+      string result = $"type: {type}\nmode: {mode}\n";
+      if (uplink_low != null) result += $"Uplink: {uplink}\n";
+      result += $"Downlink: {downlink}\n";
+      if (uplink_low != null) result += $"Inverted: {invert}\n";
+      result += $"service: {service}\nupdated: {updated:yyyy-mm-dd}";
+     
+      return result;
+    }
+
+    public static string FormatRange(long? low, long? high)
+    {
+      if (low == null) return "";
+      if (high == null) return $"{low / 1000:N0}";
+      return $"{low / 1000:N0} - {high / 1000:N0}";
+    }
   }
 
   public class ItuNotification

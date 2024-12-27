@@ -45,7 +45,7 @@ namespace OrbiNom
       UpdatedDateLabel.Text = $"Updated {updateTime:yyy-mm-dd}";
 
       // groups to treeview
-      foreach (var group in ctx.Settings.Customization.SatelliteGroups)
+      foreach (var group in ctx.Settings.SatelliteSettings.SatelliteGroups)
       {
         var node = new TreeNode(group.Name);
         node.Tag = group;
@@ -94,14 +94,7 @@ namespace OrbiNom
       item.Tag = sat;
       item.ToolTipText = sat.GetTooltipText();
 
-      if (sat.Tle != null)
-      {
-        float v;
-        string s = sat.Tle.tle2.Substring(8, 8);
-        if (float.TryParse(s, out v)) sat.Inclination = (int)v;
-        s = sat.Tle.tle2.Substring(52, 10);
-        if (float.TryParse(s, out v)) sat.Period = (int)(1440f / v);
-      }
+      sat.SetPeriodAndInclination();
 
       // highlighting
 
@@ -134,17 +127,17 @@ namespace OrbiNom
 
     private void SaveGroups()
     {
-      ctx.Settings.Customization.SatelliteGroups.Clear();
+      ctx.Settings.SatelliteSettings.SatelliteGroups.Clear();
 
       foreach (var groupNode in treeView1.Nodes.Cast<TreeNode>())
       {
         var group = new SatelliteGroup();
         group.Name = groupNode.Text;
         group.SatelliteIds = groupNode.Nodes.Cast<TreeNode>().Select(n => ((SatnogsDbSatellite)n.Tag).sat_id).ToList();
-        if (group.SatelliteIds.Count > 0) ctx.Settings.Customization.SatelliteGroups.Add(group);
+        if (group.SatelliteIds.Count > 0) ctx.Settings.SatelliteSettings.SatelliteGroups.Add(group);
       }
 
-      if (ctx.Settings.Customization.SatelliteGroups.Count == 0) ctx.Settings.Customization.SatelliteGroups.SetDefaultIfEmpty();
+      ctx.Settings.SatelliteSettings.Sanitize();
 
       Changed = false;
     }
@@ -420,7 +413,7 @@ namespace OrbiNom
       sat.BuildAllNames();
 
       // to customization storage
-      var casts = ctx.Settings.Customization.SatelliteCustomizations;
+      var casts = ctx.Settings.SatelliteSettings.SatelliteCustomizations;
       casts.TryAdd(sat.sat_id, new());
       casts[sat.sat_id].sat_id = sat.sat_id;
       casts[sat.sat_id].Name = name;
@@ -497,8 +490,13 @@ namespace OrbiNom
     {
       bool isGroup = src.Level == 0;
 
-      if (effect == DragDropEffects.Move) src.Remove();
-      else src = src.Clone() as TreeNode;
+      if (effect == DragDropEffects.Move) 
+        src.Remove();
+      else
+      {
+        src = src.Clone() as TreeNode;
+        if (src.Level == 0) src.Text += " (copy)";
+      }
 
       // dragging group
       if (isGroup) treeView1.Nodes.Insert(dst.Index, src);

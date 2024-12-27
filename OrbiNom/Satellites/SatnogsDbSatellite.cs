@@ -218,6 +218,7 @@ namespace OrbiNom
       string radio = "Transmitter";
       if (Flags.HasFlag(SatelliteFlags.Transponder)) radio = "Transponder";
       else if (Flags.HasFlag(SatelliteFlags.Transceiver)) radio = "Transceiver";
+      SetPeriodAndInclination();
 
       string tooltipText = $"{names}\nstatus: {status}\ncountries: {countries}";
       if (Tle != null) tooltipText += $"\nTLE: available\nperiod: {Period} min.\ninclination: {Inclination}°";
@@ -228,6 +229,15 @@ namespace OrbiNom
       return tooltipText;
     }
 
+    internal void SetPeriodAndInclination()
+    {
+      if (Tle == null || Period != null) return;
+      float v;
+      string s = Tle.tle2.Substring(8, 8);
+      if (float.TryParse(s, out v)) Inclination = (int)v;
+      s = Tle.tle2.Substring(52, 10);
+      if (float.TryParse(s, out v)) Period = (int)(1440f / v);
+    }
   }
 
 

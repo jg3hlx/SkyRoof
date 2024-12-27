@@ -13,7 +13,7 @@ namespace OrbiNom
   {
     public UiSettings Ui = new();
     public SatListSettings SatList = new();
-    public Customization Customization = new();
+    public SatelliteSettings SatelliteSettings = new();
 
     //    [TypeConverter(typeof(ExpandableObjectConverter))]
 
@@ -38,7 +38,7 @@ namespace OrbiNom
 
     private void SetDefaults()
     {
-      Customization.SatelliteGroups.SetDefaultIfEmpty();
+      SatelliteSettings.Sanitize();
     }
   }
 }

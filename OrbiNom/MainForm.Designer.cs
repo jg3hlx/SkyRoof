@@ -29,6 +29,7 @@
     private void InitializeComponent()
     {
       Toolbar = new Panel();
+      SatelliteSelector = new SatelliteSelector();
       ClockPanel = new Panel();
       Clock = new VE3NEA.Clock.Clock();
       StatusBar = new StatusStrip();
@@ -37,16 +38,19 @@
       menuStrip1 = new MenuStrip();
       fileToolStripMenuItem = new ToolStripMenuItem();
       ExitMNU = new ToolStripMenuItem();
-      viewToolStripMenuItem = new ToolStripMenuItem();
+      GroupViewPanelMNU = new ToolStripMenuItem();
+      GroupViewMNU = new ToolStripMenuItem();
+      SatelliteDetailsMNU = new ToolStripMenuItem();
       WaterfallMNU = new ToolStripMenuItem();
       toolsToolStripMenuItem = new ToolStripMenuItem();
       SatelliteGroupsMNU = new ToolStripMenuItem();
-      toolStripMenuItem1 = new ToolStripSeparator();
       SdrDevicesMNU = new ToolStripMenuItem();
       SettingsMNU = new ToolStripMenuItem();
+      toolStripMenuItem1 = new ToolStripSeparator();
       UpdateSatelliteListMNU = new ToolStripMenuItem();
       helpToolStripMenuItem = new ToolStripMenuItem();
       OnlineHelpMNU = new ToolStripMenuItem();
+      DataFolderMNU = new ToolStripMenuItem();
       toolStripMenuItem2 = new ToolStripSeparator();
       AboutMNU = new ToolStripMenuItem();
       Toolbar.SuspendLayout();
@@ -57,12 +61,23 @@
       // Toolbar
       // 
       Toolbar.BorderStyle = BorderStyle.FixedSingle;
+      Toolbar.Controls.Add(SatelliteSelector);
       Toolbar.Controls.Add(ClockPanel);
       Toolbar.Dock = DockStyle.Top;
       Toolbar.Location = new Point(0, 24);
       Toolbar.Name = "Toolbar";
       Toolbar.Size = new Size(1200, 40);
       Toolbar.TabIndex = 0;
+      // 
+      // SatelliteSelector
+      // 
+      SatelliteSelector.Dock = DockStyle.Left;
+      SatelliteSelector.Location = new Point(0, 0);
+      SatelliteSelector.Name = "SatelliteSelector";
+      SatelliteSelector.Size = new Size(619, 38);
+      SatelliteSelector.TabIndex = 2;
+      SatelliteSelector.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
+      SatelliteSelector.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
       // 
       // ClockPanel
       // 
@@ -96,16 +111,18 @@
       // DockHost
       // 
       DockHost.Dock = DockStyle.Fill;
-      DockHost.DockBackColor = Color.Silver;
+      DockHost.DockBackColor = Color.FromArgb(238, 238, 242);
       DockHost.Location = new Point(0, 64);
       DockHost.Name = "DockHost";
+      DockHost.Padding = new Padding(6);
       DockHost.ShowAutoHideContentOnHover = false;
       DockHost.Size = new Size(1200, 624);
       DockHost.TabIndex = 4;
+      DockHost.Theme = vS2015LightTheme1;
       // 
       // menuStrip1
       // 
-      menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, viewToolStripMenuItem, toolsToolStripMenuItem, helpToolStripMenuItem });
+      menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, GroupViewPanelMNU, toolsToolStripMenuItem, helpToolStripMenuItem });
       menuStrip1.Location = new Point(0, 0);
       menuStrip1.Name = "menuStrip1";
       menuStrip1.Size = new Size(1200, 24);
@@ -126,17 +143,31 @@
       ExitMNU.Text = "Exit";
       ExitMNU.Click += ExitMNU_Click;
       // 
-      // viewToolStripMenuItem
+      // GroupViewPanelMNU
       // 
-      viewToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { WaterfallMNU });
-      viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-      viewToolStripMenuItem.Size = new Size(44, 20);
-      viewToolStripMenuItem.Text = "View";
+      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, WaterfallMNU });
+      GroupViewPanelMNU.Name = "GroupViewPanelMNU";
+      GroupViewPanelMNU.Size = new Size(44, 20);
+      GroupViewPanelMNU.Text = "View";
+      // 
+      // GroupViewMNU
+      // 
+      GroupViewMNU.Name = "GroupViewMNU";
+      GroupViewMNU.Size = new Size(153, 22);
+      GroupViewMNU.Text = "Group";
+      GroupViewMNU.Click += GroupViewMNU_Click;
+      // 
+      // SatelliteDetailsMNU
+      // 
+      SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
+      SatelliteDetailsMNU.Size = new Size(153, 22);
+      SatelliteDetailsMNU.Text = "Satellite Details";
+      SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
       // 
       // WaterfallMNU
       // 
       WaterfallMNU.Name = "WaterfallMNU";
-      WaterfallMNU.Size = new Size(121, 22);
+      WaterfallMNU.Size = new Size(153, 22);
       WaterfallMNU.Text = "Waterfall";
       // 
       // toolsToolStripMenuItem
@@ -151,12 +182,7 @@
       SatelliteGroupsMNU.Name = "SatelliteGroupsMNU";
       SatelliteGroupsMNU.Size = new Size(193, 22);
       SatelliteGroupsMNU.Text = "Satellites and Groups...";
-      SatelliteGroupsMNU.Click += SatelliteGroupsMNU_Click;
-      // 
-      // toolStripMenuItem1
-      // 
-      toolStripMenuItem1.Name = "toolStripMenuItem1";
-      toolStripMenuItem1.Size = new Size(190, 6);
+      SatelliteGroupsMNU.Click += EditGroupsMNU_Click;
       // 
       // SdrDevicesMNU
       // 
@@ -170,6 +196,11 @@
       SettingsMNU.Size = new Size(193, 22);
       SettingsMNU.Text = "Settings...";
       // 
+      // toolStripMenuItem1
+      // 
+      toolStripMenuItem1.Name = "toolStripMenuItem1";
+      toolStripMenuItem1.Size = new Size(190, 6);
+      // 
       // UpdateSatelliteListMNU
       // 
       UpdateSatelliteListMNU.Name = "UpdateSatelliteListMNU";
@@ -179,7 +210,7 @@
       // 
       // helpToolStripMenuItem
       // 
-      helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { OnlineHelpMNU, toolStripMenuItem2, AboutMNU });
+      helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { OnlineHelpMNU, DataFolderMNU, toolStripMenuItem2, AboutMNU });
       helpToolStripMenuItem.Name = "helpToolStripMenuItem";
       helpToolStripMenuItem.Size = new Size(44, 20);
       helpToolStripMenuItem.Text = "Help";
@@ -189,6 +220,13 @@
       OnlineHelpMNU.Name = "OnlineHelpMNU";
       OnlineHelpMNU.Size = new Size(146, 22);
       OnlineHelpMNU.Text = "Online Help...";
+      // 
+      // DataFolderMNU
+      // 
+      DataFolderMNU.Name = "DataFolderMNU";
+      DataFolderMNU.Size = new Size(146, 22);
+      DataFolderMNU.Text = "Data Folder...";
+      DataFolderMNU.Click += DataFolderMNU_Click;
       // 
       // toolStripMenuItem2
       // 
@@ -232,8 +270,7 @@
     private MenuStrip menuStrip1;
     private ToolStripMenuItem fileToolStripMenuItem;
     private ToolStripMenuItem ExitMNU;
-    private ToolStripMenuItem viewToolStripMenuItem;
-    private ToolStripMenuItem WaterfallMNU;
+    private ToolStripMenuItem GroupViewPanelMNU;
     private ToolStripMenuItem toolsToolStripMenuItem;
     private ToolStripMenuItem SdrDevicesMNU;
     private ToolStripMenuItem SettingsMNU;
@@ -246,5 +283,10 @@
     private ToolStripMenuItem SatelliteGroupsMNU;
     private ToolStripSeparator toolStripMenuItem1;
     private ToolStripMenuItem UpdateSatelliteListMNU;
+    private ToolStripMenuItem DataFolderMNU;
+    public ToolStripMenuItem WaterfallMNU;
+    public ToolStripMenuItem GroupViewMNU;
+    public ToolStripMenuItem SatelliteDetailsMNU;
+    private SatelliteSelector SatelliteSelector;
   }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -11,17 +12,23 @@ namespace OrbiNom
     {
       InitializeComponent();
       Text = Utils.GetVersionString();
+      ctx.MainForm = this;
+      ctx.SatelliteSelector = SatelliteSelector;
+      SatelliteSelector.ctx = ctx;
       ctx.Settings.LoadFromFile();
     }
 
     private void MainForm_Load(object sender, EventArgs e)
     {
+      LoadSatelliteList();
+
       // apply settings
       ctx.Settings.Ui.RestoreWindowPosition(this);
       if (!ctx.Settings.Ui.RestoreDockingLayout(this)) SetDefaultDockingLayout();
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
 
-      LoadSatelliteList();
+      ctx.Settings.SatelliteSettings.DeleteInvalidData(ctx.SatnogsDb);
+      SatelliteSelector.SetSatelliteGroups();
     }
 
     const int LIST_DOWNLOAD_DAYS = 7;
@@ -32,10 +39,10 @@ namespace OrbiNom
       // load from file
       ctx.SatnogsDb = new();
       ctx.SatnogsDb.LoadFromFile();
-      ctx.SatnogsDb.Customize(ctx.Settings.Customization.SatelliteCustomizations);
+      ctx.SatnogsDb.Customize(ctx.Settings.SatelliteSettings.SatelliteCustomizations);
 
       // {!} fired before customization
-      ctx.SatnogsDb.ListUpdated += SatnogsDb_ListUpdated; 
+      ctx.SatnogsDb.ListUpdated += SatnogsDb_ListUpdated;
       ctx.SatnogsDb.TleUpdated += SatnogsDb_TleUpdated;
 
       // download if needed
@@ -48,10 +55,15 @@ namespace OrbiNom
           ctx.SatnogsDb.DownloadTle();
           ctx.Settings.SatList.LastTleTime = DateTime.UtcNow;
         }
-        catch { }
+        catch
+        {
+        }
 
       // no satellite data, cannot proceed
       if (!ctx.SatnogsDb.Loaded) Environment.Exit(1);
+
+      // delete sats that are no longer in the db
+      ctx.Settings.SatelliteSettings.DeleteInvalidData(ctx.SatnogsDb);
     }
 
     private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
@@ -89,6 +101,32 @@ namespace OrbiNom
       DownloadDialog.Download(this, ctx);
     }
 
+    private void DataFolderMNU_Click(object sender, EventArgs e)
+    {
+      Process.Start("explorer.exe", Utils.GetUserDataFolder());
+    }
+
+    private void EditGroupsMNU_Click(object sender, EventArgs e)
+    {
+      var dlg = new SatelliteGroupsForm();
+      dlg.SetList(ctx);
+      dlg.ShowDialog(this);
+      ctx.Settings.SatelliteSettings.DeleteInvalidData(ctx.SatnogsDb);
+      ctx.SatelliteSelector.SetSatelliteGroups();
+    }
+
+    private void GroupViewMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.GroupViewPanel == null)
+        new GroupViewPanel(ctx).Show(DockHost, DockState.DockLeft);
+      else
+        ctx.GroupViewPanel.Close();
+    }
+
+    private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
+    {
+
+    }
 
 
 
@@ -97,27 +135,29 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void SetDefaultDockingLayout()
     {
-      //ViewReceiversMNU_Click(null, null);
-      //ViewBandViewMNU_Click(null, null);
-      //ViewMessagesMNU_Click(null, null);
+      GroupViewMNU_Click(null, null);
     }
 
     public IDockContent? MakeDockContentFromPersistString(string persistString)
     {
       switch (persistString)
       {
-        //   case "JTSkimmer.ReceiversPanel": return new ReceiversPanel(ctx);
-        //   case "JTSkimmer.BandViewPanel": return new BandViewPanel(ctx);
-        //   case "JTSkimmer.MessagesPanel": return new MessagesPanel(ctx);
+        case "OrbiNom.GroupViewPanel": return new GroupViewPanel(ctx);
         default: return null;
       }
     }
 
-    private void SatelliteGroupsMNU_Click(object sender, EventArgs e)
+
+
+
+    private void SatelliteSelector_SelectedGroupChanged(object sender, EventArgs e)
     {
-      var dlg = new SatelliteGroupsForm();
-      dlg.SetList(ctx);
-      dlg.ShowDialog(this);
+      ctx.GroupViewPanel?.LoadGroup();
+    }
+
+    private void SatelliteSelector_SelectedSatelliteChanged(object sender, EventArgs e)
+    {
+      ctx.GroupViewPanel?.ShowSelectedSat();
     }
   }
 }
