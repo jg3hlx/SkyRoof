@@ -28,11 +28,9 @@
     /// </summary>
     private void InitializeComponent()
     {
-      components = new System.ComponentModel.Container();
       timeLabel = new Label();
       dateLabel = new Label();
       utcLabel = new Label();
-      timer1 = new System.Windows.Forms.Timer(components);
       SuspendLayout();
       // 
       // timeLabel
@@ -80,12 +78,6 @@
       utcLabel.Text = "UTC";
       utcLabel.Click += utcLabel_Click;
       // 
-      // timer1
-      // 
-      timer1.Enabled = true;
-      timer1.Interval = 500;
-      timer1.Tick += timer1_Tick;
-      // 
       // Clock
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -106,6 +98,5 @@
     private System.Windows.Forms.Label timeLabel;
     private System.Windows.Forms.Label dateLabel;
     private System.Windows.Forms.Label utcLabel;
-    private System.Windows.Forms.Timer timer1;
   }
 }

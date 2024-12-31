@@ -32,7 +32,6 @@
       splitContainer1 = new SplitContainer();
       SatellitePropertyGrid = new PropertyGrid();
       SatAkaLabel = new Label();
-      SatNameLabel = new Label();
       listView1 = new ListView();
       columnHeader1 = new ColumnHeader();
       columnHeader2 = new ColumnHeader();
@@ -43,6 +42,7 @@
       SatnogsLabel = new LinkLabel();
       label2 = new Label();
       toolTip1 = new ToolTip(components);
+      SatNameLabel = new Label();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -53,7 +53,7 @@
       // splitContainer1
       // 
       splitContainer1.Dock = DockStyle.Fill;
-      splitContainer1.Location = new Point(0, 0);
+      splitContainer1.Location = new Point(0, 23);
       splitContainer1.Name = "splitContainer1";
       splitContainer1.Orientation = Orientation.Horizontal;
       // 
@@ -61,15 +61,16 @@
       // 
       splitContainer1.Panel1.Controls.Add(SatellitePropertyGrid);
       splitContainer1.Panel1.Controls.Add(SatAkaLabel);
-      splitContainer1.Panel1.Controls.Add(SatNameLabel);
+      splitContainer1.Panel1MinSize = 0;
       // 
       // splitContainer1.Panel2
       // 
       splitContainer1.Panel2.Controls.Add(listView1);
       splitContainer1.Panel2.Controls.Add(LinksPanel);
       splitContainer1.Panel2.Controls.Add(label2);
-      splitContainer1.Size = new Size(477, 769);
-      splitContainer1.SplitterDistance = 388;
+      splitContainer1.Panel2MinSize = 0;
+      splitContainer1.Size = new Size(477, 746);
+      splitContainer1.SplitterDistance = 376;
       splitContainer1.TabIndex = 1;
       // 
       // SatellitePropertyGrid
@@ -77,33 +78,22 @@
       SatellitePropertyGrid.DisabledItemForeColor = SystemColors.WindowText;
       SatellitePropertyGrid.Dock = DockStyle.Fill;
       SatellitePropertyGrid.HelpVisible = false;
-      SatellitePropertyGrid.Location = new Point(0, 46);
+      SatellitePropertyGrid.Location = new Point(0, 23);
       SatellitePropertyGrid.Name = "SatellitePropertyGrid";
       SatellitePropertyGrid.PropertySort = PropertySort.Categorized;
-      SatellitePropertyGrid.Size = new Size(477, 342);
+      SatellitePropertyGrid.Size = new Size(477, 353);
       SatellitePropertyGrid.TabIndex = 2;
       SatellitePropertyGrid.ToolbarVisible = false;
       // 
       // SatAkaLabel
       // 
       SatAkaLabel.Dock = DockStyle.Top;
-      SatAkaLabel.Location = new Point(0, 23);
+      SatAkaLabel.Location = new Point(0, 0);
       SatAkaLabel.Name = "SatAkaLabel";
       SatAkaLabel.Size = new Size(477, 23);
       SatAkaLabel.TabIndex = 3;
       SatAkaLabel.Text = "___";
       SatAkaLabel.TextAlign = ContentAlignment.MiddleCenter;
-      // 
-      // SatNameLabel
-      // 
-      SatNameLabel.Dock = DockStyle.Top;
-      SatNameLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-      SatNameLabel.Location = new Point(0, 0);
-      SatNameLabel.Name = "SatNameLabel";
-      SatNameLabel.Size = new Size(477, 23);
-      SatNameLabel.TabIndex = 1;
-      SatNameLabel.Text = "___";
-      SatNameLabel.TextAlign = ContentAlignment.MiddleCenter;
       // 
       // listView1
       // 
@@ -115,7 +105,7 @@
       listView1.MultiSelect = false;
       listView1.Name = "listView1";
       listView1.ShowItemToolTips = true;
-      listView1.Size = new Size(477, 335);
+      listView1.Size = new Size(477, 324);
       listView1.Sorting = SortOrder.Ascending;
       listView1.TabIndex = 3;
       listView1.UseCompatibleStateImageBehavior = false;
@@ -143,7 +133,7 @@
       LinksPanel.Controls.Add(WebsiteLabel);
       LinksPanel.Controls.Add(SatnogsLabel);
       LinksPanel.Dock = DockStyle.Bottom;
-      LinksPanel.Location = new Point(0, 358);
+      LinksPanel.Location = new Point(0, 347);
       LinksPanel.Name = "LinksPanel";
       LinksPanel.Size = new Size(477, 19);
       LinksPanel.TabIndex = 2;
@@ -192,11 +182,23 @@
       label2.Text = "Transmitters";
       label2.TextAlign = ContentAlignment.MiddleCenter;
       // 
+      // SatNameLabel
+      // 
+      SatNameLabel.Dock = DockStyle.Top;
+      SatNameLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+      SatNameLabel.Location = new Point(0, 0);
+      SatNameLabel.Name = "SatNameLabel";
+      SatNameLabel.Size = new Size(477, 23);
+      SatNameLabel.TabIndex = 2;
+      SatNameLabel.Text = "___";
+      SatNameLabel.TextAlign = ContentAlignment.MiddleCenter;
+      // 
       // SatelliteDetailsControl
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       Controls.Add(splitContainer1);
+      Controls.Add(SatNameLabel);
       Name = "SatelliteDetailsControl";
       Size = new Size(477, 769);
       splitContainer1.Panel1.ResumeLayout(false);
@@ -213,7 +215,6 @@
     public SplitContainer splitContainer1;
     private Label label2;
     public PropertyGrid SatellitePropertyGrid;
-    public Label SatNameLabel;
     public Label SatAkaLabel;
     private FlowLayoutPanel LinksPanel;
     private LinkLabel ImageLabel;
@@ -224,5 +225,6 @@
     private ColumnHeader columnHeader2;
     private ColumnHeader columnHeader3;
     private ToolTip toolTip1;
+    public Label SatNameLabel;
   }
 }

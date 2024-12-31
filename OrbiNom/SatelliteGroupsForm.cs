@@ -37,7 +37,7 @@ namespace OrbiNom
     public void SetList(Context context)
     {
       ctx = context;
-      var updateTime = ctx.Settings.SatList.LastDownloadTime;
+      var updateTime = ctx.Settings.Satellites.LastDownloadTime;
 
       // satellites to listview
       foreach (var sat in ctx.SatnogsDb.Satellites) AllItems.Add(ItemFromSat(sat));
@@ -45,7 +45,7 @@ namespace OrbiNom
       UpdatedDateLabel.Text = $"Updated {updateTime:yyy-mm-dd}";
 
       // groups to treeview
-      foreach (var group in ctx.Settings.SatelliteSettings.SatelliteGroups)
+      foreach (var group in ctx.Settings.Satellites.SatelliteGroups)
       {
         var node = new TreeNode(group.Name);
         node.Tag = group;
@@ -127,17 +127,17 @@ namespace OrbiNom
 
     private void SaveGroups()
     {
-      ctx.Settings.SatelliteSettings.SatelliteGroups.Clear();
+      ctx.Settings.Satellites.SatelliteGroups.Clear();
 
       foreach (var groupNode in treeView1.Nodes.Cast<TreeNode>())
       {
         var group = new SatelliteGroup();
         group.Name = groupNode.Text;
         group.SatelliteIds = groupNode.Nodes.Cast<TreeNode>().Select(n => ((SatnogsDbSatellite)n.Tag).sat_id).ToList();
-        if (group.SatelliteIds.Count > 0) ctx.Settings.SatelliteSettings.SatelliteGroups.Add(group);
+        if (group.SatelliteIds.Count > 0) ctx.Settings.Satellites.SatelliteGroups.Add(group);
       }
 
-      ctx.Settings.SatelliteSettings.Sanitize();
+      ctx.Settings.Satellites.Sanitize();
 
       Changed = false;
     }
@@ -406,7 +406,7 @@ namespace OrbiNom
       sat.BuildAllNames();
 
       // to customization storage
-      var casts = ctx.Settings.SatelliteSettings.SatelliteCustomizations;
+      var casts = ctx.Settings.Satellites.SatelliteCustomizations;
       casts.TryAdd(sat.sat_id, new());
       casts[sat.sat_id].sat_id = sat.sat_id;
       casts[sat.sat_id].Name = name;
@@ -488,7 +488,7 @@ namespace OrbiNom
       else
       {
         src = src.Clone() as TreeNode;
-        if (src.Level == 0) src.Text += " (copy)";
+        if (isGroup) src.Text += " (copy)";
       }
 
       // dragging group

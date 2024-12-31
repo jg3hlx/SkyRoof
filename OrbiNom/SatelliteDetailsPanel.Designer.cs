@@ -48,12 +48,12 @@
       Name = "SatelliteDetailsPanel";
       Text = "Satellite Details";
       FormClosing += SatelliteDetailsPanel_FormClosing;
-      Layout += SatelliteDetailsPanel_Layout;
+      Shown += SatelliteDetailsPanel_Shown;
       ResumeLayout(false);
     }
 
     #endregion
 
-    private SatelliteDetailsControl satelliteDetailsControl1;
+    public SatelliteDetailsControl satelliteDetailsControl1;
   }
 }

@@ -28,7 +28,7 @@ namespace OrbiNom
     public void SetSatelliteGroups()
     {
       changing = true;
-      var sett = ctx.Settings.SatelliteSettings;
+      var sett = ctx.Settings.Satellites;
 
       GroupComboBox.Items.Clear();
       GroupComboBox.Items.AddRange(sett.SatelliteGroups.ToArray());
@@ -42,7 +42,7 @@ namespace OrbiNom
 
     private void SetSatellites()
     {
-      var sett = ctx.Settings.SatelliteSettings;
+      var sett = ctx.Settings.Satellites;
       var group = (SatelliteGroup)GroupComboBox.SelectedItem!;
 
       changing = true;
@@ -53,7 +53,7 @@ namespace OrbiNom
 
     internal void SetSelectedSatellite()
     {
-      var sett = ctx.Settings.SatelliteSettings;
+      var sett = ctx.Settings.Satellites;
       var group = (SatelliteGroup)GroupComboBox.SelectedItem!;
       var sat = ctx.SatnogsDb.GetSatellite(group.SelectedSatId);
 
@@ -67,7 +67,7 @@ namespace OrbiNom
 
     private void SetTransmitters()
     {
-      var sett = ctx.Settings.SatelliteSettings;
+      var sett = ctx.Settings.Satellites;
       var sat = (SatnogsDbSatellite)SatelliteComboBox.SelectedItem;
 
       changing = true;
@@ -80,7 +80,7 @@ namespace OrbiNom
 
     private void SetSelectedTransmitter()
     {
-      var sett = ctx.Settings.SatelliteSettings;
+      var sett = ctx.Settings.Satellites;
       var sat = (SatnogsDbSatellite)SatelliteComboBox.SelectedItem;
 
       sett.SatelliteCustomizations.TryAdd(sat.sat_id, new SatelliteCustomization { sat_id = sat.sat_id });
@@ -113,7 +113,7 @@ namespace OrbiNom
       if (changing) return;
 
       var group = (SatelliteGroup)GroupComboBox.SelectedItem!;
-      ctx.Settings.SatelliteSettings.SelectedGroup = group.Id;
+      ctx.Settings.Satellites.SelectedGroup = group.Id;
       SetSatellites();
 
       OnSelectedGroupChanged();
@@ -135,7 +135,7 @@ namespace OrbiNom
 
     private void TransmitterComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-      var sett = ctx.Settings.SatelliteSettings;
+      var sett = ctx.Settings.Satellites;
       var sat = (SatnogsDbSatellite)SatelliteComboBox.SelectedItem;
 
       sett.SatelliteCustomizations.TryAdd(sat.sat_id, new SatelliteCustomization { sat_id = sat.sat_id });
@@ -146,7 +146,7 @@ namespace OrbiNom
       toolTip1.SetToolTip(TransmitterComboBox, tx.GetTooltipText());
     }
 
-    private void OnSelectedGroupChanged()
+    public void OnSelectedGroupChanged()
     {
       SelectedGroupChanged?.Invoke(this, EventArgs.Empty);
       SelectedSatelliteChanged?.Invoke(this, EventArgs.Empty);

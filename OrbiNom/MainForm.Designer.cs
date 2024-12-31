@@ -28,6 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
       Toolbar = new Panel();
       SatelliteSelector = new SatelliteSelector();
       ClockPanel = new Panel();
@@ -41,6 +42,7 @@
       GroupViewPanelMNU = new ToolStripMenuItem();
       GroupViewMNU = new ToolStripMenuItem();
       SatelliteDetailsMNU = new ToolStripMenuItem();
+      SatellitePassesMNU = new ToolStripMenuItem();
       WaterfallMNU = new ToolStripMenuItem();
       toolsToolStripMenuItem = new ToolStripMenuItem();
       SatelliteGroupsMNU = new ToolStripMenuItem();
@@ -53,6 +55,7 @@
       DataFolderMNU = new ToolStripMenuItem();
       toolStripMenuItem2 = new ToolStripSeparator();
       AboutMNU = new ToolStripMenuItem();
+      timer3 = new System.Windows.Forms.Timer(components);
       Toolbar.SuspendLayout();
       ClockPanel.SuspendLayout();
       menuStrip1.SuspendLayout();
@@ -145,7 +148,7 @@
       // 
       // GroupViewPanelMNU
       // 
-      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, WaterfallMNU });
+      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, SatellitePassesMNU, WaterfallMNU });
       GroupViewPanelMNU.Name = "GroupViewPanelMNU";
       GroupViewPanelMNU.Size = new Size(44, 20);
       GroupViewPanelMNU.Text = "View";
@@ -163,6 +166,13 @@
       SatelliteDetailsMNU.Size = new Size(153, 22);
       SatelliteDetailsMNU.Text = "Satellite Details";
       SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
+      // 
+      // SatellitePassesMNU
+      // 
+      SatellitePassesMNU.Name = "SatellitePassesMNU";
+      SatellitePassesMNU.Size = new Size(153, 22);
+      SatellitePassesMNU.Text = "Satellite Passes";
+      SatellitePassesMNU.Click += SatellitePassesMNU_Click;
       // 
       // WaterfallMNU
       // 
@@ -239,6 +249,12 @@
       AboutMNU.Size = new Size(146, 22);
       AboutMNU.Text = "About...";
       // 
+      // timer3
+      // 
+      timer3.Enabled = true;
+      timer3.Interval = 500;
+      timer3.Tick += timer3_Tick;
+      // 
       // MainForm
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -288,5 +304,7 @@
     public ToolStripMenuItem GroupViewMNU;
     public ToolStripMenuItem SatelliteDetailsMNU;
     private SatelliteSelector SatelliteSelector;
+    public ToolStripMenuItem SatellitePassesMNU;
+    private System.Windows.Forms.Timer timer3;
   }
 }

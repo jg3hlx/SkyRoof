@@ -28,11 +28,6 @@ namespace VE3NEA.Clock
       SetUtcMode(!utcMode);
     }
 
-    private void timer1_Tick(object sender, EventArgs e)
-    {
-      ShowTime();
-    }
-
     public void SetUtcMode(bool value)
     {
       utcMode = value;
@@ -40,7 +35,7 @@ namespace VE3NEA.Clock
       ShowTime();
     }
 
-    private void ShowTime()
+    public void ShowTime()
     {
       DateTime now = utcMode ? DateTime.UtcNow : DateTime.Now;
       timeLabel.Text = now.ToString("HH:mm:ss");

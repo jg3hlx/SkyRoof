@@ -37,10 +37,12 @@ namespace OrbiNom
     [Category("SatNOGS Database")]
     public string name { get; set; }
 
+    [Browsable(false)]
     [ReadOnly(true)]
     [Category("SatNOGS Database")]
     public string names { get; set; }
 
+    [Browsable(false)]
     [ReadOnly(true)]
     [Category("SatNOGS Database")]
     public string image { get; set; }
@@ -61,6 +63,7 @@ namespace OrbiNom
     [Category("SatNOGS Database")]
     public DateTime? deployed { get; set; }
 
+    [Browsable(false)]
     [ReadOnly(true)]
     [Category("SatNOGS Database")]
     public string website { get; set; }

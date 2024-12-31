@@ -16,6 +16,23 @@ namespace OrbiNom
       ctx.SatelliteSelector = SatelliteSelector;
       SatelliteSelector.ctx = ctx;
       ctx.Settings.LoadFromFile();
+      EnsureUserDetails();
+    }
+
+    private void ComputePasses()
+    {
+      var point = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
+      if (ctx.Passes == null)
+      {
+        ctx.Passes = new(point, ctx.SatnogsDb.Satellites);
+        ctx.Passes.Changed += Passes_Changed;
+        Passes_Changed(null, EventArgs.Empty);
+      }
+    }
+
+    private void Passes_Changed(object? sender, EventArgs e)
+    {
+      ctx.GroupViewPanel?.UpdatePassTimes();
     }
 
     private void MainForm_Load(object sender, EventArgs e)
@@ -27,8 +44,9 @@ namespace OrbiNom
       if (!ctx.Settings.Ui.RestoreDockingLayout(this)) SetDefaultDockingLayout();
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
 
-      ctx.Settings.SatelliteSettings.DeleteInvalidData(ctx.SatnogsDb);
+      ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
       SatelliteSelector.SetSatelliteGroups();
+      ComputePasses();
     }
 
     const int LIST_DOWNLOAD_DAYS = 7;
@@ -39,21 +57,21 @@ namespace OrbiNom
       // load from file
       ctx.SatnogsDb = new();
       ctx.SatnogsDb.LoadFromFile();
-      ctx.SatnogsDb.Customize(ctx.Settings.SatelliteSettings.SatelliteCustomizations);
+      ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
 
       // {!} fired before customization
       ctx.SatnogsDb.ListUpdated += SatnogsDb_ListUpdated;
       ctx.SatnogsDb.TleUpdated += SatnogsDb_TleUpdated;
 
       // download if needed
-      if (!ctx.SatnogsDb.Loaded || DateTime.UtcNow > ctx.Settings.SatList.LastDownloadTime.AddDays(LIST_DOWNLOAD_DAYS))
+      if (!ctx.SatnogsDb.Loaded || DateTime.UtcNow > ctx.Settings.Satellites.LastDownloadTime.AddDays(LIST_DOWNLOAD_DAYS))
         DownloadDialog.Download(this, ctx);
 
-      if (DateTime.UtcNow > ctx.Settings.SatList.LastTleTime.AddDays(TLE_DOWNLOAD_DAYS))
+      if (DateTime.UtcNow > ctx.Settings.Satellites.LastTleTime.AddDays(TLE_DOWNLOAD_DAYS))
         try
         {
           ctx.SatnogsDb.DownloadTle();
-          ctx.Settings.SatList.LastTleTime = DateTime.UtcNow;
+          ctx.Settings.Satellites.LastTleTime = DateTime.UtcNow;
         }
         catch
         {
@@ -63,7 +81,7 @@ namespace OrbiNom
       if (!ctx.SatnogsDb.Loaded) Environment.Exit(1);
 
       // delete sats that are no longer in the db
-      ctx.Settings.SatelliteSettings.DeleteInvalidData(ctx.SatnogsDb);
+      ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
     }
 
     private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
@@ -82,8 +100,25 @@ namespace OrbiNom
       ctx.Settings.Ui.StoreDockingLayout(DockHost);
       ctx.Settings.Ui.StoreWindowPosition(this);
       ctx.Settings.Ui.ClockUtcMode = Clock.UtcMode;
+      ctx.Settings.Ui.SatelliteDetailsPanel.SplitterDistance = ctx.SatelliteDetailsPanel.satelliteDetailsControl1.splitContainer1.SplitterDistance;
+
       ctx.Settings.SaveToFile();
     }
+
+    private void EnsureUserDetails()
+    {
+      if (UserDetailsDialog.UserDetailsAvailable(ctx)) return;
+
+      var dialog = new UserDetailsDialog(ctx);
+      var rc = dialog.ShowDialog();
+      bool ok = rc == DialogResult.OK;
+
+      if (ok)
+        ctx.Settings.SaveToFile();
+      else
+        Environment.Exit(1); // unable to proceed without user details, terminate app
+    }
+
 
 
 
@@ -111,8 +146,9 @@ namespace OrbiNom
       var dlg = new SatelliteGroupsForm();
       dlg.SetList(ctx);
       dlg.ShowDialog(this);
-      ctx.Settings.SatelliteSettings.DeleteInvalidData(ctx.SatnogsDb);
+      ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
       ctx.SatelliteSelector.SetSatelliteGroups();
+      ctx.SatelliteSelector.OnSelectedGroupChanged();
     }
 
     private void GroupViewMNU_Click(object sender, EventArgs e)
@@ -131,6 +167,13 @@ namespace OrbiNom
         ctx.SatelliteDetailsPanel.Close();
     }
 
+    private void SatellitePassesMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.PassesPanel == null)
+        new PassesPanel(ctx).Show(DockHost, DockState.DockRight);
+      else
+        ctx.PassesPanel.Close();
+    }
 
 
     //----------------------------------------------------------------------------------------------
@@ -147,6 +190,7 @@ namespace OrbiNom
       {
         case "OrbiNom.GroupViewPanel": return new GroupViewPanel(ctx);
         case "OrbiNom.SatelliteDetailsPanel": return new SatelliteDetailsPanel(ctx);
+        case "OrbiNom.PassesPanel": return new PassesPanel(ctx);
         default: return null;
       }
     }
@@ -163,6 +207,12 @@ namespace OrbiNom
     {
       ctx.GroupViewPanel?.ShowSelectedSat();
       ctx.SatelliteDetailsPanel?.LoadSatelliteDetails();
+    }
+
+    private void timer3_Tick(object sender, EventArgs e)
+    {
+      Clock.ShowTime(); 
+      ctx.GroupViewPanel?.UpdatePassTimes();
     }
   }
 }

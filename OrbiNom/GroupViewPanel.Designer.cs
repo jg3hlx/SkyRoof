@@ -30,10 +30,11 @@
     {
       components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GroupViewPanel));
-      listView1 = new ListView();
+      listView1 = new VE3NEA.ListViewEx();
       columnHeader1 = new ColumnHeader();
       columnHeader2 = new ColumnHeader();
       columnHeader3 = new ColumnHeader();
+      columnHeader4 = new ColumnHeader();
       imageList1 = new ImageList(components);
       GroupNameLabel = new Label();
       SuspendLayout();
@@ -42,22 +43,24 @@
       // 
       listView1.Activation = ItemActivation.OneClick;
       listView1.AllowDrop = true;
-      listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3 });
+      listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
       listView1.Dock = DockStyle.Fill;
       listView1.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
       listView1.FullRowSelect = true;
       listView1.LabelEdit = true;
       listView1.Location = new Point(0, 23);
+      listView1.MultiSelect = false;
       listView1.Name = "listView1";
       listView1.ShowGroups = false;
       listView1.ShowItemToolTips = true;
-      listView1.Size = new Size(396, 229);
+      listView1.Size = new Size(432, 229);
       listView1.SmallImageList = imageList1;
       listView1.Sorting = SortOrder.Ascending;
       listView1.TabIndex = 8;
       listView1.UseCompatibleStateImageBehavior = false;
       listView1.View = View.Details;
       listView1.VirtualMode = true;
+      listView1.ColumnClick += listView1_ColumnClick;
       listView1.RetrieveVirtualItem += listView1_RetrieveVirtualItem;
       listView1.DoubleClick += listView1_DoubleClick;
       // 
@@ -74,15 +77,21 @@
       // columnHeader3
       // 
       columnHeader3.Text = "Next Pass";
+      columnHeader3.TextAlign = HorizontalAlignment.Right;
       columnHeader3.Width = 100;
+      // 
+      // columnHeader4
+      // 
+      columnHeader4.Text = "Max";
+      columnHeader4.TextAlign = HorizontalAlignment.Right;
+      columnHeader4.Width = 40;
       // 
       // imageList1
       // 
       imageList1.ColorDepth = ColorDepth.Depth32Bit;
       imageList1.ImageStream = (ImageListStreamer)resources.GetObject("imageList1.ImageStream");
       imageList1.TransparentColor = Color.Transparent;
-      imageList1.Images.SetKeyName(0, "Arrow2 Right.png");
-      imageList1.Images.SetKeyName(1, "checkmark.bmp");
+      imageList1.Images.SetKeyName(0, "checkmark.bmp");
       // 
       // GroupNameLabel
       // 
@@ -90,7 +99,7 @@
       GroupNameLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
       GroupNameLabel.Location = new Point(0, 0);
       GroupNameLabel.Name = "GroupNameLabel";
-      GroupNameLabel.Size = new Size(396, 23);
+      GroupNameLabel.Size = new Size(432, 23);
       GroupNameLabel.TabIndex = 9;
       GroupNameLabel.Text = "___";
       GroupNameLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -99,7 +108,7 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(396, 252);
+      ClientSize = new Size(432, 252);
       Controls.Add(listView1);
       Controls.Add(GroupNameLabel);
       Name = "GroupViewPanel";
@@ -110,11 +119,12 @@
 
     #endregion
 
-    public ListView listView1;
+    public VE3NEA.ListViewEx listView1;
     private ColumnHeader columnHeader1;
     private ColumnHeader columnHeader2;
     private ColumnHeader columnHeader3;
     public Label GroupNameLabel;
     private ImageList imageList1;
+    private ColumnHeader columnHeader4;
   }
 }

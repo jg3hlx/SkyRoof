@@ -89,5 +89,15 @@ namespace VE3NEA
     // avoid warning when not awaiting for an async task. Usage: DoSomethingAsync().DoNotAwait();
     // https://stackoverflow.com/questions/14903887
     public static void DoNotAwait(this Task task) { }
+
+    public static string TimespanToString(TimeSpan timeSpan)
+    {
+      if (timeSpan > TimeSpan.FromHours(1))
+        return $"{(int)timeSpan.TotalHours:D} h {timeSpan.Minutes,2:D2} m {timeSpan.Seconds,2:D2} s";
+      else if (timeSpan > TimeSpan.FromMinutes(1))
+        return $"{timeSpan.Minutes} m {timeSpan.Seconds,2:D2} s";
+      else
+      return $"{timeSpan.Seconds,2:D2} s";
+    }
   }
 }

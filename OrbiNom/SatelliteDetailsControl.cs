@@ -75,7 +75,7 @@ namespace OrbiNom
         var item = new ListViewItem([t.Mode, t.Uplink, t.Downlink]);
         item.Group = listView1.Groups[1];
         if (t.Status != "active") item.ForeColor = Color.Silver;
-        item.ToolTipText = $"Beacon: {t.Beacon}\nCall: {t.Call}\nstatus: {t.Status}";
+        item.ToolTipText = t.GetTooltipText();
 
         // band color
         var match = Regex.Match(t.Downlink, "^[0-9.]+");

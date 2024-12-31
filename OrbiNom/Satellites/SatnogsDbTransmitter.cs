@@ -37,11 +37,11 @@
       string uplink = FormatRange(uplink_low, uplink_high);
       string downlink = FormatRange(downlink_low, downlink_high);
       
-      string result = $"type: {type}\nmode: {mode}\n";
+      string result = $"Type: {type}\n";
       if (uplink_low != null) result += $"Uplink: {uplink}\n";
-      result += $"Downlink: {downlink}\n";
+      result += $"Downlink: {downlink}\nMode: {mode}\n";
       if (uplink_low != null) result += $"Inverted: {invert}\n";
-      result += $"service: {service}\nupdated: {updated:yyyy-mm-dd}";
+      result += $"Service: {service}\nUpdated: {updated:yyyy-mm-dd}";
      
       return result;
     }

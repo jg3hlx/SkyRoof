@@ -1,4 +1,5 @@
-﻿namespace OrbiNom
+﻿
+namespace OrbiNom
 {
   public class JE9PELtransmitter
   {
@@ -25,6 +26,19 @@
       Mode = cols[5];
       Call = cols[6];
       Status = cols[7];
+    }
+
+    internal string GetTooltipText()
+    {
+      string tooltip = "";
+      if (!string.IsNullOrEmpty(Uplink)) tooltip += $"Uplink: {Uplink}\n";
+      if (!string.IsNullOrEmpty(Downlink)) tooltip += $"Downlink: {Downlink}\n";
+      if (!string.IsNullOrEmpty(Beacon)) tooltip += $"Beacon: {Beacon}\n";
+      if (!string.IsNullOrEmpty(Mode)) tooltip += $"Mode: {Mode}\n";
+      if (!string.IsNullOrEmpty(Call)) tooltip += $"Call: {Call}\n";
+      if (!string.IsNullOrEmpty(Status)) tooltip += $"Status: {Status}\n";
+
+      return tooltip.Trim();
     }
   }
 }

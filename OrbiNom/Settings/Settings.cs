@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 using VE3NEA;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using Sixer;
 
 namespace OrbiNom
 {
   public class Settings
   {
     public UiSettings Ui = new();
-    public SatListSettings SatList = new();
-    public SatelliteSettings SatelliteSettings = new();
+    public SatelliteSettings Satellites = new();
 
-    //    [TypeConverter(typeof(ExpandableObjectConverter))]
+
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public UserSettings User { get; set; } = new();
 
 
 
@@ -38,7 +41,7 @@ namespace OrbiNom
 
     private void SetDefaults()
     {
-      SatelliteSettings.Sanitize();
+      Satellites.Sanitize();
     }
   }
 }

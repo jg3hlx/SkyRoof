@@ -10,10 +10,12 @@ namespace OrbiNom
   {
     public Settings Settings = new();
     public SatnogsDb SatnogsDb;
+    public SatellitePasses Passes;
 
     internal MainForm MainForm;
     internal SatelliteSelector SatelliteSelector;
     internal GroupViewPanel? GroupViewPanel;
     public SatelliteDetailsPanel? SatelliteDetailsPanel;
+    public PassesPanel? PassesPanel;
   }
 }
