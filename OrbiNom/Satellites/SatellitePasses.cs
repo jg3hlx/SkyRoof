@@ -23,11 +23,12 @@ namespace OrbiNom
     {
       Satellites = satellites;
       CreateGroundStation(observerLocation);
-      ComputePasses(true);
+      
+      //{!} ComputePasses(true);
 
       Timer.Interval = 60_000;
       Timer.Tick += Timer_Tick;
-      Timer.Start();
+      //{!} Timer.Start();
     }
 
     public void Rebuild()

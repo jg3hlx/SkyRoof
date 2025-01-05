@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using VE3NEA;
+using SGPdotNET.Observation;
+using SGPdotNET.CoordinateSystem;
+using SGPdotNET.Util;
+using Newtonsoft.Json.Linq;
 
 namespace OrbiNom
 {
@@ -28,6 +32,10 @@ namespace OrbiNom
     private List<ListViewItem> Items = new();
     private TimeSpan PredictionTimeSpan = TimeSpan.FromDays(2);
     private readonly Font BoldFont;
+//    private readonly Brush SkyViewBrush = new SolidBrush(Color.FromArgb(0x00FFFF));
+    private GroundStation GroundStation;
+    const double HalfPi = Math.PI / 2;
+    private readonly Pen PathPen = new Pen(Brushes.Teal, 2);
 
     public PassesPanel()
     {
@@ -44,6 +52,7 @@ namespace OrbiNom
 
       BoldFont = new Font(listViewEx1.Font, FontStyle.Bold);
       listViewEx1.SetRowHeight(45);
+      listViewEx1.SetTooltipDelay(10000);
     }
 
     private void PassesPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -103,6 +112,11 @@ namespace OrbiNom
       Sats = sats.ToList();
       var now = DateTime.UtcNow;
 
+      // ground station for pass predictions
+      var pos = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
+      var myLocation = new GeodeticCoordinate(Angle.FromRadians(pos.LatitudeRad), Angle.FromRadians(pos.LongitudeRad), 0);
+      GroundStation = new GroundStation(myLocation);
+
       Items = Sats
         .SelectMany(sat => ctx.Passes.ComputeFor(sat, now, now + PredictionTimeSpan))
         .OrderBy(p => p.StartTime)
@@ -117,19 +131,14 @@ namespace OrbiNom
     {
       var item = new ListViewItem();
       item.Tag = new ItemData(pass, MakePath(pass));
+      item.ToolTipText = pass.Satellite.GetTooltipText();
       return item;
-    }
-
-    private PointF[] MakePath(SatellitePass pass)
-    {
-      return [];
     }
 
     internal void UpdatePassTimes()
     {
       listViewEx1.Invalidate();
     }
-
 
     private void listViewEx1_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
     {
@@ -142,38 +151,94 @@ namespace OrbiNom
 
       // sat name
       string text = pass.Satellite.name;
-      e.Graphics.DrawString(text, BoldFont, Brushes.Black, e.Bounds);
+      var size = e.Graphics.MeasureString(text, BoldFont);
+      var rect = new RectangleF(e.Bounds.X, e.Bounds.Y, size.Width, size.Height);
+      var brush = Brushes.White;
+      if (pass.Satellite.Flags.HasFlag(SatelliteFlags.Uhf)) brush = Brushes.LightCyan;
+      else if (pass.Satellite.Flags.HasFlag(SatelliteFlags.Vhf)) brush = Brushes.LightGoldenrodYellow;
+      e.Graphics.FillRectangle(brush, rect);
+      e.Graphics.DrawString(text, BoldFont, Brushes.Black, rect);
 
       // start/end time
-      text = $"{pass.StartTime:yyyy-MM-dd  hh:mm:ss}  to  {pass.EndTime:hhhh:mm:ss}";
-      var size = e.Graphics.MeasureString(text, listViewEx1.Font);
-      var rect = new RectangleF(e.Bounds.X, e.Bounds.Y + e.Bounds.Height - size.Height, size.Width, size.Height);
+      text = $"{pass.StartTime.ToLocalTime():yyyy-MM-dd  HH:mm:ss}  to  {pass.EndTime.ToLocalTime():HH:mm:ss}";
+      size = e.Graphics.MeasureString(text, listViewEx1.Font);
+      rect = new RectangleF(e.Bounds.X, e.Bounds.Y + e.Bounds.Height - size.Height - 2, size.Width, size.Height);
       e.Graphics.DrawString(text, listViewEx1.Font, Brushes.Black, rect);
 
       // duration / elevation
       text = $"{Utils.TimespanToString(pass.EndTime - pass.StartTime, false)}   {pass.MaxElevation:F0}°";
       size = e.Graphics.MeasureString(text, listViewEx1.Font);
-      rect = new RectangleF(e.Bounds.X + w - size.Width, e.Bounds.Y + e.Bounds.Height - size.Height, size.Width, size.Height);
+      rect = new RectangleF(e.Bounds.X + w - size.Width, e.Bounds.Y + e.Bounds.Height - size.Height - 2, size.Width, size.Height);
       e.Graphics.DrawString(text, listViewEx1.Font, Brushes.Black, rect);
-
 
       // wait time
       text = now ? "Now" : $"in {Utils.TimespanToString(pass.StartTime - DateTime.UtcNow)}";
-      var brush = now ? Brushes.Green : Brushes.Black;
+      brush = now ? Brushes.Green : Brushes.Black;
       size = e.Graphics.MeasureString(text, BoldFont);
       rect = new RectangleF(e.Bounds.X + w - size.Width, e.Bounds.Y, size.Width, size.Height);
       e.Graphics.DrawString(text, BoldFont, brush, rect);
 
-      // mini sky view
-      rect = new RectangleF(e.Bounds.X + w, e.Bounds.Y, h, h);
-      e.Graphics.FillRectangle(Brushes.Azure, rect);
-      var path = ((ItemData)e.Item.Tag).path;
-      if (path.Length > 1) e.Graphics.DrawLines(Pens.Blue, path);
 
+      // mini sky view
+
+      // background
+      rect = new RectangleF(e.Bounds.X + w, e.Bounds.Y, h, h);
+      //e.Graphics.FillRectangle(Brushes.Aquamarine, rect);      
+      rect.Inflate(-5, -5);
+      //e.Graphics.FillEllipse(Brushes.White, rect);
+
+      var radius = rect.Width / 2;
+      var center = new PointF(rect.Left + radius, rect.Top + radius);
+
+      // grid
+      e.Graphics.DrawEllipse(Pens.Silver, rect);
+      e.Graphics.DrawLine(Pens.Silver, rect.Left, center.Y, rect.Right, center.Y);
+      e.Graphics.DrawLine(Pens.Silver, center.X, rect.Top, center.X, rect.Bottom);
+      rect.Inflate(-radius / 2, -radius / 2);
+      e.Graphics.DrawEllipse(Pens.Silver, rect);
+
+      var path = ((ItemData)e.Item.Tag).path;
+      if (path.Length > 1)
+      {
+        // path
+        var points = path.Select(p => 
+          new PointF(center.X + p.X * radius, center.Y - p.Y * radius)).ToArray();
+        e.Graphics.DrawLines(PathPen, points);
+
+        // end points
+        e.Graphics.FillEllipse(Brushes.Green, points.First().X - 3, points.First().Y - 3, 6, 6);
+        e.Graphics.FillEllipse(Brushes.Red, points.Last().X - 3, points.Last().Y - 3, 6, 6);
+      }
 
       // item separator
       rect = new RectangleF(e.Bounds.X, e.Bounds.Y + h, e.Bounds.Width, 1);
-      e.Graphics.FillRectangle(Brushes.Silver, rect);
+      e.Graphics.FillRectangle(Brushes.Gray, rect);
+    }
+
+    private void DrawSymbol(Brush brush, Graphics graphics, PointF point)
+    {
+      graphics.FillEllipse(brush, point.X-3, point.Y - 3, 6, 6);
+    }
+
+    private const int StepCount = 10;
+    private PointF[] MakePath(SatellitePass pass)
+    {
+      var duration = pass.EndTime - pass.StartTime;
+      var step = duration / StepCount;
+      var points = new PointF[StepCount + 1];
+
+      for (int i = 0; i <= StepCount; i++)
+      {
+        var utc = pass.StartTime + step * i;
+        var observation = GroundStation.Observe(pass.SatTracker, utc);
+
+        double ro = 1 - observation.Elevation.Radians / HalfPi;
+        double phi = HalfPi - observation.Azimuth.Radians;
+
+        points[i] = new PointF((float)(ro * Math.Cos(phi)), (float)(ro * Math.Sin(phi)));
+      }
+
+        return points;
     }
   }
 }

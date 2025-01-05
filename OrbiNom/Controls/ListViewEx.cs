@@ -64,5 +64,23 @@ namespace VE3NEA
       SmallImageList = new ImageList();
       SmallImageList.ImageSize = new Size(1, height);
     }
+
+
+
+
+    //--------------------------------------------------------------------------------------------------------------
+    //                   set tooltip delay: https://stackoverflow.com/questions/4899687 
+    //--------------------------------------------------------------------------------------------------------------
+    [DllImport("user32.dll")]
+    static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
+    const int LVM_GETTOOLTIPS = 0x104E;
+    const int TTM_SETDELAYTIME = 0x403;
+    const int TTDT_AUTOPOP = 2;
+
+    public void SetTooltipDelay(int delayMs)
+    {
+      var tooltip = SendMessage(Handle, LVM_GETTOOLTIPS, 0, 0);
+      SendMessage(tooltip, TTM_SETDELAYTIME, TTDT_AUTOPOP, delayMs);
+    }
   }
 }
