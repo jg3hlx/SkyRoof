@@ -199,19 +199,20 @@ namespace OrbiNom
     {
       if (e.Index < 0) { e.DrawBackground(); return; }
 
-      Color backColor = Color.White;
-      Color foreColor = e.ForeColor;
+      Brush bacBrush = Brushes.White;
+      Brush foreBrush = Brushes.Black;
+
       Font font = e.Font;
 
       var tx = (SatnogsDbTransmitter)TransmitterComboBox.Items[e.Index];
 
-      if (tx.downlink_low >= 144000000 && tx.downlink_low <= 148000000) backColor = Color.LightGoldenrodYellow;
-      if (tx.downlink_low >= 430000000 && tx.downlink_low <= 440000000) backColor = Color.LightCyan;
+      if (tx.downlink_low >= 144000000 && tx.downlink_low <= 148000000) bacBrush = Brushes.LightGoldenrodYellow;
+      if (tx.downlink_low >= 430000000 && tx.downlink_low <= 440000000) bacBrush = Brushes.LightCyan;
       if (tx.service == "Amateur") font = new(font, FontStyle.Bold);
-      if (!tx.alive || tx.status != "active") foreColor = Color.Silver;
+      if (!tx.alive || tx.status != "active") foreBrush = Brushes.Silver;
       
-      e.Graphics.FillRectangle(new SolidBrush(backColor), e.Bounds);
-      e.Graphics.DrawString(tx.description, font, Brushes.Black, e.Bounds);
+      e.Graphics.FillRectangle(bacBrush, e.Bounds);
+      e.Graphics.DrawString(tx.description, font, foreBrush, e.Bounds);
       e.DrawFocusRectangle();
     }
   }

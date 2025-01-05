@@ -90,14 +90,13 @@ namespace VE3NEA
     // https://stackoverflow.com/questions/14903887
     public static void DoNotAwait(this Task task) { }
 
-    public static string TimespanToString(TimeSpan timeSpan)
+    public static string TimespanToString(TimeSpan timeSpan, bool showSeconds = true)
     {
-      if (timeSpan > TimeSpan.FromHours(1))
-        return $"{(int)timeSpan.TotalHours:D} h {timeSpan.Minutes,2:D2} m {timeSpan.Seconds,2:D2} s";
-      else if (timeSpan > TimeSpan.FromMinutes(1))
-        return $"{timeSpan.Minutes} m {timeSpan.Seconds,2:D2} s";
-      else
-      return $"{timeSpan.Seconds,2:D2} s";
+      string result = "";
+      if (timeSpan > TimeSpan.FromHours(1)) result += $"{(int)timeSpan.TotalHours:D}h ";
+      if (timeSpan > TimeSpan.FromMinutes(1)) result += $"{timeSpan.Minutes}m";
+      result += showSeconds ? $" {timeSpan.Seconds,2:D2}s" : "in.";
+      return result;
     }
   }
 }

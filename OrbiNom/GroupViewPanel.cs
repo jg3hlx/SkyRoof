@@ -13,8 +13,6 @@ using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 
 // todo: open properties dlg on Space
-// todo: show next pass time
-// todo: sort by any column
 // todo: add Description field to tx tooltip
 
 namespace OrbiNom
@@ -29,7 +27,7 @@ namespace OrbiNom
     }
 
     private Context ctx;
-    private int SortColumn;
+    private int SortColumn = 2;
     public ListViewItem[] Items;
 
     public GroupViewPanel()
@@ -50,7 +48,10 @@ namespace OrbiNom
 
     private void ListView1_SelectedIndexChanged(object? sender, EventArgs e)
     {
+      if (((ListView)sender).SelectedIndices.Count == 0) return;
+
       ctx.SatelliteDetailsPanel?.LoadSatelliteDetails();
+      ctx.PassesPanel?.ShowPasses();
     }
 
     private void GroupViewPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -63,10 +64,10 @@ namespace OrbiNom
     {
       // select group or default
       var sett = ctx.Settings.Satellites;
-
       var group = sett.SatelliteGroups.First(g => g.Id == sett.SelectedGroup);
       Items = group.SatelliteIds.Select(id => ItemFromSat(ctx.SatnogsDb.GetSatellite(id))).ToArray();
       listView1.VirtualListSize = Items.Length;
+      listView1.Invalidate();
 
       ShowSelectedSat();
       GroupNameLabel.Text = group.Name;
@@ -102,14 +103,10 @@ namespace OrbiNom
       foreach (var item in Items)
       {
         var sat = ((ItemData)item.Tag!).Sat;
-        if (sat.sat_id == group.SelectedSatId)
-        {
-          item.ImageIndex = 0;
-          item.Selected = true;
-        }
-        else item.ImageIndex = -1;
+        item.ImageIndex = sat.sat_id == group.SelectedSatId ? 0 : -1;
       }
 
+      listView1.SelectedIndices.Clear();
       listView1.Invalidate();
     }
 
@@ -129,11 +126,9 @@ namespace OrbiNom
       ctx.SatelliteSelector.OnSelectedSatelliteChanged();
     }
 
-    bool SkipTick;
     public void UpdatePassTimes()
     {
-      // skip every other 500-ms tick
-      if (SkipTick = !SkipTick) return;
+      if (ctx.Passes == null) return;
 
       var now = DateTime.UtcNow;
       bool changed = false;

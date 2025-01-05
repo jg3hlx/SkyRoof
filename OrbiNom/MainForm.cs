@@ -47,6 +47,7 @@ namespace OrbiNom
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
       SatelliteSelector.SetSatelliteGroups();
       ComputePasses();
+      ctx.PassesPanel?.ShowPasses();
     }
 
     const int LIST_DOWNLOAD_DAYS = 7;
@@ -201,18 +202,26 @@ namespace OrbiNom
     private void SatelliteSelector_SelectedGroupChanged(object sender, EventArgs e)
     {
       ctx.GroupViewPanel?.LoadGroup();
+      ctx.PassesPanel?.ShowPasses();
     }
 
     private void SatelliteSelector_SelectedSatelliteChanged(object sender, EventArgs e)
     {
       ctx.GroupViewPanel?.ShowSelectedSat();
       ctx.SatelliteDetailsPanel?.LoadSatelliteDetails();
+      ctx.PassesPanel?.ShowPasses();
     }
 
+    bool SkipTick;
     private void timer3_Tick(object sender, EventArgs e)
     {
-      Clock.ShowTime(); 
+      Clock.ShowTime();
+
+      // skip every other 500-ms tick
+      if (SkipTick = !SkipTick) return;
+
       ctx.GroupViewPanel?.UpdatePassTimes();
+      ctx.PassesPanel?.UpdatePassTimes();
     }
   }
 }
