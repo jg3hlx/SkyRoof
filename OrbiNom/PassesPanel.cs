@@ -30,13 +30,15 @@ namespace OrbiNom
     private readonly Context ctx;
     private List<SatnogsDbSatellite> Sats = new();
     private List<ListViewItem> Items = new();
-    private TimeSpan PredictionTimeSpan = TimeSpan.FromDays(2);
-    private readonly Font BoldFont;
-//    private readonly Brush SkyViewBrush = new SolidBrush(Color.FromArgb(0x00FFFF));
     private GroundStation GroundStation;
     const double HalfPi = Math.PI / 2;
+
+    private DateTime LastPredictionTime = DateTime.MinValue;
+    private TimeSpan PredictionTimeSpan = TimeSpan.FromDays(2);
+    private readonly Font BoldFont;
     private readonly Pen PathPen = new Pen(Brushes.Teal, 2);
 
+    
     public PassesPanel()
     {
       InitializeComponent();
@@ -52,7 +54,7 @@ namespace OrbiNom
 
       BoldFont = new Font(listViewEx1.Font, FontStyle.Bold);
       listViewEx1.SetRowHeight(45);
-      listViewEx1.SetTooltipDelay(10000);
+      listViewEx1.SetTooltipDelay(1500);
     }
 
     private void PassesPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -71,7 +73,7 @@ namespace OrbiNom
       listViewEx1.Columns[0].Width = listViewEx1.ClientSize.Width;
     }
 
-    private void radioButton3_CheckedChanged(object sender, EventArgs e)
+    private void radioButton_CheckedChanged(object sender, EventArgs e)
     {
       var radioBtn = (RadioButton)sender;
       if (!radioBtn.Checked) return;
@@ -110,19 +112,11 @@ namespace OrbiNom
       var sats = ListSats();
       if (Sats.SequenceEqual(sats)) return;
       Sats = sats.ToList();
-      var now = DateTime.UtcNow;
 
-      // ground station for pass predictions
-      var pos = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
-      var myLocation = new GeodeticCoordinate(Angle.FromRadians(pos.LatitudeRad), Angle.FromRadians(pos.LongitudeRad), 0);
-      GroundStation = new GroundStation(myLocation);
+      var startTime = DateTime.UtcNow;
+      var endTime = startTime + PredictionTimeSpan;
 
-      Items = Sats
-        .SelectMany(sat => ctx.Passes.ComputeFor(sat, now, now + PredictionTimeSpan))
-        .OrderBy(p => p.StartTime)
-        .Select(ItemForPass)
-        .ToList();
-
+      Items = CreatePassItems(startTime, endTime).ToList(); 
       listViewEx1.VirtualListSize = Items.Count;
       listViewEx1.Invalidate();
     }
@@ -137,6 +131,13 @@ namespace OrbiNom
 
     internal void UpdatePassTimes()
     {
+      // delete finished passes
+      int oldCount = Items.Count;
+      for (int i=Items.Count-1; i>=0; i--)
+        if (((ItemData)Items[i].Tag).Pass.EndTime < DateTime.UtcNow) Items.RemoveAt(i);
+      listViewEx1.VirtualListSize = Items.Count;
+
+      // update wait times
       listViewEx1.Invalidate();
     }
 
@@ -215,11 +216,6 @@ namespace OrbiNom
       e.Graphics.FillRectangle(Brushes.Gray, rect);
     }
 
-    private void DrawSymbol(Brush brush, Graphics graphics, PointF point)
-    {
-      graphics.FillEllipse(brush, point.X-3, point.Y - 3, 6, 6);
-    }
-
     private const int StepCount = 10;
     private PointF[] MakePath(SatellitePass pass)
     {
@@ -239,6 +235,36 @@ namespace OrbiNom
       }
 
         return points;
+    }
+
+    // every 5 minutes compute more passes
+    internal void PredictMorePasses()
+    {
+      var startTime = LastPredictionTime + PredictionTimeSpan;
+      var endTime = DateTime.UtcNow + PredictionTimeSpan;
+      var items = CreatePassItems(startTime, endTime).Where(item => ((ItemData)item.Tag).Pass.StartTime > startTime);
+
+      Items.AddRange(items);
+      listViewEx1.VirtualListSize = Items.Count;
+      listViewEx1.Invalidate();
+    }
+
+    public IEnumerable<ListViewItem> CreatePassItems(DateTime startTime, DateTime endTime)
+    {
+      // ground station for pass predictions
+      var pos = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
+      var myLocation = new GeodeticCoordinate(Angle.FromRadians(pos.LatitudeRad), Angle.FromRadians(pos.LongitudeRad), 0);
+      GroundStation = new GroundStation(myLocation);
+
+      // predict passes and wrap them in listview items
+      var items = Sats
+        .SelectMany(sat => ctx.Passes.ComputeFor(sat, startTime, endTime))
+        .OrderBy(p => p.StartTime)
+        .Select(ItemForPass);        
+
+      LastPredictionTime = DateTime.UtcNow;
+
+      return items;
     }
   }
 }

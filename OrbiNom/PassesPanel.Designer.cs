@@ -61,7 +61,7 @@
       CurrentSatBtn.TabStop = true;
       CurrentSatBtn.Text = "Current Satellite";
       CurrentSatBtn.UseVisualStyleBackColor = true;
-      CurrentSatBtn.CheckedChanged += radioButton3_CheckedChanged;
+      CurrentSatBtn.CheckedChanged += radioButton_CheckedChanged;
       // 
       // GroupBtn
       // 
@@ -72,7 +72,7 @@
       GroupBtn.TabIndex = 1;
       GroupBtn.Text = "Group";
       GroupBtn.UseVisualStyleBackColor = true;
-      GroupBtn.CheckedChanged += radioButton3_CheckedChanged;
+      GroupBtn.CheckedChanged += radioButton_CheckedChanged;
       // 
       // AllBtn
       // 
@@ -83,7 +83,7 @@
       AllBtn.TabIndex = 2;
       AllBtn.Text = "All VHF/UHF";
       AllBtn.UseVisualStyleBackColor = true;
-      AllBtn.CheckedChanged += radioButton3_CheckedChanged;
+      AllBtn.CheckedChanged += radioButton_CheckedChanged;
       // 
       // panel1
       // 

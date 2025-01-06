@@ -75,12 +75,14 @@ namespace VE3NEA
     static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
     const int LVM_GETTOOLTIPS = 0x104E;
     const int TTM_SETDELAYTIME = 0x403;
+    const int TTDT_AUTOMATIC = 0;
     const int TTDT_AUTOPOP = 2;
+    const int TTDT_INITIAL = 3;
 
     public void SetTooltipDelay(int delayMs)
     {
       var tooltip = SendMessage(Handle, LVM_GETTOOLTIPS, 0, 0);
-      SendMessage(tooltip, TTM_SETDELAYTIME, TTDT_AUTOPOP, delayMs);
+      SendMessage(tooltip, TTM_SETDELAYTIME, TTDT_AUTOMATIC, delayMs);
     }
   }
 }

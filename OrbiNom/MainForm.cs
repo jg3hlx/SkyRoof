@@ -212,16 +212,26 @@ namespace OrbiNom
       ctx.PassesPanel?.ShowPasses();
     }
 
-    bool SkipTick;
+    long TickCount;
     private void timer3_Tick(object sender, EventArgs e)
     {
       Clock.ShowTime();
 
-      // skip every other 500-ms tick
-      if (SkipTick = !SkipTick) return;
+      // 500-ms ticks
+      TickCount += 1;
+      if (TickCount % 2 == 0) OneSecondTick();
+      if (TickCount % 120 == 0) OneMinuteTick();
+    }
 
+    private void OneSecondTick()
+    {
       ctx.GroupViewPanel?.UpdatePassTimes();
       ctx.PassesPanel?.UpdatePassTimes();
+    }
+
+    private void OneMinuteTick()
+    {
+      ctx.PassesPanel?.PredictMorePasses();
     }
   }
 }
