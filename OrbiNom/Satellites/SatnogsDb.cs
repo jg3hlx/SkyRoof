@@ -55,7 +55,7 @@ namespace OrbiNom
       File.WriteAllText(path, JsonConvert.SerializeObject(Satellites));
     }
 
-    internal void UpdateSatelliteList(SatnogsDb db)
+    internal void ReplaceSatelliteList(SatnogsDb db)
     {
       SatelliteList = db.SatelliteList;
       ListUpdated?.Invoke(this, EventArgs.Empty);

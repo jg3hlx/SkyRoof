@@ -10,7 +10,7 @@ namespace OrbiNom
   {
     public Settings Settings = new();
     public SatnogsDb SatnogsDb;
-    public SatellitePasses Passes;
+    public SatellitePassesOld Passes;
 
     public MainForm MainForm;
     public SatelliteSelector SatelliteSelector;

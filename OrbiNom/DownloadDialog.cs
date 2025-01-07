@@ -58,7 +58,7 @@ namespace OrbiNom
       try
       {
         db.ImportAll();
-        ctx.SatnogsDb.UpdateSatelliteList(db);
+        ctx.SatnogsDb.ReplaceSatelliteList(db);
         ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
         ctx.Settings.Satellites.LastDownloadTime = DateTime.UtcNow;
         ctx.Settings.Satellites.LastTleTime = ctx.Settings.Satellites.LastDownloadTime;

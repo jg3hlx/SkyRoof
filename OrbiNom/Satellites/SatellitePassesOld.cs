@@ -7,7 +7,7 @@ using VE3NEA;
 
 namespace OrbiNom
 {
-  public class SatellitePasses
+  public class SatellitePassesOld
   {
     private readonly IEnumerable<SatnogsDbSatellite> Satellites;
     private GroundStation GroundStation;
@@ -19,7 +19,7 @@ namespace OrbiNom
     public event EventHandler Changed;
 
 
-    public SatellitePasses(GeoPoint observerLocation, IEnumerable<SatnogsDbSatellite> satellites)
+    public SatellitePassesOld(GeoPoint observerLocation, IEnumerable<SatnogsDbSatellite> satellites)
     {
       Satellites = satellites;
       CreateGroundStation(observerLocation);

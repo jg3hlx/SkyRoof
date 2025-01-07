@@ -43,11 +43,6 @@ namespace OrbiNom
       ctx.Settings.Ui.RestoreWindowPosition(this);
       if (!ctx.Settings.Ui.RestoreDockingLayout(this)) SetDefaultDockingLayout();
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
-
-      ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
-      SatelliteSelector.SetSatelliteGroups();
-      ComputePasses();
-      ctx.PassesPanel?.ShowPasses();
     }
 
     const int LIST_DOWNLOAD_DAYS = 7;
@@ -57,42 +52,27 @@ namespace OrbiNom
     {
       // load from file
       ctx.SatnogsDb = new();
-      ctx.SatnogsDb.LoadFromFile();
-      ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
-
-      // {!} fired before customization
       ctx.SatnogsDb.ListUpdated += SatnogsDb_ListUpdated;
       ctx.SatnogsDb.TleUpdated += SatnogsDb_TleUpdated;
+      ctx.SatnogsDb.LoadFromFile();
+
 
       // download if needed
-      if (!ctx.SatnogsDb.Loaded || DateTime.UtcNow > ctx.Settings.Satellites.LastDownloadTime.AddDays(LIST_DOWNLOAD_DAYS))
+      if (ctx.SatnogsDb.Loaded && DateTime.UtcNow < ctx.Settings.Satellites.LastDownloadTime.AddDays(LIST_DOWNLOAD_DAYS))
+        SatnogsDb_ListUpdated(null, null); 
+      else
         DownloadDialog.Download(this, ctx);
-
+      
       if (DateTime.UtcNow > ctx.Settings.Satellites.LastTleTime.AddDays(TLE_DOWNLOAD_DAYS))
         try
         {
           ctx.SatnogsDb.DownloadTle();
           ctx.Settings.Satellites.LastTleTime = DateTime.UtcNow;
         }
-        catch
-        {
-        }
+        catch {}
 
       // no satellite data, cannot proceed
       if (!ctx.SatnogsDb.Loaded) Environment.Exit(1);
-
-      // delete sats that are no longer in the db
-      ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
-    }
-
-    private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
-    {
-
-    }
-
-    private void SatnogsDb_ListUpdated(object? sender, EventArgs e)
-    {
-
     }
 
     private void MainForm_FormClosing(object sender, EventArgs e)
@@ -149,7 +129,6 @@ namespace OrbiNom
       dlg.ShowDialog(this);
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
       ctx.SatelliteSelector.SetSatelliteGroups();
-      ctx.SatelliteSelector.OnSelectedGroupChanged();
     }
 
     private void GroupViewMNU_Click(object sender, EventArgs e)
@@ -210,19 +189,10 @@ namespace OrbiNom
 
 
 
-    private void SatelliteSelector_SelectedGroupChanged(object sender, EventArgs e)
-    {
-      ctx.GroupViewPanel?.LoadGroup();
-      ctx.PassesPanel?.ShowPasses();
-    }
 
-    private void SatelliteSelector_SelectedSatelliteChanged(object sender, EventArgs e)
-    {
-      ctx.GroupViewPanel?.ShowSelectedSat();
-      ctx.SatelliteDetailsPanel?.LoadSatelliteDetails();
-      ctx.PassesPanel?.ShowPasses();
-    }
-
+    //----------------------------------------------------------------------------------------------
+    //                                       timer
+    //----------------------------------------------------------------------------------------------
     long TickCount;
     private void timer3_Tick(object sender, EventArgs e)
     {
@@ -244,6 +214,43 @@ namespace OrbiNom
     private void OneMinuteTick()
     {
       ctx.PassesPanel?.PredictMorePasses();
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                 change
+    //----------------------------------------------------------------------------------------------
+    private void SatnogsDb_ListUpdated(object? sender, EventArgs e)
+    {
+      ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
+
+      // delete sats that are no longer in the db
+      ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
+      
+      SatelliteSelector.SetSatelliteGroups();
+
+      //      ComputePasses();
+      ctx.PassesPanel?.ShowPasses();
+    }
+
+    private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
+    {
+
+    }
+
+    private void SatelliteSelector_SelectedGroupChanged(object sender, EventArgs e)
+    {
+      ctx.GroupViewPanel?.LoadGroup();
+      ctx.PassesPanel?.ShowPasses();
+    }
+
+    private void SatelliteSelector_SelectedSatelliteChanged(object sender, EventArgs e)
+    {
+      ctx.GroupViewPanel?.ShowSelectedSat();
+      ctx.SatelliteDetailsPanel?.LoadSatelliteDetails();
+      ctx.PassesPanel?.ShowPasses();
     }
   }
 }
