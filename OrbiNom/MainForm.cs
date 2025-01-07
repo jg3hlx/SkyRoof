@@ -176,6 +176,16 @@ namespace OrbiNom
         ctx.PassesPanel.Close();
     }
 
+    private void TimelineMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.TimelinePanel == null)
+        new TimelinePanel(ctx).Show(DockHost, DockState.DockRight);
+      else
+        ctx.TimelinePanel.Close();      
+    }
+
+
+
 
     //----------------------------------------------------------------------------------------------
     //                                     docking
@@ -192,6 +202,7 @@ namespace OrbiNom
         case "OrbiNom.GroupViewPanel": return new GroupViewPanel(ctx);
         case "OrbiNom.SatelliteDetailsPanel": return new SatelliteDetailsPanel(ctx);
         case "OrbiNom.PassesPanel": return new PassesPanel(ctx);
+        case "OrbiNom.TimelinePanel": return new TimelinePanel(ctx);
         default: return null;
       }
     }
@@ -227,6 +238,7 @@ namespace OrbiNom
     {
       ctx.GroupViewPanel?.UpdatePassTimes();
       ctx.PassesPanel?.UpdatePassTimes();
+      ctx.TimelinePanel?.Invalidate();
     }
 
     private void OneMinuteTick()

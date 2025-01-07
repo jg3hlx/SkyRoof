@@ -12,10 +12,11 @@ namespace OrbiNom
     public SatnogsDb SatnogsDb;
     public SatellitePasses Passes;
 
-    internal MainForm MainForm;
-    internal SatelliteSelector SatelliteSelector;
-    internal GroupViewPanel? GroupViewPanel;
+    public MainForm MainForm;
+    public SatelliteSelector SatelliteSelector;
+    public GroupViewPanel? GroupViewPanel;
     public SatelliteDetailsPanel? SatelliteDetailsPanel;
     public PassesPanel? PassesPanel;
+    public TimelinePanel? TimelinePanel;
   }
 }

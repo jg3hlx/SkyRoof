@@ -79,7 +79,7 @@ namespace OrbiNom
       if (!radioBtn.Checked) return;
 
       if (CurrentSatBtn.Checked) PredictionTimeSpan = TimeSpan.FromDays(2);
-      else if (GroupBtn.Checked) PredictionTimeSpan = TimeSpan.FromDays(1);
+      else if (GroupBtn.Checked) PredictionTimeSpan = TimeSpan.FromDays(2);
       else PredictionTimeSpan = TimeSpan.FromMinutes(30);
 
       ShowPasses();
