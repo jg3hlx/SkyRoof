@@ -12,28 +12,33 @@ namespace OrbiNom
     {
       InitializeComponent();
       Text = Utils.GetVersionString();
+      
       ctx.MainForm = this;
       ctx.SatelliteSelector = SatelliteSelector;
       SatelliteSelector.ctx = ctx;
       ctx.Settings.LoadFromFile();
+
       EnsureUserDetails();
+
+      ctx.GroupPasses = new(ctx, true);
+      ctx.AllPasses = new(ctx, false);
     }
 
-    private void ComputePasses()
-    {
-      var point = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
-      if (ctx.Passes == null)
-      {
-        ctx.Passes = new(point, ctx.SatnogsDb.Satellites);
-        ctx.Passes.Changed += Passes_Changed;
-        Passes_Changed(null, EventArgs.Empty);
-      }
-    }
+    //private void ComputePasses()
+    //{
+    //  var point = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
+    //  if (ctx.Passes == null)
+    //  {
+    //    ctx.Passes = new(point, ctx.SatnogsDb.Satellites);
+    //    ctx.Passes.Changed += Passes_Changed;
+    //    Passes_Changed(null, EventArgs.Empty);
+    //  }
+    //}
 
-    private void Passes_Changed(object? sender, EventArgs e)
-    {
-      ctx.GroupViewPanel?.UpdatePassTimes();
-    }
+    //private void Passes_Changed(object? sender, EventArgs e)
+    //{
+    //  ctx.GroupViewPanel?.UpdatePassTimes();
+    //}
 
     private void MainForm_Load(object sender, EventArgs e)
     {
@@ -81,7 +86,9 @@ namespace OrbiNom
       ctx.Settings.Ui.StoreDockingLayout(DockHost);
       ctx.Settings.Ui.StoreWindowPosition(this);
       ctx.Settings.Ui.ClockUtcMode = Clock.UtcMode;
-      ctx.Settings.Ui.SatelliteDetailsPanel.SplitterDistance = ctx.SatelliteDetailsPanel.satelliteDetailsControl1.splitContainer1.SplitterDistance;
+
+      if (ctx.SatelliteDetailsPanel != null)
+        ctx.Settings.Ui.SatelliteDetailsPanel.SplitterDistance = ctx.SatelliteDetailsPanel.satelliteDetailsControl1.splitContainer1.SplitterDistance;
 
       ctx.Settings.SaveToFile();
     }
@@ -194,7 +201,7 @@ namespace OrbiNom
     //                                       timer
     //----------------------------------------------------------------------------------------------
     long TickCount;
-    private void timer3_Tick(object sender, EventArgs e)
+    private void timer_Tick(object sender, EventArgs e)
     {
       Clock.ShowTime();
 
@@ -202,6 +209,7 @@ namespace OrbiNom
       TickCount += 1;
       if (TickCount % 2 == 0) OneSecondTick();
       if (TickCount % 120 == 0) OneMinuteTick();
+      if (TickCount % 600 == 0) FiveMinutesTick();
     }
 
     private void OneSecondTick()
@@ -213,7 +221,14 @@ namespace OrbiNom
 
     private void OneMinuteTick()
     {
-      ctx.PassesPanel?.PredictMorePasses();
+      ctx.GroupPasses.PredictMorePasses();
+      ctx.AllPasses.PredictMorePasses();
+      ctx.PassesPanel?.ShowPasses();
+    }
+
+    private void FiveMinutesTick()
+    {
+      // {!} maybe compute predictions every 5 min, not 1
     }
 
 
@@ -225,25 +240,21 @@ namespace OrbiNom
     private void SatnogsDb_ListUpdated(object? sender, EventArgs e)
     {
       ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
-
-      // delete sats that are no longer in the db
-      ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
-      
+      ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);      
       SatelliteSelector.SetSatelliteGroups();
 
-      //      ComputePasses();
+      ctx.AllPasses.FullRebuild();
+      ctx.GroupPasses.FullRebuild();
       ctx.PassesPanel?.ShowPasses();
-    }
-
-    private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
-    {
-
+      ctx.TimelinePanel?.Invalidate();
     }
 
     private void SatelliteSelector_SelectedGroupChanged(object sender, EventArgs e)
     {
       ctx.GroupViewPanel?.LoadGroup();
+      ctx.GroupPasses.FullRebuild();
       ctx.PassesPanel?.ShowPasses();
+      ctx.TimelinePanel?.Invalidate();
     }
 
     private void SatelliteSelector_SelectedSatelliteChanged(object sender, EventArgs e)
@@ -251,6 +262,15 @@ namespace OrbiNom
       ctx.GroupViewPanel?.ShowSelectedSat();
       ctx.SatelliteDetailsPanel?.LoadSatelliteDetails();
       ctx.PassesPanel?.ShowPasses();
+      ctx.TimelinePanel?.Invalidate();
+    }
+
+    private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
+    {
+      ctx.AllPasses.Rebuild();
+      ctx.GroupPasses.Rebuild();
+      ctx.PassesPanel?.ShowPasses();
+      ctx.TimelinePanel?.Invalidate();
     }
   }
 }

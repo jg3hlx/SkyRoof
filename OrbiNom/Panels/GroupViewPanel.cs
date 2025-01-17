@@ -128,8 +128,6 @@ namespace OrbiNom
 
     public void UpdatePassTimes()
     {
-      if (ctx.Passes == null) return;
-
       var now = DateTime.UtcNow;
       bool changed = false;
 
@@ -138,7 +136,7 @@ namespace OrbiNom
         var data = item.Tag as ItemData;
         if (data.Pass == null || data.Pass.EndTime < now)
         {
-          data.Pass = ctx.Passes.ComputeFor(data.Sat, now, now.AddDays(1)).OrderBy(pass => pass.StartTime).FirstOrDefault();
+          data.Pass = ctx.AllPasses.ComputePassesFor(data.Sat, now, now.AddDays(1)).OrderBy(pass => pass.StartTime).FirstOrDefault();
           changed = true;
         }
 

@@ -132,9 +132,9 @@ namespace OrbiNom
     {
       if (changing) return;
 
-      var sat = (SatnogsDbSatellite)SatelliteComboBox.SelectedItem!;
-      group.SelectedSatId = sat.sat_id;
-      toolTip1.SetToolTip(SatelliteComboBox, sat.GetTooltipText());
+      SelectedSatellite = (SatnogsDbSatellite)SatelliteComboBox.SelectedItem!;
+      group.SelectedSatId = SelectedSatellite.sat_id;
+      toolTip1.SetToolTip(SatelliteComboBox, SelectedSatellite.GetTooltipText());
 
       SetTransmitters();
 
@@ -221,8 +221,8 @@ namespace OrbiNom
 
       var tx = (SatnogsDbTransmitter)TransmitterComboBox.Items[e.Index];
 
-      if (tx.downlink_low >= 144000000 && tx.downlink_low <= 148000000) bacBrush = Brushes.LightGoldenrodYellow;
-      if (tx.downlink_low >= 430000000 && tx.downlink_low <= 440000000) bacBrush = Brushes.LightCyan;
+      if (tx.IsUhf()) bacBrush = Brushes.LightGoldenrodYellow;
+      if (tx.IsUhf()) bacBrush = Brushes.LightCyan;
       if (tx.service == "Amateur") font = new(font, FontStyle.Bold);
       if (!tx.alive || tx.status != "active") foreBrush = Brushes.Silver;
       

@@ -18,15 +18,6 @@ namespace OrbiNom
 {
   public partial class PassesPanel : DockContent
   {
-    public class ItemData
-    {
-      public SatellitePass Pass;
-      public PointF[] path;
-      public ItemData(SatellitePass pass, PointF[] path) { Pass = pass; this.path = path; }
-    }
-
-
-
     private readonly Context ctx;
     private List<SatnogsDbSatellite> Sats = new();
     private List<ListViewItem> Items = new();
@@ -34,7 +25,6 @@ namespace OrbiNom
     const double HalfPi = Math.PI / 2;
 
     private DateTime LastPredictionTime = DateTime.MinValue;
-    private TimeSpan PredictionTimeSpan = TimeSpan.FromDays(2);
     private readonly Font BoldFont;
     private readonly Pen PathPen = new Pen(Brushes.Teal, 2);
 
@@ -55,6 +45,8 @@ namespace OrbiNom
       BoldFont = new Font(listViewEx1.Font, FontStyle.Bold);
       listViewEx1.SetRowHeight(45);
       listViewEx1.SetTooltipDelay(1500);
+
+      ShowPasses();
     }
 
     private void PassesPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -76,47 +68,41 @@ namespace OrbiNom
     private void radioButton_CheckedChanged(object sender, EventArgs e)
     {
       var radioBtn = (RadioButton)sender;
-      if (!radioBtn.Checked) return;
-
-      if (CurrentSatBtn.Checked) PredictionTimeSpan = TimeSpan.FromDays(2);
-      else if (GroupBtn.Checked) PredictionTimeSpan = TimeSpan.FromDays(2);
-      else PredictionTimeSpan = TimeSpan.FromMinutes(30);
-
-      ShowPasses();
+      if (radioBtn.Checked) ShowPasses();
     }
-
-    private IEnumerable<SatnogsDbSatellite> ListSats()
-    {
-      IEnumerable<SatnogsDbSatellite> sats;
-      var group = ctx.Settings.Satellites.SatelliteGroups.FirstOrDefault(g => g.Id == ctx.Settings.Satellites.SelectedGroup);
-
-      if (AllBtn.Checked) sats = ctx.SatnogsDb.Satellites.Where(sat =>
-        sat.Flags.HasFlag(SatelliteFlags.Vhf) || sat.Flags.HasFlag(SatelliteFlags.Uhf));
-
-      else if (GroupBtn.Checked) sats = group.SatelliteIds.Select(ctx.SatnogsDb.GetSatellite);
-
-      else if (ctx.GroupViewPanel != null && ctx.GroupViewPanel.listView1.SelectedIndices.Count > 0)
-      {
-        int idx = ctx.GroupViewPanel.listView1.SelectedIndices[0];
-        sats = [((GroupViewPanel.ItemData)ctx.GroupViewPanel.Items[idx].Tag).Sat];
-      }
-
-      else sats = [ctx.SatnogsDb.GetSatellite(group.SelectedSatId)];
-
-      return sats.Where(sat => sat.Tle != null && sat.status == "alive");
-    }
-
 
     internal void ShowPasses()
     {
-      var sats = ListSats();
-      if (Sats.SequenceEqual(sats)) return;
-      Sats = sats.ToList();
-
+      IEnumerable<SatellitePass> passes = ctx.GroupPasses.Passes;
       var startTime = DateTime.UtcNow;
-      var endTime = startTime + PredictionTimeSpan;
+      var endTime = startTime + TimeSpan.FromDays(2); 
 
-      Items = CreatePassItems(startTime, endTime).ToList(); 
+      if (CurrentSatBtn.Checked)
+      {
+        // selected in the Selector panel
+        var sat = ctx.SatelliteSelector.SelectedSatellite;
+        // currently highlighted in the Group View panel
+        if (ctx.GroupViewPanel != null && ctx.GroupViewPanel.listView1.SelectedIndices.Count > 0)
+        {
+          int idx = ctx.GroupViewPanel.listView1.SelectedIndices[0];
+          sat = ((GroupViewPanel.ItemData)ctx.GroupViewPanel.Items[idx].Tag).Sat;
+        }
+
+        passes = passes.Where(p => p.Satellite == sat);
+      }
+
+      else if (GroupBtn.Checked)
+      {
+      }
+
+      else
+      {
+        passes = ctx.AllPasses.Passes;
+        endTime = startTime + TimeSpan.FromHours(1);
+      }
+
+      passes = passes.Where(pass => pass.EndTime >= startTime && pass.StartTime < endTime);
+      Items = CreatePassItems(passes).ToList(); 
       listViewEx1.VirtualListSize = Items.Count;
       listViewEx1.Invalidate();
     }
@@ -124,8 +110,11 @@ namespace OrbiNom
     private ListViewItem ItemForPass(SatellitePass pass)
     {
       var item = new ListViewItem();
-      item.Tag = new ItemData(pass, MakePath(pass));
+      item.Tag = (pass);
+
+      pass.MakeMiniPath();
       item.ToolTipText = pass.Satellite.GetTooltipText();
+      
       return item;
     }
 
@@ -134,10 +123,9 @@ namespace OrbiNom
       // delete finished passes
       int oldCount = Items.Count;
       for (int i=Items.Count-1; i>=0; i--)
-        if (((ItemData)Items[i].Tag).Pass.EndTime < DateTime.UtcNow) Items.RemoveAt(i);
-      listViewEx1.VirtualListSize = Items.Count;
+        if (((SatellitePass)Items[i].Tag).EndTime < DateTime.UtcNow) Items.RemoveAt(i);
 
-      // update wait times
+      listViewEx1.VirtualListSize = Items.Count;
       listViewEx1.Invalidate();
     }
 
@@ -145,7 +133,7 @@ namespace OrbiNom
     {
       e.DrawBackground();
 
-      var pass = ((ItemData)e.Item.Tag).Pass;
+      var pass = (SatellitePass)e.Item.Tag;
       int h = e.Bounds.Height - 1;
       int w = e.Bounds.Width - h;
       bool now = pass.StartTime < DateTime.UtcNow;
@@ -159,6 +147,12 @@ namespace OrbiNom
       else if (pass.Satellite.Flags.HasFlag(SatelliteFlags.Vhf)) brush = Brushes.LightGoldenrodYellow;
       e.Graphics.FillRectangle(brush, rect);
       e.Graphics.DrawString(text, BoldFont, Brushes.Black, rect);
+
+      // orbit number
+      text = $"#{pass.OrbitNumber}";
+      size = e.Graphics.MeasureString(text, listViewEx1.Font);
+      rect = new RectangleF(rect.Right + 10, rect.Y, size.Width, size.Height);
+      e.Graphics.DrawString(text, listViewEx1.Font, Brushes.Black, rect);
 
       // start/end time
       text = $"{pass.StartTime.ToLocalTime():yyyy-MM-dd  HH:mm:ss}  to  {pass.EndTime.ToLocalTime():HH:mm:ss}";
@@ -198,7 +192,7 @@ namespace OrbiNom
       rect.Inflate(-radius / 2, -radius / 2);
       e.Graphics.DrawEllipse(Pens.Silver, rect);
 
-      var path = ((ItemData)e.Item.Tag).path;
+      var path = ((SatellitePass)e.Item.Tag).MiniPath;
       if (path.Length > 1)
       {
         // path
@@ -237,34 +231,23 @@ namespace OrbiNom
         return points;
     }
 
-    // every 5 minutes compute more passes
+    // every N minutes compute more passes
     internal void PredictMorePasses()
     {
-      var startTime = LastPredictionTime + PredictionTimeSpan;
-      var endTime = DateTime.UtcNow + PredictionTimeSpan;
-      var items = CreatePassItems(startTime, endTime).Where(item => ((ItemData)item.Tag).Pass.StartTime > startTime);
-
-      Items.AddRange(items);
-      listViewEx1.VirtualListSize = Items.Count;
-      listViewEx1.Invalidate();
+      // var startTime = LastPredictionTime + PredictionTimeSpan;
+      // var endTime = DateTime.UtcNow + PredictionTimeSpan;
+      // var items = CreatePassItems(startTime, endTime).Where(item => ((SatellitePass)item.Tag).StartTime > startTime);
+      // 
+      // Items.AddRange(items);
+      // listViewEx1.VirtualListSize = Items.Count;
+      // listViewEx1.Invalidate();
     }
 
-    public IEnumerable<ListViewItem> CreatePassItems(DateTime startTime, DateTime endTime)
+    public IEnumerable<ListViewItem> CreatePassItems(IEnumerable<SatellitePass> passes)
     {
-      // ground station for pass predictions
-      var pos = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
-      var myLocation = new GeodeticCoordinate(Angle.FromRadians(pos.LatitudeRad), Angle.FromRadians(pos.LongitudeRad), 0);
-      GroundStation = new GroundStation(myLocation);
 
       // predict passes and wrap them in listview items
-      var items = Sats
-        .SelectMany(sat => ctx.Passes.ComputeFor(sat, startTime, endTime))
-        .OrderBy(p => p.StartTime)
-        .Select(ItemForPass);        
-
-      LastPredictionTime = DateTime.UtcNow;
-
-      return items;
+      return passes.OrderBy(p => p.StartTime).Select(ItemForPass);        
     }
   }
 }

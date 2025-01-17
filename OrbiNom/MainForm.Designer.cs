@@ -261,7 +261,7 @@
       // 
       timer3.Enabled = true;
       timer3.Interval = 500;
-      timer3.Tick += timer3_Tick;
+      timer3.Tick += timer_Tick;
       // 
       // MainForm
       // 

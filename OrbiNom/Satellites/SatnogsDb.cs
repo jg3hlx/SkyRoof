@@ -260,6 +260,8 @@ namespace OrbiNom
     {
       foreach (var cust in satelliteCustomizations.Values)
       {
+        if (cust.sat_id == null) continue;
+
         if (!SatelliteList.TryGetValue(cust.sat_id, out SatnogsDbSatellite? sat)) return;
 
         if (!string.IsNullOrEmpty(cust.Name))

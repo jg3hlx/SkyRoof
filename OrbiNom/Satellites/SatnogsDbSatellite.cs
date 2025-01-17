@@ -167,6 +167,18 @@ namespace OrbiNom
 
 
 
+    [Browsable(false)]    
+    public List<string> TransmittersHint { get => transmittersHint ?? FormatTransmitters(); } // build on demand
+    private List<string>? transmittersHint;
+    private List<string> FormatTransmitters()
+    {
+      return Transmitters
+        .Where(t => t.IsHamBand() && t.alive)
+        .GroupBy(t => t.downlink_low)
+        .Select(d => $"{d.Key / 1e6:F3}   {string.Join(", ", d.Select(r => r.mode).Distinct())}")
+        .Order().ToList();
+    }
+
     internal void BuildAllNames()
     {
       AllNames.Clear();
@@ -200,10 +212,8 @@ namespace OrbiNom
       else Flags |= SatelliteFlags.NonHam;
 
       // band
-      if (Transmitters.Any(t => t.downlink_low >= 144000000 && t.downlink_low <= 148000000))
-        Flags |= SatelliteFlags.Vhf;
-      if (Transmitters.Any(t => t.downlink_low >= 430000000 && t.downlink_low <= 440000000))
-        Flags |= SatelliteFlags.Uhf;
+      if (Transmitters.Any(t => t.IsVhf())) Flags |= SatelliteFlags.Vhf;
+      if (Transmitters.Any(t => t.IsUhf())) Flags |= SatelliteFlags.Uhf;
       if ((Flags & (SatelliteFlags.Vhf | SatelliteFlags.Uhf)) == SatelliteFlags.None)
         Flags |= SatelliteFlags.OtherBands;
 

@@ -90,15 +90,7 @@ namespace OrbiNom
 
             if (rebuild || p.Start > startTime)
             {
-              var pass = new SatellitePass();
-              pass.Satellite = sat;
-              pass.SatTracker = satTracker;
-              pass.StartTime = p.Start;
-              pass.CulminationTime = p.MaxElevationTime;
-              pass.EndTime = p.End;
-              pass.MaxElevation = p.MaxElevation.Degrees;
-              pass.DownLinks = FormatTransmitters(sat.Transmitters).ToList();
-              pass.OrbitNumber = orbitNumber;
+              var pass = new SatellitePass(GroundStation, sat, satTracker, p);
               ComputeTrack(pass);
               Passes.Add(pass);
             }
@@ -157,12 +149,7 @@ namespace OrbiNom
 
     public static IEnumerable<SatnogsDbTransmitter> HamTransmitters(IEnumerable<SatnogsDbTransmitter> transmitters)
     {
-      //return transmitters.Where(t => t.downlink_low >= 435000000 && t.downlink_low <= 436400000);
-      return transmitters.Where(t =>
-      (t.downlink_low >= 430000000 && t.downlink_low <= 440000000)
-      ||
-      (t.downlink_low >= 145500000 && t.downlink_low <= 146000000)
-      );
+      return transmitters.Where(t => t.IsHamBand());
     }
 
     public string FormatAsString()
@@ -174,19 +161,19 @@ namespace OrbiNom
       var builder = new StringBuilder();
 
       foreach (var pass in passes.Where(p => p.EndTime < t1))
-        foreach (var link in pass.DownLinks)
+        foreach (var link in pass.Satellite.TransmittersHint)
           builder.AppendLine($"{pass.Satellite.name,-20}  {pass.OrbitNumber,6}   {pass.StartTime.ToLocalTime():HH:mm:ss}   {pass.CulminationTime.ToLocalTime():HH:mm:ss}   {pass.EndTime.ToLocalTime():HH:mm:ss}   {pass.MaxElevation,2:F0}    {link}");
 
       builder.AppendLine("------------");
 
       foreach (var pass in passes.Where(p => p.StartTime < t1 && p.EndTime > t1))
-        foreach (var link in pass.DownLinks)
+        foreach (var link in pass.Satellite.TransmittersHint)
           builder.AppendLine($"{pass.Satellite.name,-20}  {pass.OrbitNumber,6}   {pass.StartTime.ToLocalTime():HH:mm:ss}   {pass.CulminationTime.ToLocalTime():HH:mm:ss}   {pass.EndTime.ToLocalTime():HH:mm:ss}   {pass.MaxElevation,2:F0}    {link}");
 
       builder.AppendLine("------------");
 
       foreach (var pass in passes.Where(p => p.StartTime > t1))
-        foreach (var link in pass.DownLinks)
+        foreach (var link in pass.Satellite.TransmittersHint)
           builder.AppendLine($"{pass.Satellite.name,-20}  {pass.OrbitNumber,6}   {pass.StartTime.ToLocalTime():HH:mm:ss}   {pass.CulminationTime.ToLocalTime():HH:mm:ss}   {pass.EndTime.ToLocalTime():HH:mm:ss}   {pass.MaxElevation,2:F0}    {link}");
 
       return builder.ToString();
@@ -214,17 +201,17 @@ namespace OrbiNom
 
         foreach (var p in passes)
         {
-          var pass = new SatellitePass();
-          pass.Satellite = satellite;
-          pass.SatTracker = sat;
-          pass.StartTime = p.Start;
-          pass.CulminationTime = p.MaxElevationTime;
-          pass.EndTime = p.End;
-          pass.MaxElevation = p.MaxElevation.Degrees;
-          pass.DownLinks = FormatTransmitters(satellite.Transmitters).ToList();
-          pass.OrbitNumber = ComputeOrbitNumber(sat, p.MaxElevationTime);
-          ComputeTrack(pass);
-          result.Add(pass);
+          //var pass = new SatellitePass();
+          //pass.Satellite = satellite;
+          //pass.SatTracker = sat;
+          //pass.StartTime = p.Start;
+          //pass.CulminationTime = p.MaxElevationTime;
+          //pass.EndTime = p.End;
+          //pass.MaxElevation = p.MaxElevation.Degrees;
+          //pass.TransmittersHint = FormatTransmitters(satellite.Transmitters).ToList();
+          //pass.OrbitNumber = ComputeOrbitNumber(sat, p.MaxElevationTime);
+          //ComputeTrack(pass);
+          //result.Add(pass);
         }
       }
       catch (Exception e)

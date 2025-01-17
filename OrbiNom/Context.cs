@@ -8,10 +8,13 @@ namespace OrbiNom
 {
   public class Context
   {
+    // data
     public Settings Settings = new();
     public SatnogsDb SatnogsDb;
-    public SatellitePassesOld Passes;
+    public SatellitePasses GroupPasses;
+    public SatellitePasses AllPasses;
 
+    // panels
     public MainForm MainForm;
     public SatelliteSelector SatelliteSelector;
     public GroupViewPanel? GroupViewPanel;

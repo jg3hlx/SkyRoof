@@ -34,30 +34,41 @@
     {
       string mode = this.mode;
       if (baud != null && baud != 0) mode = $"{mode} {baud} Bd";
-      string uplink = FormatRange(uplink_low, uplink_high);
-      string downlink = FormatRange(downlink_low, downlink_high);
-      
+      string uplink = FormatFrequencyRange(uplink_low, uplink_high);
+      string downlink = FormatFrequencyRange(downlink_low, downlink_high);
+
       string result = $"Type: {type}\n";
       if (uplink_low != null) result += $"Uplink: {uplink}\n";
       result += $"Downlink: {downlink}\nMode: {mode}\n";
       if (uplink_low != null) result += $"Inverted: {invert}\n";
       result += $"Service: {service}\nUpdated: {updated:yyyy-mm-dd}";
-     
+
       return result;
     }
 
-    public static string FormatRange(long? low, long? high)
+    public static string FormatFrequencyRange(long? low, long? high)
     {
       if (low == null) return "";
       if (high == null) return $"{low / 1000:N0}";
       return $"{low / 1000:N0} - {high / 1000:N0}";
     }
+
+    public bool IsVhf()
+    {
+      return downlink_low >= 144000000 && downlink_low <= 148000000;
+    }
+
+    public bool IsUhf()
+    {
+      return downlink_low >= 430000000 && downlink_low <= 440000000;
+    }
+
+    public bool IsHamBand() { return IsVhf() || IsUhf(); }
+
   }
 
-  public class ItuNotification
-  {
-    public List<string> urls { get; set; } = new();
-  }
+
+  public class ItuNotification { public List<string> urls { get; set; } = new(); }
 
   public class SatnogsDbTransmitterList : List<SatnogsDbTransmitter> { }
 }
