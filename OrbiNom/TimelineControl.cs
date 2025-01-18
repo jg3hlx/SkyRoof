@@ -26,14 +26,6 @@
       MouseWheel += SatelliteTimelineControl_MouseWheel;
     }
 
-    private void SatelliteTimelineControl_MouseWheel(object? sender, MouseEventArgs e)
-    {
-      int dZoom = e.Delta / 120;// WHEEL_DELTA;
-
-      Zoom *= Math.Pow(2, dZoom / 4d);
-      Invalidate();
-    }
-
     internal void SetList(List<SatellitePass> passes)
     {
       Passes = passes;
@@ -173,6 +165,20 @@
     private float TimeToPixel(DateTime time, DateTime now)
     {
       return (float)(X0 + (time - now).TotalMinutes * PixelsPerMinute);
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        mouse
+    //----------------------------------------------------------------------------------------------
+    private void SatelliteTimelineControl_MouseWheel(object? sender, MouseEventArgs e)
+    {
+      int dZoom = e.Delta / 120;// WHEEL_DELTA;
+
+      Zoom *= Math.Pow(2, dZoom / 4d);
+      Invalidate();
     }
 
     private void SatelliteTimelineControl_MouseDown(object sender, MouseEventArgs e)

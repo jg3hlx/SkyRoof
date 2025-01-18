@@ -35,10 +35,15 @@
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       ClientSize = new Size(800, 189);
+      DoubleBuffered = true;
       Name = "TimelinePanel";
       Text = "TimelinePanel";
       FormClosing += TimelinePanel_FormClosing;
       Paint += TimelinePanel_Paint;
+      MouseDown += SatelliteTimelineControl_MouseDown;
+      MouseMove += SatelliteTimelineControl_MouseMove;
+      MouseUp += SatelliteTimelineControl_MouseUp;
+      Resize += TimelinePanel_Resize;
       ResumeLayout(false);
     }
 

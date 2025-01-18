@@ -13,6 +13,7 @@ using SGPdotNET.Observation;
 using SGPdotNET.CoordinateSystem;
 using SGPdotNET.Util;
 using Newtonsoft.Json.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace OrbiNom
 {
@@ -68,7 +69,11 @@ namespace OrbiNom
     private void radioButton_CheckedChanged(object sender, EventArgs e)
     {
       var radioBtn = (RadioButton)sender;
-      if (radioBtn.Checked) ShowPasses();
+      if (radioBtn.Checked)
+      {
+        listViewEx1.EnsureVisible(0);
+        ShowPasses();
+      }
     }
 
     internal void ShowPasses()
@@ -229,18 +234,6 @@ namespace OrbiNom
       }
 
         return points;
-    }
-
-    // every N minutes compute more passes
-    internal void PredictMorePasses()
-    {
-      // var startTime = LastPredictionTime + PredictionTimeSpan;
-      // var endTime = DateTime.UtcNow + PredictionTimeSpan;
-      // var items = CreatePassItems(startTime, endTime).Where(item => ((SatellitePass)item.Tag).StartTime > startTime);
-      // 
-      // Items.AddRange(items);
-      // listViewEx1.VirtualListSize = Items.Count;
-      // listViewEx1.Invalidate();
     }
 
     public IEnumerable<ListViewItem> CreatePassItems(IEnumerable<SatellitePass> passes)
