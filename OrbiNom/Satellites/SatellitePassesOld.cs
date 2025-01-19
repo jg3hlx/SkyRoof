@@ -108,7 +108,7 @@ namespace OrbiNom
     {
       if (pass.Track != null) return;
 
-      pass.Track = new();
+      //pass.Track = new();
 
 
       for (DateTime t = pass.StartTime - Margin; t < pass.EndTime + Margin; t = t.AddSeconds(5))

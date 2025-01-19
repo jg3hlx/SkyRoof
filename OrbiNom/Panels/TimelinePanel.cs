@@ -17,25 +17,25 @@ namespace OrbiNom
     private const double MaxPixelsPerMinute = 60; // at max zoom, 1 pixel = 1 second
     private const int ScaleHeight = 40;
 
-    private readonly TimeSpan MinTimeOffset = TimeSpan.FromMinutes(-30);
-    private readonly TimeSpan MaxTimeOffset = TimeSpan.FromDays(2);
-    private readonly Brush ShadowBrush = new SolidBrush(Color.FromArgb(25, Color.Black));
+    private static readonly TimeSpan HistoryTimeSpan = TimeSpan.FromMinutes(-30);
+    private static readonly TimeSpan PredictionTimeSpan = TimeSpan.FromDays(2);
+    private static double TotalMinutes = PredictionTimeSpan.Subtract(HistoryTimeSpan).TotalMinutes;
+    private static readonly Brush ShadowBrush = new SolidBrush(Color.FromArgb(25, Color.Black));
 
     private Context ctx;
-    double Zoom = 1;
     private double PixelsPerMinute;
-    double X0 = int.MaxValue;
-    int width, height;
     private int MouseDownX;
-    private double MouseDownX0;
+    private TimeSpan MouseDownLeftSpan;
     private int MouseMoveX;
     private bool Dragging;
 
+    // Now minus time at leftmost pixel
+    TimeSpan LeftSpan = TimeSpan.FromMinutes(5);
+    double Zoom = 8;
 
-    public TimelinePanel()
-    {
-      InitializeComponent();
-    }
+
+    // for visual designer
+    public TimelinePanel() { InitializeComponent(); }
 
     public TimelinePanel(Context ctx)
     {
@@ -45,6 +45,8 @@ namespace OrbiNom
       ctx.MainForm.TimelineMNU.Checked = true;
 
       MouseWheel += SatelliteTimelineControl_MouseWheel;
+
+
     }
 
     private void TimelinePanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -61,31 +63,32 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void TimelinePanel_Paint(object sender, PaintEventArgs e)
     {
-      var g = e.Graphics;
-      ValidateViewport();
-      DrawBg(g);
-
+      ValidateZoom();
+      ValidateLeftSpan();
       var now = DateTime.Now;
-      DrawDateLabels(g, now);
-      DrawtimeLabels(g, now);
-      g.DrawString($"x0 = {X0:F1}   zoom = {Zoom:F3} pix/min = {PixelsPerMinute:F3}", Font, Brushes.Black, 5, 5);
 
-      //DrawPasses(g, now);
+      DrawBg(e.Graphics, now);
+      DrawDateLabels(e.Graphics, now);
+      DrawtimeLabels(e.Graphics, now);
+      DrawPasses(e.Graphics, now);
+
+      //g.DrawString($"x0 = {X0:F1}   zoom = {Zoom:F3} pix/min = {PixelsPerMinute:F3}", Font, Brushes.Black, 5, 5);
     }
 
-    private void DrawBg(Graphics g)
+    private void DrawBg(Graphics g, DateTime now)
     {
       // chart
-      var rect = new RectangleF(0, 0, width, height - ScaleHeight);
+      var rect = new RectangleF(0, 0, ClientSize.Width, ClientSize.Height - ScaleHeight);
       LinearGradientBrush lgb = new LinearGradientBrush(rect, Color.SkyBlue, Color.White, LinearGradientMode.Vertical);
       g.FillRectangle(lgb, rect);
 
       // time scale
-      rect = new RectangleF(0, height - ScaleHeight, width, ScaleHeight);
+      rect = new RectangleF(0, ClientSize.Height - ScaleHeight, ClientSize.Width, ScaleHeight);
       g.FillRectangle(Brushes.Silver, rect);
 
       // past time shadow
-      rect = new RectangleF(0, 0, (int)X0, height - ScaleHeight);
+      float x = TimeToPixel(now, now);
+      rect = new RectangleF(0, 0, x, ClientSize.Height - ScaleHeight);
       g.FillRectangle(ShadowBrush, rect);
 
     }
@@ -99,18 +102,18 @@ namespace OrbiNom
       do
       {
         var date2 = date1.AddDays(1);
-        x2 = Math.Min(width, TimeToPixel(date2, now));
-        g.DrawLine(Pens.Black, x2, height - ScaleHeight, x2, height);
+        x2 = Math.Min(ClientSize.Width, TimeToPixel(date2, now));
+        g.DrawLine(Pens.Black, x2, ClientSize.Height - ScaleHeight, x2, ClientSize.Height);
 
         string label = $"{date1:MMM dd}";
         var size = TextRenderer.MeasureText(label, Font);
         if (x2 - x1 > size.Width + 15)
-          g.DrawString(label, Font, Brushes.Black, (x1 + x2 - size.Width) / 2, height - size.Height - 5);
+          g.DrawString(label, Font, Brushes.Black, (x1 + x2 - size.Width) / 2, ClientSize.Height - size.Height - 5);
 
         date1 = date2;
         x1 = Math.Max(-1, x2);
       }
-      while (x2 < width);
+      while (x2 < ClientSize.Width);
     }
 
 
@@ -119,6 +122,7 @@ namespace OrbiNom
 
     private void DrawtimeLabels(Graphics g, DateTime now)
     {
+      // compute steps
       TimeSpan step = TimeSpan.Zero;
       TimeSpan smallStep = TimeSpan.Zero;
 
@@ -131,62 +135,90 @@ namespace OrbiNom
         }
       if (step == TimeSpan.Zero) return;
 
-
-      // ticks
-      var time = TruncateTime(now.Add(MinTimeOffset), smallStep);
+      // draw ticks
+      var time = TruncateTime(now.Add(HistoryTimeSpan), smallStep);
       var x = TimeToPixel(time, now);
-      while (x < width)
+      while (x < ClientSize.Width)
       {
-        g.DrawLine(Pens.Black, x, height - ScaleHeight, x, height - ScaleHeight + 5);
+        g.DrawLine(Pens.Black, x, ClientSize.Height - ScaleHeight, x, ClientSize.Height - ScaleHeight + 5);
         time = time.Add(smallStep);
         x = TimeToPixel(time, now);
       }
 
-
-      // labels
-      time = TruncateTime(now.Add(MinTimeOffset), step);
+      // draw labels
+      time = TruncateTime(now.Add(HistoryTimeSpan), step);
       x = TimeToPixel(time, now);
-
-      while (x < width)
+      while (x < ClientSize.Width)
       {
         string label = $"{time:HH:mm}";
         var size = TextRenderer.MeasureText(label, Font);
-        g.DrawString(label, Font, Brushes.Black, x - size.Width / 2, height - ScaleHeight + 7);
+        g.DrawString(label, Font, Brushes.Black, x - size.Width / 2, ClientSize.Height - ScaleHeight + 7);
 
-        g.DrawLine(Pens.Black, x, height - ScaleHeight, x, height - ScaleHeight + 10);
+        g.DrawLine(Pens.Black, x, ClientSize.Height - ScaleHeight, x, ClientSize.Height - ScaleHeight + 10);
         time = time.Add(step);
         x = TimeToPixel(time, now);
       }
     }
 
+    private void DrawPasses(Graphics g, DateTime now)
+    {
+      if (ctx.GroupPasses == null) return;
+      var passes = ctx.GroupPasses.Passes;
+
+      now = now.ToUniversalTime();
+      g.SmoothingMode = SmoothingMode.AntiAlias;
+      var pen = new Pen(Brushes.Blue, 2);
+
+      foreach (var pass in passes)
+      {
+        var firstX = TimeToPixel(pass.Track.First().Utc, now);
+        var lastX = TimeToPixel(pass.Track.Last().Utc, now);
+        if (lastX < 0 || firstX > ClientSize.Width) continue;
+
+        float y0 = ClientSize.Height - ScaleHeight - 1;
+        float ys = (y0 - 10) / 90f;
+
+        var x1 = firstX;
+        var y1 = y0;
+        foreach (var p in pass.Track)
+        {
+          var x2 = TimeToPixel(p.Utc, now);
+          if (x2 == x1) continue;
+          var y2 = y0 - (float)Math.Max(0, p.Observation.Elevation.Degrees) * ys;
+          g.DrawLine(pen, x1, y1, x2, y2);
+          x1 = x2;
+          y1 = y2;
+        }
+      }
+    }
 
 
 
     //----------------------------------------------------------------------------------------------
     //                                    viewport
     //----------------------------------------------------------------------------------------------
-    private void ValidateViewport()
+    private void ValidateZoom()
     {
-      width = ClientRectangle.Width;
-      height = ClientRectangle.Height;
-      var now = DateTime.UtcNow;
-
-      // validate zoom
-      double totalMinutes = MaxTimeOffset.Subtract(MinTimeOffset).TotalMinutes;
-      double minPixelsPerMinute = width / totalMinutes;
+      double minPixelsPerMinute = ClientRectangle.Width / TotalMinutes;
       double maxZoom = MaxPixelsPerMinute / minPixelsPerMinute;
       Zoom = Math.Max(1, Math.Min(maxZoom, Zoom));
       PixelsPerMinute = minPixelsPerMinute * Zoom;
-
-      // validate offset
-      double x0Min = -MaxTimeOffset.TotalMinutes * PixelsPerMinute + width;
-      double x0Max = -MinTimeOffset.TotalMinutes * PixelsPerMinute;
-      X0 = Math.Max(x0Min, Math.Min(x0Max, X0));
+    }
+    private void ValidateLeftSpan()
+      {
+      var maxLeftOffset = TimeSpan.FromMinutes(TotalMinutes - ClientRectangle.Width / PixelsPerMinute);
+      if (LeftSpan > -HistoryTimeSpan) LeftSpan = -HistoryTimeSpan;
+      if (LeftSpan < -maxLeftOffset) LeftSpan = maxLeftOffset;
     }
 
     private float TimeToPixel(DateTime time, DateTime now)
     {
-      return (float)Math.Round(X0 + (time - now).TotalMinutes * PixelsPerMinute);
+      return (float)((time - (now - LeftSpan)).TotalMinutes * PixelsPerMinute);
+    }
+
+    private DateTime PixelToTime(float x, DateTime now)
+    {
+      return now - LeftSpan + TimeSpan.FromMinutes(x / PixelsPerMinute);
     }
 
     DateTime TruncateTime(DateTime time, TimeSpan span)
@@ -202,16 +234,22 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void SatelliteTimelineControl_MouseWheel(object? sender, MouseEventArgs e)
     {
-      int dZoom = e.Delta / 120;// WHEEL_DELTA;
+      var now = DateTime.Now;
+      var timeUnderCursor = PixelToTime(e.X, now);
 
+      int dZoom = e.Delta / 120;// WHEEL_DELTA;
       Zoom *= Math.Pow(2, dZoom / 4d);
+      ValidateZoom();
+
+      LeftSpan -= timeUnderCursor - PixelToTime(e.X, now);
+
       Invalidate();
     }
 
     private void SatelliteTimelineControl_MouseDown(object sender, MouseEventArgs e)
     {
       MouseDownX = e.X;
-      MouseDownX0 = X0;
+      MouseDownLeftSpan = LeftSpan;
       Dragging = true;
       Cursor = Cursors.NoMoveHoriz;
     }
@@ -223,8 +261,9 @@ namespace OrbiNom
 
       if (Dragging)
       {
-        X0 = MouseDownX0 + MouseMoveX - MouseDownX;
+        LeftSpan = MouseDownLeftSpan - TimeSpan.FromMinutes((MouseDownX - MouseMoveX) / PixelsPerMinute);
         Invalidate();
+        Update();
       }
     }
 

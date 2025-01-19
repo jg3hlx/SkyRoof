@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Drawing.Printing;
+using System.Runtime.CompilerServices;
 using SGPdotNET.Observation;
 using SGPdotNET.Util;
 
@@ -13,6 +14,8 @@ namespace OrbiNom
     }
 
     private const double TwoPi = 2 * Math.PI;
+    readonly TimeSpan Margin = TimeSpan.FromMinutes(5);
+
     private GroundStation GroundStation;
     public SatnogsDbSatellite Satellite;
     public Satellite SatTracker;
@@ -20,10 +23,28 @@ namespace OrbiNom
     public double MaxElevation;
     public int OrbitNumber;
     //public List<string> TransmittersHint = new();
-    public List<TrackPoint> Track;
+    public List<TrackPoint> Track { get => track ?? MakeTrack(); }
+
+    private List<TrackPoint> MakeTrack()
+    {
+      track = new();
+
+        for (DateTime t = StartTime - Margin; t < EndTime + Margin; t = t.AddSeconds(5))
+        {
+          var point = new SatellitePass.TrackPoint();
+          point.Utc = t;
+          point.Observation = GroundStation.Observe(SatTracker, t);
+
+          track.Add(point);
+        }
+
+      return track;
+    }
+
     private Satellite tracker;
     private SatelliteVisibilityPeriod SatelliteVisibilityPeriod;
     public PointF[]? MiniPath;
+    private List<TrackPoint> track;
 
     public SatellitePass(GroundStation groundStation, SatnogsDbSatellite satellite, Satellite tracker, SatelliteVisibilityPeriod visibilityPeriod)
     {
