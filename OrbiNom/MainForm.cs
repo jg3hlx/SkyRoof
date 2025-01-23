@@ -216,7 +216,7 @@ namespace OrbiNom
     {
       ctx.GroupViewPanel?.UpdatePassTimes();
       ctx.PassesPanel?.UpdatePassTimes();
-      ctx.TimelinePanel?.Invalidate();
+      ctx.TimelinePanel?.Advance();
     }
 
     private void OneMinuteTick()

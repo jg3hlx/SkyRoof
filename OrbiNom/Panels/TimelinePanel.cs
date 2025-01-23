@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,7 +16,7 @@ namespace OrbiNom
   public partial class TimelinePanel : DockContent
   {
     private const double MaxPixelsPerMinute = 60; // at max zoom, 1 pixel = 1 second
-    private const int ScaleHeight = 40;
+    private const int ScaleHeight = 35;
 
     private static readonly TimeSpan HistoryTimeSpan = TimeSpan.FromMinutes(-30);
     private static readonly TimeSpan PredictionTimeSpan = TimeSpan.FromDays(2);
@@ -28,6 +29,7 @@ namespace OrbiNom
     private TimeSpan MouseDownLeftSpan;
     private int MouseMoveX;
     private bool Dragging;
+    private DateTime LastAdvanceTime;
 
     // Now minus time at leftmost pixel
     TimeSpan LeftSpan = TimeSpan.FromMinutes(5);
@@ -79,6 +81,7 @@ namespace OrbiNom
     {
       // chart
       var rect = new RectangleF(0, 0, ClientSize.Width, ClientSize.Height - ScaleHeight);
+//      LinearGradientBrush lgb = new LinearGradientBrush(rect, Color.SkyBlue, Color.White, LinearGradientMode.Vertical);
       LinearGradientBrush lgb = new LinearGradientBrush(rect, Color.SkyBlue, Color.White, LinearGradientMode.Vertical);
       g.FillRectangle(lgb, rect);
 
@@ -103,12 +106,15 @@ namespace OrbiNom
       {
         var date2 = date1.AddDays(1);
         x2 = Math.Min(ClientSize.Width, TimeToPixel(date2, now));
-        g.DrawLine(Pens.Black, x2, ClientSize.Height - ScaleHeight, x2, ClientSize.Height);
+        {
+          g.DrawLine(Pens.Gray, x2-1, ClientSize.Height - ScaleHeight, x2-1, ClientSize.Height);
+          g.DrawLine(Pens.White, x2+1, ClientSize.Height - ScaleHeight, x2+1, ClientSize.Height);
+        }
 
         string label = $"{date1:MMM dd}";
         var size = TextRenderer.MeasureText(label, Font);
         if (x2 - x1 > size.Width + 15)
-          g.DrawString(label, Font, Brushes.Black, (x1 + x2 - size.Width) / 2, ClientSize.Height - size.Height - 5);
+          g.DrawString(label, Font, Brushes.Black, (x1 + x2 - size.Width) / 2, ClientSize.Height - size.Height - 1);
 
         date1 = date2;
         x1 = Math.Max(-1, x2);
@@ -160,6 +166,24 @@ namespace OrbiNom
       }
     }
 
+    private readonly Dictionary<SatnogsDbSatellite, int> SatColors = new();
+
+    private const string randomColorsString =
+      "#FF0000,#FF8000,#FFBF00,#B2B200,#ACE600,#00E600,#00CC66,#00CCCC,#00ACE6,#1A8CFF,#9999FF,#B266FF,#FF33FF,#FF3399";
+
+    private static Brush[] SatBrushes = randomColorsString.Split([','])
+        .Select(c => new SolidBrush(Color.FromArgb(50, ColorTranslator.FromHtml(c)))).ToArray();
+
+    private static Pen[] SatPens = randomColorsString.Split([','])
+        .Select(c => new Pen(ColorTranslator.FromHtml(c))).ToArray();
+
+    private int getColorIndex(SatnogsDbSatellite sat)
+    {
+      if (!SatColors.ContainsKey(sat))
+        SatColors[sat] = SatColors.Count % SatBrushes.Length;
+      return SatColors[sat];
+    }
+
     private void DrawPasses(Graphics g, DateTime now)
     {
       if (ctx.GroupPasses == null) return;
@@ -169,29 +193,34 @@ namespace OrbiNom
       g.SmoothingMode = SmoothingMode.AntiAlias;
       var pen = new Pen(Brushes.Blue, 2);
 
+      float y0 = ClientSize.Height - ScaleHeight;
+      float scaleY = (y0 - 10) / 90f;
+
+
       foreach (var pass in passes)
       {
-        var firstX = TimeToPixel(pass.Track.First().Utc, now);
-        var lastX = TimeToPixel(pass.Track.Last().Utc, now);
+        // skip if not visible
+        var firstUtc = pass.StartTime;
+        var firstX = TimeToPixel(firstUtc, now);
+        var lastX = TimeToPixel(pass.EndTime, now);
         if (lastX < 0 || firstX > ClientSize.Width) continue;
 
-        float y0 = ClientSize.Height - ScaleHeight - 1;
-        float ys = (y0 - 10) / 90f;
+        // huamp
+        var points = pass.GetHump(firstX, y0, (float)PixelsPerMinute, scaleY);
+        int colorIndex = getColorIndex(pass.Satellite);
+        g.FillPolygon(SatBrushes[colorIndex], points);
+        g.DrawLines(SatPens[colorIndex], points);
 
-        var x1 = firstX;
-        var y1 = y0;
-        foreach (var p in pass.Track)
-        {
-          var x2 = TimeToPixel(p.Utc, now);
-          if (x2 == x1) continue;
-          var y2 = y0 - (float)Math.Max(0, p.Observation.Elevation.Degrees) * ys;
-          g.DrawLine(pen, x1, y1, x2, y2);
-          x1 = x2;
-          y1 = y2;
-        }
+        // label
+        string text = pass.Satellite.name;
+        var size = TextRenderer.MeasureText(text, Font);
+        float x = TimeToPixel(pass.CulminationTime, now) - size.Width / 2;
+        float y = y0 - (float)pass.MaxElevation * scaleY - size.Height;
+        g.DrawString(text, Font, Brushes.Black,  x, y);
       }
     }
 
+    
 
 
     //----------------------------------------------------------------------------------------------
@@ -206,9 +235,9 @@ namespace OrbiNom
     }
     private void ValidateLeftSpan()
       {
-      var maxLeftOffset = TimeSpan.FromMinutes(TotalMinutes - ClientRectangle.Width / PixelsPerMinute);
+      var maxLeftOffset = TimeSpan.FromMinutes(ClientRectangle.Width / PixelsPerMinute - TotalMinutes);
       if (LeftSpan > -HistoryTimeSpan) LeftSpan = -HistoryTimeSpan;
-      if (LeftSpan < -maxLeftOffset) LeftSpan = maxLeftOffset;
+      if (LeftSpan < maxLeftOffset) LeftSpan = maxLeftOffset;
     }
 
     private float TimeToPixel(DateTime time, DateTime now)
@@ -275,6 +304,14 @@ namespace OrbiNom
 
     private void TimelinePanel_Resize(object sender, EventArgs e)
     {
+      Invalidate();
+    }
+
+    internal void Advance()
+    {
+      if ((DateTime.UtcNow - LastAdvanceTime).TotalMinutes < 0.5 / PixelsPerMinute) return;
+      LastAdvanceTime = DateTime.UtcNow;
+
       Invalidate();
     }
   }

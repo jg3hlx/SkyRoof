@@ -15,15 +15,45 @@ namespace OrbiNom
 
     private const double TwoPi = 2 * Math.PI;
     readonly TimeSpan Margin = TimeSpan.FromMinutes(5);
+    private readonly TimeSpan HumpStep = TimeSpan.FromSeconds(10);
 
     private GroundStation GroundStation;
+    private PointF[] NormalizedHump, hump;
     public SatnogsDbSatellite Satellite;
     public Satellite SatTracker;
     public DateTime StartTime, CulminationTime, EndTime;
     public double MaxElevation;
     public int OrbitNumber;
-    //public List<string> TransmittersHint = new();
+    
     public List<TrackPoint> Track { get => track ?? MakeTrack(); }
+
+
+    public PointF[] GetHump(float x0, float y0, float scaleX, float scaleY)
+    {
+      if (NormalizedHump == null) MakeNormalizedHump();
+      
+      for (int i = 0; i < hump.Length; i++)
+        hump[i] = new(x0 + NormalizedHump[i].X * scaleX, y0 - NormalizedHump[i].Y * scaleY);
+
+      return hump;
+    }
+
+    public void MakeNormalizedHump()
+    {
+      int stepCount = (int)Math.Round((EndTime - StartTime) / HumpStep); // 30-second steps
+
+      NormalizedHump = new PointF[stepCount+1];
+      hump = new PointF[stepCount+1];
+
+      NormalizedHump[0] = new PointF(0, 0);
+
+      for (int i=1; i <= stepCount; i++)
+      {
+        var utc = StartTime + HumpStep * i;
+        var observation = GroundStation.Observe(SatTracker, utc);
+        NormalizedHump[i] = new((float)(HumpStep * i).TotalMinutes, (float)observation.Elevation.Degrees);
+      }
+    }
 
     private List<TrackPoint> MakeTrack()
     {
@@ -31,7 +61,7 @@ namespace OrbiNom
 
         for (DateTime t = StartTime - Margin; t < EndTime + Margin; t = t.AddSeconds(5))
         {
-          var point = new SatellitePass.TrackPoint();
+          var point = new TrackPoint();
           point.Utc = t;
           point.Observation = GroundStation.Observe(SatTracker, t);
 
@@ -57,7 +87,6 @@ namespace OrbiNom
       EndTime = visibilityPeriod.End;
       MaxElevation = visibilityPeriod.MaxElevation.Degrees;
       OrbitNumber = ComputeOrbitNumber();
-      //{!} ComputeTrack(pass);
     }
 
     private int ComputeOrbitNumber()

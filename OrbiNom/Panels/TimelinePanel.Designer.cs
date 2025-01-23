@@ -37,7 +37,7 @@
       ClientSize = new Size(800, 189);
       DoubleBuffered = true;
       Name = "TimelinePanel";
-      Text = "TimelinePanel";
+      Text = "Timeline";
       FormClosing += TimelinePanel_FormClosing;
       Paint += TimelinePanel_Paint;
       MouseDown += SatelliteTimelineControl_MouseDown;
