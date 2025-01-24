@@ -1,7 +1,10 @@
-﻿using System.Drawing.Printing;
+﻿using System.Drawing;
+using System.Drawing.Printing;
 using System.Runtime.CompilerServices;
 using SGPdotNET.Observation;
 using SGPdotNET.Util;
+using static System.Net.Mime.MediaTypeNames;
+using VE3NEA;
 
 namespace OrbiNom
 {
@@ -147,8 +150,23 @@ namespace OrbiNom
           point.Observation = new(0, Angle.FromRadians(elevation), 0, rangeRate);
           return point;
         }
-
       return Track.Last();
+    }
+
+    internal string GetTooltipText()
+    {
+      string tooltip = "";
+
+      if (StartTime < DateTime.UtcNow) tooltip += "Started\n";
+      else if (EndTime < DateTime.UtcNow) tooltip += "Ended\n";
+      else tooltip += $"in {Utils.TimespanToString(StartTime - DateTime.UtcNow)}\n";
+       
+      tooltip += $"{StartTime.ToLocalTime():yyyy-MM-dd\nHH:mm:ss}  to  {EndTime.ToLocalTime():HH:mm:ss}\n";
+      tooltip += $"Duration: {Utils.TimespanToString(EndTime - StartTime, false)}\n";
+      tooltip += $"Max Elevation: {MaxElevation:F0}°\n";
+      tooltip += $"Orbit: #{OrbitNumber}\n";
+
+      return tooltip;
     }
   }
 }

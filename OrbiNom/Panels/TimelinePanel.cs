@@ -178,7 +178,7 @@ namespace OrbiNom
     private static Pen[] SatPens = randomColorsString.Split([','])
         .Select(c => new Pen(ColorTranslator.FromHtml(c))).ToArray();
 
-    private Dictionary<RectangleF, SatnogsDbSatellite> SatRects = new();
+    private Dictionary<RectangleF, SatellitePass> SatLabelRects = new();
 
     private int getColorIndex(SatnogsDbSatellite sat)
     {
@@ -192,7 +192,7 @@ namespace OrbiNom
       if (ctx.GroupPasses == null) return;
       var passes = ctx.GroupPasses.Passes;
 
-      SatRects.Clear();
+      SatLabelRects.Clear();
 
       now = now.ToUniversalTime();
       float y0 = ClientSize.Height - ScaleHeight;
@@ -223,7 +223,7 @@ namespace OrbiNom
           size.Width, size.Height);
 
         g.DrawString(text, Font, Brushes.Black, rect);
-        SatRects[rect] = pass.Satellite;
+        SatLabelRects[rect] = pass;
       }
     }
 
@@ -303,16 +303,15 @@ namespace OrbiNom
       }
       else
       {
-        var sat = GetSatelliteAt(new PointF(e.X, e.Y));
-        if (sat != null)
+        var pass = GetPassAt(new PointF(e.X, e.Y));
+        if (pass != null)
         {
           Cursor = Cursors.Hand;
 
-          string tooltip = sat.GetTooltipText();
+          string tooltip = pass.Satellite.GetTooltipText() + "\n\n" + pass.GetTooltipText();
           if (tooltip != toolTip1.GetToolTip(this))
           {
-            //toolTip1.SetToolTip(this, tooltip);
-            toolTip1.ToolTipTitle = sat.name;
+            toolTip1.ToolTipTitle = pass.Satellite.name;
             toolTip1.Show(tooltip, this);
           }
         }
@@ -330,11 +329,11 @@ namespace OrbiNom
       Cursor = Cursors.Default;
     }
 
-    private SatnogsDbSatellite GetSatelliteAt(PointF point)
+    private SatellitePass GetPassAt(PointF point)
     {
-      foreach (var rect in SatRects.Keys)
+      foreach (var rect in SatLabelRects.Keys)
         if (rect.Contains(point)) 
-          return SatRects[rect];
+          return SatLabelRects[rect];
 
       return null;
     }
