@@ -12,7 +12,7 @@ namespace OrbiNom
     {
       InitializeComponent();
       Text = Utils.GetVersionString();
-      
+
       ctx.MainForm = this;
       ctx.SatelliteSelector = SatelliteSelector;
       SatelliteSelector.ctx = ctx;
@@ -64,17 +64,17 @@ namespace OrbiNom
 
       // download if needed
       if (ctx.SatnogsDb.Loaded && DateTime.UtcNow < ctx.Settings.Satellites.LastDownloadTime.AddDays(LIST_DOWNLOAD_DAYS))
-        SatnogsDb_ListUpdated(null, null); 
+        SatnogsDb_ListUpdated(null, null);
       else
         DownloadDialog.Download(this, ctx);
-      
+
       if (DateTime.UtcNow > ctx.Settings.Satellites.LastTleTime.AddDays(TLE_DOWNLOAD_DAYS))
         try
         {
           ctx.SatnogsDb.DownloadTle();
           ctx.Settings.Satellites.LastTleTime = DateTime.UtcNow;
         }
-        catch {}
+        catch { }
 
       // no satellite data, cannot proceed
       if (!ctx.SatnogsDb.Loaded) Environment.Exit(1);
@@ -167,8 +167,18 @@ namespace OrbiNom
       if (ctx.TimelinePanel == null)
         new TimelinePanel(ctx).Show(DockHost, DockState.DockRight);
       else
-        ctx.TimelinePanel.Close();      
+        ctx.TimelinePanel.Close();
     }
+
+    private void SkyViewMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.SkyViewPanel == null)
+        new SkyViewPanel(ctx).Show(DockHost, DockState.DockRight);
+      else
+        ctx.SkyViewPanel.Close();
+    }
+
+
 
 
 
@@ -189,6 +199,7 @@ namespace OrbiNom
         case "OrbiNom.SatelliteDetailsPanel": return new SatelliteDetailsPanel(ctx);
         case "OrbiNom.PassesPanel": return new PassesPanel(ctx);
         case "OrbiNom.TimelinePanel": return new TimelinePanel(ctx);
+        case "OrbiNom.SkyViewPanel": return new SkyViewPanel(ctx);
         default: return null;
       }
     }
@@ -240,7 +251,7 @@ namespace OrbiNom
     private void SatnogsDb_ListUpdated(object? sender, EventArgs e)
     {
       ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
-      ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);      
+      ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
       SatelliteSelector.SetSatelliteGroups();
 
       ctx.AllPasses.FullRebuild();

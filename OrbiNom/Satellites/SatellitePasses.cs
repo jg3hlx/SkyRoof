@@ -106,8 +106,8 @@ namespace OrbiNom
       }
       catch (Exception e)
       {
-        //{!} maybe not wise to log all prediction exceptions
-        Log.Error(e, $"Pass computation failed for {satellite.name}: {e.Message}");
+        // no need to log all prediction exceptions
+        //Log.Error(e, $"Pass computation failed for {satellite.name}: {e.Message}");
       }
 
       return result;

@@ -29,7 +29,7 @@ namespace OrbiNom
     private readonly Font BoldFont;
     private readonly Pen PathPen = new Pen(Brushes.Teal, 2);
 
-    
+
     public PassesPanel()
     {
       InitializeComponent();
@@ -46,14 +46,29 @@ namespace OrbiNom
       BoldFont = new Font(listViewEx1.Font, FontStyle.Bold);
       listViewEx1.SetRowHeight(45);
       listViewEx1.SetTooltipDelay(1500);
-
-      ShowPasses();
+      SetRadioButtonIndex(ctx.Settings.Ui.SatellitePassesPanel.RadioButtoIndex);
+      if (listViewEx1.VirtualListSize == 0) ShowPasses();
     }
 
     private void PassesPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
       ctx.PassesPanel = null;
       ctx.MainForm.SatellitePassesMNU.Checked = false;
+    }
+
+
+    private int GetRadioButtonIndex()
+    {
+      if (CurrentSatBtn.Checked) return 0;
+      if (GroupBtn.Checked) return 1;
+      return 2;
+    }
+
+    private void SetRadioButtonIndex(int index)
+    {
+      CurrentSatBtn.Checked = index == 0;
+      GroupBtn.Checked = index == 1;
+      AllBtn.Checked = index == 2;
     }
 
     private void listViewEx1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -71,7 +86,8 @@ namespace OrbiNom
       var radioBtn = (RadioButton)sender;
       if (radioBtn.Checked)
       {
-        listViewEx1.EnsureVisible(0);
+        ctx.Settings.Ui.SatellitePassesPanel.RadioButtoIndex = GetRadioButtonIndex();
+        if (listViewEx1.VirtualListSize > 0) listViewEx1.EnsureVisible(0);
         ShowPasses();
       }
     }
@@ -80,7 +96,7 @@ namespace OrbiNom
     {
       IEnumerable<SatellitePass> passes = ctx.GroupPasses.Passes;
       var startTime = DateTime.UtcNow;
-      var endTime = startTime + TimeSpan.FromDays(2); 
+      var endTime = startTime + TimeSpan.FromDays(2);
 
       if (CurrentSatBtn.Checked)
       {
@@ -107,7 +123,7 @@ namespace OrbiNom
       }
 
       passes = passes.Where(pass => pass.EndTime >= startTime && pass.StartTime < endTime);
-      Items = CreatePassItems(passes).ToList(); 
+      Items = CreatePassItems(passes).ToList();
       listViewEx1.VirtualListSize = Items.Count;
       listViewEx1.Invalidate();
     }
@@ -119,7 +135,7 @@ namespace OrbiNom
 
       pass.MakeMiniPath();
       item.ToolTipText = pass.Satellite.GetTooltipText();
-      
+
       return item;
     }
 
@@ -127,7 +143,7 @@ namespace OrbiNom
     {
       // delete finished passes
       int oldCount = Items.Count;
-      for (int i=Items.Count-1; i>=0; i--)
+      for (int i = Items.Count - 1; i >= 0; i--)
         if (((SatellitePass)Items[i].Tag).EndTime < DateTime.UtcNow) Items.RemoveAt(i);
 
       listViewEx1.VirtualListSize = Items.Count;
@@ -201,7 +217,7 @@ namespace OrbiNom
       if (path.Length > 1)
       {
         // path
-        var points = path.Select(p => 
+        var points = path.Select(p =>
           new PointF(center.X + p.X * radius, center.Y - p.Y * radius)).ToArray();
         e.Graphics.DrawLines(PathPen, points);
 
@@ -215,32 +231,19 @@ namespace OrbiNom
       e.Graphics.FillRectangle(Brushes.Gray, rect);
     }
 
-    private const int StepCount = 10;
-    private PointF[] MakePath(SatellitePass pass)
-    {
-      var duration = pass.EndTime - pass.StartTime;
-      var step = duration / StepCount;
-      var points = new PointF[StepCount + 1];
-
-      for (int i = 0; i <= StepCount; i++)
-      {
-        var utc = pass.StartTime + step * i;
-        var observation = GroundStation.Observe(pass.SatTracker, utc);
-
-        double ro = 1 - observation.Elevation.Radians / HalfPi;
-        double phi = HalfPi - observation.Azimuth.Radians;
-
-        points[i] = new PointF((float)(ro * Math.Cos(phi)), (float)(ro * Math.Sin(phi)));
-      }
-
-        return points;
-    }
-
     public IEnumerable<ListViewItem> CreatePassItems(IEnumerable<SatellitePass> passes)
     {
 
       // predict passes and wrap them in listview items
-      return passes.OrderBy(p => p.StartTime).Select(ItemForPass);        
+      return passes.OrderBy(p => p.StartTime).Select(ItemForPass);
+    }
+
+    private void listViewEx1_MouseDown(object sender, MouseEventArgs e)
+    {
+      var item = listViewEx1.GetItemAt(e.X, e.Y);
+      if (item == null) return;
+      var pass = (SatellitePass)item.Tag;
+      ctx.SatelliteSelector.SetSelectedPass(pass);
     }
   }
 }

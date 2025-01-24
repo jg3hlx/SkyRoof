@@ -45,6 +45,7 @@
       SatellitePassesMNU = new ToolStripMenuItem();
       WaterfallMNU = new ToolStripMenuItem();
       TimelineMNU = new ToolStripMenuItem();
+      SkyViewMNU = new ToolStripMenuItem();
       toolsToolStripMenuItem = new ToolStripMenuItem();
       SatelliteGroupsMNU = new ToolStripMenuItem();
       SdrDevicesMNU = new ToolStripMenuItem();
@@ -149,7 +150,7 @@
       // 
       // GroupViewPanelMNU
       // 
-      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, SatellitePassesMNU, WaterfallMNU, TimelineMNU });
+      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, SatellitePassesMNU, WaterfallMNU, TimelineMNU, SkyViewMNU });
       GroupViewPanelMNU.Name = "GroupViewPanelMNU";
       GroupViewPanelMNU.Size = new Size(44, 20);
       GroupViewPanelMNU.Text = "View";
@@ -187,6 +188,13 @@
       TimelineMNU.Size = new Size(180, 22);
       TimelineMNU.Text = "Timeline";
       TimelineMNU.Click += TimelineMNU_Click;
+      // 
+      // SkyViewMNU
+      // 
+      SkyViewMNU.Name = "SkyViewMNU";
+      SkyViewMNU.Size = new Size(180, 22);
+      SkyViewMNU.Text = "SkyV iew";
+      SkyViewMNU.Click += SkyViewMNU_Click;
       // 
       // toolsToolStripMenuItem
       // 
@@ -315,5 +323,6 @@
     public ToolStripMenuItem SatellitePassesMNU;
     private System.Windows.Forms.Timer timer3;
     public ToolStripMenuItem TimelineMNU;
+    public ToolStripMenuItem SkyViewMNU;
   }
 }

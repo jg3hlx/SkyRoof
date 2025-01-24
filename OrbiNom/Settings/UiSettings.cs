@@ -12,6 +12,7 @@ namespace OrbiNom
     public SatelliteGroupsFormSettings SatelliteGroupsForm { get; set; } = new();
     public SatelliteDetailsFormSettings SatelliteDetailsForm { get; set; } = new();
     public SatelliteDetailsPanelSettings SatelliteDetailsPanel { get; set; } = new();
+    public SatellitePassesPanelSettings SatellitePassesPanel { get; set; } = new();
 
     public void StoreWindowPosition(Form form)
     {
@@ -55,6 +56,11 @@ namespace OrbiNom
 
       return true;
     }
+  }
+
+  public class SatellitePassesPanelSettings
+  {
+    public int RadioButtoIndex { get; set; }
   }
 
   public class SatelliteDetailsPanelSettings

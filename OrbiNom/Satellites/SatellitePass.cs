@@ -17,11 +17,10 @@ namespace OrbiNom
     }
 
     private const double TwoPi = 2 * Math.PI;
-    readonly TimeSpan Margin = TimeSpan.FromMinutes(5);
-    private readonly TimeSpan HumpStep = TimeSpan.FromSeconds(10);
+    private readonly TimeSpan TrackStep = TimeSpan.FromSeconds(10);
 
     private GroundStation GroundStation;
-    private PointF[] NormalizedHump, hump;
+    private PointF[] hump;
     public SatnogsDbSatellite Satellite;
     public Satellite SatTracker;
     public DateTime StartTime, CulminationTime, EndTime;
@@ -33,43 +32,30 @@ namespace OrbiNom
 
     public PointF[] GetHump(float x0, float y0, float scaleX, float scaleY)
     {
-      if (NormalizedHump == null) MakeNormalizedHump();
-      
-      for (int i = 0; i < hump.Length; i++)
-        hump[i] = new(x0 + NormalizedHump[i].X * scaleX, y0 - NormalizedHump[i].Y * scaleY);
+      for (int i = 0; i < Track.Count; i++)
+        hump[i] = new(
+          x0 + (float)(Track[i].Utc - StartTime).TotalMinutes * scaleX, 
+          y0 - (float)Track[i].Observation.Elevation.Degrees * scaleY);
 
       return hump;
     }
 
-    public void MakeNormalizedHump()
-    {
-      int stepCount = (int)Math.Round((EndTime - StartTime) / HumpStep); // 30-second steps
-
-      NormalizedHump = new PointF[stepCount+1];
-      hump = new PointF[stepCount+1];
-
-      NormalizedHump[0] = new PointF(0, 0);
-
-      for (int i=1; i <= stepCount; i++)
-      {
-        var utc = StartTime + HumpStep * i;
-        var observation = GroundStation.Observe(SatTracker, utc);
-        NormalizedHump[i] = new((float)(HumpStep * i).TotalMinutes, (float)observation.Elevation.Degrees);
-      }
-    }
-
     private List<TrackPoint> MakeTrack()
     {
+      int setpCount = (int)Math.Max(2, (EndTime - StartTime) / TrackStep);
+      TimeSpan step = (EndTime - StartTime) / setpCount;
+
       track = new();
-
-        for (DateTime t = StartTime - Margin; t < EndTime + Margin; t = t.AddSeconds(5))
+      
+      for (int i=0; i <= setpCount; i++)
         {
-          var point = new TrackPoint();
-          point.Utc = t;
-          point.Observation = GroundStation.Observe(SatTracker, t);
-
-          track.Add(point);
+          var trackPoint = new TrackPoint();
+          trackPoint.Utc = StartTime + i * step;
+          trackPoint.Observation = GroundStation.Observe(SatTracker, trackPoint.Utc);
+          track.Add(trackPoint);
         }
+
+      hump = new PointF[track.Count];
 
       return track;
     }

@@ -19,10 +19,12 @@ namespace OrbiNom
 
     public SatnogsDbSatellite[] GroupSatellites { get; private set; } = [];
     public SatnogsDbSatellite SelectedSatellite { get; private set; }
+    public SatellitePass SelectedPass { get; private set; }
 
     public event EventHandler? SelectedGroupChanged;
     public event EventHandler? SelectedSatelliteChanged;
     public event EventHandler? SelectedTransmitterChanged;
+    public event EventHandler? SelectedPassChanged;
 
     public SatelliteSelector()
     {
@@ -109,6 +111,12 @@ namespace OrbiNom
       TransmitterComboBox.SelectedItem = tx;
       toolTip1.SetToolTip(TransmitterComboBox, tx.GetTooltipText());
       changing = false;
+    }
+
+    public void SetSelectedPass(SatellitePass pass)
+    {
+      SelectedPass = pass;
+      SelectedPassChanged?.Invoke(this, EventArgs.Empty);
     }
 
 

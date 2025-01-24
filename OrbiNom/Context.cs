@@ -21,5 +21,6 @@ namespace OrbiNom
     public SatelliteDetailsPanel? SatelliteDetailsPanel;
     public PassesPanel? PassesPanel;
     public TimelinePanel? TimelinePanel;
+    public SkyViewPanel? SkyViewPanel;
   }
 }

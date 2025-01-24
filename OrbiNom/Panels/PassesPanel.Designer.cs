@@ -113,6 +113,7 @@
       listViewEx1.VirtualMode = true;
       listViewEx1.DrawSubItem += listViewEx1_DrawSubItem;
       listViewEx1.RetrieveVirtualItem += listViewEx1_RetrieveVirtualItem;
+      listViewEx1.MouseDown += listViewEx1_MouseDown;
       listViewEx1.Resize += listViewEx1_Resize;
       // 
       // PassesPanel

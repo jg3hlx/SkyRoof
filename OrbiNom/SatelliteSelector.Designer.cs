@@ -70,7 +70,6 @@
       SatelliteComboBox.Name = "SatelliteComboBox";
       SatelliteComboBox.Size = new Size(121, 24);
       SatelliteComboBox.TabIndex = 11;
-      toolTip1.SetToolTip(SatelliteComboBox, "aaa");
       SatelliteComboBox.DrawItem += SatelliteComboBox_DrawItem;
       SatelliteComboBox.SelectedIndexChanged += SatelliteComboBox_SelectedIndexChanged;
       // 
