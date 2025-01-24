@@ -6,10 +6,12 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace OrbiNom
 {
@@ -81,7 +83,6 @@ namespace OrbiNom
     {
       // chart
       var rect = new RectangleF(0, 0, ClientSize.Width, ClientSize.Height - ScaleHeight);
-//      LinearGradientBrush lgb = new LinearGradientBrush(rect, Color.SkyBlue, Color.White, LinearGradientMode.Vertical);
       LinearGradientBrush lgb = new LinearGradientBrush(rect, Color.SkyBlue, Color.White, LinearGradientMode.Vertical);
       g.FillRectangle(lgb, rect);
 
@@ -177,6 +178,8 @@ namespace OrbiNom
     private static Pen[] SatPens = randomColorsString.Split([','])
         .Select(c => new Pen(ColorTranslator.FromHtml(c))).ToArray();
 
+    private Dictionary<RectangleF, SatnogsDbSatellite> SatRects = new();
+
     private int getColorIndex(SatnogsDbSatellite sat)
     {
       if (!SatColors.ContainsKey(sat))
@@ -189,13 +192,13 @@ namespace OrbiNom
       if (ctx.GroupPasses == null) return;
       var passes = ctx.GroupPasses.Passes;
 
-      now = now.ToUniversalTime();
-      g.SmoothingMode = SmoothingMode.AntiAlias;
-      var pen = new Pen(Brushes.Blue, 2);
+      SatRects.Clear();
 
+      now = now.ToUniversalTime();
       float y0 = ClientSize.Height - ScaleHeight;
       float scaleY = (y0 - 10) / 90f;
 
+      g.SmoothingMode = SmoothingMode.AntiAlias;
 
       foreach (var pass in passes)
       {
@@ -214,9 +217,13 @@ namespace OrbiNom
         // label
         string text = pass.Satellite.name;
         var size = TextRenderer.MeasureText(text, Font);
-        float x = TimeToPixel(pass.CulminationTime, now) - size.Width / 2;
-        float y = y0 - (float)pass.MaxElevation * scaleY - size.Height;
-        g.DrawString(text, Font, Brushes.Black,  x, y);
+        var rect = new RectangleF(
+          TimeToPixel(pass.CulminationTime, now) - size.Width / 2,
+          y0 - (float)pass.MaxElevation * scaleY - size.Height,
+          size.Width, size.Height);
+
+        g.DrawString(text, Font, Brushes.Black, rect);
+        SatRects[rect] = pass.Satellite;
       }
     }
 
@@ -294,6 +301,27 @@ namespace OrbiNom
         Invalidate();
         Update();
       }
+      else
+      {
+        var sat = GetSatelliteAt(new PointF(e.X, e.Y));
+        if (sat != null)
+        {
+          Cursor = Cursors.Hand;
+
+          string tooltip = sat.GetTooltipText();
+          if (tooltip != toolTip1.GetToolTip(this))
+          {
+            //toolTip1.SetToolTip(this, tooltip);
+            toolTip1.ToolTipTitle = sat.name;
+            toolTip1.Show(tooltip, this);
+          }
+        }
+        else
+        {
+          Cursor = Cursors.Default;
+          toolTip1.Hide(this);
+        }
+      }
     }
 
     private void SatelliteTimelineControl_MouseUp(object sender, MouseEventArgs e)
@@ -301,6 +329,16 @@ namespace OrbiNom
       Dragging = false;
       Cursor = Cursors.Default;
     }
+
+    private SatnogsDbSatellite GetSatelliteAt(PointF point)
+    {
+      foreach (var rect in SatRects.Keys)
+        if (rect.Contains(point)) 
+          return SatRects[rect];
+
+      return null;
+    }
+
 
     private void TimelinePanel_Resize(object sender, EventArgs e)
     {

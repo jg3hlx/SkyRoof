@@ -28,7 +28,17 @@
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
+      toolTip1 = new ToolTip(components);
       SuspendLayout();
+      // 
+      // toolTip1
+      // 
+      toolTip1.AutomaticDelay = 1500;
+      toolTip1.AutoPopDelay = 15000;
+      toolTip1.InitialDelay = 500;
+      toolTip1.ReshowDelay = 300;
+      toolTip1.ShowAlways = true;
       // 
       // TimelinePanel
       // 
@@ -48,5 +58,7 @@
     }
 
     #endregion
+
+    private ToolTip toolTip1;
   }
 }
