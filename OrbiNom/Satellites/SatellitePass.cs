@@ -1,9 +1,5 @@
-﻿using System.Drawing;
-using System.Drawing.Printing;
-using System.Runtime.CompilerServices;
-using SGPdotNET.Observation;
+﻿using SGPdotNET.Observation;
 using SGPdotNET.Util;
-using static System.Net.Mime.MediaTypeNames;
 using VE3NEA;
 
 namespace OrbiNom
@@ -98,7 +94,6 @@ namespace OrbiNom
       // + (int)revNum;
     }
 
-    const double HalfPi = Math.PI / 2;
     private const int StepCount = 10;
     public void MakeMiniPath()
     {
@@ -113,8 +108,8 @@ namespace OrbiNom
         var utc = StartTime + step * i;
         var observation = GroundStation.Observe(SatTracker, utc);
 
-        double ro = 1 - observation.Elevation.Radians / HalfPi;
-        double phi = HalfPi - observation.Azimuth.Radians;
+        double ro = 1 - observation.Elevation.Radians / Utils.HalfPi;
+        double phi = Utils.HalfPi - observation.Azimuth.Radians;
 
         MiniPath[i] = new PointF((float)(ro * Math.Cos(phi)), (float)(ro * Math.Sin(phi)));
       }
@@ -139,20 +134,26 @@ namespace OrbiNom
       return Track.Last();
     }
 
-    internal string GetTooltipText()
+    internal string[] GetTooltipText()
     {
-      string tooltip = "";
+      string[] tooltip = new string[6];
 
-      if (StartTime < DateTime.UtcNow) tooltip += "Started\n";
-      else if (EndTime < DateTime.UtcNow) tooltip += "Ended\n";
-      else tooltip += $"in {Utils.TimespanToString(StartTime - DateTime.UtcNow)}\n";
-       
-      tooltip += $"{StartTime.ToLocalTime():yyyy-MM-dd\nHH:mm:ss}  to  {EndTime.ToLocalTime():HH:mm:ss}\n";
-      tooltip += $"Duration: {Utils.TimespanToString(EndTime - StartTime, false)}\n";
-      tooltip += $"Max Elevation: {MaxElevation:F0}°\n";
-      tooltip += $"Orbit: #{OrbitNumber}\n";
+      if (EndTime < DateTime.UtcNow) tooltip[0] = "Ended.";
+      else if (StartTime < DateTime.UtcNow) tooltip[0] = $"LOS  in {Utils.TimespanToString(EndTime - DateTime.UtcNow)}";
+      else tooltip[0] = $"AOS  in {Utils.TimespanToString(StartTime - DateTime.UtcNow)}";
+
+      tooltip[1] = $"{StartTime.ToLocalTime():yyyy-MM-dd}";
+      tooltip[2] = $"{StartTime.ToLocalTime():HH:mm:ss} to {EndTime.ToLocalTime():HH:mm:ss}";
+      tooltip[3] = $"Duration: {Utils.TimespanToString(EndTime - StartTime, false)}";
+      tooltip[4] = $"Max Elevation: {MaxElevation:F0}°";
+      tooltip[5] = $"Orbit: #{OrbitNumber}";
 
       return tooltip;
+    }
+
+    internal TopocentricObservation GetObservationAt(DateTime utc)
+    {
+      return GroundStation.Observe(SatTracker, utc);
     }
   }
 }

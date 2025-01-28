@@ -10,8 +10,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static OrbiNom.GroupViewPanel;
 
 namespace OrbiNom
 {
@@ -91,7 +93,7 @@ namespace OrbiNom
     private void DrawBg(Graphics g, DateTime now)
     {
       // chart
-      var rect = new RectangleF(0, 0, ClientSize.Width, ClientSize.Height - ScaleHeight);
+      var rect = new RectangleF(0, 0, ClientSize.Width, Math.Max(1, ClientSize.Height - ScaleHeight));
       LinearGradientBrush lgb = new LinearGradientBrush(rect, Color.SkyBlue, Color.White, LinearGradientMode.Vertical);
       g.FillRectangle(lgb, rect);
 
@@ -188,7 +190,7 @@ namespace OrbiNom
     private readonly Dictionary<SatnogsDbSatellite, int> SatColorIndices = new();
 
     // hand-picked colors for the humps
-    private const string ColorsString = 
+    private const string ColorsString =
       "#FF0000,#FF8000,#FFBF00,#B2B200,#ACE600,#00E600,#00CC66,#00CCCC,#00ACE6,#1A8CFF,#9999FF,#B266FF,#FF33FF,#FF3399";
     private static Color[] SatColors = ColorsString.Split([',']).Select(ColorTranslator.FromHtml).ToArray();
     private static Pen[] SatPens = SatColors.Select(c => new Pen(c)).ToArray();
@@ -243,7 +245,7 @@ namespace OrbiNom
       }
     }
 
-    
+
 
 
     //----------------------------------------------------------------------------------------------
@@ -257,7 +259,7 @@ namespace OrbiNom
       PixelsPerMinute = minPixelsPerMinute * Zoom;
     }
     private void ValidateLeftSpan()
-      {
+    {
       var maxLeftOffset = TimeSpan.FromMinutes(ClientRectangle.Width / PixelsPerMinute - TotalMinutes);
       if (LeftSpan > -HistoryTimeSpan) LeftSpan = -HistoryTimeSpan;
       if (LeftSpan < maxLeftOffset) LeftSpan = maxLeftOffset;
@@ -286,7 +288,7 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private int MouseDownX;
     private TimeSpan MouseDownLeftSpan;
-    private int MouseMoveX;
+    private Point MouseMovePos;
     private bool Dragging;
 
     private void SatelliteTimelineControl_MouseWheel(object? sender, MouseEventArgs e)
@@ -311,9 +313,9 @@ namespace OrbiNom
       if (!Dragging)
       {
         var rect = GetSatRectAt(new PointF(e.X, e.Y));
-        if (rect != null)
+        if (!rect.IsEmpty)
         {
-          var pass = SatLabelRects[(RectangleF)rect];
+          var pass = SatLabelRects[rect];
           ctx.SatelliteSelector.SetSelectedPass(pass);
         }
       }
@@ -321,14 +323,14 @@ namespace OrbiNom
 
     private void SatelliteTimelineControl_MouseMove(object sender, MouseEventArgs e)
     {
-      if (e.X == MouseMoveX) return;
-      MouseMoveX = e.X;
+      if (e.X == MouseMovePos.X) return;
+      MouseMovePos = new Point(e.X, e.Y);
 
       // dragging: scroll
       if (Dragging)
       {
         Cursor = Cursors.NoMoveHoriz;
-        LeftSpan = MouseDownLeftSpan - TimeSpan.FromMinutes((MouseDownX - MouseMoveX) / PixelsPerMinute);
+        LeftSpan = MouseDownLeftSpan - TimeSpan.FromMinutes((MouseDownX - MouseMovePos.X) / PixelsPerMinute);
         Invalidate();
         Update();
       }
@@ -346,16 +348,16 @@ namespace OrbiNom
       else
       {
         var rect = GetSatRectAt(new PointF(e.X, e.Y));
-        if (rect != null)
+        if (!rect.IsEmpty)
         {
           Cursor = Cursors.Hand;
 
-          var pass = SatLabelRects[(RectangleF)rect];
-          string tooltip = pass.Satellite.GetTooltipText() + "\n\n" + pass.GetTooltipText();
+          var pass = SatLabelRects[rect];
+          string tooltip = pass.Satellite.GetTooltipText() + "\n\n" + string.Join("\n", pass.GetTooltipText());
           if (tooltip != toolTip1.GetToolTip(this))
           {
             toolTip1.ToolTipTitle = pass.Satellite.name;
-            toolTip1.Show(tooltip, this, (int)rect.Value.Right, (int)rect.Value.Top);
+            toolTip1.Show(tooltip, this, (int)rect.Right, (int)rect.Top);
           }
         }
 
@@ -374,13 +376,24 @@ namespace OrbiNom
       Cursor = Cursors.Default;
     }
 
-    private RectangleF? GetSatRectAt(PointF point)
+    private RectangleF GetSatRectAt(PointF point)
     {
-      foreach (var rect in SatLabelRects.Keys)
-        if (rect.Contains(point))
-          return rect;
+      return SatLabelRects.Keys.FirstOrDefault(rect => rect.Contains(point));
+    }
 
-      return null;
+    private void TimelinePanel_DoubleClick(object sender, EventArgs e)
+    {
+      var rect = GetSatRectAt(new PointF(MouseMovePos.X, MouseMovePos.Y));
+      if (!rect.IsEmpty)
+      {
+        var pass = SatLabelRects[rect];
+        ctx.SatelliteSelector.SetSelectedSatellite(pass.Satellite);
+      }
+    }
+
+    private void TimelinePanel_MouseLeave(object sender, EventArgs e)
+    {
+      toolTip1.Hide(this);
     }
   }
 }

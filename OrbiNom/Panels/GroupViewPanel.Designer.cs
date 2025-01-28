@@ -78,7 +78,7 @@
       // 
       columnHeader3.Text = "Next Pass";
       columnHeader3.TextAlign = HorizontalAlignment.Right;
-      columnHeader3.Width = 100;
+      columnHeader3.Width = 85;
       // 
       // columnHeader4
       // 

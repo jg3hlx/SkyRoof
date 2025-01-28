@@ -19,7 +19,7 @@ namespace OrbiNom
 
     public SatnogsDbSatellite[] GroupSatellites { get; private set; } = [];
     public SatnogsDbSatellite SelectedSatellite { get; private set; }
-    public SatellitePass SelectedPass { get; private set; }
+    public SatellitePass? SelectedPass { get; private set; }
 
     public event EventHandler? SelectedGroupChanged;
     public event EventHandler? SelectedSatelliteChanged;
@@ -40,7 +40,7 @@ namespace OrbiNom
       GroupComboBox.Items.AddRange(sett.SatelliteGroups.ToArray());
       changing = false;
 
-      SetSelectedGroup();    
+      SetSelectedGroup();
     }
 
     public void SetSelectedGroup()
@@ -54,7 +54,7 @@ namespace OrbiNom
       changing = false;
 
       SetSatellites();
-    
+
       OnSelectedGroupChanged();
     }
 
@@ -68,7 +68,20 @@ namespace OrbiNom
       SetSelectedSatellite();
     }
 
-    public void SetSelectedSatellite()
+
+    public void SetSelectedSatellite(SatnogsDbSatellite satellite)
+    {
+      if (group.SatelliteIds.Contains(satellite.sat_id))
+      {
+        group.SelectedSatId = satellite.sat_id;
+        SetSelectedSatellite();
+        OnSelectedSatelliteChanged();
+      }
+      else
+        Console.Beep();
+    }
+
+    private void SetSelectedSatellite()
     {
       var sett = ctx.Settings.Satellites;
       SelectedSatellite = ctx.SatnogsDb.GetSatellite(group.SelectedSatId);
@@ -79,6 +92,7 @@ namespace OrbiNom
       changing = false;
 
       SetTransmitters();
+      //SetSelectedPass(null);
     }
 
     private void SetTransmitters()
@@ -113,7 +127,7 @@ namespace OrbiNom
       changing = false;
     }
 
-    public void SetSelectedPass(SatellitePass pass)
+    public void SetSelectedPass(SatellitePass? pass)
     {
       SelectedPass = pass;
       SelectedPassChanged?.Invoke(this, EventArgs.Empty);
@@ -145,6 +159,7 @@ namespace OrbiNom
       toolTip1.SetToolTip(SatelliteComboBox, SelectedSatellite.GetTooltipText());
 
       SetTransmitters();
+      //SetSelectedPass(null);
 
       OnSelectedSatelliteChanged();
     }
@@ -176,7 +191,7 @@ namespace OrbiNom
       SelectedTransmitterChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public void OnSelectedSatelliteChanged()
+    private void OnSelectedSatelliteChanged()
     {
       SelectedSatelliteChanged?.Invoke(this, EventArgs.Empty);
       SelectedTransmitterChanged?.Invoke(this, EventArgs.Empty);

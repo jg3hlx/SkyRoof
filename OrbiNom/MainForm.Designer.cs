@@ -57,7 +57,7 @@
       DataFolderMNU = new ToolStripMenuItem();
       toolStripMenuItem2 = new ToolStripSeparator();
       AboutMNU = new ToolStripMenuItem();
-      timer3 = new System.Windows.Forms.Timer(components);
+      timer = new System.Windows.Forms.Timer(components);
       Toolbar.SuspendLayout();
       ClockPanel.SuspendLayout();
       menuStrip1.SuspendLayout();
@@ -83,6 +83,7 @@
       SatelliteSelector.TabIndex = 2;
       SatelliteSelector.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
       SatelliteSelector.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
+      SatelliteSelector.SelectedPassChanged += SatelliteSelector_SelectedPassChanged;
       // 
       // ClockPanel
       // 
@@ -158,41 +159,41 @@
       // GroupViewMNU
       // 
       GroupViewMNU.Name = "GroupViewMNU";
-      GroupViewMNU.Size = new Size(180, 22);
+      GroupViewMNU.Size = new Size(153, 22);
       GroupViewMNU.Text = "Group";
       GroupViewMNU.Click += GroupViewMNU_Click;
       // 
       // SatelliteDetailsMNU
       // 
       SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
-      SatelliteDetailsMNU.Size = new Size(180, 22);
+      SatelliteDetailsMNU.Size = new Size(153, 22);
       SatelliteDetailsMNU.Text = "Satellite Details";
       SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
       // 
       // SatellitePassesMNU
       // 
       SatellitePassesMNU.Name = "SatellitePassesMNU";
-      SatellitePassesMNU.Size = new Size(180, 22);
+      SatellitePassesMNU.Size = new Size(153, 22);
       SatellitePassesMNU.Text = "Satellite Passes";
       SatellitePassesMNU.Click += SatellitePassesMNU_Click;
       // 
       // WaterfallMNU
       // 
       WaterfallMNU.Name = "WaterfallMNU";
-      WaterfallMNU.Size = new Size(180, 22);
+      WaterfallMNU.Size = new Size(153, 22);
       WaterfallMNU.Text = "Waterfall";
       // 
       // TimelineMNU
       // 
       TimelineMNU.Name = "TimelineMNU";
-      TimelineMNU.Size = new Size(180, 22);
+      TimelineMNU.Size = new Size(153, 22);
       TimelineMNU.Text = "Timeline";
       TimelineMNU.Click += TimelineMNU_Click;
       // 
       // SkyViewMNU
       // 
       SkyViewMNU.Name = "SkyViewMNU";
-      SkyViewMNU.Size = new Size(180, 22);
+      SkyViewMNU.Size = new Size(153, 22);
       SkyViewMNU.Text = "SkyV iew";
       SkyViewMNU.Click += SkyViewMNU_Click;
       // 
@@ -265,11 +266,11 @@
       AboutMNU.Size = new Size(146, 22);
       AboutMNU.Text = "About...";
       // 
-      // timer3
+      // timer
       // 
-      timer3.Enabled = true;
-      timer3.Interval = 500;
-      timer3.Tick += timer_Tick;
+      timer.Enabled = true;
+      timer.Interval = 250;
+      timer.Tick += timer_Tick;
       // 
       // MainForm
       // 
@@ -321,7 +322,7 @@
     public ToolStripMenuItem SatelliteDetailsMNU;
     private SatelliteSelector SatelliteSelector;
     public ToolStripMenuItem SatellitePassesMNU;
-    private System.Windows.Forms.Timer timer3;
+    private System.Windows.Forms.Timer timer;
     public ToolStripMenuItem TimelineMNU;
     public ToolStripMenuItem SkyViewMNU;
   }

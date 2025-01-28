@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="arrow-33-16.png" />
+    <None Remove="ok.png" />
+    <None Remove="x_mark.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

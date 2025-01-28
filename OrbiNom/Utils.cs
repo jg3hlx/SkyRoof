@@ -9,6 +9,8 @@ namespace VE3NEA
 {
   internal static class Utils
   {
+    public const double HalfPi = Math.PI / 2;
+
     internal static string GetAppName()
     {
       return Path.GetFileNameWithoutExtension(Application.ExecutablePath);
@@ -94,8 +96,9 @@ namespace VE3NEA
     {
       string result = "";
       if (timeSpan > TimeSpan.FromHours(1)) result += $"{(int)timeSpan.TotalHours:D}h ";
-      if (timeSpan > TimeSpan.FromMinutes(1)) result += $"{timeSpan.Minutes}";
-      result += showSeconds ? $"m {timeSpan.Seconds,2:D2}s" : " min.";
+      string minutesLabel = showSeconds ? "m" : " min";
+      if (timeSpan > TimeSpan.FromMinutes(1)) result += $"{timeSpan.Minutes}{minutesLabel}";
+      if (showSeconds) result += $"{timeSpan.Seconds,2:D2}s";
       return result;
     }
 
@@ -109,6 +112,14 @@ namespace VE3NEA
         dict.Add(key, val);
       }
       return val;
+    }
+
+    //https://stackoverflow.com/questions/818415
+    internal static void SetDoubleBuffered(Panel panel, bool value)
+    {
+      typeof(Panel).InvokeMember("DoubleBuffered",
+        BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, 
+        null, panel, [value]);
     }
   }
 }

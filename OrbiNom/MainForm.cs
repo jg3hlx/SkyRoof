@@ -215,12 +215,13 @@ namespace OrbiNom
     private void timer_Tick(object sender, EventArgs e)
     {
       Clock.ShowTime();
+      ctx.SkyViewPanel?.Advance();
 
       // 500-ms ticks
       TickCount += 1;
-      if (TickCount % 2 == 0) OneSecondTick();
-      if (TickCount % 120 == 0) OneMinuteTick();
-      if (TickCount % 600 == 0) FiveMinutesTick();
+      if (TickCount % 4 == 0) OneSecondTick();
+      if (TickCount % (4 * 60) == 0) OneMinuteTick();
+      if (TickCount % (4 * 300) == 0) FiveMinutesTick();
     }
 
     private void OneSecondTick()
@@ -282,6 +283,11 @@ namespace OrbiNom
       ctx.GroupPasses.Rebuild();
       ctx.PassesPanel?.ShowPasses();
       ctx.TimelinePanel?.Invalidate();
+    }
+
+    private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)
+    {
+      ctx.SkyViewPanel?.SetPass(ctx.SatelliteSelector.SelectedPass);
     }
   }
 }

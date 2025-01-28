@@ -23,8 +23,7 @@ namespace OrbiNom
     private List<SatnogsDbSatellite> Sats = new();
     private List<ListViewItem> Items = new();
     private GroundStation GroundStation;
-    const double HalfPi = Math.PI / 2;
-
+    
     private DateTime LastPredictionTime = DateTime.MinValue;
     private readonly Font BoldFont;
     private readonly Pen PathPen = new Pen(Brushes.Teal, 2);

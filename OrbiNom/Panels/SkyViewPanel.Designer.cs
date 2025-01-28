@@ -28,26 +28,33 @@
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
       flowLayoutPanel1 = new FlowLayoutPanel();
       RealTimeRadioBtn = new RadioButton();
-      PassRadioBtn = new RadioButton();
-      panel = new Panel();
+      OrbitRadioBtn = new RadioButton();
+      DrawPanel = new Panel();
+      toolTip1 = new ToolTip(components);
+      toolTip2 = new ToolTip(components);
+      FlowPanel = new FlowLayoutPanel();
       flowLayoutPanel1.SuspendLayout();
       SuspendLayout();
       // 
       // flowLayoutPanel1
       // 
+      flowLayoutPanel1.AutoSize = true;
       flowLayoutPanel1.Controls.Add(RealTimeRadioBtn);
-      flowLayoutPanel1.Controls.Add(PassRadioBtn);
+      flowLayoutPanel1.Controls.Add(OrbitRadioBtn);
       flowLayoutPanel1.Dock = DockStyle.Top;
       flowLayoutPanel1.Location = new Point(0, 0);
+      flowLayoutPanel1.MaximumSize = new Size(0, 60);
       flowLayoutPanel1.Name = "flowLayoutPanel1";
-      flowLayoutPanel1.Size = new Size(800, 27);
+      flowLayoutPanel1.Size = new Size(800, 25);
       flowLayoutPanel1.TabIndex = 1;
       // 
       // RealTimeRadioBtn
       // 
       RealTimeRadioBtn.AutoSize = true;
+      RealTimeRadioBtn.BackColor = Color.FromArgb(230, 249, 255);
       RealTimeRadioBtn.Checked = true;
       RealTimeRadioBtn.Location = new Point(3, 3);
       RealTimeRadioBtn.Name = "RealTimeRadioBtn";
@@ -55,38 +62,54 @@
       RealTimeRadioBtn.TabIndex = 0;
       RealTimeRadioBtn.TabStop = true;
       RealTimeRadioBtn.Text = "Real Time";
-      RealTimeRadioBtn.UseVisualStyleBackColor = true;
+      RealTimeRadioBtn.UseVisualStyleBackColor = false;
       RealTimeRadioBtn.CheckedChanged += radioButton_CheckedChanged;
       // 
-      // PassRadioBtn
+      // OrbitRadioBtn
       // 
-      PassRadioBtn.AutoSize = true;
-      PassRadioBtn.Enabled = false;
-      PassRadioBtn.Location = new Point(85, 3);
-      PassRadioBtn.Name = "PassRadioBtn";
-      PassRadioBtn.Size = new Size(99, 19);
-      PassRadioBtn.TabIndex = 1;
-      PassRadioBtn.Text = "Selected Orbit";
-      PassRadioBtn.UseVisualStyleBackColor = true;
-      PassRadioBtn.CheckedChanged += radioButton_CheckedChanged;
+      OrbitRadioBtn.AutoSize = true;
+      OrbitRadioBtn.BackColor = Color.FromArgb(224, 224, 224);
+      OrbitRadioBtn.Enabled = false;
+      OrbitRadioBtn.Location = new Point(85, 3);
+      OrbitRadioBtn.Name = "OrbitRadioBtn";
+      OrbitRadioBtn.Size = new Size(99, 19);
+      OrbitRadioBtn.TabIndex = 1;
+      OrbitRadioBtn.Text = "Selected Orbit";
+      OrbitRadioBtn.UseVisualStyleBackColor = false;
+      OrbitRadioBtn.CheckedChanged += radioButton_CheckedChanged;
       // 
-      // panel
+      // DrawPanel
       // 
-      panel.Dock = DockStyle.Fill;
-      panel.Font = new Font("Segoe UI", 11F);
-      panel.Location = new Point(0, 27);
-      panel.Name = "panel";
-      panel.Size = new Size(800, 423);
-      panel.TabIndex = 2;
-      panel.Paint += panel_Paint;
-      panel.Resize += panel_Resize;
+      DrawPanel.Dock = DockStyle.Fill;
+      DrawPanel.Font = new Font("Segoe UI", 11F);
+      DrawPanel.Location = new Point(0, 25);
+      DrawPanel.Name = "DrawPanel";
+      DrawPanel.Size = new Size(800, 425);
+      DrawPanel.TabIndex = 3;
+      DrawPanel.Paint += panel_Paint;
+      DrawPanel.MouseDown += DrawPanel_MouseDown;
+      DrawPanel.MouseLeave += DrawPanel_MouseLeave;
+      DrawPanel.MouseMove += DrawPanel_MouseMove;
+      DrawPanel.Resize += panel_Resize;
+      // 
+      // FlowPanel
+      // 
+      FlowPanel.AutoSize = true;
+      FlowPanel.BackColor = Color.White;
+      FlowPanel.Dock = DockStyle.Top;
+      FlowPanel.Location = new Point(0, 25);
+      FlowPanel.MaximumSize = new Size(0, 60);
+      FlowPanel.Name = "FlowPanel";
+      FlowPanel.Size = new Size(800, 0);
+      FlowPanel.TabIndex = 6;
       // 
       // SkyViewPanel
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       ClientSize = new Size(800, 450);
-      Controls.Add(panel);
+      Controls.Add(DrawPanel);
+      Controls.Add(FlowPanel);
       Controls.Add(flowLayoutPanel1);
       Name = "SkyViewPanel";
       Text = "Sky View";
@@ -94,13 +117,17 @@
       flowLayoutPanel1.ResumeLayout(false);
       flowLayoutPanel1.PerformLayout();
       ResumeLayout(false);
+      PerformLayout();
     }
 
     #endregion
 
     private FlowLayoutPanel flowLayoutPanel1;
     private RadioButton RealTimeRadioBtn;
-    private RadioButton PassRadioBtn;
-    private Panel panel;
+    private RadioButton OrbitRadioBtn;
+    private Panel DrawPanel;
+    private ToolTip toolTip1;
+    private ToolTip toolTip2;
+    private FlowLayoutPanel FlowPanel;
   }
 }

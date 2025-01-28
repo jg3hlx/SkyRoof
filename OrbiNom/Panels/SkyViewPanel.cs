@@ -10,6 +10,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+using static OrbiNom.SatellitePass;
+using System.IO;
+using System.Reflection;
+using VE3NEA;
+using SGPdotNET.Observation;
+using System.Reflection.Metadata.Ecma335;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.CodeDom;
 
 namespace OrbiNom
 {
@@ -17,6 +25,13 @@ namespace OrbiNom
   {
     private readonly Context ctx;
     private SatellitePass? Pass;
+    private Dictionary<RectangleF, SatellitePass> SatLabelRects = new();
+
+    private readonly Font RegularFont, BoldFont;
+    private readonly Image OkImage, XMarkImage, ArrowImage, SatImage;
+    private readonly Brush BlueBrush = new SolidBrush(Color.FromArgb(230, 249, 255));
+    private readonly Brush SilverBrush = new SolidBrush(Color.FromArgb(242, 242, 242));
+
 
     public SkyViewPanel() { InitializeComponent(); }
 
@@ -26,95 +41,235 @@ namespace OrbiNom
       this.ctx = ctx;
       ctx.SkyViewPanel = this;
       ctx.MainForm.GroupViewMNU.Checked = true;
-      ctx.SatelliteSelector.SelectedPassChanged += SatelliteSelector_SelectedPassChanged;
 
-      //https://stackoverflow.com/questions/818415
-      typeof(Panel).InvokeMember("DoubleBuffered",
-        BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-        null, panel, [true]);
+      RegularFont = new Font(OrbitRadioBtn.Font, FontStyle.Regular);
+      BoldFont = new Font(OrbitRadioBtn.Font, FontStyle.Bold);
+
+      // icons from https://www.iconsdb.com/
+      using (var ms = new MemoryStream(Properties.Resources.ok)) { OkImage = Image.FromStream(ms); }
+      using (var ms = new MemoryStream(Properties.Resources.xmark)) { XMarkImage = Image.FromStream(ms); }
+      using (var ms = new MemoryStream(Properties.Resources.arrow)) { ArrowImage = Image.FromStream(ms); }
+      using (var ms = new MemoryStream(Properties.Resources.satellite3)) { SatImage = Image.FromStream(ms); }
+
+      Utils.SetDoubleBuffered(DrawPanel, true);
     }
 
     private void SkyViewPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
-      ctx.SatelliteSelector.SelectedPassChanged -= SatelliteSelector_SelectedPassChanged;
       ctx.SkyViewPanel = null;
       ctx.MainForm.SkyViewMNU.Checked = false;
-    }
-
-    private void SatelliteSelector_SelectedPassChanged(object? sender, EventArgs e)
-    {
-      Pass = ctx.SatelliteSelector.SelectedPass;
-      if (Pass == null)
-      {
-        PassRadioBtn.Text = "Orbit";
-        PassRadioBtn.Enabled = false;
-        RealTimeRadioBtn.Checked = true;
-      }
-      else
-      {
-        PassRadioBtn.Text = $"Orbit #{Pass.OrbitNumber} of {Pass.Satellite.name}";
-        PassRadioBtn.Enabled = true;
-        PassRadioBtn.Checked = true;
-      }
-
-      panel.Invalidate();
     }
 
     private void radioButton_CheckedChanged(object sender, EventArgs e)
     {
       var radioBtn = (RadioButton)sender;
       if (!radioBtn.Checked) return;
-      panel.Invalidate();
+
+      OrbitRadioBtn.Font = OrbitRadioBtn.Checked ? BoldFont : RegularFont;
+
+      SetLabels();
+      DrawPanel.Invalidate();
     }
 
     private void panel_Resize(object sender, EventArgs e)
     {
-      panel.Invalidate();
+      DrawPanel.Invalidate();
     }
 
+    // on timer tick
+    public void Advance()
+    {
+      SetLabels();
+      DrawPanel.Invalidate();
+    }
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                          draw
+    //----------------------------------------------------------------------------------------------
     private void panel_Paint(object sender, PaintEventArgs e)
     {
       var g = e.Graphics;
       g.SmoothingMode = SmoothingMode.AntiAlias;
       DrawBackground(g);
+
+      SatLabelRects.Clear();
+
+      if (OrbitRadioBtn.Checked) DrawPass(g, Pass);
+      else DrawRealTime(g);
     }
 
-    Brush BgBrush = new SolidBrush(Color.FromArgb(0xda, 0xef, 0xf8));
     private void DrawBackground(Graphics g)
     {
-      var sizeN = g.MeasureString("N", panel.Font);
-      var sizeS = g.MeasureString("S", panel.Font);
-      var sizeE = g.MeasureString("E", panel.Font);
-      var sizeW = g.MeasureString("W", panel.Font);
+      var sizeN = g.MeasureString("N", DrawPanel.Font);
+      var sizeS = g.MeasureString("S", DrawPanel.Font);
+      var sizeE = g.MeasureString("E", DrawPanel.Font);
+      var sizeW = g.MeasureString("W", DrawPanel.Font);
 
-      var center = new PointF(panel.Width / 2, panel.Height / 2);
-      float radiusX = center.X - Math.Max(sizeE.Width, sizeW.Width) - 4;
-      float radiusY = center.Y - Math.Max(sizeN.Width, sizeS.Width) - 4;
-      float radius = Math.Min(radiusX, radiusY);
+      Center = new PointF(DrawPanel.Width / 2, DrawPanel.Height / 2);
+      float radiusX = Center.X - Math.Max(sizeE.Width, sizeW.Width) - 4;
+      float radiusY = Center.Y - Math.Max(sizeN.Width, sizeS.Width) - 4;
+      Radius = Math.Min(radiusX, radiusY);
 
-      g.FillRectangle(Brushes.White, panel.ClientRectangle);
-      RectangleF bounds = new RectangleF(center.X - radius, center.Y - radius, 2*radius, 2*radius);
-      g.FillEllipse(BgBrush, bounds);
+      // fill bg 
+      g.FillRectangle(Brushes.White, DrawPanel.ClientRectangle);
+      RectangleF rect = new RectangleF(Center.X - Radius, Center.Y - Radius, 2 * Radius, 2 * Radius);
+      var brush = OrbitRadioBtn.Checked ? SilverBrush : BlueBrush;
+      g.FillEllipse(brush, rect);
 
-      for (float r = radius / 3; r <= radius; r += radius / 3)
+      // circles
+      var pen = OrbitRadioBtn.Checked ? Pens.Gray : Pens.Teal;
+      for (float r = Radius / 3; r <= Radius; r += Radius / 3)
       {
-        var rect = new RectangleF(center.X - r, center.Y - r, 2 * r, 2 * r);
-        g.DrawEllipse(Pens.Teal, rect);
+        rect = new RectangleF(Center.X - r, Center.Y - r, 2 * r, 2 * r);
+        g.DrawEllipse(pen, rect);
       }
 
-      g.DrawLine(Pens.Teal, center.X - radius, center.Y, center.X + radius, center.Y);
-      g.DrawLine(Pens.Teal, center.X, center.Y - radius, center.X, center.Y + radius);
+      // straight lines
+      g.DrawLine(pen, Center.X - Radius, Center.Y, Center.X + Radius, Center.Y);
+      g.DrawLine(pen, Center.X, Center.Y - Radius, Center.X, Center.Y + Radius);
 
-      g.DrawString("N", panel.Font, Brushes.Teal, center.X - sizeN.Width / 2, center.Y - radius - sizeN.Height - 2);
-      g.DrawString("S", panel.Font, Brushes.Teal, center.X - sizeS.Width / 2, center.Y + radius + 2);
-      g.DrawString("E", panel.Font, Brushes.Teal, center.X + radius + 2, center.Y - sizeE.Height / 2);
-      g.DrawString("W", panel.Font, Brushes.Teal, center.X - radius - sizeW.Width - 2, center.Y - sizeW.Height / 2);
+      // compass labels
+      g.DrawString("N", DrawPanel.Font, Brushes.Teal, Center.X - sizeN.Width / 2, Center.Y - Radius - sizeN.Height - 2);
+      g.DrawString("S", DrawPanel.Font, Brushes.Teal, Center.X - sizeS.Width / 2, Center.Y + Radius + 2);
+      g.DrawString("E", DrawPanel.Font, Brushes.Teal, Center.X + Radius + 2, Center.Y - sizeE.Height / 2);
+      g.DrawString("W", DrawPanel.Font, Brushes.Teal, Center.X - Radius - sizeW.Width - 2, Center.Y - sizeW.Height / 2);
     }
+
+    private void DrawRealTime(Graphics g)
+    {
+      var now = DateTime.UtcNow;
+      var passes = ctx.GroupPasses.Passes.Where(p => now > p.StartTime && now < p.EndTime);
+      foreach (var pass in passes) DrawPass(g, pass);
+    }
+
+    private void DrawPass(Graphics g, SatellitePass? pass)
+    {
+      if (pass == null) return;
+
+      // compute track points
+      var track = pass.Track;
+      var points = new PointF[track.Count];
+      for (int i = 0; i < track.Count; i++)
+        points[i] = TrackPointToXY(pass.Track[i]);
+
+      // draw track
+      var pen = new Pen(Color.Green, 2f);
+      g.DrawLines(pen, points);
+      var startPoint = TrackPointToXY(pass.Track.First());
+      var endPoint = TrackPointToXY(pass.Track.Last());
+
+      // draw end icons
+      float size = Math.Min(16, 0.04f * Radius + 5);
+
+      g.TranslateTransform(startPoint.X, startPoint.Y);
+      g.ScaleTransform(size / OkImage.Width, size / OkImage.Height);
+      DrawImage(g, OkImage, true);
+      g.ResetTransform();
+
+      g.TranslateTransform(endPoint.X, endPoint.Y);
+      g.ScaleTransform(size / XMarkImage.Width, size / XMarkImage.Height);
+      DrawImage(g, XMarkImage, true);
+      g.ResetTransform();
+
+      // draw arrow
+      size *= 0.8f;
+      int idx = (int)(pass.Track.Count * (1f / 2));
+      DrawArrow(g, pass, idx, size);
+
+      // sat
+      var now = DateTime.UtcNow;
+      if (pass.StartTime < now && pass.EndTime > now) DrawSat(g, pass);
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                   helper functions
+    //----------------------------------------------------------------------------------------------
+    private void DrawSat(Graphics g, SatellitePass pass)
+    {
+      var now = DateTime.UtcNow;
+      var location = ObservationToXY(pass.GetObservationAt(now));
+      float angle = ComputeDirection(pass, now);
+      float scale = Math.Min(1, 0.5f + 0.0013f * Radius);
+
+      g.TranslateTransform(location.X, location.Y);
+      g.RotateTransform(angle + 45);
+      g.ScaleTransform(scale, scale);
+      DrawImage(g, SatImage);
+      g.ResetTransform();
+
+      string text = pass.Satellite.name;
+      var font = (pass.Satellite == ctx.SatelliteSelector.SelectedSatellite) ? BoldFont : RegularFont;
+      var size = g.MeasureString(text, font);
+      var offset = SatImage.Height / 3f * scale;
+      var rect = new RectangleF(location.X + offset, location.Y - size.Height - offset, size.Width, size.Height);
+      if (rect.Right > DrawPanel.Width) rect.X -= 2 * offset + size.Width;
+      g.DrawString(text, font, Brushes.Black, rect);
+      SatLabelRects[rect] = pass;
+    }
+
+    private void DrawImage(Graphics g, Image image, bool whiteBg = false)
+    {
+      var size = image.Size;
+      var rect = new RectangleF(-size.Width / 2, -size.Height / 2, size.Width, size.Height);
+      if (whiteBg) g.FillEllipse(Brushes.White, rect); // give the transpatent symbol inside the circle a white bg
+      g.DrawImage(image, rect);
+    }
+
+    private float ComputeDirection(SatellitePass pass, DateTime utc)
+    {
+      var p1 = ObservationToXY(pass.GetObservationAt(utc.AddSeconds(-10)));
+      var p2 = ObservationToXY(pass.GetObservationAt(utc.AddSeconds(10)));
+      return (float)(Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) * 180 / Math.PI);
+    }
+
+    private void DrawArrow(Graphics g, SatellitePass pass, int idx, float size)
+    {
+      var arrowPoint = TrackPointToXY(pass.Track[idx]);
+      var p1 = TrackPointToXY(pass.Track[idx - 1]);
+      var p2 = TrackPointToXY(pass.Track[idx + 1]);
+      float angle = (float)(Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) * 180 / Math.PI);
+
+      g.TranslateTransform(arrowPoint.X, arrowPoint.Y);
+      g.RotateTransform(angle);
+      g.ScaleTransform(size / ArrowImage.Width, size / ArrowImage.Height);
+      DrawImage(g, ArrowImage);
+      g.ResetTransform();
+    }
+
+    private PointF TrackPointToXY(TrackPoint point)
+    {
+      return ObservationToXY(point.Observation);
+    }
+
+    private PointF ObservationToXY(TopocentricObservation obs)
+    {
+      double ro = 1 - obs.Elevation.Radians / Utils.HalfPi;
+      double phi = Utils.HalfPi - obs.Azimuth.Radians;
+
+      return new PointF(
+        Center.X + (float)(Radius * ro * Math.Cos(phi)),
+        Center.Y - (float)(Radius * ro * Math.Sin(phi))
+        );
+    }
+
+    private RectangleF GetSatRectAt(PointF point)
+    {
+      return SatLabelRects.Keys.FirstOrDefault(rect => rect.Contains(point));
+    }
+
+
 
 
     // currently not used
     //https://stackoverflow.com/questions/3519835
     PathGradientBrush? GradientBrush;
+    private PointF Center;
+    private float Radius;
+
     private PathGradientBrush GetRadialBrush(RectangleF bounds)
     {
       if (GradientBrush != null) return GradientBrush;
@@ -129,6 +284,148 @@ namespace OrbiNom
         GradientBrush.FocusScales = new PointF(0, 0);
       }
       return GradientBrush;
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        mouse
+    //----------------------------------------------------------------------------------------------
+    Point MouseMovePos;
+
+    private void DrawPanel_MouseMove(object sender, MouseEventArgs e)
+    {
+      if (e.Location == MouseMovePos) return;
+      MouseMovePos = e.Location;
+
+      var rect = GetSatRectAt(new PointF(e.X, e.Y));
+      if (!rect.IsEmpty)
+      {
+        Cursor = Cursors.Hand;
+        var pass = SatLabelRects[rect];
+
+        string tooltip = pass.Satellite.GetTooltipText() + "\n\n" + string.Join("\n", pass.GetTooltipText());
+        if (tooltip != toolTip1.GetToolTip(this))
+        {
+          toolTip1.ToolTipTitle = pass.Satellite.name;
+          toolTip1.Show(tooltip, this, (int)rect.Right, (int)rect.Top);
+        }
+      }
+      else
+      {
+        Cursor = Cursors.Default;
+        toolTip1.Hide(this);
+      }
+    }
+
+    private void DrawPanel_MouseDown(object sender, MouseEventArgs e)
+    {
+      var rect = GetSatRectAt(new PointF(e.X, e.Y));
+      if (!rect.IsEmpty)
+      {
+        var pass = SatLabelRects[rect];
+        ctx.SatelliteSelector.SetSelectedSatellite(pass.Satellite);
+      }
+    }
+
+    private void DrawPanel_MouseLeave(object sender, EventArgs e)
+    {
+      toolTip1.Hide(this);
+    }
+
+    internal void SetPass(SatellitePass pass)
+    {
+      Pass = pass;
+      OrbitRadioBtn.Text = $"Orbit #{Pass.OrbitNumber} of {Pass.Satellite.name}";
+      OrbitRadioBtn.Enabled = true;
+
+      if (ctx.SatelliteSelector.GroupSatellites.Contains(pass.Satellite) &&
+        pass.StartTime < DateTime.UtcNow && pass.EndTime > DateTime.UtcNow) 
+          RealTimeRadioBtn.Checked = true;
+      else      
+        OrbitRadioBtn.Checked = true;
+
+      SetLabels();
+      DrawPanel.Invalidate();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //                                        labels
+    //----------------------------------------------------------------------------------------------
+    private void SetLabels()
+    {
+      if (OrbitRadioBtn.Checked && Pass != null)
+      {
+        // replace realtime labels with orbit labels
+        if (FlowPanel.Controls.Count != 4)
+        {
+          FlowPanel.Controls.Clear();
+          for (int i = 0; i < 4; i++) FlowPanel.Controls.Add(new Label() { AutoSize = true });
+        }
+
+        var tooltip = Pass.GetTooltipText();
+        FlowPanel.Controls[0].Text = tooltip[0];
+        FlowPanel.Controls[1].Text = $"{tooltip[1]}   {tooltip[2]}";
+        FlowPanel.Controls[2].Text = tooltip[3];
+        FlowPanel.Controls[3].Text = tooltip[4];
+      }
+      else if (RealTimeRadioBtn.Checked)
+        ShowSatLabels();
+    }
+
+    private void ShowSatLabels()
+    {
+      if (FlowPanel.Controls.Count == 4) FlowPanel.Controls.Clear();
+
+      var now = DateTime.UtcNow;
+      var passes = ctx.GroupPasses.Passes.Where(p => now > p.StartTime && now < p.EndTime).ToArray();
+      EnsureLabels(passes.Length * 3);
+
+      // set label text
+      for (int i = 0; i < passes.Length; i++)
+      {
+        var tooltip = passes[i].GetTooltipText();
+        bool selected = passes[i].Satellite == ctx.SatelliteSelector.SelectedSatellite;
+
+        FlowPanel.Controls[i * 3].Font = selected ? BoldFont : RegularFont;
+        FlowPanel.Controls[i * 3].Text = passes[i].Satellite.name;
+        FlowPanel.Controls[i * 3 + 1].Text = tooltip[0];
+        FlowPanel.Controls[i * 3 + 2].Text = $"Az. {passes[i].GetObservationAt(now).Azimuth.Degrees:F1}°  El. {passes[i].GetObservationAt(now).Elevation.Degrees:F1}°";
+      }
+    }
+
+    private const int ORBIT_LABEL_COUNT = 4;
+    private void EnsureLabels(int count)
+    {
+      int currentCount = FlowPanel.Controls.Count;
+
+      // orbit labels
+      if (count == ORBIT_LABEL_COUNT)
+      {
+        if (currentCount != ORBIT_LABEL_COUNT)
+        {
+          // delete sat labels, they may have bold font
+          FlowPanel.Controls.Clear();
+          for (int i = 0; i < ORBIT_LABEL_COUNT; i++) 
+            FlowPanel.Controls.Add(new Label() { AutoSize = true });
+        }
+      }
+
+      // satellite labels
+      else
+      {
+        // delete if more than needed
+        for (int i = currentCount-1; i >= count; i--) 
+          FlowPanel.Controls.Remove(FlowPanel.Controls[i]);
+
+        // add if less than needed
+        for (int i = currentCount; i < count; i++)
+        {
+          FlowPanel.Controls.Add(new Label() { AutoSize = true });
+          if (i % 3 == 2) FlowPanel.SetFlowBreak(FlowPanel.Controls[i], true);
+        }
+      }
     }
   }
 }

@@ -52,6 +52,9 @@ namespace OrbiNom
 
       ctx.SatelliteDetailsPanel?.LoadSatelliteDetails();
       ctx.PassesPanel?.ShowPasses();
+
+      var pass = ((ItemData)Items[listView1.SelectedIndices[0]].Tag!).Pass;
+      ctx.SatelliteSelector.SetSelectedPass(pass);
     }
 
     private void GroupViewPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -97,14 +100,10 @@ namespace OrbiNom
 
     public void ShowSelectedSat()
     {
-      var sett = ctx.Settings.Satellites;
-      var group = sett.SatelliteGroups.First(g => g.Id == sett.SelectedGroup);
+      var selectedSat = ctx.SatelliteSelector.SelectedSatellite;
 
       foreach (var item in Items)
-      {
-        var sat = ((ItemData)item.Tag!).Sat;
-        item.ImageIndex = sat.sat_id == group.SelectedSatId ? 0 : -1;
-      }
+        item.ImageIndex = ((ItemData)item.Tag!).Sat == selectedSat ? 0 : -1;
 
       listView1.SelectedIndices.Clear();
       listView1.Invalidate();
@@ -117,13 +116,9 @@ namespace OrbiNom
 
     private void listView1_DoubleClick(object sender, EventArgs e)
     {
-      var sett = ctx.Settings.Satellites;
-      var group = sett.SatelliteGroups.First(g => g.Id == sett.SelectedGroup);
-      group.SelectedSatId = ((ItemData)Items[listView1.SelectedIndices[0]].Tag!).Sat.sat_id;
+      var sat = ((ItemData)Items[listView1.SelectedIndices[0]].Tag!).Sat;
+      ctx.SatelliteSelector.SetSelectedSatellite(sat);
       ShowSelectedSat();
-
-      ctx.SatelliteSelector.SetSelectedSatellite();
-      ctx.SatelliteSelector.OnSelectedSatelliteChanged();
     }
 
     public void UpdatePassTimes()
