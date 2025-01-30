@@ -40,14 +40,14 @@ namespace OrbiNom
       InitializeComponent();
       this.ctx = ctx;
       ctx.SkyViewPanel = this;
-      ctx.MainForm.GroupViewMNU.Checked = true;
+      ctx.MainForm.SkyViewMNU.Checked = true;
 
       RegularFont = new Font(OrbitRadioBtn.Font, FontStyle.Regular);
       BoldFont = new Font(OrbitRadioBtn.Font, FontStyle.Bold);
 
       // icons from https://www.iconsdb.com/
       using (var ms = new MemoryStream(Properties.Resources.ok)) { OkImage = Image.FromStream(ms); }
-      using (var ms = new MemoryStream(Properties.Resources.xmark)) { XMarkImage = Image.FromStream(ms); }
+      using (var ms = new MemoryStream(Properties.Resources.x_mark)) { XMarkImage = Image.FromStream(ms); }
       using (var ms = new MemoryStream(Properties.Resources.arrow)) { ArrowImage = Image.FromStream(ms); }
       using (var ms = new MemoryStream(Properties.Resources.satellite3)) { SatImage = Image.FromStream(ms); }
 
@@ -305,11 +305,11 @@ namespace OrbiNom
         Cursor = Cursors.Hand;
         var pass = SatLabelRects[rect];
 
-        string tooltip = pass.Satellite.GetTooltipText() + "\n\n" + string.Join("\n", pass.GetTooltipText());
-        if (tooltip != toolTip1.GetToolTip(this))
+        string tooltip = pass.Satellite.GetTooltipText() + "\n\n" + string.Join("\n", pass.GetTooltipText(false));
+        if (tooltip != toolTip1.GetToolTip(DrawPanel))
         {
           toolTip1.ToolTipTitle = pass.Satellite.name;
-          toolTip1.Show(tooltip, this, (int)rect.Right, (int)rect.Top);
+          toolTip1.Show(tooltip, DrawPanel, (int)rect.Right, (int)rect.Bottom);
         }
       }
       else
@@ -334,8 +334,10 @@ namespace OrbiNom
       toolTip1.Hide(this);
     }
 
-    internal void SetPass(SatellitePass pass)
+    internal void SetPass(SatellitePass? pass)
     {
+      if (pass == null) return;
+
       Pass = pass;
       OrbitRadioBtn.Text = $"Orbit #{Pass.OrbitNumber} of {Pass.Satellite.name}";
       OrbitRadioBtn.Enabled = true;
@@ -355,16 +357,13 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void SetLabels()
     {
+      FlowPanel.SuspendLayout();
+
       if (OrbitRadioBtn.Checked && Pass != null)
       {
-        // replace realtime labels with orbit labels
-        if (FlowPanel.Controls.Count != 4)
-        {
-          FlowPanel.Controls.Clear();
-          for (int i = 0; i < 4; i++) FlowPanel.Controls.Add(new Label() { AutoSize = true });
-        }
-
+        EnsureLabels(ORBIT_LABEL_COUNT);
         var tooltip = Pass.GetTooltipText();
+
         FlowPanel.Controls[0].Text = tooltip[0];
         FlowPanel.Controls[1].Text = $"{tooltip[1]}   {tooltip[2]}";
         FlowPanel.Controls[2].Text = tooltip[3];
@@ -372,14 +371,15 @@ namespace OrbiNom
       }
       else if (RealTimeRadioBtn.Checked)
         ShowSatLabels();
+
+      FlowPanel.ResumeLayout();
     }
 
     private void ShowSatLabels()
     {
-      if (FlowPanel.Controls.Count == 4) FlowPanel.Controls.Clear();
-
       var now = DateTime.UtcNow;
       var passes = ctx.GroupPasses.Passes.Where(p => now > p.StartTime && now < p.EndTime).ToArray();
+
       EnsureLabels(passes.Length * 3);
 
       // set label text
@@ -387,11 +387,12 @@ namespace OrbiNom
       {
         var tooltip = passes[i].GetTooltipText();
         bool selected = passes[i].Satellite == ctx.SatelliteSelector.SelectedSatellite;
+        var observation = passes[i].GetObservationAt(now);
 
         FlowPanel.Controls[i * 3].Font = selected ? BoldFont : RegularFont;
         FlowPanel.Controls[i * 3].Text = passes[i].Satellite.name;
         FlowPanel.Controls[i * 3 + 1].Text = tooltip[0];
-        FlowPanel.Controls[i * 3 + 2].Text = $"Az. {passes[i].GetObservationAt(now).Azimuth.Degrees:F1}°  El. {passes[i].GetObservationAt(now).Elevation.Degrees:F1}°";
+        FlowPanel.Controls[i * 3 + 2].Text = $"Az. {observation.Azimuth.Degrees:F1}°  El. {observation.Elevation.Degrees:F1}°";
       }
     }
 
@@ -399,33 +400,24 @@ namespace OrbiNom
     private void EnsureLabels(int count)
     {
       int currentCount = FlowPanel.Controls.Count;
+      if (currentCount == count) return;
 
-      // orbit labels
-      if (count == ORBIT_LABEL_COUNT)
-      {
-        if (currentCount != ORBIT_LABEL_COUNT)
-        {
-          // delete sat labels, they may have bold font
-          FlowPanel.Controls.Clear();
-          for (int i = 0; i < ORBIT_LABEL_COUNT; i++) 
-            FlowPanel.Controls.Add(new Label() { AutoSize = true });
-        }
-      }
+      // delete if more than needed
+      for (int i = currentCount - 1; i >= count; i--)
+        FlowPanel.Controls.Remove(FlowPanel.Controls[i]);
 
-      // satellite labels
-      else
-      {
-        // delete if more than needed
-        for (int i = currentCount-1; i >= count; i--) 
-          FlowPanel.Controls.Remove(FlowPanel.Controls[i]);
+      // add if less than needed
+      for (int i = currentCount; i < count; i++)
+        FlowPanel.Controls.Add(new Label() { AutoSize = true });
 
-        // add if less than needed
-        for (int i = currentCount; i < count; i++)
-        {
-          FlowPanel.Controls.Add(new Label() { AutoSize = true });
-          if (i % 3 == 2) FlowPanel.SetFlowBreak(FlowPanel.Controls[i], true);
-        }
-      }
+      // regular font
+      foreach (Label label in FlowPanel.Controls)
+        label.Font = RegularFont;
+
+      // 3 labels per line if sat labels
+      bool breaksNeeded = count != ORBIT_LABEL_COUNT;
+      for (int i = 2; i < count; i += 3)
+        FlowPanel.SetFlowBreak(FlowPanel.Controls[i], breaksNeeded && i % 3 == 2);
     }
   }
 }

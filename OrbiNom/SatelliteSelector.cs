@@ -17,8 +17,13 @@ namespace OrbiNom
     private bool changing;
     private SatelliteGroup group;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public SatnogsDbSatellite[] GroupSatellites { get; private set; } = [];
+    
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] 
     public SatnogsDbSatellite SelectedSatellite { get; private set; }
+    
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] 
     public SatellitePass? SelectedPass { get; private set; }
 
     public event EventHandler? SelectedGroupChanged;

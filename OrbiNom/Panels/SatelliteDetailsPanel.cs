@@ -43,21 +43,9 @@ namespace OrbiNom
       ctx.Settings.Ui.SatelliteDetailsPanel.SplitterDistance = satelliteDetailsControl1.splitContainer1.SplitterDistance;
     }
 
-    public void LoadSatelliteDetails()
+    public void LoadSatelliteDetails(SatnogsDbSatellite? sat = null)
     {
-      SatnogsDbSatellite sat;
-      if (ctx.GroupViewPanel != null && ctx.GroupViewPanel.listView1.SelectedIndices.Count > 0)
-      {
-        int idx = ctx.GroupViewPanel.listView1.SelectedIndices[0];
-        sat = ((GroupViewPanel.ItemData)ctx.GroupViewPanel.Items[idx].Tag).Sat;
-      }
-      else
-      {
-        var sett = ctx.Settings.Satellites;
-        var group = sett.SatelliteGroups.First(g => g.Id == sett.SelectedGroup);
-        sat = ctx.SatnogsDb.GetSatellite(group.SelectedSatId);
-      }
-
+      sat ??= ctx.SatelliteSelector.SelectedSatellite; ;
       sat.SetElevationAndFootPrint();
       satelliteDetailsControl1.ShowSatellite(sat);
     }

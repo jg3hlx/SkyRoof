@@ -134,13 +134,13 @@ namespace OrbiNom
       return Track.Last();
     }
 
-    internal string[] GetTooltipText()
+    internal string[] GetTooltipText(bool showSeconds = true)
     {
       string[] tooltip = new string[6];
 
       if (EndTime < DateTime.UtcNow) tooltip[0] = "Ended.";
-      else if (StartTime < DateTime.UtcNow) tooltip[0] = $"LOS  in {Utils.TimespanToString(EndTime - DateTime.UtcNow)}";
-      else tooltip[0] = $"AOS  in {Utils.TimespanToString(StartTime - DateTime.UtcNow)}";
+      else if (StartTime < DateTime.UtcNow) tooltip[0] = $"LOS ↓  in {Utils.TimespanToString(EndTime - DateTime.UtcNow, showSeconds)}";
+      else tooltip[0] = $"AOS ↑  in {Utils.TimespanToString(StartTime - DateTime.UtcNow, showSeconds)}";
 
       tooltip[1] = $"{StartTime.ToLocalTime():yyyy-MM-dd}";
       tooltip[2] = $"{StartTime.ToLocalTime():HH:mm:ss} to {EndTime.ToLocalTime():HH:mm:ss}";

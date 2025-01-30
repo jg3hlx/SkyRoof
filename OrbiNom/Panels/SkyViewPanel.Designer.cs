@@ -29,27 +29,27 @@
     private void InitializeComponent()
     {
       components = new System.ComponentModel.Container();
-      flowLayoutPanel1 = new FlowLayoutPanel();
+      RadioButtonsPanel = new FlowLayoutPanel();
       RealTimeRadioBtn = new RadioButton();
       OrbitRadioBtn = new RadioButton();
       DrawPanel = new Panel();
       toolTip1 = new ToolTip(components);
       toolTip2 = new ToolTip(components);
       FlowPanel = new FlowLayoutPanel();
-      flowLayoutPanel1.SuspendLayout();
+      RadioButtonsPanel.SuspendLayout();
       SuspendLayout();
       // 
-      // flowLayoutPanel1
+      // RadioButtonsPanel
       // 
-      flowLayoutPanel1.AutoSize = true;
-      flowLayoutPanel1.Controls.Add(RealTimeRadioBtn);
-      flowLayoutPanel1.Controls.Add(OrbitRadioBtn);
-      flowLayoutPanel1.Dock = DockStyle.Top;
-      flowLayoutPanel1.Location = new Point(0, 0);
-      flowLayoutPanel1.MaximumSize = new Size(0, 60);
-      flowLayoutPanel1.Name = "flowLayoutPanel1";
-      flowLayoutPanel1.Size = new Size(800, 25);
-      flowLayoutPanel1.TabIndex = 1;
+      RadioButtonsPanel.AutoSize = true;
+      RadioButtonsPanel.Controls.Add(RealTimeRadioBtn);
+      RadioButtonsPanel.Controls.Add(OrbitRadioBtn);
+      RadioButtonsPanel.Dock = DockStyle.Top;
+      RadioButtonsPanel.Location = new Point(0, 0);
+      RadioButtonsPanel.MaximumSize = new Size(0, 60);
+      RadioButtonsPanel.Name = "RadioButtonsPanel";
+      RadioButtonsPanel.Size = new Size(800, 25);
+      RadioButtonsPanel.TabIndex = 1;
       // 
       // RealTimeRadioBtn
       // 
@@ -110,19 +110,19 @@
       ClientSize = new Size(800, 450);
       Controls.Add(DrawPanel);
       Controls.Add(FlowPanel);
-      Controls.Add(flowLayoutPanel1);
+      Controls.Add(RadioButtonsPanel);
       Name = "SkyViewPanel";
       Text = "Sky View";
       FormClosing += SkyViewPanel_FormClosing;
-      flowLayoutPanel1.ResumeLayout(false);
-      flowLayoutPanel1.PerformLayout();
+      RadioButtonsPanel.ResumeLayout(false);
+      RadioButtonsPanel.PerformLayout();
       ResumeLayout(false);
       PerformLayout();
     }
 
     #endregion
 
-    private FlowLayoutPanel flowLayoutPanel1;
+    private FlowLayoutPanel RadioButtonsPanel;
     private RadioButton RealTimeRadioBtn;
     private RadioButton OrbitRadioBtn;
     private Panel DrawPanel;

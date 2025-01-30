@@ -73,6 +73,26 @@ namespace OrbiNom.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] EarthFragmentShader {
+            get {
+                object obj = ResourceManager.GetObject("EarthFragmentShader", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] EarthVertexShader {
+            get {
+                object obj = ResourceManager.GetObject("EarthVertexShader", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] ok {
             get {
                 object obj = ResourceManager.GetObject("ok", resourceCulture);
@@ -93,9 +113,39 @@ namespace OrbiNom.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] xmark {
+        internal static byte[] WaterfallFragmentShader {
             get {
-                object obj = ResourceManager.GetObject("xmark", resourceCulture);
+                object obj = ResourceManager.GetObject("WaterfallFragmentShader", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] WaterfallVertexShader {
+            get {
+                object obj = ResourceManager.GetObject("WaterfallVertexShader", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap worldMapTexture {
+            get {
+                object obj = ResourceManager.GetObject("worldMapTexture", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] x_mark {
+            get {
+                object obj = ResourceManager.GetObject("x_mark", resourceCulture);
                 return ((byte[])(obj));
             }
         }

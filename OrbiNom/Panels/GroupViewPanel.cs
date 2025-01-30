@@ -42,20 +42,19 @@ namespace OrbiNom
       this.ctx = ctx;
       ctx.GroupViewPanel = this;
       ctx.MainForm.GroupViewMNU.Checked = true;
-      listView1.SelectedIndexChanged += ListView1_SelectedIndexChanged;
       LoadGroup();
     }
 
-    private void ListView1_SelectedIndexChanged(object? sender, EventArgs e)
+    private void listView1_Click(object sender, EventArgs e)
     {
-      if (((ListView)sender).SelectedIndices.Count == 0) return;
+      if (listView1.SelectedIndices.Count == 0) return;
 
-      ctx.SatelliteDetailsPanel?.LoadSatelliteDetails();
+      var data = (ItemData)Items[listView1.SelectedIndices[0]].Tag!;
       ctx.PassesPanel?.ShowPasses();
-
-      var pass = ((ItemData)Items[listView1.SelectedIndices[0]].Tag!).Pass;
-      ctx.SatelliteSelector.SetSelectedPass(pass);
+      if (data.Pass != null) ctx.SatelliteSelector.SetSelectedPass(data.Pass);
+      ctx.SatelliteDetailsPanel?.LoadSatelliteDetails(data.Sat);
     }
+
 
     private void GroupViewPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
@@ -135,8 +134,7 @@ namespace OrbiNom
           changed = true;
         }
 
-
-          if (data.Pass == null)
+        if (data.Pass == null)
         {
           item.SubItems[2].Text = "n/a";
           item.SubItems[3].Text = "";
@@ -154,7 +152,7 @@ namespace OrbiNom
       }
 
       if (changed) SortItems();
-        listView1.Invalidate();
+      listView1.Invalidate();
     }
 
     private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -165,14 +163,14 @@ namespace OrbiNom
 
     private void SortItems()
     {
-      switch(SortColumn)
+      switch (SortColumn)
       {
         case 0: Items = Items.OrderBy(item => item.Text).ToArray(); break;
         case 1: Items = Items.OrderBy(item => ((ItemData)item.Tag!).Sat.norad_cat_id).ToArray(); break;
         case 2: Items = Items.OrderBy(item => ((ItemData)item.Tag!).Pass?.StartTime ?? DateTime.MaxValue).ToArray(); break;
         case 3: Items = Items.OrderBy(item => ((ItemData)item.Tag!).Pass?.MaxElevation).ToArray(); break;
       }
-      
+
       listView1.Invalidate();
     }
   }

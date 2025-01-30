@@ -149,7 +149,7 @@ namespace OrbiNom
     private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
     {
       if (ctx.SatelliteDetailsPanel == null)
-        new SatelliteDetailsPanel(ctx).Show(DockHost, DockState.DockLeft);
+        new SatelliteDetailsPanel(ctx).Show(DockHost, DockState.Float);
       else
         ctx.SatelliteDetailsPanel.Close();
     }
@@ -178,6 +178,15 @@ namespace OrbiNom
         ctx.SkyViewPanel.Close();
     }
 
+    private void EarthViewMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.EarthViewPanel == null)
+        new EarthViewPanel(ctx).Show(DockHost, DockState.DockRight);
+      else
+        ctx.EarthViewPanel.Close();
+    }
+
+
 
 
 
@@ -200,6 +209,7 @@ namespace OrbiNom
         case "OrbiNom.PassesPanel": return new PassesPanel(ctx);
         case "OrbiNom.TimelinePanel": return new TimelinePanel(ctx);
         case "OrbiNom.SkyViewPanel": return new SkyViewPanel(ctx);
+        case "OrbiNom.EarthViewPanel": return new EarthViewPanel(ctx);
         default: return null;
       }
     }
@@ -216,6 +226,7 @@ namespace OrbiNom
     {
       Clock.ShowTime();
       ctx.SkyViewPanel?.Advance();
+      ctx.EarthViewPanel?.Advance();
 
       // 500-ms ticks
       TickCount += 1;
@@ -287,7 +298,9 @@ namespace OrbiNom
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)
     {
-      ctx.SkyViewPanel?.SetPass(ctx.SatelliteSelector.SelectedPass);
+      SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
+      ctx.SkyViewPanel?.SetPass(pass);
+      ctx.EarthViewPanel?.SetPass(pass);
     }
   }
 }

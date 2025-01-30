@@ -22,5 +22,6 @@ namespace OrbiNom
     public PassesPanel? PassesPanel;
     public TimelinePanel? TimelinePanel;
     public SkyViewPanel? SkyViewPanel;
+    public EarthViewPanel? EarthViewPanel;
   }
 }

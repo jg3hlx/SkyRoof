@@ -62,6 +62,7 @@
       listView1.VirtualMode = true;
       listView1.ColumnClick += listView1_ColumnClick;
       listView1.RetrieveVirtualItem += listView1_RetrieveVirtualItem;
+      listView1.Click += listView1_Click;
       listView1.DoubleClick += listView1_DoubleClick;
       // 
       // columnHeader1

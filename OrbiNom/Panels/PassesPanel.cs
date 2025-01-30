@@ -242,6 +242,7 @@ namespace OrbiNom
       var item = listViewEx1.GetItemAt(e.X, e.Y);
       if (item == null) return;
       var pass = (SatellitePass)item.Tag;
+      ctx.SatelliteDetailsPanel?.LoadSatelliteDetails(pass.Satellite);
       ctx.SatelliteSelector.SetSelectedPass(pass);
     }
   }

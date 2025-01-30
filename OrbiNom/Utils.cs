@@ -96,8 +96,8 @@ namespace VE3NEA
     {
       string result = "";
       if (timeSpan > TimeSpan.FromHours(1)) result += $"{(int)timeSpan.TotalHours:D}h ";
-      string minutesLabel = showSeconds ? "m" : " min";
-      if (timeSpan > TimeSpan.FromMinutes(1)) result += $"{timeSpan.Minutes}{minutesLabel}";
+      string minutesLabel = showSeconds ? "m " : " min";
+      if (timeSpan > TimeSpan.FromMinutes(1) || !showSeconds) result += $"{timeSpan.Minutes}{minutesLabel}";
       if (showSeconds) result += $"{timeSpan.Seconds,2:D2}s";
       return result;
     }

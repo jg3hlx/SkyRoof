@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static OrbiNom.GroupViewPanel;
 
@@ -238,7 +239,7 @@ namespace OrbiNom
         var rect = new RectangleF(
           TimeToPixel(pass.CulminationTime, now) - size.Width / 2,
           y0 - (float)pass.MaxElevation * scaleY - size.Height,
-          size.Width, size.Height);
+          size.Width+1, size.Height); // without +1 the last char is sometimes truncated
 
         g.DrawString(text, Font, Brushes.Black, rect);
         SatLabelRects[rect] = pass;
@@ -317,6 +318,7 @@ namespace OrbiNom
         {
           var pass = SatLabelRects[rect];
           ctx.SatelliteSelector.SetSelectedPass(pass);
+          ctx.SatelliteDetailsPanel?.LoadSatelliteDetails(pass.Satellite);
         }
       }
     }
@@ -353,7 +355,7 @@ namespace OrbiNom
           Cursor = Cursors.Hand;
 
           var pass = SatLabelRects[rect];
-          string tooltip = pass.Satellite.GetTooltipText() + "\n\n" + string.Join("\n", pass.GetTooltipText());
+          string tooltip = pass.Satellite.GetTooltipText() + "\n\n" + string.Join("\n", pass.GetTooltipText(false));
           if (tooltip != toolTip1.GetToolTip(this))
           {
             toolTip1.ToolTipTitle = pass.Satellite.name;
