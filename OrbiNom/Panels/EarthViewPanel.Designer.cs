@@ -30,7 +30,7 @@
     {
       openglControl1 = new SharpGL.OpenGLControl();
       RadioButtonsPanel = new FlowLayoutPanel();
-      RealTimeRadioBtn = new RadioButton();
+      SatelliteRadioBtn = new RadioButton();
       OrbitRadioBtn = new RadioButton();
       ((System.ComponentModel.ISupportInitialize)openglControl1).BeginInit();
       RadioButtonsPanel.SuspendLayout();
@@ -55,7 +55,7 @@
       // RadioButtonsPanel
       // 
       RadioButtonsPanel.BackColor = Color.Transparent;
-      RadioButtonsPanel.Controls.Add(RealTimeRadioBtn);
+      RadioButtonsPanel.Controls.Add(SatelliteRadioBtn);
       RadioButtonsPanel.Controls.Add(OrbitRadioBtn);
       RadioButtonsPanel.Dock = DockStyle.Top;
       RadioButtonsPanel.Location = new Point(0, 0);
@@ -64,28 +64,30 @@
       RadioButtonsPanel.Size = new Size(299, 25);
       RadioButtonsPanel.TabIndex = 3;
       // 
-      // RealTimeRadioBtn
+      // SatelliteRadioBtn
       // 
-      RealTimeRadioBtn.AutoSize = true;
-      RealTimeRadioBtn.Checked = true;
-      RealTimeRadioBtn.Location = new Point(3, 3);
-      RealTimeRadioBtn.Name = "RealTimeRadioBtn";
-      RealTimeRadioBtn.Size = new Size(76, 19);
-      RealTimeRadioBtn.TabIndex = 0;
-      RealTimeRadioBtn.TabStop = true;
-      RealTimeRadioBtn.Text = "Real Time";
-      RealTimeRadioBtn.UseVisualStyleBackColor = false;
+      SatelliteRadioBtn.AutoSize = true;
+      SatelliteRadioBtn.Checked = true;
+      SatelliteRadioBtn.Location = new Point(3, 3);
+      SatelliteRadioBtn.Name = "SatelliteRadioBtn";
+      SatelliteRadioBtn.Size = new Size(66, 19);
+      SatelliteRadioBtn.TabIndex = 0;
+      SatelliteRadioBtn.TabStop = true;
+      SatelliteRadioBtn.Text = "Satellite";
+      SatelliteRadioBtn.UseVisualStyleBackColor = false;
+      SatelliteRadioBtn.CheckedChanged += SatelliteRadioBtn_CheckedChanged;
       // 
       // OrbitRadioBtn
       // 
       OrbitRadioBtn.AutoSize = true;
       OrbitRadioBtn.Enabled = false;
-      OrbitRadioBtn.Location = new Point(85, 3);
+      OrbitRadioBtn.Location = new Point(75, 3);
       OrbitRadioBtn.Name = "OrbitRadioBtn";
       OrbitRadioBtn.Size = new Size(99, 19);
       OrbitRadioBtn.TabIndex = 1;
       OrbitRadioBtn.Text = "Selected Orbit";
       OrbitRadioBtn.UseVisualStyleBackColor = false;
+      OrbitRadioBtn.CheckedChanged += SatelliteRadioBtn_CheckedChanged;
       // 
       // EarthViewPanel
       // 
@@ -107,7 +109,7 @@
 
     private SharpGL.OpenGLControl openglControl1;
     private FlowLayoutPanel RadioButtonsPanel;
-    private RadioButton RealTimeRadioBtn;
+    private RadioButton SatelliteRadioBtn;
     private RadioButton OrbitRadioBtn;
   }
 }

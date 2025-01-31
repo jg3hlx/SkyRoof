@@ -16,13 +16,14 @@ using VE3NEA;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using Serilog;
+using System.Drawing.Drawing2D;
 
 namespace OrbiNom
 {
   public partial class EarthViewPanel : DockContent
   {
     private readonly Context ctx;
-
+    private readonly Font RegularFont, BoldFont;
     private OpenGL gl;
     private ShaderProgram ShaderProgram;
     private VertexBufferArray VertexBufferArray;
@@ -31,8 +32,8 @@ namespace OrbiNom
 
     public GeoPoint Center;
     private double Footprint;
-    public float Zoom = 1;
-    public Satellite Satellite;
+    public double Zoom = 1;
+    public SatnogsDbSatellite Satellite;
 
 
     public EarthViewPanel() { InitializeComponent(); }
@@ -41,12 +42,15 @@ namespace OrbiNom
     {
       InitializeComponent();
       this.ctx = ctx;
-
       ctx.EarthViewPanel = this;
       ctx.MainForm.EarthViewMNU.Checked = true;
+      Center = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
+      SetSatellite();
+
+      RegularFont = new Font(OrbitRadioBtn.Font, FontStyle.Regular);
+      BoldFont = new Font(OrbitRadioBtn.Font, FontStyle.Bold);
 
       openglControl1.MouseWheel += OpenglControl1_MouseWheel;
-      Center = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
     }
 
     private void EarthViewPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -65,6 +69,16 @@ namespace OrbiNom
       Zoom *= 1 + e.Delta / 1200f;
     }
 
+    internal void SetSatellite(SatnogsDbSatellite? satellite = null)
+    {
+      Satellite = satellite ?? ctx.SatelliteSelector.SelectedSatellite;
+      SatelliteRadioBtn.Text = $"{Satellite.name}  Now";
+      if (SatelliteRadioBtn.Checked) SatelliteRadioBtn.Font = new(SatelliteRadioBtn.Font, FontStyle.Bold);
+
+      ComputeSatLocation();
+      Zoom = 0.8 * Math.PI / Footprint;
+      Invalidate();
+    }
 
     public void SetPass(SatellitePass? pass)
     {
@@ -73,9 +87,15 @@ namespace OrbiNom
 
     public void Advance()
     {
-      if (Satellite == null) return;
+      if (!SatelliteRadioBtn.Checked || Satellite == null) return;
 
-      var p = Satellite.Predict().ToGeodetic();
+      ComputeSatLocation();
+      Invalidate();
+    }
+
+    private void ComputeSatLocation()
+    {
+      var p = Satellite.Tracker.Predict().ToGeodetic();
       Center = new(p.Latitude.Degrees, p.Longitude.Degrees);
       Footprint = p.GetFootprintAngle().Radians;
     }
@@ -224,7 +244,7 @@ namespace OrbiNom
       CheckError();
       ShaderProgram.SetUniform1(gl, "in_aspect", ClientSize.Width / (float)ClientSize.Height);
       CheckError();
-      ShaderProgram.SetUniform1(gl, "in_zoom", Zoom);
+      ShaderProgram.SetUniform1(gl, "in_zoom", (float)Zoom);
       CheckError();
 
       gl.ClearColor(0.7f, 0.7f, 0.7f, 1);
@@ -255,7 +275,7 @@ namespace OrbiNom
           string stackTrace = new StackTrace(true).ToString();
           if (IsLoggableError(stackTrace))
             Log.Error($"{gl.ErrorString(err)}\n{stackTrace}");
-        }      
+        }
     }
 
     // GL scene may be updated many times per second.
@@ -271,6 +291,14 @@ namespace OrbiNom
       // if (DateTime.UtcNow < NextLogErrortime) return false;
       // NextLogErrortime = DateTime.UtcNow + TimeSpan.FromSeconds(30);
       // return true;
+    }
+
+    private void SatelliteRadioBtn_CheckedChanged(object sender, EventArgs e)
+    {
+      if (!((RadioButton)sender).Checked) return;
+
+      SatelliteRadioBtn.Font = SatelliteRadioBtn.Checked ? BoldFont : RegularFont;
+      OrbitRadioBtn.Font = OrbitRadioBtn.Checked ? BoldFont : RegularFont;
     }
   }
 }

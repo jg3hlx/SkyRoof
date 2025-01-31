@@ -1,4 +1,5 @@
-﻿using SGPdotNET.Observation;
+﻿using System.Drawing.Printing;
+using SGPdotNET.Observation;
 using SGPdotNET.Util;
 using VE3NEA;
 
@@ -18,7 +19,6 @@ namespace OrbiNom
     private GroundStation GroundStation;
     private PointF[] hump;
     public SatnogsDbSatellite Satellite;
-    public Satellite SatTracker;
     public DateTime StartTime, CulminationTime, EndTime;
     public double MaxElevation;
     public int OrbitNumber;
@@ -47,7 +47,7 @@ namespace OrbiNom
         {
           var trackPoint = new TrackPoint();
           trackPoint.Utc = StartTime + i * step;
-          trackPoint.Observation = GroundStation.Observe(SatTracker, trackPoint.Utc);
+          trackPoint.Observation = GroundStation.Observe(Satellite.Tracker, trackPoint.Utc);
           track.Add(trackPoint);
         }
 
@@ -65,7 +65,6 @@ namespace OrbiNom
     {
       GroundStation = groundStation;
       Satellite = satellite;
-      SatTracker = tracker;
       SatelliteVisibilityPeriod = visibilityPeriod;
       StartTime = visibilityPeriod.Start;
       CulminationTime = visibilityPeriod.MaxElevationTime;
@@ -77,12 +76,12 @@ namespace OrbiNom
     private int ComputeOrbitNumber()
     {
       var utc = SatelliteVisibilityPeriod.MaxElevationTime;
-      uint revNum = SatTracker.Tle.OrbitNumber;
-      var timeSinceOrbit = (utc - SatTracker.Tle.Epoch).TotalDays;
-      var revPerDay = SatTracker.Tle.MeanMotionRevPerDay;
-      var drag = SatTracker.Tle.BStarDragTerm;
-      var meanAnomaly = SatTracker.Tle.MeanAnomaly.Radians;
-      var argumentPerigee = SatTracker.Tle.ArgumentPerigee.Radians;
+      uint revNum = Satellite.Tracker.Tle.OrbitNumber;
+      var timeSinceOrbit = (utc - Satellite.Tracker.Tle.Epoch).TotalDays;
+      var revPerDay = Satellite.Tracker.Tle.MeanMotionRevPerDay;
+      var drag = Satellite.Tracker.Tle.BStarDragTerm;
+      var meanAnomaly = Satellite.Tracker.Tle.MeanAnomaly.Radians;
+      var argumentPerigee = Satellite.Tracker.Tle.ArgumentPerigee.Radians;
 
       return (int)(
         revNum +
@@ -106,7 +105,7 @@ namespace OrbiNom
       for (int i = 0; i <= StepCount; i++)
       {
         var utc = StartTime + step * i;
-        var observation = GroundStation.Observe(SatTracker, utc);
+        var observation = GroundStation.Observe(Satellite.Tracker, utc);
 
         double ro = 1 - observation.Elevation.Radians / Utils.HalfPi;
         double phi = Utils.HalfPi - observation.Azimuth.Radians;
@@ -153,7 +152,57 @@ namespace OrbiNom
 
     internal TopocentricObservation GetObservationAt(DateTime utc)
     {
-      return GroundStation.Observe(SatTracker, utc);
+      return GroundStation.Observe(Satellite.Tracker, utc);
+    }
+
+    public List<GeoPath> GetCoveragePolygon()
+    {
+      // only for LEO
+      if (EndTime - StartTime > TimeSpan.FromHours(2)) return new();
+
+      var leftPoints = new List<GeoPoint>();
+      var rightPoints = new List<GeoPoint>();
+
+      var predictions = Track.Select(t => Satellite.Tracker.Predict(t.Utc).ToGeodetic()).ToArray();
+
+      for (int i = 0; i < predictions.Length; i++)
+      {
+        var prevP = predictions[Math.Max(0, i-1)];
+        var P = predictions[i];
+        var nextP = predictions[Math.Min(predictions.Length-1, i+1)];
+
+        var prevG = new GeoPoint(prevP.Latitude.Degrees, prevP.Longitude.Degrees);
+        var G = new GeoPoint(P.Latitude.Degrees, P.Longitude.Degrees);
+        var nextG = new GeoPoint(nextP.Latitude.Degrees, nextP.Longitude.Degrees);
+
+        var azim = (nextG - prevG).Azimuth;
+        var radius = P.GetFootprintAngle().Radians * Geo.KmInR;
+
+        var pointL = G + new GeoPath(azim - 90, radius);
+        var pointR = G + new GeoPath(azim + 90, radius);
+
+        if (i == 0)
+          for (double a = 1; a < 180; a+=1)
+            leftPoints.Add(G + new GeoPath(azim + 90 + a, radius));
+
+        leftPoints.Add(pointL);
+        rightPoints.Add(pointR);
+
+        if (i == predictions.Length-1)
+          for (double a = 1; a < 180; a+=1)
+            leftPoints.Add(G + new GeoPath(azim - 90 + a, radius));
+      }
+
+      rightPoints.Reverse();
+      leftPoints.AddRange(rightPoints);
+      
+      // close the loop
+      leftPoints.Add(leftPoints[0]);
+
+      // lat/lon to az/dist
+      var homeP = GroundStation.Location.ToGeodetic();
+      var homeG = new GeoPoint(homeP.Latitude.Degrees, homeP.Longitude.Degrees);
+      return leftPoints.Select(g => g - homeG).ToList();
     }
   }
 }

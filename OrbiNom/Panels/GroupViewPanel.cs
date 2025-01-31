@@ -52,7 +52,8 @@ namespace OrbiNom
       var data = (ItemData)Items[listView1.SelectedIndices[0]].Tag!;
       ctx.PassesPanel?.ShowPasses();
       if (data.Pass != null) ctx.SatelliteSelector.SetSelectedPass(data.Pass);
-      ctx.SatelliteDetailsPanel?.LoadSatelliteDetails(data.Sat);
+      ctx.SatelliteDetailsPanel?.SetSatellite(data.Sat);
+      ctx.EarthViewPanel?.SetSatellite(data.Sat);
     }
 
 

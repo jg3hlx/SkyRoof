@@ -283,9 +283,10 @@ namespace OrbiNom
     private void SatelliteSelector_SelectedSatelliteChanged(object sender, EventArgs e)
     {
       ctx.GroupViewPanel?.ShowSelectedSat();
-      ctx.SatelliteDetailsPanel?.LoadSatelliteDetails();
+      ctx.SatelliteDetailsPanel?.SetSatellite();
       ctx.PassesPanel?.ShowPasses();
       ctx.TimelinePanel?.Invalidate();
+      ctx.EarthViewPanel?.SetSatellite();
     }
 
     private void SatnogsDb_TleUpdated(object? sender, EventArgs e)

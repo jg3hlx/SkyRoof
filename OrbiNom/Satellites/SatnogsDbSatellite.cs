@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using SGPdotNET.Observation;
+using SGPdotNET.TLE;
 using static OrbiNom.SatnogsDbSatellite;
 
 namespace OrbiNom
@@ -165,11 +166,14 @@ namespace OrbiNom
     [Browsable(false)]
     public List<JE9PELtransmitter> JE9PELtransmitters { get; set; } = new();
 
-
-
     [Browsable(false)]    
-    public List<string> TransmittersHint { get => transmittersHint ?? FormatTransmitters(); } // build on demand
+    public List<string> TransmittersHint { get => transmittersHint ??= FormatTransmitters(); } // build on demand
     private List<string>? transmittersHint;
+
+    [Browsable(false)]
+    public Satellite Tracker { get => tracker ??= new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);  }
+    private Satellite? tracker;
+    
     private List<string> FormatTransmitters()
     {
       return Transmitters
@@ -258,9 +262,8 @@ namespace OrbiNom
       if (Tle == null) return;
       try
       {
-        var satellite = new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);
-        Footprint = (int)satellite.Predict().ToGeodetic().GetFootprint();
-        Elevation = (int)satellite.Predict().ToGeodetic().Altitude;
+        Footprint = (int)Tracker.Predict().ToGeodetic().GetFootprint();
+        Elevation = (int)Tracker.Predict().ToGeodetic().Altitude;
       }
       catch
       {

@@ -33,7 +33,7 @@ namespace OrbiNom
       ctx.MainForm.SatelliteDetailsMNU.Checked = true;
       //satelliteDetailsControl1.splitContainer1.SplitterMoved += SplitContainer1_SplitterMoved;
 
-      LoadSatelliteDetails();
+      SetSatellite();
     }
 
     private void SatelliteDetailsPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -43,7 +43,7 @@ namespace OrbiNom
       ctx.Settings.Ui.SatelliteDetailsPanel.SplitterDistance = satelliteDetailsControl1.splitContainer1.SplitterDistance;
     }
 
-    public void LoadSatelliteDetails(SatnogsDbSatellite? sat = null)
+    public void SetSatellite(SatnogsDbSatellite? sat = null)
     {
       sat ??= ctx.SatelliteSelector.SelectedSatellite; ;
       sat.SetElevationAndFootPrint();

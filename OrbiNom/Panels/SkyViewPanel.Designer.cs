@@ -34,7 +34,6 @@
       OrbitRadioBtn = new RadioButton();
       DrawPanel = new Panel();
       toolTip1 = new ToolTip(components);
-      toolTip2 = new ToolTip(components);
       FlowPanel = new FlowLayoutPanel();
       RadioButtonsPanel.SuspendLayout();
       SuspendLayout();
@@ -127,7 +126,6 @@
     private RadioButton OrbitRadioBtn;
     private Panel DrawPanel;
     private ToolTip toolTip1;
-    private ToolTip toolTip2;
     private FlowLayoutPanel FlowPanel;
   }
 }
