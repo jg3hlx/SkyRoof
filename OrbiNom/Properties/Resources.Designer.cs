@@ -113,6 +113,26 @@ namespace OrbiNom.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] SpriteFragmentShader {
+            get {
+                object obj = ResourceManager.GetObject("SpriteFragmentShader", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SpriteVertexShader {
+            get {
+                object obj = ResourceManager.GetObject("SpriteVertexShader", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] WaterfallFragmentShader {
             get {
                 object obj = ResourceManager.GetObject("WaterfallFragmentShader", resourceCulture);

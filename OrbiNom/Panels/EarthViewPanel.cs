@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using Serilog;
 using System.Drawing.Drawing2D;
+using System.Runtime.CompilerServices;
 
 namespace OrbiNom
 {
@@ -29,9 +30,11 @@ namespace OrbiNom
     private VertexBufferArray VertexBufferArray;
     private uint[] TextureIds = new uint[1];
     private int VertexCount;
-
+    private SpriteRenderer SpriteRenderer;
+    private Sprite SatelliteSprite;
     public GeoPoint Center;
     private double Footprint;
+    private double Azimuth;
     public double Zoom = 1;
     public SatnogsDbSatellite Satellite;
 
@@ -62,11 +65,22 @@ namespace OrbiNom
     private void openglControl1_Resize(object sender, EventArgs e)
     {
       openglControl1.Invalidate();
+      ValidateZoom();
+
+      OrbitRadioBtn.Text = $"Zoom {Zoom:F2}x Radius {Math.Min(openglControl1.ClientSize.Width, openglControl1.ClientSize.Height)}";
     }
 
     private void OpenglControl1_MouseWheel(object? sender, MouseEventArgs e)
     {
       Zoom *= 1 + e.Delta / 1200f;
+      ValidateZoom();
+      OrbitRadioBtn.Text = $"Zoom {Zoom:F2}x Radius {Math.Min(openglControl1.ClientSize.Width, openglControl1.ClientSize.Height)}";
+    }
+
+    private void ValidateZoom()
+    {
+      var diam = Math.Min(openglControl1.ClientSize.Width, openglControl1.ClientSize.Height);
+      Zoom = Math.Max(1f, Math.Min(25000 / diam, Zoom));
     }
 
     internal void SetSatellite(SatnogsDbSatellite? satellite = null)
@@ -96,8 +110,12 @@ namespace OrbiNom
     private void ComputeSatLocation()
     {
       var p = Satellite.Tracker.Predict().ToGeodetic();
+      var nextP = Satellite.Tracker.Predict(DateTime.UtcNow.AddSeconds(10)).ToGeodetic();
+      var nextCenter = new GeoPoint(nextP.Latitude.Degrees, nextP.Longitude.Degrees);
+
       Center = new(p.Latitude.Degrees, p.Longitude.Degrees);
       Footprint = p.GetFootprintAngle().Radians;
+      Azimuth = (nextCenter - Center).AzimuthRad;
     }
 
 
@@ -110,6 +128,10 @@ namespace OrbiNom
     {
       gl = openglControl1.OpenGL;
       CheckError(false);
+
+      SpriteRenderer = new(gl);
+      CheckError(false);
+      SatelliteSprite = new Sprite(gl, Properties.Resources.satellite3);
 
       gl.Disable(OpenGL.GL_DEPTH_TEST);
       CheckError();
@@ -242,7 +264,7 @@ namespace OrbiNom
       CheckError();
       ShaderProgram.SetUniform1(gl, "in_footprint", (float)Footprint);
       CheckError();
-      ShaderProgram.SetUniform1(gl, "in_aspect", ClientSize.Width / (float)ClientSize.Height);
+      ShaderProgram.SetUniform1(gl, "in_aspect", openglControl1.ClientSize.Width / (float)openglControl1.ClientSize.Height);
       CheckError();
       ShaderProgram.SetUniform1(gl, "in_zoom", (float)Zoom);
       CheckError();
@@ -257,6 +279,14 @@ namespace OrbiNom
       VertexBufferArray.Unbind(gl);
       CheckError();
       ShaderProgram.Unbind(gl);
+      CheckError();
+
+      var diam = Math.Min(openglControl1.ClientSize.Width, openglControl1.ClientSize.Height);
+      SatelliteSprite.Scale = 0.6f + diam * 0.0007f;
+      SatelliteSprite.Angle = (float)(-Azimuth + Math.PI / 4);
+
+
+      SpriteRenderer.DrawSprite(SatelliteSprite);
       CheckError();
     }
 
