@@ -47,9 +47,9 @@ namespace OrbiNom
 
       // icons from https://www.iconsdb.com/
       using (var ms = new MemoryStream(Properties.Resources.ok)) { OkImage = Image.FromStream(ms); }
-      using (var ms = new MemoryStream(Properties.Resources.x_mark)) { XMarkImage = Image.FromStream(ms); }
+      using (var ms = new MemoryStream(Properties.Resources.xmark)) { XMarkImage = Image.FromStream(ms); }
       using (var ms = new MemoryStream(Properties.Resources.arrow)) { ArrowImage = Image.FromStream(ms); }
-      using (var ms = new MemoryStream(Properties.Resources.satellite3)) { SatImage = Image.FromStream(ms); }
+      using (var ms = new MemoryStream(Properties.Resources.satellite)) { SatImage = Image.FromStream(ms); }
 
       Utils.SetDoubleBuffered(DrawPanel, true);
     }

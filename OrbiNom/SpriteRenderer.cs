@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Serilog;
@@ -61,7 +62,7 @@ namespace OrbiNom
       VertexBufferArray.Unbind(gl);
     }
 
-    public void DrawSprite(Sprite sprite)
+    internal void DrawSprites(Sprite[] sprites)
     {
       ShaderProgram.Bind(gl);
       CheckError();
@@ -72,21 +73,26 @@ namespace OrbiNom
       gl.ActiveTexture(OpenGL.GL_TEXTURE0);
       CheckError();
 
-      gl.BindTexture(OpenGL.GL_TEXTURE_2D, sprite.TextureId);
-      CheckError();
-
-      var matrixId = ShaderProgram.GetUniformLocation(gl, "transform");
-      var transform = sprite.Transform;
-      gl.UniformMatrix4(matrixId, 1, false, MatrixToFloats(transform));
-      CheckError();
-
-      gl.DrawArrays(OpenGL.GL_TRIANGLE_STRIP, 0, 4);
-      CheckError();
+      foreach (var sprite in sprites) DrawSprite(sprite);
 
       VertexBufferArray.Unbind(gl);
       CheckError();
 
       ShaderProgram.Unbind(gl);
+      CheckError();
+    }
+
+    private void DrawSprite(Sprite sprite)
+    {
+      gl.BindTexture(OpenGL.GL_TEXTURE_2D, sprite.TextureId);
+      CheckError();
+
+      var matrixId = ShaderProgram.GetUniformLocation(gl, "transform");
+      var matrix = sprite.Transform;
+      gl.UniformMatrix4(matrixId, 1, false, MatrixToFloats(matrix));
+      CheckError();
+
+      gl.DrawArrays(OpenGL.GL_TRIANGLE_STRIP, 0, 4);
       CheckError();
     }
 

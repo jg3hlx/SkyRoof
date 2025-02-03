@@ -31,8 +31,8 @@ namespace OrbiNom
     private uint[] TextureIds = new uint[1];
     private int VertexCount;
     private SpriteRenderer SpriteRenderer;
-    private Sprite SatelliteSprite;
-    public GeoPoint Center;
+    private Sprite SatelliteSprite, HomeSprite;
+    public GeoPoint Home, Center;
     private double Footprint;
     private double Azimuth;
     public double Zoom = 1;
@@ -47,7 +47,7 @@ namespace OrbiNom
       this.ctx = ctx;
       ctx.EarthViewPanel = this;
       ctx.MainForm.EarthViewMNU.Checked = true;
-      Center = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
+      Home = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
       SetSatellite();
 
       RegularFont = new Font(OrbitRadioBtn.Font, FontStyle.Regular);
@@ -80,7 +80,7 @@ namespace OrbiNom
     private void ValidateZoom()
     {
       var diam = Math.Min(openglControl1.ClientSize.Width, openglControl1.ClientSize.Height);
-      Zoom = Math.Max(1f, Math.Min(25000 / diam, Zoom));
+      if (diam > 0) Zoom = Math.Max(1f, Math.Min(25000 / diam, Zoom));
     }
 
     internal void SetSatellite(SatnogsDbSatellite? satellite = null)
@@ -90,7 +90,7 @@ namespace OrbiNom
       if (SatelliteRadioBtn.Checked) SatelliteRadioBtn.Font = new(SatelliteRadioBtn.Font, FontStyle.Bold);
 
       ComputeSatLocation();
-      Zoom = 0.8 * Math.PI / Footprint;
+      Zoom = 0.9 * Math.PI / Footprint;
       Invalidate();
     }
 
@@ -131,7 +131,8 @@ namespace OrbiNom
 
       SpriteRenderer = new(gl);
       CheckError(false);
-      SatelliteSprite = new Sprite(gl, Properties.Resources.satellite3);
+      SatelliteSprite = new Sprite(gl, Properties.Resources.satellite);
+      HomeSprite = new Sprite(gl, Properties.Resources.ant);
 
       gl.Disable(OpenGL.GL_DEPTH_TEST);
       CheckError();
@@ -223,7 +224,8 @@ namespace OrbiNom
 
 
       //using (Bitmap bitmap = new Bitmap(@"C:\Users\Alex\Desktop\sat\maps\worldMapTexture.bmp"))
-      using (Bitmap bitmap = new Bitmap(Properties.Resources.worldMapTexture))
+      //using (Bitmap bitmap = new Bitmap(Properties.Resources.NaturalEarth))
+      using (Bitmap bitmap = new Bitmap(Properties.Resources.DxAtlasMap1))
       {
         BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
           ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
@@ -281,13 +283,34 @@ namespace OrbiNom
       ShaderProgram.Unbind(gl);
       CheckError();
 
-      var diam = Math.Min(openglControl1.ClientSize.Width, openglControl1.ClientSize.Height);
-      SatelliteSprite.Scale = 0.6f + diam * 0.0007f;
+      SetSpriteAttributes();
+      SpriteRenderer.DrawSprites([SatelliteSprite, HomeSprite]);
+      CheckError();
+    }
+
+    private void SetSpriteAttributes()
+    {
+      // control size, pixels
+      var size = openglControl1.ClientSize;
+      // diameter of the inscribed circle, pixels
+      var diam = Math.Min(size.Width, size.Height);
+      
+      // scale sprites to look nice at all control sizes
+      var scale = 0.6f + diam * 0.0007f;
+      SatelliteSprite.Scale = scale;
+      HomeSprite.Scale = scale;
+
+      // satellite points in the direction of the next position
       SatelliteSprite.Angle = (float)(-Azimuth + Math.PI / 4);
 
+      // home location in the azimuthal projection
+      var path = Home - Center;
+      var ro = path.DistanceRad / Math.PI * Zoom;
+      var phi = Geo.HalfPi - path.AzimuthRad;
 
-      SpriteRenderer.DrawSprite(SatelliteSprite);
-      CheckError();
+      HomeSprite.Location = new PointF(
+        (float)(ro * Math.Cos(phi) * diam / size.Width),
+        (float)(ro * Math.Sin(phi) * diam / size.Height));
     }
 
 

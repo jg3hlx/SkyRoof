@@ -84,9 +84,9 @@ namespace OrbiNom
 
 
       return
-        Matrix4x4.CreateTranslation(Location.X, Location.Y, 0) *
+        Matrix4x4.CreateTranslation(Location.X / scaleX, Location.Y / scaleY, 0) *
         Matrix4x4.CreateRotationZ(Angle) *
-        Matrix4x4.CreateScale(Scale * scaleX, Scale * scaleY, 1);
+        Matrix4x4.CreateScale(scaleX, scaleY, 1);
     }
   }
 }
