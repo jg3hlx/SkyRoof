@@ -16,18 +16,17 @@ namespace OrbiNom
 {
   public class Sprite
   {
-    private uint[] TextureIds = new uint[1];
     private OpenGL gl;
+    private uint[] TextureIds = new uint[1];
     private Size ImageSize;
-    private float scale = 0.7f;
+    private float scale = 1;
 
     public PointF Location;
     public float Angle;
     public float Scale { get => scale; set => SetScale(value); }
-
-
     public uint TextureId => TextureIds[0];
     public Matrix4x4 Transform => GetTransform();
+
 
     public Sprite(OpenGL gl, byte[] imageBytes)
     {
@@ -44,8 +43,8 @@ namespace OrbiNom
 
       gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_LINEAR);    // shrink
       gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_LINEAR);    // stretch
-      gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE); // lat
-      gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE);        // lon
+      gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE); // tex x
+      gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE); // tex y
 
       using (Bitmap bitmap = BitmapFromBytes(imageBytes))
       {
@@ -73,15 +72,12 @@ namespace OrbiNom
     }
 
     private Matrix4x4 GetTransform()
-    {
-      // 0, 0, w, h
-      var viewport = new int[4];
+    {      
+      var viewport = new int[4]; // 0, 0, W, H
       gl.GetInteger(OpenGL.GL_VIEWPORT, viewport);
 
-      float scaleX = Scale * ImageSize.Width / (float)viewport[2];
-      float scaleY = Scale * ImageSize.Height / (float)viewport[3];
-
-
+      float scaleX = Scale * ImageSize.Width / viewport[2];
+      float scaleY = Scale * ImageSize.Height / viewport[3];
 
       return
         Matrix4x4.CreateTranslation(Location.X / scaleX, Location.Y / scaleY, 0) *

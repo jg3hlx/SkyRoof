@@ -22,23 +22,9 @@ namespace OrbiNom
 
       ctx.GroupPasses = new(ctx, true);
       ctx.AllPasses = new(ctx, false);
+
+      timer.Interval = 1000 / TICKS_PER_SECOND;
     }
-
-    //private void ComputePasses()
-    //{
-    //  var point = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
-    //  if (ctx.Passes == null)
-    //  {
-    //    ctx.Passes = new(point, ctx.SatnogsDb.Satellites);
-    //    ctx.Passes.Changed += Passes_Changed;
-    //    Passes_Changed(null, EventArgs.Empty);
-    //  }
-    //}
-
-    //private void Passes_Changed(object? sender, EventArgs e)
-    //{
-    //  ctx.GroupViewPanel?.UpdatePassTimes();
-    //}
 
     private void MainForm_Load(object sender, EventArgs e)
     {
@@ -63,7 +49,8 @@ namespace OrbiNom
 
 
       // download if needed
-      if (ctx.SatnogsDb.Loaded && DateTime.UtcNow < ctx.Settings.Satellites.LastDownloadTime.AddDays(LIST_DOWNLOAD_DAYS))
+      var nextDownloadTime = ctx.Settings.Satellites.LastDownloadTime.AddDays(LIST_DOWNLOAD_DAYS);
+      if (ctx.SatnogsDb.Loaded && DateTime.UtcNow < nextDownloadTime)
         SatnogsDb_ListUpdated(null, null);
       else
         DownloadDialog.Download(this, ctx);
@@ -189,9 +176,6 @@ namespace OrbiNom
 
 
 
-
-
-
     //----------------------------------------------------------------------------------------------
     //                                     docking
     //----------------------------------------------------------------------------------------------
@@ -217,22 +201,27 @@ namespace OrbiNom
 
 
 
-
     //----------------------------------------------------------------------------------------------
     //                                       timer
     //----------------------------------------------------------------------------------------------
+    private const int TICKS_PER_SECOND = 8;
     long TickCount;
+
     private void timer_Tick(object sender, EventArgs e)
+    {
+      ctx.EarthViewPanel?.Advance();
+
+      // 1/8 s ticks
+      TickCount += 1;
+      if (TickCount % (TICKS_PER_SECOND / 4) == 0) FourHertzTick();
+      if (TickCount % TICKS_PER_SECOND == 0) OneSecondTick();
+      if (TickCount % (TICKS_PER_SECOND * 60) == 0) OneMinuteTick();
+    }
+
+    private void FourHertzTick()
     {
       Clock.ShowTime();
       ctx.SkyViewPanel?.Advance();
-      ctx.EarthViewPanel?.Advance();
-
-      // 500-ms ticks
-      TickCount += 1;
-      if (TickCount % 4 == 0) OneSecondTick();
-      if (TickCount % (4 * 60) == 0) OneMinuteTick();
-      if (TickCount % (4 * 300) == 0) FiveMinutesTick();
     }
 
     private void OneSecondTick()
@@ -247,11 +236,6 @@ namespace OrbiNom
       ctx.GroupPasses.PredictMorePasses();
       ctx.AllPasses.PredictMorePasses();
       ctx.PassesPanel?.ShowPasses();
-    }
-
-    private void FiveMinutesTick()
-    {
-      // {!} maybe compute predictions every 5 min, not 1
     }
 
 
@@ -301,7 +285,6 @@ namespace OrbiNom
     {
       SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
       ctx.SkyViewPanel?.SetPass(pass);
-      ctx.EarthViewPanel?.SetPass(pass);
     }
   }
 }

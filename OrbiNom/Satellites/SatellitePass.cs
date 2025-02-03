@@ -17,14 +17,104 @@ namespace OrbiNom
     private readonly TimeSpan TrackStep = TimeSpan.FromSeconds(10);
 
     private GroundStation GroundStation;
-    private PointF[] hump;
     public SatnogsDbSatellite Satellite;
+
     public DateTime StartTime, CulminationTime, EndTime;
     public double MaxElevation;
     public int OrbitNumber;
-    
+    private SatelliteVisibilityPeriod SatelliteVisibilityPeriod;
+
+    public PointF[]? MiniPath;
+    private PointF[] hump;
+    private List<TrackPoint> track;
     public List<TrackPoint> Track { get => track ?? MakeTrack(); }
 
+
+
+    public SatellitePass(GroundStation groundStation, SatnogsDbSatellite satellite, Satellite tracker, SatelliteVisibilityPeriod visibilityPeriod)
+    {
+      GroundStation = groundStation;
+      Satellite = satellite;
+      SatelliteVisibilityPeriod = visibilityPeriod;
+      StartTime = visibilityPeriod.Start;
+      CulminationTime = visibilityPeriod.MaxElevationTime;
+      EndTime = visibilityPeriod.End;
+      MaxElevation = visibilityPeriod.MaxElevation.Degrees;
+      OrbitNumber = ComputeOrbitNumber();
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                         get
+    //----------------------------------------------------------------------------------------------
+    public TrackPoint GetTrackPointAt(DateTime utc)
+    {
+      if (utc < Track.First().Utc) return Track.First();
+
+      for (int i = 1; i < Track.Count; i++)
+        if (Track[i - 1].Utc <= utc && Track[i].Utc > utc)
+        {
+          var r = (utc - Track[i - 1].Utc).TotalSeconds / (Track[i].Utc - Track[i - 1].Utc).TotalSeconds;
+          var rangeRate = Track[i - 1].Observation.RangeRate * (1 - r) + Track[i].Observation.RangeRate * r;
+          var elevation = Track[i - 1].Observation.Elevation.Radians * (1 - r) + Track[i].Observation.Elevation.Radians * r;
+
+          var point = new TrackPoint();
+          point.Utc = utc;
+          point.Observation = new(0, Angle.FromRadians(elevation), 0, rangeRate);
+          return point;
+        }
+      return Track.Last();
+    }
+
+    internal TopocentricObservation GetObservationAt(DateTime utc)
+    {
+      return GroundStation.Observe(Satellite.Tracker, utc);
+    }
+
+    internal string[] GetTooltipText(bool showSeconds = true)
+    {
+      string[] tooltip = new string[6];
+
+      if (EndTime < DateTime.UtcNow) tooltip[0] = "Ended.";
+      else if (StartTime < DateTime.UtcNow) tooltip[0] = $"LOS ↓  in {Utils.TimespanToString(EndTime - DateTime.UtcNow, showSeconds)}";
+      else tooltip[0] = $"AOS ↑  in {Utils.TimespanToString(StartTime - DateTime.UtcNow, showSeconds)}";
+
+      tooltip[1] = $"{StartTime.ToLocalTime():yyyy-MM-dd}";
+      tooltip[2] = $"{StartTime.ToLocalTime():HH:mm:ss} to {EndTime.ToLocalTime():HH:mm:ss}";
+      tooltip[3] = $"Duration: {Utils.TimespanToString(EndTime - StartTime, false)}";
+      tooltip[4] = $"Max Elevation: {MaxElevation:F0}°";
+      tooltip[5] = $"Orbit: #{OrbitNumber}";
+
+      return tooltip;
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        compute
+    //----------------------------------------------------------------------------------------------
+    private int ComputeOrbitNumber()
+    {
+      var utc = SatelliteVisibilityPeriod.MaxElevationTime;
+      uint revNum = Satellite.Tracker.Tle.OrbitNumber;
+      var timeSinceOrbit = (utc - Satellite.Tracker.Tle.Epoch).TotalDays;
+      var revPerDay = Satellite.Tracker.Tle.MeanMotionRevPerDay;
+      var drag = Satellite.Tracker.Tle.BStarDragTerm;
+      var meanAnomaly = Satellite.Tracker.Tle.MeanAnomaly.Radians;
+      var argumentPerigee = Satellite.Tracker.Tle.ArgumentPerigee.Radians;
+
+      return (int)(
+        revNum +
+        Math.Floor((meanAnomaly + argumentPerigee) / TwoPi)
+        + (revPerDay + drag * timeSinceOrbit) * timeSinceOrbit);
+
+      // (int)((revPerDay + drag * timeSinceOrbit) * timeSinceOrbit + (meanAnomaly + argumentPerigee) / TwoPi)
+      // - (int)((meanAnomaly + argumentPerigee) / TwoPi)
+      // + (int)revNum;
+    }
 
     public PointF[] GetHump(float x0, float y0, float scaleX, float scaleY)
     {
@@ -56,42 +146,6 @@ namespace OrbiNom
       return track;
     }
 
-    private Satellite tracker;
-    private SatelliteVisibilityPeriod SatelliteVisibilityPeriod;
-    public PointF[]? MiniPath;
-    private List<TrackPoint> track;
-
-    public SatellitePass(GroundStation groundStation, SatnogsDbSatellite satellite, Satellite tracker, SatelliteVisibilityPeriod visibilityPeriod)
-    {
-      GroundStation = groundStation;
-      Satellite = satellite;
-      SatelliteVisibilityPeriod = visibilityPeriod;
-      StartTime = visibilityPeriod.Start;
-      CulminationTime = visibilityPeriod.MaxElevationTime;
-      EndTime = visibilityPeriod.End;
-      MaxElevation = visibilityPeriod.MaxElevation.Degrees;
-      OrbitNumber = ComputeOrbitNumber();
-    }
-
-    private int ComputeOrbitNumber()
-    {
-      var utc = SatelliteVisibilityPeriod.MaxElevationTime;
-      uint revNum = Satellite.Tracker.Tle.OrbitNumber;
-      var timeSinceOrbit = (utc - Satellite.Tracker.Tle.Epoch).TotalDays;
-      var revPerDay = Satellite.Tracker.Tle.MeanMotionRevPerDay;
-      var drag = Satellite.Tracker.Tle.BStarDragTerm;
-      var meanAnomaly = Satellite.Tracker.Tle.MeanAnomaly.Radians;
-      var argumentPerigee = Satellite.Tracker.Tle.ArgumentPerigee.Radians;
-
-      return (int)(
-        revNum +
-        Math.Floor((meanAnomaly + argumentPerigee) / TwoPi)
-        + (revPerDay + drag * timeSinceOrbit) * timeSinceOrbit);
-
-      // (int)((revPerDay + drag * timeSinceOrbit) * timeSinceOrbit + (meanAnomaly + argumentPerigee) / TwoPi)
-      // - (int)((meanAnomaly + argumentPerigee) / TwoPi)
-      // + (int)revNum;
-    }
 
     private const int StepCount = 10;
     public void MakeMiniPath()
@@ -114,47 +168,7 @@ namespace OrbiNom
       }
     }
 
-    public TrackPoint GetTrackPointAt(DateTime utc)
-    {
-      if (utc < Track.First().Utc) return Track.First();
-
-      for (int i = 1; i < Track.Count; i++)
-        if (Track[i - 1].Utc <= utc && Track[i].Utc > utc)
-        {
-          var r = (utc - Track[i - 1].Utc).TotalSeconds / (Track[i].Utc - Track[i - 1].Utc).TotalSeconds;
-          var rangeRate = Track[i - 1].Observation.RangeRate * (1 - r) + Track[i].Observation.RangeRate * r;
-          var elevation = Track[i - 1].Observation.Elevation.Radians * (1 - r) + Track[i].Observation.Elevation.Radians * r;
-
-          var point = new TrackPoint();
-          point.Utc = utc;
-          point.Observation = new(0, Angle.FromRadians(elevation), 0, rangeRate);
-          return point;
-        }
-      return Track.Last();
-    }
-
-    internal string[] GetTooltipText(bool showSeconds = true)
-    {
-      string[] tooltip = new string[6];
-
-      if (EndTime < DateTime.UtcNow) tooltip[0] = "Ended.";
-      else if (StartTime < DateTime.UtcNow) tooltip[0] = $"LOS ↓  in {Utils.TimespanToString(EndTime - DateTime.UtcNow, showSeconds)}";
-      else tooltip[0] = $"AOS ↑  in {Utils.TimespanToString(StartTime - DateTime.UtcNow, showSeconds)}";
-
-      tooltip[1] = $"{StartTime.ToLocalTime():yyyy-MM-dd}";
-      tooltip[2] = $"{StartTime.ToLocalTime():HH:mm:ss} to {EndTime.ToLocalTime():HH:mm:ss}";
-      tooltip[3] = $"Duration: {Utils.TimespanToString(EndTime - StartTime, false)}";
-      tooltip[4] = $"Max Elevation: {MaxElevation:F0}°";
-      tooltip[5] = $"Orbit: #{OrbitNumber}";
-
-      return tooltip;
-    }
-
-    internal TopocentricObservation GetObservationAt(DateTime utc)
-    {
-      return GroundStation.Observe(Satellite.Tracker, utc);
-    }
-
+    // currently not used
     public List<GeoPath> GetCoveragePolygon()
     {
       // only for LEO

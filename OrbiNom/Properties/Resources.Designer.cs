@@ -121,6 +121,16 @@ namespace OrbiNom.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] N {
+            get {
+                object obj = ResourceManager.GetObject("N", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap NaturalEarth {
@@ -136,6 +146,16 @@ namespace OrbiNom.Properties {
         internal static byte[] ok {
             get {
                 object obj = ResourceManager.GetObject("ok", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] S {
+            get {
+                object obj = ResourceManager.GetObject("S", resourceCulture);
                 return ((byte[])(obj));
             }
         }

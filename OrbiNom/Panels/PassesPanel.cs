@@ -49,25 +49,16 @@ namespace OrbiNom
       if (listViewEx1.VirtualListSize == 0) ShowPasses();
     }
 
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        events
+    //----------------------------------------------------------------------------------------------
     private void PassesPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
       ctx.PassesPanel = null;
       ctx.MainForm.SatellitePassesMNU.Checked = false;
-    }
-
-
-    private int GetRadioButtonIndex()
-    {
-      if (CurrentSatBtn.Checked) return 0;
-      if (GroupBtn.Checked) return 1;
-      return 2;
-    }
-
-    private void SetRadioButtonIndex(int index)
-    {
-      CurrentSatBtn.Checked = index == 0;
-      GroupBtn.Checked = index == 1;
-      AllBtn.Checked = index == 2;
     }
 
     private void listViewEx1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -91,6 +82,21 @@ namespace OrbiNom
       }
     }
 
+    private void listViewEx1_MouseDown(object sender, MouseEventArgs e)
+    {
+      var item = listViewEx1.GetItemAt(e.X, e.Y);
+      if (item == null) return;
+      var pass = (SatellitePass)item.Tag;
+      ctx.SatelliteDetailsPanel?.SetSatellite(pass.Satellite);
+      ctx.SatelliteSelector.SetSelectedPass(pass);
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                      items  
+    //----------------------------------------------------------------------------------------------
     internal void ShowPasses()
     {
       IEnumerable<SatellitePass> passes = ctx.GroupPasses.Passes;
@@ -127,17 +133,6 @@ namespace OrbiNom
       listViewEx1.Invalidate();
     }
 
-    private ListViewItem ItemForPass(SatellitePass pass)
-    {
-      var item = new ListViewItem();
-      item.Tag = (pass);
-
-      pass.MakeMiniPath();
-      item.ToolTipText = pass.Satellite.GetTooltipText();
-
-      return item;
-    }
-
     internal void UpdatePassTimes()
     {
       // delete finished passes
@@ -149,6 +144,43 @@ namespace OrbiNom
       listViewEx1.Invalidate();
     }
 
+    public IEnumerable<ListViewItem> CreatePassItems(IEnumerable<SatellitePass> passes)
+    {
+      // wrap passes in listview items
+      return passes.OrderBy(p => p.StartTime).Select(ItemForPass);
+    }
+
+    private ListViewItem ItemForPass(SatellitePass pass)
+    {
+      var item = new ListViewItem();
+      item.Tag = (pass);
+
+      pass.MakeMiniPath();
+      item.ToolTipText = pass.Satellite.GetTooltipText();
+
+      return item;
+    }
+
+    private int GetRadioButtonIndex()
+    {
+      if (CurrentSatBtn.Checked) return 0;
+      if (GroupBtn.Checked) return 1;
+      return 2;
+    }
+
+    private void SetRadioButtonIndex(int index)
+    {
+      CurrentSatBtn.Checked = index == 0;
+      GroupBtn.Checked = index == 1;
+      AllBtn.Checked = index == 2;
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        draw
+    //----------------------------------------------------------------------------------------------
     private void listViewEx1_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
     {
       e.DrawBackground();
@@ -228,28 +260,6 @@ namespace OrbiNom
       // item separator
       rect = new RectangleF(e.Bounds.X, e.Bounds.Y + h, e.Bounds.Width, 1);
       e.Graphics.FillRectangle(Brushes.Gray, rect);
-    }
-
-    public IEnumerable<ListViewItem> CreatePassItems(IEnumerable<SatellitePass> passes)
-    {
-
-      // predict passes and wrap them in listview items
-      return passes.OrderBy(p => p.StartTime).Select(ItemForPass);
-    }
-
-    private void listViewEx1_MouseDown(object sender, MouseEventArgs e)
-    {
-      var item = listViewEx1.GetItemAt(e.X, e.Y);
-      if (item == null) return;
-      var pass = (SatellitePass)item.Tag;
-      ctx.SatelliteDetailsPanel?.SetSatellite(pass.Satellite);
-      ctx.SatelliteSelector.SetSelectedPass(pass);
-
-
-      var poly = pass?.GetCoveragePolygon();
-      string res = "";
-        foreach(var p in poly)
-        res += (Math.PI/2 - p.AzimuthRad) + " " + p.Distance + "\n";
     }
   }
 }

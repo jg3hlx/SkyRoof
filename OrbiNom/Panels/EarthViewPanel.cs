@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Text;
 using SharpGL.VertexBuffers;
 using SharpGL;
 using WeifenLuo.WinFormsUI.Docking;
 using SharpGL.Shaders;
-using SGPdotNET.Observation;
 using VE3NEA;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using Serilog;
-using System.Drawing.Drawing2D;
-using System.Runtime.CompilerServices;
 
 namespace OrbiNom
 {
@@ -31,7 +20,7 @@ namespace OrbiNom
     private uint[] TextureIds = new uint[1];
     private int VertexCount;
     private SpriteRenderer SpriteRenderer;
-    private Sprite SatelliteSprite, HomeSprite;
+    private Sprite SatelliteSprite, HomeSprite, NorthSprite, SouthSprite;
     public GeoPoint Home, Center;
     private double Footprint;
     private double Azimuth;
@@ -47,11 +36,9 @@ namespace OrbiNom
       this.ctx = ctx;
       ctx.EarthViewPanel = this;
       ctx.MainForm.EarthViewMNU.Checked = true;
+
       Home = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
       SetSatellite();
-
-      RegularFont = new Font(OrbitRadioBtn.Font, FontStyle.Regular);
-      BoldFont = new Font(OrbitRadioBtn.Font, FontStyle.Bold);
 
       openglControl1.MouseWheel += OpenglControl1_MouseWheel;
     }
@@ -66,15 +53,12 @@ namespace OrbiNom
     {
       openglControl1.Invalidate();
       ValidateZoom();
-
-      OrbitRadioBtn.Text = $"Zoom {Zoom:F2}x Radius {Math.Min(openglControl1.ClientSize.Width, openglControl1.ClientSize.Height)}";
     }
 
     private void OpenglControl1_MouseWheel(object? sender, MouseEventArgs e)
     {
       Zoom *= 1 + e.Delta / 1200f;
       ValidateZoom();
-      OrbitRadioBtn.Text = $"Zoom {Zoom:F2}x Radius {Math.Min(openglControl1.ClientSize.Width, openglControl1.ClientSize.Height)}";
     }
 
     private void ValidateZoom()
@@ -86,22 +70,15 @@ namespace OrbiNom
     internal void SetSatellite(SatnogsDbSatellite? satellite = null)
     {
       Satellite = satellite ?? ctx.SatelliteSelector.SelectedSatellite;
-      SatelliteRadioBtn.Text = $"{Satellite.name}  Now";
-      if (SatelliteRadioBtn.Checked) SatelliteRadioBtn.Font = new(SatelliteRadioBtn.Font, FontStyle.Bold);
+      label1.Text = Satellite.name;
 
       ComputeSatLocation();
       Zoom = 0.9 * Math.PI / Footprint;
       Invalidate();
     }
-
-    public void SetPass(SatellitePass? pass)
-    {
-
-    }
-
     public void Advance()
     {
-      if (!SatelliteRadioBtn.Checked || Satellite == null) return;
+      if (Satellite == null) return;
 
       ComputeSatLocation();
       Invalidate();
@@ -133,6 +110,8 @@ namespace OrbiNom
       CheckError(false);
       SatelliteSprite = new Sprite(gl, Properties.Resources.satellite);
       HomeSprite = new Sprite(gl, Properties.Resources.ant);
+      NorthSprite = new Sprite(gl, Properties.Resources.N);
+      SouthSprite = new Sprite(gl, Properties.Resources.S);
 
       gl.Disable(OpenGL.GL_DEPTH_TEST);
       CheckError();
@@ -225,7 +204,7 @@ namespace OrbiNom
 
       //using (Bitmap bitmap = new Bitmap(@"C:\Users\Alex\Desktop\sat\maps\worldMapTexture.bmp"))
       //using (Bitmap bitmap = new Bitmap(Properties.Resources.NaturalEarth))
-      using (Bitmap bitmap = new Bitmap(Properties.Resources.DxAtlasMap1))
+      using (Bitmap bitmap = new Bitmap(Properties.Resources.DxAtlasMap2))
       {
         BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
           ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
@@ -284,7 +263,7 @@ namespace OrbiNom
       CheckError();
 
       SetSpriteAttributes();
-      SpriteRenderer.DrawSprites([SatelliteSprite, HomeSprite]);
+      SpriteRenderer.DrawSprites([SatelliteSprite, HomeSprite, NorthSprite, SouthSprite]);
       CheckError();
     }
 
@@ -299,16 +278,29 @@ namespace OrbiNom
       var scale = 0.6f + diam * 0.0007f;
       SatelliteSprite.Scale = scale;
       HomeSprite.Scale = scale;
+      NorthSprite.Scale = 0.4f * scale;
+      SouthSprite.Scale = 0.4f * scale;
 
       // satellite points in the direction of the next position
       SatelliteSprite.Angle = (float)(-Azimuth + Math.PI / 4);
 
       // home location in the azimuthal projection
-      var path = Home - Center;
+      HomeSprite.Location = ComputeLocation(Home);
+
+      // N and S at the poles
+      NorthSprite.Location = ComputeLocation(GeoPoint.NorthPole);
+      SouthSprite.Location = ComputeLocation(GeoPoint.SouthPole);
+    }
+
+    private PointF ComputeLocation(GeoPoint point)
+    {
+      var path = point - Center;
       var ro = path.DistanceRad / Math.PI * Zoom;
       var phi = Geo.HalfPi - path.AzimuthRad;
+      var size = openglControl1.ClientSize;
+      var diam = Math.Min(size.Width, size.Height);
 
-      HomeSprite.Location = new PointF(
+      return new PointF(
         (float)(ro * Math.Cos(phi) * diam / size.Width),
         (float)(ro * Math.Sin(phi) * diam / size.Height));
     }
@@ -344,14 +336,6 @@ namespace OrbiNom
       // if (DateTime.UtcNow < NextLogErrortime) return false;
       // NextLogErrortime = DateTime.UtcNow + TimeSpan.FromSeconds(30);
       // return true;
-    }
-
-    private void SatelliteRadioBtn_CheckedChanged(object sender, EventArgs e)
-    {
-      if (!((RadioButton)sender).Checked) return;
-
-      SatelliteRadioBtn.Font = SatelliteRadioBtn.Checked ? BoldFont : RegularFont;
-      OrbitRadioBtn.Font = OrbitRadioBtn.Checked ? BoldFont : RegularFont;
     }
   }
 }

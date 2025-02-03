@@ -117,6 +117,9 @@
 
   public struct GeoPoint
   {
+    public static GeoPoint NorthPole = new(90, 0);
+    public static GeoPoint SouthPole = new(-90, 0);
+
     internal double LatitudeRad, LongitudeRad;
 
     public double Latitude { get => LatitudeRad * Geo.DinR; set => LatitudeRad = value * Geo.RinD; }

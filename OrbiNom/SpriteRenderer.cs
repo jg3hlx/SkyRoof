@@ -88,8 +88,7 @@ namespace OrbiNom
       CheckError();
 
       var matrixId = ShaderProgram.GetUniformLocation(gl, "transform");
-      var matrix = sprite.Transform;
-      gl.UniformMatrix4(matrixId, 1, false, MatrixToFloats(matrix));
+      gl.UniformMatrix4(matrixId, 1, false, MatrixToFloats(sprite.Transform));
       CheckError();
 
       gl.DrawArrays(OpenGL.GL_TRIANGLE_STRIP, 0, 4);
