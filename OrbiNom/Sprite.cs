@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using SharpGL;
 using SharpGL.Shaders;
 using SharpGL.VertexBuffers;
+using VE3NEA;
 
 namespace OrbiNom
 {
@@ -46,7 +47,7 @@ namespace OrbiNom
       gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE); // tex x
       gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE); // tex y
 
-      using (Bitmap bitmap = BitmapFromBytes(imageBytes))
+      using (Bitmap bitmap = Utils.BitmapFromBytes(imageBytes))
       {
         ImageSize = bitmap.Size;
 
@@ -60,11 +61,6 @@ namespace OrbiNom
       }      
     }  
     
-    private Bitmap BitmapFromBytes(byte[] imageBytes)
-    {
-      using (MemoryStream ms = new MemoryStream(imageBytes))
-        return new Bitmap(Image.FromStream(ms));
-    }
 
     private void SetScale(float value) 
     { 

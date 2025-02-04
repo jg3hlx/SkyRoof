@@ -121,5 +121,11 @@ namespace VE3NEA
         BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, 
         null, panel, [value]);
     }
+
+    public static Bitmap BitmapFromBytes(byte[] imageBytes)
+    {
+      using (MemoryStream ms = new MemoryStream(imageBytes))
+        return new Bitmap(Image.FromStream(ms));
+    }
   }
 }

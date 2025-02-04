@@ -204,7 +204,8 @@ namespace OrbiNom
 
       //using (Bitmap bitmap = new Bitmap(@"C:\Users\Alex\Desktop\sat\maps\worldMapTexture.bmp"))
       //using (Bitmap bitmap = new Bitmap(Properties.Resources.NaturalEarth))
-      using (Bitmap bitmap = new Bitmap(Properties.Resources.DxAtlasMap2))
+      //using (Bitmap bitmap = new Bitmap(Properties.Resources.dxcc))
+      using (Bitmap bitmap = Utils.BitmapFromBytes(Properties.Resources.dxcc))
       {
         BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
           ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
