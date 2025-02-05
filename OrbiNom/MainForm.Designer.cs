@@ -33,7 +33,6 @@
       SatelliteSelector = new SatelliteSelector();
       ClockPanel = new Panel();
       Clock = new VE3NEA.Clock.Clock();
-      StatusBar = new StatusStrip();
       DockHost = new WeifenLuo.WinFormsUI.Docking.DockPanel();
       vS2015LightTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015LightTheme();
       menuStrip1 = new MenuStrip();
@@ -55,14 +54,32 @@
       UpdateSatelliteListMNU = new ToolStripMenuItem();
       helpToolStripMenuItem = new ToolStripMenuItem();
       OnlineHelpMNU = new ToolStripMenuItem();
+      emailTheAuthorToolStripMenuItem = new ToolStripMenuItem();
       DataFolderMNU = new ToolStripMenuItem();
       toolStripMenuItem2 = new ToolStripSeparator();
       AboutMNU = new ToolStripMenuItem();
       timer = new System.Windows.Forms.Timer(components);
-      emailTheAuthorToolStripMenuItem = new ToolStripMenuItem();
+      StatusStrip = new StatusStrip();
+      toolStripStatusLabel2 = new ToolStripStatusLabel();
+      SdrLedLabel = new ToolStripStatusLabel();
+      SdrStatusLabel = new ToolStripStatusLabel();
+      SoundcardLedLabel = new ToolStripStatusLabel();
+      SoundcardStatusLabel = new ToolStripStatusLabel();
+      VacLedLabel = new ToolStripStatusLabel();
+      VacStatusLabel = new ToolStripStatusLabel();
+      OmniRigLedLabel = new ToolStripStatusLabel();
+      OmniRigStatusLabel = new ToolStripStatusLabel();
+      SatDataLedLabel = new ToolStripStatusLabel();
+      SatDataStatusLabel = new ToolStripStatusLabel();
+      IqOutputLedLabel = new ToolStripStatusLabel();
+      IqOutputStatusLabel = new ToolStripStatusLabel();
+      NoiseFloorLabel = new ToolStripStatusLabel();
+      CpuLoadlabel = new ToolStripStatusLabel();
+      toolTip1 = new ToolTip(components);
       Toolbar.SuspendLayout();
       ClockPanel.SuspendLayout();
       menuStrip1.SuspendLayout();
+      StatusStrip.SuspendLayout();
       SuspendLayout();
       // 
       // Toolbar
@@ -108,14 +125,6 @@
       Clock.TabIndex = 1;
       Clock.UtcMode = true;
       // 
-      // StatusBar
-      // 
-      StatusBar.Location = new Point(0, 688);
-      StatusBar.Name = "StatusBar";
-      StatusBar.Size = new Size(1200, 22);
-      StatusBar.TabIndex = 1;
-      StatusBar.Text = "statusStrip1";
-      // 
       // DockHost
       // 
       DockHost.Dock = DockStyle.Fill;
@@ -124,7 +133,7 @@
       DockHost.Name = "DockHost";
       DockHost.Padding = new Padding(6);
       DockHost.ShowAutoHideContentOnHover = false;
-      DockHost.Size = new Size(1200, 624);
+      DockHost.Size = new Size(1200, 611);
       DockHost.TabIndex = 4;
       DockHost.Theme = vS2015LightTheme1;
       // 
@@ -255,26 +264,33 @@
       // OnlineHelpMNU
       // 
       OnlineHelpMNU.Name = "OnlineHelpMNU";
-      OnlineHelpMNU.Size = new Size(180, 22);
+      OnlineHelpMNU.Size = new Size(172, 22);
       OnlineHelpMNU.Text = "Online Help...";
       OnlineHelpMNU.Click += WebsiteMNU_Click;
+      // 
+      // emailTheAuthorToolStripMenuItem
+      // 
+      emailTheAuthorToolStripMenuItem.Name = "emailTheAuthorToolStripMenuItem";
+      emailTheAuthorToolStripMenuItem.Size = new Size(172, 22);
+      emailTheAuthorToolStripMenuItem.Text = "Email the Author...";
+      emailTheAuthorToolStripMenuItem.Click += EmailTheAuthorMNU_Click;
       // 
       // DataFolderMNU
       // 
       DataFolderMNU.Name = "DataFolderMNU";
-      DataFolderMNU.Size = new Size(180, 22);
+      DataFolderMNU.Size = new Size(172, 22);
       DataFolderMNU.Text = "Data Folder...";
       DataFolderMNU.Click += DataFolderMNU_Click;
       // 
       // toolStripMenuItem2
       // 
       toolStripMenuItem2.Name = "toolStripMenuItem2";
-      toolStripMenuItem2.Size = new Size(177, 6);
+      toolStripMenuItem2.Size = new Size(169, 6);
       // 
       // AboutMNU
       // 
       AboutMNU.Name = "AboutMNU";
-      AboutMNU.Size = new Size(180, 22);
+      AboutMNU.Size = new Size(172, 22);
       AboutMNU.Text = "About...";
       AboutMNU.Click += AboutMNU_Click;
       // 
@@ -284,12 +300,145 @@
       timer.Interval = 250;
       timer.Tick += timer_Tick;
       // 
-      // emailTheAuthorToolStripMenuItem
+      // StatusStrip
       // 
-      emailTheAuthorToolStripMenuItem.Name = "emailTheAuthorToolStripMenuItem";
-      emailTheAuthorToolStripMenuItem.Size = new Size(180, 22);
-      emailTheAuthorToolStripMenuItem.Text = "Email the Author...";
-      emailTheAuthorToolStripMenuItem.Click += EmailTheAuthorMNU_Click;
+      StatusStrip.ImageScalingSize = new Size(24, 24);
+      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, VacLedLabel, VacStatusLabel, OmniRigLedLabel, OmniRigStatusLabel, SatDataLedLabel, SatDataStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, NoiseFloorLabel, CpuLoadlabel });
+      StatusStrip.Location = new Point(0, 675);
+      StatusStrip.Name = "StatusStrip";
+      StatusStrip.ShowItemToolTips = true;
+      StatusStrip.Size = new Size(1200, 35);
+      StatusStrip.TabIndex = 6;
+      StatusStrip.Text = "statusStrip1";
+      // 
+      // toolStripStatusLabel2
+      // 
+      toolStripStatusLabel2.AutoSize = false;
+      toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+      toolStripStatusLabel2.Size = new Size(10, 30);
+      // 
+      // SdrLedLabel
+      // 
+      SdrLedLabel.Font = new Font("Webdings", 9F);
+      SdrLedLabel.ForeColor = Color.Gray;
+      SdrLedLabel.Name = "SdrLedLabel";
+      SdrLedLabel.Size = new Size(21, 30);
+      SdrLedLabel.Text = "n";
+      SdrLedLabel.ToolTipText = "Disabled";
+      // 
+      // SdrStatusLabel
+      // 
+      SdrStatusLabel.Font = new Font("Segoe UI", 10F);
+      SdrStatusLabel.Name = "SdrStatusLabel";
+      SdrStatusLabel.Size = new Size(42, 30);
+      SdrStatusLabel.Text = "SDR  ";
+      SdrStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+      SdrStatusLabel.ToolTipText = "Disabled";
+      // 
+      // SoundcardLedLabel
+      // 
+      SoundcardLedLabel.Font = new Font("Webdings", 9F);
+      SoundcardLedLabel.ForeColor = Color.Gray;
+      SoundcardLedLabel.Name = "SoundcardLedLabel";
+      SoundcardLedLabel.Size = new Size(21, 30);
+      SoundcardLedLabel.Text = "n";
+      SoundcardLedLabel.Visible = false;
+      // 
+      // SoundcardStatusLabel
+      // 
+      SoundcardStatusLabel.Font = new Font("Segoe UI", 10F);
+      SoundcardStatusLabel.Name = "SoundcardStatusLabel";
+      SoundcardStatusLabel.Size = new Size(82, 30);
+      SoundcardStatusLabel.Text = "Soundcard  ";
+      SoundcardStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+      SoundcardStatusLabel.Visible = false;
+      // 
+      // VacLedLabel
+      // 
+      VacLedLabel.Font = new Font("Webdings", 9F);
+      VacLedLabel.ForeColor = Color.Gray;
+      VacLedLabel.Name = "VacLedLabel";
+      VacLedLabel.Size = new Size(21, 30);
+      VacLedLabel.Text = "n";
+      VacLedLabel.Visible = false;
+      // 
+      // VacStatusLabel
+      // 
+      VacStatusLabel.Font = new Font("Segoe UI", 10F);
+      VacStatusLabel.Name = "VacStatusLabel";
+      VacStatusLabel.Size = new Size(43, 30);
+      VacStatusLabel.Text = "VAC  ";
+      VacStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+      VacStatusLabel.Visible = false;
+      // 
+      // OmniRigLedLabel
+      // 
+      OmniRigLedLabel.Font = new Font("Webdings", 9F);
+      OmniRigLedLabel.ForeColor = Color.Gray;
+      OmniRigLedLabel.Name = "OmniRigLedLabel";
+      OmniRigLedLabel.Size = new Size(21, 30);
+      OmniRigLedLabel.Text = "n";
+      OmniRigLedLabel.Visible = false;
+      // 
+      // OmniRigStatusLabel
+      // 
+      OmniRigStatusLabel.Font = new Font("Segoe UI", 10F);
+      OmniRigStatusLabel.Name = "OmniRigStatusLabel";
+      OmniRigStatusLabel.Size = new Size(70, 30);
+      OmniRigStatusLabel.Text = "OmniRig  ";
+      OmniRigStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+      OmniRigStatusLabel.Visible = false;
+      // 
+      // SatDataLedLabel
+      // 
+      SatDataLedLabel.Font = new Font("Webdings", 9F);
+      SatDataLedLabel.ForeColor = Color.Gray;
+      SatDataLedLabel.Name = "SatDataLedLabel";
+      SatDataLedLabel.Size = new Size(21, 30);
+      SatDataLedLabel.Text = "n";
+      // 
+      // SatDataStatusLabel
+      // 
+      SatDataStatusLabel.Font = new Font("Segoe UI", 10F);
+      SatDataStatusLabel.Name = "SatDataStatusLabel";
+      SatDataStatusLabel.Size = new Size(89, 30);
+      SatDataStatusLabel.Text = "Satellite Data";
+      SatDataStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+      SatDataStatusLabel.ToolTipText = "Network";
+      // 
+      // IqOutputLedLabel
+      // 
+      IqOutputLedLabel.Font = new Font("Webdings", 9F);
+      IqOutputLedLabel.ForeColor = Color.Gray;
+      IqOutputLedLabel.Name = "IqOutputLedLabel";
+      IqOutputLedLabel.Size = new Size(21, 30);
+      IqOutputLedLabel.Text = "n";
+      IqOutputLedLabel.Visible = false;
+      // 
+      // IqOutputStatusLabel
+      // 
+      IqOutputStatusLabel.Font = new Font("Segoe UI", 10F);
+      IqOutputStatusLabel.Name = "IqOutputStatusLabel";
+      IqOutputStatusLabel.Size = new Size(86, 30);
+      IqOutputStatusLabel.Text = "I/Q Output  ";
+      IqOutputStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+      IqOutputStatusLabel.Visible = false;
+      // 
+      // NoiseFloorLabel
+      // 
+      NoiseFloorLabel.Name = "NoiseFloorLabel";
+      NoiseFloorLabel.Size = new Size(119, 30);
+      NoiseFloorLabel.Text = "Noise Floor: -100 dB  ";
+      NoiseFloorLabel.TextAlign = ContentAlignment.MiddleLeft;
+      NoiseFloorLabel.Visible = false;
+      // 
+      // CpuLoadlabel
+      // 
+      CpuLoadlabel.DisplayStyle = ToolStripItemDisplayStyle.Text;
+      CpuLoadlabel.Name = "CpuLoadlabel";
+      CpuLoadlabel.Size = new Size(96, 30);
+      CpuLoadlabel.Text = "CPU Load: 00.0%";
+      CpuLoadlabel.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // MainForm
       // 
@@ -297,9 +446,9 @@
       AutoScaleMode = AutoScaleMode.Font;
       ClientSize = new Size(1200, 710);
       Controls.Add(DockHost);
-      Controls.Add(StatusBar);
       Controls.Add(Toolbar);
       Controls.Add(menuStrip1);
+      Controls.Add(StatusStrip);
       MainMenuStrip = menuStrip1;
       Name = "MainForm";
       Text = "Form1";
@@ -309,6 +458,8 @@
       ClockPanel.ResumeLayout(false);
       menuStrip1.ResumeLayout(false);
       menuStrip1.PerformLayout();
+      StatusStrip.ResumeLayout(false);
+      StatusStrip.PerformLayout();
       ResumeLayout(false);
       PerformLayout();
     }
@@ -316,7 +467,6 @@
     #endregion
 
     private Panel Toolbar;
-    private StatusStrip StatusBar;
     public WeifenLuo.WinFormsUI.Docking.DockPanel DockHost;
     private WeifenLuo.WinFormsUI.Docking.VS2015LightTheme vS2015LightTheme1;
     private MenuStrip menuStrip1;
@@ -346,5 +496,22 @@
     public ToolStripMenuItem SkyViewMNU;
     public ToolStripMenuItem EarthViewMNU;
     private ToolStripMenuItem emailTheAuthorToolStripMenuItem;
+    private StatusStrip StatusStrip;
+    private ToolStripStatusLabel toolStripStatusLabel2;
+    private ToolStripStatusLabel SdrLedLabel;
+    private ToolStripStatusLabel SdrStatusLabel;
+    private ToolStripStatusLabel SoundcardLedLabel;
+    private ToolStripStatusLabel SoundcardStatusLabel;
+    private ToolStripStatusLabel VacLedLabel;
+    private ToolStripStatusLabel VacStatusLabel;
+    private ToolStripStatusLabel OmniRigLedLabel;
+    private ToolStripStatusLabel OmniRigStatusLabel;
+    private ToolStripStatusLabel SatDataLedLabel;
+    private ToolStripStatusLabel SatDataStatusLabel;
+    private ToolStripStatusLabel IqOutputLedLabel;
+    private ToolStripStatusLabel IqOutputStatusLabel;
+    private ToolStripStatusLabel NoiseFloorLabel;
+    private ToolStripStatusLabel CpuLoadlabel;
+    private ToolTip toolTip1;
   }
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -65,6 +66,8 @@ namespace OrbiNom
 
       // no satellite data, cannot proceed
       if (!ctx.SatnogsDb.Loaded) Environment.Exit(1);
+
+      ShowSatDataStatus();
     }
 
     private void MainForm_FormClosing(object sender, EventArgs e)
@@ -196,6 +199,39 @@ namespace OrbiNom
 
 
 
+    //----------------------------------------------------------------------------------------------
+    //                                     statusbar
+    //----------------------------------------------------------------------------------------------
+    public void ShowSatDataStatus()
+    {
+      var sett = ctx.Settings.Satellites;
+
+      if (sett.LastDownloadTime < DateTime.UtcNow.AddDays(-LIST_DOWNLOAD_DAYS) &&
+        sett.LastTleTime < DateTime.UtcNow.AddDays(-TLE_DOWNLOAD_DAYS))
+        SatDataLedLabel.ForeColor = Color.Red;
+      else
+        SatDataLedLabel.ForeColor = Color.Lime;
+
+      SatDataLedLabel.ToolTipText = SatDataStatusLabel.ToolTipText =
+        $"Satellite List:  {sett.LastDownloadTime.ToLocalTime():yyyy-MM-dd HH:mm}\n" +
+        $"TLE:                 {sett.LastTleTime.ToLocalTime():yyyy-MM-dd HH:mm}";
+    }
+
+    DateTime StartTime;
+    double StartSeconds;
+
+    private void ShowCpuUsage()
+    {
+      var time = DateTime.UtcNow;
+      var usedSeconds = AppDomain.CurrentDomain.MonitoringTotalProcessorTime.TotalSeconds;
+      var usage = (usedSeconds - StartSeconds) / (time - StartTime).TotalSeconds * 100d / Environment.ProcessorCount;
+      StartTime = time;
+      StartSeconds = usedSeconds;
+
+      CpuLoadlabel.Text = $"    CPU Load: {usage:F1}%";
+    }
+
+
 
     //----------------------------------------------------------------------------------------------
     //                                     docking
@@ -250,6 +286,8 @@ namespace OrbiNom
       ctx.GroupViewPanel?.UpdatePassTimes();
       ctx.PassesPanel?.UpdatePassTimes();
       ctx.TimelinePanel?.Advance();
+
+      ShowCpuUsage();      
     }
 
     private void OneMinuteTick()
