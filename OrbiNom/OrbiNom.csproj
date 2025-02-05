@@ -6,6 +6,20 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Title>OrbiNom</Title>
+    <Description>Satellite tracking and signal processing software</Description>
+    <Copyright>Copyright © 2025 Alex Shovkoplyas VE3NEA</Copyright>
+    <Authors>Alex VE3NEA</Authors>
+    <AssemblyVersion>1.0.*</AssemblyVersion>
+    <FileVersion></FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Deterministic>False</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Deterministic>False</Deterministic>
   </PropertyGroup>
 
   <ItemGroup>

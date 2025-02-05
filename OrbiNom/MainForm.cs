@@ -178,6 +178,22 @@ namespace OrbiNom
       new SettingsDialog(ctx).ShowDialog();
     }
 
+    private void WebsiteMNU_Click(object sender, EventArgs e)
+    {
+      Process.Start(new ProcessStartInfo("https://ve3nea.github.io/OrbiNom") { UseShellExecute = true });
+    }
+
+    private void EmailTheAuthorMNU_Click(object sender, EventArgs e)
+    {
+      Process.Start(new ProcessStartInfo("mailto:ve3nea@dxatlas.com") { UseShellExecute = true });
+    }
+
+    private void AboutMNU_Click(object sender, EventArgs e)
+    {
+      new AboutBox().ShowDialog();
+    }
+
+
 
 
 

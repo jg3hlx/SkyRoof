@@ -59,6 +59,7 @@
       toolStripMenuItem2 = new ToolStripSeparator();
       AboutMNU = new ToolStripMenuItem();
       timer = new System.Windows.Forms.Timer(components);
+      emailTheAuthorToolStripMenuItem = new ToolStripMenuItem();
       Toolbar.SuspendLayout();
       ClockPanel.SuspendLayout();
       menuStrip1.SuspendLayout();
@@ -246,7 +247,7 @@
       // 
       // helpToolStripMenuItem
       // 
-      helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { OnlineHelpMNU, DataFolderMNU, toolStripMenuItem2, AboutMNU });
+      helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { OnlineHelpMNU, emailTheAuthorToolStripMenuItem, DataFolderMNU, toolStripMenuItem2, AboutMNU });
       helpToolStripMenuItem.Name = "helpToolStripMenuItem";
       helpToolStripMenuItem.Size = new Size(44, 20);
       helpToolStripMenuItem.Text = "Help";
@@ -254,32 +255,41 @@
       // OnlineHelpMNU
       // 
       OnlineHelpMNU.Name = "OnlineHelpMNU";
-      OnlineHelpMNU.Size = new Size(146, 22);
+      OnlineHelpMNU.Size = new Size(180, 22);
       OnlineHelpMNU.Text = "Online Help...";
+      OnlineHelpMNU.Click += WebsiteMNU_Click;
       // 
       // DataFolderMNU
       // 
       DataFolderMNU.Name = "DataFolderMNU";
-      DataFolderMNU.Size = new Size(146, 22);
+      DataFolderMNU.Size = new Size(180, 22);
       DataFolderMNU.Text = "Data Folder...";
       DataFolderMNU.Click += DataFolderMNU_Click;
       // 
       // toolStripMenuItem2
       // 
       toolStripMenuItem2.Name = "toolStripMenuItem2";
-      toolStripMenuItem2.Size = new Size(143, 6);
+      toolStripMenuItem2.Size = new Size(177, 6);
       // 
       // AboutMNU
       // 
       AboutMNU.Name = "AboutMNU";
-      AboutMNU.Size = new Size(146, 22);
+      AboutMNU.Size = new Size(180, 22);
       AboutMNU.Text = "About...";
+      AboutMNU.Click += AboutMNU_Click;
       // 
       // timer
       // 
       timer.Enabled = true;
       timer.Interval = 250;
       timer.Tick += timer_Tick;
+      // 
+      // emailTheAuthorToolStripMenuItem
+      // 
+      emailTheAuthorToolStripMenuItem.Name = "emailTheAuthorToolStripMenuItem";
+      emailTheAuthorToolStripMenuItem.Size = new Size(180, 22);
+      emailTheAuthorToolStripMenuItem.Text = "Email the Author...";
+      emailTheAuthorToolStripMenuItem.Click += EmailTheAuthorMNU_Click;
       // 
       // MainForm
       // 
@@ -335,5 +345,6 @@
     public ToolStripMenuItem TimelineMNU;
     public ToolStripMenuItem SkyViewMNU;
     public ToolStripMenuItem EarthViewMNU;
+    private ToolStripMenuItem emailTheAuthorToolStripMenuItem;
   }
 }
