@@ -1,23 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using System.Data;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using static OrbiNom.SatellitePass;
-using System.IO;
-using System.Reflection;
 using VE3NEA;
 using SGPdotNET.Observation;
-using System.Reflection.Metadata.Ecma335;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.CodeDom;
 
 namespace OrbiNom
 {
@@ -76,12 +61,45 @@ namespace OrbiNom
       DrawPanel.Invalidate();
     }
 
-    // on timer tick
-    public void Advance()
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                  public interface
+    //----------------------------------------------------------------------------------------------
+    internal void SetPass(SatellitePass? pass)
+    {
+      if (pass == null) return;
+
+      Pass = pass;
+      OrbitRadioBtn.Text = $"Orbit #{Pass.OrbitNumber} of {Pass.Satellite.name}";
+      OrbitRadioBtn.Enabled = true;
+
+      if (ctx.SatelliteSelector.GroupSatellites.Contains(pass.Satellite) &&
+        pass.StartTime < DateTime.UtcNow && pass.EndTime > DateTime.UtcNow)
+        RealTimeRadioBtn.Checked = true;
+      else
+        OrbitRadioBtn.Checked = true;
+
+      SetLabels();
+      DrawPanel.Invalidate();
+    }
+
+    internal void ClearPass()
+    {
+      Pass = null;
+      OrbitRadioBtn.Enabled = false;
+      OrbitRadioBtn.Text = "Selected Orbit";
+      RealTimeRadioBtn.Checked = true;
+    }
+
+    public void Advance() // on timer tick
     {
       SetLabels();
       DrawPanel.Invalidate();
     }
+
+
 
 
     //----------------------------------------------------------------------------------------------
@@ -240,7 +258,7 @@ namespace OrbiNom
       g.ResetTransform();
     }
 
-    private PointF TrackPointToXY(TrackPoint point)
+    private PointF TrackPointToXY(SatellitePass.TrackPoint point)
     {
       return ObservationToXY(point.Observation);
     }
@@ -334,23 +352,8 @@ namespace OrbiNom
       toolTip1.Hide(this);
     }
 
-    internal void SetPass(SatellitePass? pass)
-    {
-      if (pass == null) return;
 
-      Pass = pass;
-      OrbitRadioBtn.Text = $"Orbit #{Pass.OrbitNumber} of {Pass.Satellite.name}";
-      OrbitRadioBtn.Enabled = true;
 
-      if (ctx.SatelliteSelector.GroupSatellites.Contains(pass.Satellite) &&
-        pass.StartTime < DateTime.UtcNow && pass.EndTime > DateTime.UtcNow) 
-          RealTimeRadioBtn.Checked = true;
-      else      
-        OrbitRadioBtn.Checked = true;
-
-      SetLabels();
-      DrawPanel.Invalidate();
-    }
 
     //----------------------------------------------------------------------------------------------
     //                                        labels

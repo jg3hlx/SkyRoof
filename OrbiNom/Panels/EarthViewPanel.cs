@@ -37,10 +37,15 @@ namespace OrbiNom
       ctx.EarthViewPanel = this;
       ctx.MainForm.EarthViewMNU.Checked = true;
 
-      Home = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
+      SetGridSquare();
       SetSatellite();
 
       openglControl1.MouseWheel += OpenglControl1_MouseWheel;
+    }
+
+    public void SetGridSquare()
+    {
+      Home = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
     }
 
     private void EarthViewPanel_FormClosing(object sender, FormClosingEventArgs e)

@@ -171,7 +171,13 @@ namespace OrbiNom
     private List<string>? transmittersHint;
 
     [Browsable(false)]
-    public Satellite Tracker { get => tracker ??= new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);  }
+    public Satellite Tracker { get => tracker ??= CreateTracker();  }
+
+    private Satellite? CreateTracker()
+    {
+      return Tle == null ? null : new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);
+    }
+
     private Satellite? tracker;
     
     private List<string> FormatTransmitters()

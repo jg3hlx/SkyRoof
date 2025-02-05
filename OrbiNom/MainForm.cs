@@ -122,7 +122,7 @@ namespace OrbiNom
       dlg.SetList(ctx);
       dlg.ShowDialog(this);
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
-      ctx.SatelliteSelector.SetSatelliteGroups();
+      SatelliteSelector.SetSatelliteGroups();
     }
 
     private void GroupViewMNU_Click(object sender, EventArgs e)
@@ -171,6 +171,11 @@ namespace OrbiNom
         new EarthViewPanel(ctx).Show(DockHost, DockState.DockRight);
       else
         ctx.EarthViewPanel.Close();
+    }
+
+    private void SettingsMNU_Click(object sender, EventArgs e)
+    {
+      new SettingsDialog(ctx).ShowDialog();
     }
 
 
@@ -249,11 +254,11 @@ namespace OrbiNom
       ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
       SatelliteSelector.SetSatelliteGroups();
-
       ctx.AllPasses.FullRebuild();
       ctx.GroupPasses.FullRebuild();
+
       ctx.PassesPanel?.ShowPasses();
-      ctx.TimelinePanel?.Invalidate();
+      ctx.SkyViewPanel?.ClearPass();
     }
 
     private void SatelliteSelector_SelectedGroupChanged(object sender, EventArgs e)
@@ -261,30 +266,45 @@ namespace OrbiNom
       ctx.GroupViewPanel?.LoadGroup();
       ctx.GroupPasses.FullRebuild();
       ctx.PassesPanel?.ShowPasses();
-      ctx.TimelinePanel?.Invalidate();
     }
 
     private void SatelliteSelector_SelectedSatelliteChanged(object sender, EventArgs e)
     {
       ctx.GroupViewPanel?.ShowSelectedSat();
-      ctx.SatelliteDetailsPanel?.SetSatellite();
-      ctx.PassesPanel?.ShowPasses();
-      ctx.TimelinePanel?.Invalidate();
       ctx.EarthViewPanel?.SetSatellite();
+      ctx.SatelliteDetailsPanel?.SetSatellite();
     }
 
     private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
     {
       ctx.AllPasses.Rebuild();
       ctx.GroupPasses.Rebuild();
+
+      ctx.SatelliteSelector.SetSelectedPass(null);
+      ctx.GroupViewPanel?.LoadGroup(); // replace passes attached to sats
       ctx.PassesPanel?.ShowPasses();
-      ctx.TimelinePanel?.Invalidate();
+      ctx.SkyViewPanel?.ClearPass();
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)
     {
       SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
       ctx.SkyViewPanel?.SetPass(pass);
+    }
+
+    internal void SetGridSquare()
+    {
+      // update data
+      ctx.GroupPasses = new(ctx, true);
+      ctx.GroupPasses.FullRebuild();
+      ctx.AllPasses = new(ctx, false);
+      ctx.AllPasses.FullRebuild();
+
+      ctx.SatelliteSelector.SetSelectedPass(null);
+      ctx.GroupViewPanel?.LoadGroup();
+      ctx.PassesPanel?.ShowPasses();
+      ctx.EarthViewPanel?.SetGridSquare();
+      ctx.SkyViewPanel?.ClearPass();
     }
   }
 }

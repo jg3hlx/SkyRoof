@@ -160,48 +160,48 @@
       // GroupViewMNU
       // 
       GroupViewMNU.Name = "GroupViewMNU";
-      GroupViewMNU.Size = new Size(180, 22);
+      GroupViewMNU.Size = new Size(153, 22);
       GroupViewMNU.Text = "Group";
       GroupViewMNU.Click += GroupViewMNU_Click;
       // 
       // SatelliteDetailsMNU
       // 
       SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
-      SatelliteDetailsMNU.Size = new Size(180, 22);
+      SatelliteDetailsMNU.Size = new Size(153, 22);
       SatelliteDetailsMNU.Text = "Satellite Details";
       SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
       // 
       // SatellitePassesMNU
       // 
       SatellitePassesMNU.Name = "SatellitePassesMNU";
-      SatellitePassesMNU.Size = new Size(180, 22);
+      SatellitePassesMNU.Size = new Size(153, 22);
       SatellitePassesMNU.Text = "Satellite Passes";
       SatellitePassesMNU.Click += SatellitePassesMNU_Click;
       // 
       // WaterfallMNU
       // 
       WaterfallMNU.Name = "WaterfallMNU";
-      WaterfallMNU.Size = new Size(180, 22);
+      WaterfallMNU.Size = new Size(153, 22);
       WaterfallMNU.Text = "Waterfall";
       // 
       // TimelineMNU
       // 
       TimelineMNU.Name = "TimelineMNU";
-      TimelineMNU.Size = new Size(180, 22);
+      TimelineMNU.Size = new Size(153, 22);
       TimelineMNU.Text = "Timeline";
       TimelineMNU.Click += TimelineMNU_Click;
       // 
       // SkyViewMNU
       // 
       SkyViewMNU.Name = "SkyViewMNU";
-      SkyViewMNU.Size = new Size(180, 22);
+      SkyViewMNU.Size = new Size(153, 22);
       SkyViewMNU.Text = "SkyV iew";
       SkyViewMNU.Click += SkyViewMNU_Click;
       // 
       // EarthViewMNU
       // 
       EarthViewMNU.Name = "EarthViewMNU";
-      EarthViewMNU.Size = new Size(180, 22);
+      EarthViewMNU.Size = new Size(153, 22);
       EarthViewMNU.Text = "Earth View";
       EarthViewMNU.Click += EarthViewMNU_Click;
       // 
@@ -230,6 +230,7 @@
       SettingsMNU.Name = "SettingsMNU";
       SettingsMNU.Size = new Size(193, 22);
       SettingsMNU.Text = "Settings...";
+      SettingsMNU.Click += SettingsMNU_Click;
       // 
       // toolStripMenuItem1
       // 

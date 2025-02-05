@@ -1,30 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Data;
 using WeifenLuo.WinFormsUI.Docking;
 using VE3NEA;
-using SGPdotNET.Observation;
-using SGPdotNET.CoordinateSystem;
-using SGPdotNET.Util;
-using Newtonsoft.Json.Linq;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace OrbiNom
 {
   public partial class PassesPanel : DockContent
   {
     private readonly Context ctx;
-    private List<SatnogsDbSatellite> Sats = new();
     private List<ListViewItem> Items = new();
-    private GroundStation GroundStation;
     
-    private DateTime LastPredictionTime = DateTime.MinValue;
     private readonly Font BoldFont;
     private readonly Pen PathPen = new Pen(Brushes.Teal, 2);
 
