@@ -51,7 +51,8 @@
       SdrDevicesMNU = new ToolStripMenuItem();
       SettingsMNU = new ToolStripMenuItem();
       toolStripMenuItem1 = new ToolStripSeparator();
-      UpdateSatelliteListMNU = new ToolStripMenuItem();
+      DownloadSatDataMNU = new ToolStripMenuItem();
+      DownloadTleMNU = new ToolStripMenuItem();
       helpToolStripMenuItem = new ToolStripMenuItem();
       OnlineHelpMNU = new ToolStripMenuItem();
       emailTheAuthorToolStripMenuItem = new ToolStripMenuItem();
@@ -217,7 +218,7 @@
       // 
       // toolsToolStripMenuItem
       // 
-      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, UpdateSatelliteListMNU });
+      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, DownloadSatDataMNU, DownloadTleMNU });
       toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
       toolsToolStripMenuItem.Size = new Size(46, 20);
       toolsToolStripMenuItem.Text = "Tools";
@@ -225,34 +226,41 @@
       // SatelliteGroupsMNU
       // 
       SatelliteGroupsMNU.Name = "SatelliteGroupsMNU";
-      SatelliteGroupsMNU.Size = new Size(193, 22);
+      SatelliteGroupsMNU.Size = new Size(225, 22);
       SatelliteGroupsMNU.Text = "Satellites and Groups...";
       SatelliteGroupsMNU.Click += EditGroupsMNU_Click;
       // 
       // SdrDevicesMNU
       // 
       SdrDevicesMNU.Name = "SdrDevicesMNU";
-      SdrDevicesMNU.Size = new Size(193, 22);
+      SdrDevicesMNU.Size = new Size(225, 22);
       SdrDevicesMNU.Text = "SDR Devices...";
       // 
       // SettingsMNU
       // 
       SettingsMNU.Name = "SettingsMNU";
-      SettingsMNU.Size = new Size(193, 22);
+      SettingsMNU.Size = new Size(225, 22);
       SettingsMNU.Text = "Settings...";
       SettingsMNU.Click += SettingsMNU_Click;
       // 
       // toolStripMenuItem1
       // 
       toolStripMenuItem1.Name = "toolStripMenuItem1";
-      toolStripMenuItem1.Size = new Size(190, 6);
+      toolStripMenuItem1.Size = new Size(222, 6);
       // 
-      // UpdateSatelliteListMNU
+      // DownloadSatDataMNU
       // 
-      UpdateSatelliteListMNU.Name = "UpdateSatelliteListMNU";
-      UpdateSatelliteListMNU.Size = new Size(193, 22);
-      UpdateSatelliteListMNU.Text = "Update Satellite Data...";
-      UpdateSatelliteListMNU.Click += UpdateSatelliteListMNU_Click;
+      DownloadSatDataMNU.Name = "DownloadSatDataMNU";
+      DownloadSatDataMNU.Size = new Size(216, 22);
+      DownloadSatDataMNU.Text = "Download All Satellite Data";
+      DownloadSatDataMNU.Click += DownloadSatDataMNU_Click;
+      // 
+      // DownloadTleMNU
+      // 
+      DownloadTleMNU.Name = "DownloadTleMNU";
+      DownloadTleMNU.Size = new Size(216, 22);
+      DownloadTleMNU.Text = "Download Only TLE";
+      DownloadTleMNU.Click += DownloadTleMNU_Click;
       // 
       // helpToolStripMenuItem
       // 
@@ -484,7 +492,7 @@
     private VE3NEA.Clock.Clock Clock;
     private ToolStripMenuItem SatelliteGroupsMNU;
     private ToolStripSeparator toolStripMenuItem1;
-    private ToolStripMenuItem UpdateSatelliteListMNU;
+    private ToolStripMenuItem DownloadSatDataMNU;
     private ToolStripMenuItem DataFolderMNU;
     public ToolStripMenuItem WaterfallMNU;
     public ToolStripMenuItem GroupViewMNU;
@@ -513,5 +521,6 @@
     private ToolStripStatusLabel NoiseFloorLabel;
     private ToolStripStatusLabel CpuLoadlabel;
     private ToolTip toolTip1;
+    private ToolStripMenuItem DownloadTleMNU;
   }
 }

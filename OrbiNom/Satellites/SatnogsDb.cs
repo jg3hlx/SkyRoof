@@ -80,22 +80,27 @@ namespace OrbiNom
       cts = new CancellationTokenSource();
 
       await Download("satellites");
+      Log.Information("satellites downloaded");
       DownloadProgress?.Invoke(this, new(20, null));
 
       await Download("transmitters");
+      Log.Information("transmitters downloaded");
       DownloadProgress?.Invoke(this, new(40, null));
 
       await Download("tle");
+      Log.Information("tle downloaded");
       DownloadProgress?.Invoke(this, new(60, null));
 
       await DownloadJE9PEL();
+      Log.Information("JE9PEL downloaded");
       DownloadProgress?.Invoke(this, new(80, null));
 
       await DownloadLotwSatList();
+      Log.Information("Lotw downloaded");
       DownloadProgress?.Invoke(this, new(100, null));
     }
 
-    public async void DownloadTle()
+    public async Task DownloadTle()
     {
       cts = new CancellationTokenSource();
       await Download("tle");

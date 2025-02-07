@@ -22,12 +22,13 @@ namespace OrbiNom
       InitializeComponent();
     }
 
-    public static void Download(Form parent, Context ctx)
+    public static bool Download(Form parent, Context ctx)
     {
       var dlg = new DownloadDialog();
       dlg.ctx = ctx;
 
-      dlg.ShowDialog(parent);
+      var rc = dlg.ShowDialog(parent);
+      return rc == DialogResult.OK;
     }
 
     private void Button_Click(object sender, EventArgs e)
@@ -51,6 +52,7 @@ namespace OrbiNom
         Button.Text = "Close";
         Log.Error(ex, ErrorLabel.Text);
         db = null;
+        DialogResult = DialogResult.None;
         return;
       }
 
@@ -59,11 +61,7 @@ namespace OrbiNom
       {
         db.ImportAll();
         ctx.SatnogsDb.ReplaceSatelliteList(db);
-        ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
-        ctx.Settings.Satellites.LastDownloadTime = DateTime.UtcNow;
-        ctx.Settings.Satellites.LastTleTime = ctx.Settings.Satellites.LastDownloadTime;
-        ctx.MainForm.ShowSatDataStatus();
-        Close();
+        DialogResult = DialogResult.OK;
       }
       catch (Exception ex)
       {

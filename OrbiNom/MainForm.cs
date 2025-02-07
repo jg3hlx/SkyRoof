@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -29,45 +30,12 @@ namespace OrbiNom
 
     private void MainForm_Load(object sender, EventArgs e)
     {
-      LoadSatelliteList();
+      ReadOrDownloadSatelliteData();
 
       // apply settings
       ctx.Settings.Ui.RestoreWindowPosition(this);
       if (!ctx.Settings.Ui.RestoreDockingLayout(this)) SetDefaultDockingLayout();
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
-    }
-
-    const int LIST_DOWNLOAD_DAYS = 7;
-    const int TLE_DOWNLOAD_DAYS = 1;
-
-    private void LoadSatelliteList()
-    {
-      // load from file
-      ctx.SatnogsDb = new();
-      ctx.SatnogsDb.ListUpdated += SatnogsDb_ListUpdated;
-      ctx.SatnogsDb.TleUpdated += SatnogsDb_TleUpdated;
-      ctx.SatnogsDb.LoadFromFile();
-
-
-      // download if needed
-      var nextDownloadTime = ctx.Settings.Satellites.LastDownloadTime.AddDays(LIST_DOWNLOAD_DAYS);
-      if (ctx.SatnogsDb.Loaded && DateTime.UtcNow < nextDownloadTime)
-        SatnogsDb_ListUpdated(null, null);
-      else
-        DownloadDialog.Download(this, ctx);
-
-      if (DateTime.UtcNow > ctx.Settings.Satellites.LastTleTime.AddDays(TLE_DOWNLOAD_DAYS))
-        try
-        {
-          ctx.SatnogsDb.DownloadTle();
-          ctx.Settings.Satellites.LastTleTime = DateTime.UtcNow;
-        }
-        catch { }
-
-      // no satellite data, cannot proceed
-      if (!ctx.SatnogsDb.Loaded) Environment.Exit(1);
-
-      ShowSatDataStatus();
     }
 
     private void MainForm_FormClosing(object sender, EventArgs e)
@@ -100,6 +68,77 @@ namespace OrbiNom
 
 
 
+    //----------------------------------------------------------------------------------------------
+    //                                      sat data
+    //----------------------------------------------------------------------------------------------
+
+    const int LIST_DOWNLOAD_DAYS = 7;
+    const int TLE_DOWNLOAD_DAYS = 1;
+
+    bool DownloadOk = true;
+
+    private void ReadOrDownloadSatelliteData()
+    {
+      LoadSatelliteData();
+      CheckDownloadSatelliteList();
+      if (!ctx.SatnogsDb.Loaded) Environment.Exit(1);
+
+      CheckDownloadTle();
+    }
+
+    private void LoadSatelliteData()
+    {
+      ctx.SatnogsDb = new();
+      ctx.SatnogsDb.ListUpdated += SatnogsDb_ListUpdated;
+      ctx.SatnogsDb.TleUpdated += SatnogsDb_TleUpdated;
+      ctx.SatnogsDb.LoadFromFile();
+
+      SatnogsDb_ListUpdated(null, null);
+    }
+
+    private void CheckDownloadSatelliteList()
+    {
+      var nextDownloadTime = ctx.Settings.Satellites.LastDownloadTime.AddDays(LIST_DOWNLOAD_DAYS);
+
+      if (!ctx.SatnogsDb.Loaded || DateTime.UtcNow > nextDownloadTime)
+        DownloadSatList();
+    }
+
+    private void DownloadSatList()
+    {
+      DownloadOk = DownloadDialog.Download(this, ctx);
+      ShowSatDataStatus();
+    }
+
+    public void CheckDownloadTle()
+    {
+      if (DateTime.UtcNow < ctx.Settings.Satellites.LastTleTime.AddDays(TLE_DOWNLOAD_DAYS)) return;
+      DownloadTle();
+    }
+
+    private async void DownloadTle()
+    {
+      try
+      {
+        SatDataLedLabel.ForeColor = Color.Gray;
+        SatDataStatusLabel.ToolTipText = SatDataLedLabel.ToolTipText = "Downloading TLE...";
+
+
+       await ctx.SatnogsDb.DownloadTle();
+        DownloadOk = true;
+        Log.Information("TLE downloaded");
+      }
+      catch (Exception ex)
+      {
+        DownloadOk = false;
+        Log.Error(ex, "TLE download failed");
+        ShowSatDataStatus();
+      }
+    }
+
+
+
+
 
     //----------------------------------------------------------------------------------------------
     //                                      menu
@@ -109,9 +148,14 @@ namespace OrbiNom
       Close();
     }
 
-    private void UpdateSatelliteListMNU_Click(object sender, EventArgs e)
+    private void DownloadSatDataMNU_Click(object sender, EventArgs e)
     {
-      DownloadDialog.Download(this, ctx);
+      DownloadSatList();
+    }
+
+    private void DownloadTleMNU_Click(object sender, EventArgs e)
+    {
+      DownloadTle();
     }
 
     private void DataFolderMNU_Click(object sender, EventArgs e)
@@ -123,7 +167,9 @@ namespace OrbiNom
     {
       var dlg = new SatelliteGroupsForm();
       dlg.SetList(ctx);
-      dlg.ShowDialog(this);
+      var rc = dlg.ShowDialog(this);
+      
+      if (rc != DialogResult.OK) return;
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
       SatelliteSelector.SetSatelliteGroups();
     }
@@ -209,12 +255,17 @@ namespace OrbiNom
       if (sett.LastDownloadTime < DateTime.UtcNow.AddDays(-LIST_DOWNLOAD_DAYS) &&
         sett.LastTleTime < DateTime.UtcNow.AddDays(-TLE_DOWNLOAD_DAYS))
         SatDataLedLabel.ForeColor = Color.Red;
+      else if (!DownloadOk)
+        SatDataLedLabel.ForeColor = Color.Gold;
       else
         SatDataLedLabel.ForeColor = Color.Lime;
 
-      SatDataLedLabel.ToolTipText = SatDataStatusLabel.ToolTipText =
+      string tooltip =
         $"Satellite List:  {sett.LastDownloadTime.ToLocalTime():yyyy-MM-dd HH:mm}\n" +
-        $"TLE:                 {sett.LastTleTime.ToLocalTime():yyyy-MM-dd HH:mm}";
+        $"TLE:                 {sett.LastTleTime.ToLocalTime():yyyy-MM-dd HH:mm}" +
+        (DownloadOk ? "" : "\nDownload failed");
+
+      SatDataStatusLabel.ToolTipText = SatDataLedLabel.ToolTipText = tooltip;  
     }
 
     DateTime StartTime;
@@ -273,6 +324,7 @@ namespace OrbiNom
       if (TickCount % (TICKS_PER_SECOND / 4) == 0) FourHertzTick();
       if (TickCount % TICKS_PER_SECOND == 0) OneSecondTick();
       if (TickCount % (TICKS_PER_SECOND * 60) == 0) OneMinuteTick();
+      if (TickCount % (TICKS_PER_SECOND * 3600) == 0) OneHourTick();
     }
 
     private void FourHertzTick()
@@ -287,7 +339,7 @@ namespace OrbiNom
       ctx.PassesPanel?.UpdatePassTimes();
       ctx.TimelinePanel?.Advance();
 
-      ShowCpuUsage();      
+      ShowCpuUsage();
     }
 
     private void OneMinuteTick()
@@ -295,6 +347,12 @@ namespace OrbiNom
       ctx.GroupPasses.PredictMorePasses();
       ctx.AllPasses.PredictMorePasses();
       ctx.PassesPanel?.ShowPasses();
+    }
+
+    private void OneHourTick()
+    {
+      CheckDownloadSatelliteList();
+      CheckDownloadTle();
     }
 
 
@@ -305,12 +363,35 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void SatnogsDb_ListUpdated(object? sender, EventArgs e)
     {
+      if (sender != null)
+      {
+        ctx.Settings.Satellites.LastDownloadTime = DateTime.UtcNow;
+        ctx.Settings.Satellites.LastTleTime = ctx.Settings.Satellites.LastDownloadTime;
+      }
+
       ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
+
       SatelliteSelector.SetSatelliteGroups();
       ctx.AllPasses.FullRebuild();
       ctx.GroupPasses.FullRebuild();
 
+      ctx.PassesPanel?.ShowPasses();
+      ctx.SkyViewPanel?.ClearPass();
+
+      ShowSatDataStatus();
+    }
+
+    private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
+    {
+      ctx.Settings.Satellites.LastTleTime = DateTime.UtcNow;
+      ShowSatDataStatus();
+
+      ctx.AllPasses.Rebuild();
+      ctx.GroupPasses.Rebuild();
+
+      ctx.SatelliteSelector.SetSelectedPass(null);
+      ctx.GroupViewPanel?.LoadGroup(); // replace passes attached to sats
       ctx.PassesPanel?.ShowPasses();
       ctx.SkyViewPanel?.ClearPass();
     }
@@ -327,17 +408,6 @@ namespace OrbiNom
       ctx.GroupViewPanel?.ShowSelectedSat();
       ctx.EarthViewPanel?.SetSatellite();
       ctx.SatelliteDetailsPanel?.SetSatellite();
-    }
-
-    private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
-    {
-      ctx.AllPasses.Rebuild();
-      ctx.GroupPasses.Rebuild();
-
-      ctx.SatelliteSelector.SetSelectedPass(null);
-      ctx.GroupViewPanel?.LoadGroup(); // replace passes attached to sats
-      ctx.PassesPanel?.ShowPasses();
-      ctx.SkyViewPanel?.ClearPass();
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)
