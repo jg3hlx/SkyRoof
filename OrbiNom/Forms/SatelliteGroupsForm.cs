@@ -94,7 +94,7 @@ namespace OrbiNom
       item.Tag = sat;
       item.ToolTipText = sat.GetTooltipText();
 
-      sat.SetPeriodAndInclination();
+      sat.ComputeOrbitDetails();
 
       // highlighting
 
@@ -394,8 +394,7 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void ShowSatelliteDetails(SatnogsDbSatellite sat)
     {
-      // compute sat location only when needed for display
-      sat.SetElevationAndFootPrint();
+      sat.ComputeOrbitDetails();
 
       SatelliteDetailsForm.ShowSatellite(sat, ParentForm);
     }

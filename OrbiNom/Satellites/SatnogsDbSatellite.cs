@@ -137,7 +137,7 @@ namespace OrbiNom
     [ReadOnly(true)]
     [Category("Orbit")]
     [DisplayName("Elevation, km")]
-    public int? Elevation { get; set; }
+    public int? Altitude { get; set; }
 
     [ReadOnly(true)]
     [Category("Orbit")]
@@ -242,10 +242,12 @@ namespace OrbiNom
       string radio = "Transmitter";
       if (Flags.HasFlag(SatelliteFlags.Transponder)) radio = "Transponder";
       else if (Flags.HasFlag(SatelliteFlags.Transceiver)) radio = "Transceiver";
-      SetPeriodAndInclination();
+      ComputeOrbitDetails();
 
       string tooltipText = $"{names}\nstatus: {status}\ncountries: {countries}";
-      if (Tle != null) tooltipText += $"\nTLE: available\nperiod: {Period} min.\ninclination: {Inclination}°";
+      if (Tle != null) tooltipText +=
+          $"\nTLE: available\nperiod: {Period} min.\ninclination: {Inclination}°\n" +
+          $"footprint: {Footprint} km\naltitude: {Altitude}";
       tooltipText += $"\nradio: {radio}";
       if (!string.IsNullOrEmpty(LotwName)) tooltipText += "\nAccepted by LoTW";
       tooltipText += $"\nupdated: {updated:yyyy-mm-dd}";
@@ -253,27 +255,27 @@ namespace OrbiNom
       return tooltipText;
     }
 
-    internal void SetPeriodAndInclination()
-    {
-      if (Tle == null || Period != null) return;
-      float v;
-      string s = Tle.tle2.Substring(8, 8);
-      if (float.TryParse(s, out v)) Inclination = (int)v;
-      s = Tle.tle2.Substring(52, 10);
-      if (float.TryParse(s, out v)) Period = (int)(1440f / v);
-    }
-
-    internal void SetElevationAndFootPrint()
+    internal void ComputeOrbitDetails()
     {
       if (Tle == null) return;
+
+      float v;
+      
+      // inclination
+      string s = Tle.tle2.Substring(8, 8);
+      if (float.TryParse(s, out v)) Inclination = (int)v;
+
+      // period
+      s = Tle.tle2.Substring(52, 10);
+      if (float.TryParse(s, out v)) Period = (int)(1440f / v);
+
       try
       {
-        Footprint = (int)Tracker.Predict().ToGeodetic().GetFootprint() * 2; // diameter in km
-        Elevation = (int)Tracker.Predict().ToGeodetic().Altitude;
+        var prediction = Tracker.Predict().ToGeodetic();
+        Footprint = (int)(2 * prediction.GetFootprint()); // diameter in km
+        Altitude = (int)prediction.Altitude;
       }
-      catch
-      {
-      }
+      catch { }
     }
   }
 

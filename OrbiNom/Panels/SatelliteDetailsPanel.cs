@@ -46,7 +46,7 @@ namespace OrbiNom
     public void SetSatellite(SatnogsDbSatellite? sat = null)
     {
       sat ??= ctx.SatelliteSelector.SelectedSatellite; ;
-      sat.SetElevationAndFootPrint();
+      sat.ComputeOrbitDetails();
       satelliteDetailsControl1.ShowSatellite(sat);
     }
 
