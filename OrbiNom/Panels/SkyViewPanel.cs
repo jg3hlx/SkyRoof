@@ -239,6 +239,8 @@ namespace OrbiNom
 
     private float ComputeDirection(SatellitePass pass, DateTime utc)
     {
+      if (pass.Geostationary) return 0;
+
       var p1 = ObservationToXY(pass.GetObservationAt(utc.AddSeconds(-10)));
       var p2 = ObservationToXY(pass.GetObservationAt(utc.AddSeconds(10)));
       return (float)(Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) * 180 / Math.PI);
@@ -362,20 +364,22 @@ namespace OrbiNom
     {
       FlowPanel.SuspendLayout();
 
-      if (OrbitRadioBtn.Checked && Pass != null)
-      {
-        EnsureLabels(ORBIT_LABEL_COUNT);
-        var tooltip = Pass.GetTooltipText();
-
-        FlowPanel.Controls[0].Text = tooltip[0];
-        FlowPanel.Controls[1].Text = $"{tooltip[1]}   {tooltip[2]}";
-        FlowPanel.Controls[2].Text = tooltip[3];
-        FlowPanel.Controls[3].Text = tooltip[4];
-      }
-      else if (RealTimeRadioBtn.Checked)
-        ShowSatLabels();
+      if (RealTimeRadioBtn.Checked) ShowSatLabels();
+      else if (Pass != null) ShowPassLabels();
+      else FlowPanel.Controls.Clear();
 
       FlowPanel.ResumeLayout();
+    }
+
+    private void ShowPassLabels()
+    {
+      EnsureLabels(ORBIT_LABEL_COUNT);
+      var tooltip = Pass.GetTooltipText();
+
+      FlowPanel.Controls[0].Text = tooltip[0];
+      FlowPanel.Controls[1].Text = $"{tooltip[1]}   {tooltip[2]}";
+      FlowPanel.Controls[2].Text = tooltip[3];
+      FlowPanel.Controls[3].Text = tooltip[4];
     }
 
     private void ShowSatLabels()

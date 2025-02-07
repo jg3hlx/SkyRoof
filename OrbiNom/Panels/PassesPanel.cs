@@ -191,13 +191,15 @@ namespace OrbiNom
       e.Graphics.DrawString(text, listViewEx1.Font, Brushes.Black, rect);
 
       // start/end time
-      text = $"{pass.StartTime.ToLocalTime():yyyy-MM-dd  HH:mm:ss}  to  {pass.EndTime.ToLocalTime():HH:mm:ss}";
+      text = pass.Geostationary ? 
+        "Geostationary" : $"{pass.StartTime.ToLocalTime():yyyy-MM-dd  HH:mm:ss}  to  {pass.EndTime.ToLocalTime():HH:mm:ss}";
       size = e.Graphics.MeasureString(text, listViewEx1.Font);
       rect = new RectangleF(e.Bounds.X, e.Bounds.Y + e.Bounds.Height - size.Height - 2, size.Width, size.Height);
       e.Graphics.DrawString(text, listViewEx1.Font, Brushes.Black, rect);
 
       // duration / elevation
-      text = $"{Utils.TimespanToString(pass.EndTime - pass.StartTime, false)}   {pass.MaxElevation:F0}°";
+      text = pass.Geostationary ? 
+        $"{pass.MaxElevation:F0}°" : $"{Utils.TimespanToString(pass.EndTime - pass.StartTime, false)}   {pass.MaxElevation:F0}°";
       size = e.Graphics.MeasureString(text, listViewEx1.Font);
       rect = new RectangleF(e.Bounds.X + w - size.Width, e.Bounds.Y + e.Bounds.Height - size.Height - 2, size.Width, size.Height);
       e.Graphics.DrawString(text, listViewEx1.Font, Brushes.Black, rect);

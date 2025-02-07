@@ -209,7 +209,7 @@ namespace OrbiNom
     private void DrawPasses(Graphics g, DateTime now)
     {
       if (ctx.GroupPasses == null) return;
-      var passes = ctx.GroupPasses.Passes;
+      var passes = ctx.GroupPasses.Passes.Where(p => !p.Geostationary);
 
       SatLabelRects.Clear();
 
@@ -228,7 +228,7 @@ namespace OrbiNom
         if (lastX < 0 || firstX > ClientSize.Width) continue;
 
         // hump
-        var points = pass.GetHump(firstX, y0, (float)PixelsPerMinute, scaleY);
+        var points = pass.ComputeHump(firstX, y0, (float)PixelsPerMinute, scaleY);
         int colorIndex = getColorIndex(pass.Satellite);
         g.FillPolygon(SatBrushes[colorIndex], points);
         g.DrawLines(SatPens[colorIndex], points);

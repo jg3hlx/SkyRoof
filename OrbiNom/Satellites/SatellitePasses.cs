@@ -101,7 +101,9 @@ namespace OrbiNom
 
       try
       {
-        var passes = GroundStation.Observe(tracker, startTime, endTime, TimeSpan.FromSeconds(15), clipToStartTime: false);
+        List<SatelliteVisibilityPeriod> passes;
+        if (SatellitePass.IsGeoStationary(tracker)) passes = ComputeGeostationaryPasses(tracker);
+        else passes = GroundStation.Observe(tracker, startTime, endTime, TimeSpan.FromSeconds(15), clipToStartTime: false);
         result = passes.Select(p => new SatellitePass(GroundStation, satellite, tracker, p));
       }
       catch (Exception e)
@@ -112,6 +114,21 @@ namespace OrbiNom
 
       return result;
     }
+
+    private List<SatelliteVisibilityPeriod> ComputeGeostationaryPasses(Satellite tracker)
+    {
+      return new List<SatelliteVisibilityPeriod>
+      {
+        new SatelliteVisibilityPeriod(
+          tracker,
+          DateTime.UtcNow,
+          DateTime.UtcNow + TimeSpan.FromDays(1),
+          GroundStation.Observe(tracker, DateTime.UtcNow).Elevation,
+          DateTime.UtcNow + TimeSpan.FromHours(12)
+          )
+      };
+    }
+
 
     private void ListSatellites()
     {

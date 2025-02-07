@@ -268,7 +268,7 @@ namespace OrbiNom
       if (Tle == null) return;
       try
       {
-        Footprint = (int)Tracker.Predict().ToGeodetic().GetFootprint();
+        Footprint = (int)Tracker.Predict().ToGeodetic().GetFootprint() * 2; // diameter in km
         Elevation = (int)Tracker.Predict().ToGeodetic().Altitude;
       }
       catch

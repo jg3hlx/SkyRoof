@@ -22,6 +22,7 @@ namespace OrbiNom
     public DateTime StartTime, CulminationTime, EndTime;
     public double MaxElevation;
     public int OrbitNumber;
+    public bool Geostationary { get; private set; }
     private SatelliteVisibilityPeriod SatelliteVisibilityPeriod;
 
     public PointF[]? MiniPath;
@@ -41,7 +42,10 @@ namespace OrbiNom
       EndTime = visibilityPeriod.End;
       MaxElevation = visibilityPeriod.MaxElevation.Degrees;
       OrbitNumber = ComputeOrbitNumber();
+      Geostationary = IsGeoStationary(tracker);
     }
+
+
 
 
 
@@ -49,6 +53,11 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                         get
     //----------------------------------------------------------------------------------------------
+    public static bool IsGeoStationary(Satellite tracker)
+    {
+      return Math.Abs(tracker.Tle.MeanMotionRevPerDay - 1) < 0.1f;
+    }
+    
     public TrackPoint GetTrackPointAt(DateTime utc)
     {
       if (utc < Track.First().Utc) return Track.First();
@@ -75,6 +84,8 @@ namespace OrbiNom
 
     internal string[] GetTooltipText(bool showSeconds = true)
     {
+      if (Geostationary) return [$"Geostationary   orbit #{OrbitNumber}", "", "", "", "", ""];
+
       string[] tooltip = new string[6];
 
       if (EndTime < DateTime.UtcNow) tooltip[0] = "Ended.";
@@ -116,7 +127,7 @@ namespace OrbiNom
       // + (int)revNum;
     }
 
-    public PointF[] GetHump(float x0, float y0, float scaleX, float scaleY)
+    public PointF[] ComputeHump(float x0, float y0, float scaleX, float scaleY)
     {
       for (int i = 0; i < Track.Count; i++)
         hump[i] = new(
@@ -128,12 +139,18 @@ namespace OrbiNom
 
     private List<TrackPoint> MakeTrack()
     {
-      int setpCount = (int)Math.Max(2, (EndTime - StartTime) / TrackStep);
-      TimeSpan step = (EndTime - StartTime) / setpCount;
+      //int setpCount = (int)Math.Max(2, (EndTime - StartTime) / TrackStep);
+      //TimeSpan step = (EndTime - StartTime) / setpCount;
+
+      int stepCount = 63;
+      if (Satellite.norad_cat_id == 43700) stepCount = 3; // QO-100 does not move
+      TimeSpan step = (EndTime - StartTime) / stepCount;
+      if (step < TimeSpan.FromSeconds(10)) step = TimeSpan.FromSeconds(10);
+      stepCount = (int)Math.Round((EndTime - StartTime) / step);
 
       track = new();
       
-      for (int i=0; i <= setpCount; i++)
+      for (int i=0; i <= stepCount; i++)
         {
           var trackPoint = new TrackPoint();
           trackPoint.Utc = StartTime + i * step;
@@ -190,7 +207,7 @@ namespace OrbiNom
         var nextG = new GeoPoint(nextP.Latitude.Degrees, nextP.Longitude.Degrees);
 
         var azim = (nextG - prevG).Azimuth;
-        var radius = P.GetFootprintAngle().Radians * Geo.KmInR;
+        var radius = P.GetFootprint();
 
         var pointL = G + new GeoPath(azim - 90, radius);
         var pointR = G + new GeoPath(azim + 90, radius);
