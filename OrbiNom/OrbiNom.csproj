@@ -36,6 +36,7 @@
   <ItemGroup>
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
@@ -44,6 +45,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Pothosware.SoapySDR">
+      <HintPath>..\..\SoapySdrSharp\Pothosware.SoapySDR\bin\x64\Debug\net8.0\Pothosware.SoapySDR.dll</HintPath>
+    </Reference>
     <Reference Include="SGP.NET">
       <HintPath>..\Vendor\SGP.NET\SGP.NET\bin\x64\Release\net6.0\SGP.NET.dll</HintPath>
     </Reference>
@@ -62,6 +66,54 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="libusb-1.0.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\SoapySDR\module0.8-3\airspy.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\SoapySDR\module0.8-3\airspySupport.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\SoapySDR\module0.8-3\airspySupport.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\SoapySDR\module0.8-3\rtlsdr.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\SoapySDR\module0.8-3\rtlsdrSupport.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\SoapySDR\module0.8-3\rtlsdrSupport.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\SoapySDR\module0.8-3\sdrPlaySupport.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\SoapySDR\module0.8-3\sdrPlaySupport.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lib\SoapySDR\module0.8-3\sdrplay_api.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="pthreadVC2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SoapySDR.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SoapySDR.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SoapySDRCSharpSWIG.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SoapySDRCSharpSWIG.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
