@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ namespace OrbiNom
   public partial class SatelliteDetailsPanel : DockContent
   {
     private readonly Context ctx;
+    private SatnogsDbSatellite? Satellite;
 
     public SatelliteDetailsPanel()
     {
@@ -31,8 +33,7 @@ namespace OrbiNom
       this.ctx = ctx;
       ctx.SatelliteDetailsPanel = this;
       ctx.MainForm.SatelliteDetailsMNU.Checked = true;
-      //satelliteDetailsControl1.splitContainer1.SplitterMoved += SplitContainer1_SplitterMoved;
-
+      
       SetSatellite();
     }
 
@@ -40,20 +41,41 @@ namespace OrbiNom
     {
       ctx.SatelliteDetailsPanel = null;
       ctx.MainForm.SatelliteDetailsMNU.Checked = false;
-      ctx.Settings.Ui.SatelliteDetailsPanel.SplitterDistance = satelliteDetailsControl1.splitContainer1.SplitterDistance;
     }
 
     public void SetSatellite(SatnogsDbSatellite? sat = null)
     {
-      sat ??= ctx.SatelliteSelector.SelectedSatellite; ;
+      sat ??= ctx.SatelliteSelector.SelectedSatellite; 
       sat.ComputeOrbitDetails();
-      satelliteDetailsControl1.ShowSatellite(sat);
+
+      Satellite = sat;
+      SatNameLabel.Text = sat.name;
+
+      SatAkaLabel.Visible = sat.AllNames.Count > 1;
+      SatAkaLabel.Text = $"a.k.a. {string.Join(", ", sat.AllNames.Where(s => s != sat.name))}";
+
+      ImageLabel.Visible = !string.IsNullOrEmpty(sat.image);
+      WebsiteLabel.Visible = !string.IsNullOrEmpty(sat.website);
+
+      SatellitePropertyGrid.SelectedObject = sat;
     }
 
-    private void SatelliteDetailsPanel_Shown(object sender, EventArgs e)
+    private void ImageLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
-      if (ctx.Settings.Ui.SatelliteDetailsPanel.SplitterDistance > -1)
-        satelliteDetailsControl1.splitContainer1.SplitterDistance = ctx.Settings.Ui.SatelliteDetailsPanel.SplitterDistance;
+      ImageLabel.LinkVisited = true;
+      Process.Start(new ProcessStartInfo($"https://db-satnogs.freetls.fastly.net/media/{Satellite.image}") { UseShellExecute = true });
+    }
+
+    private void WebsiteLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+      WebsiteLabel.LinkVisited = true;
+      Process.Start(new ProcessStartInfo(Satellite.website) { UseShellExecute = true });
+    }
+
+    private void SatnogsLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+      SatnogsLabel.LinkVisited = true;
+      Process.Start(new ProcessStartInfo($"https://db.satnogs.org/satellite/{Satellite.sat_id}") { UseShellExecute = true });
     }
   }
 }

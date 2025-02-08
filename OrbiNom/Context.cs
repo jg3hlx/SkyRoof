@@ -23,5 +23,6 @@ namespace OrbiNom
     public TimelinePanel? TimelinePanel;
     public SkyViewPanel? SkyViewPanel;
     public EarthViewPanel? EarthViewPanel;
+    internal TransmittersPanel? TransmittersPanel;
   }
 }

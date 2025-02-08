@@ -35,7 +35,7 @@
       string mode = this.mode;
       if (baud != null && baud != 0) mode = $"{mode} {baud} Bd";
       string uplink = FormatFrequencyRange(uplink_low, uplink_high);
-      string downlink = FormatFrequencyRange(downlink_low, downlink_high);
+      string downlink = FormatFrequencyRange(downlink_low, downlink_high, invert);
 
       string result = $"Type: {type}\n";
       if (uplink_low != null) result += $"Uplink: {uplink}\n";
@@ -46,10 +46,11 @@
       return result;
     }
 
-    public static string FormatFrequencyRange(long? low, long? high)
+    public static string FormatFrequencyRange(long? low, long? high, bool inverted = false)
     {
       if (low == null) return "";
       if (high == null) return $"{low / 1000:N0}";
+      if (inverted) return $"{high / 1000:N0} - {low / 1000:N0}";
       return $"{low / 1000:N0} - {high / 1000:N0}";
     }
 

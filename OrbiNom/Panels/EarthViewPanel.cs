@@ -7,6 +7,7 @@ using VE3NEA;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using Serilog;
+using static System.Windows.Forms.AxHost;
 
 namespace OrbiNom
 {
@@ -64,6 +65,11 @@ namespace OrbiNom
     {
       Zoom *= 1 + e.Delta / 1200f;
       ValidateZoom();
+    }
+
+    private void label1_DoubleClick(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetSelectedSatellite(Satellite);
     }
 
     private void ValidateZoom()
@@ -279,7 +285,7 @@ namespace OrbiNom
       var size = openglControl1.ClientSize;
       // diameter of the inscribed circle, pixels
       var diam = Math.Min(size.Width, size.Height);
-      
+
       // scale sprites to look nice at all control sizes
       var scale = 0.6f + diam * 0.0007f;
       SatelliteSprite.Scale = scale;

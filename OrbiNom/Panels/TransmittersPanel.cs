@@ -2,40 +2,51 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SGPdotNET.Observation;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace OrbiNom
 {
-  public partial class SatelliteDetailsControl : UserControl
+  public partial class TransmittersPanel : DockContent
   {
+    private Context ctx;
     private SatnogsDbSatellite? Satellite;
 
-    public SatelliteDetailsControl()
+    public TransmittersPanel()
     {
       InitializeComponent();
     }
 
-    internal void ShowSatellite(SatnogsDbSatellite? satellite)
+    public TransmittersPanel(Context ctx)
     {
-      Satellite = satellite;
+      InitializeComponent();
 
-      SatNameLabel.Text = satellite.name;
+      this.ctx = ctx;
+      ctx.TransmittersPanel = this;
+      ctx.MainForm.TransmittersMNU.Checked = true;
+      SetSatellite();
+    }
 
-      SatAkaLabel.Visible = satellite.AllNames.Count > 1;
-      SatAkaLabel.Text = $"a.k.a. {string.Join(", ", satellite.AllNames.Where(s => s != satellite.name))}";
-
-      ImageLabel.Visible = !string.IsNullOrEmpty(satellite.image);
-      WebsiteLabel.Visible = !string.IsNullOrEmpty(satellite.website);
-
-      SatellitePropertyGrid.SelectedObject = satellite;
-
+    internal void SetSatellite(SatnogsDbSatellite? sat = null)
+    {
+      sat ??= ctx.SatelliteSelector.SelectedSatellite; ;
+      sat.ComputeOrbitDetails();
+      Satellite = sat;
       CreateTransmitterItems();
+
+      SatNameLabel.Text = sat.name;
+    }
+
+    private void TransmittersPanel_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      ctx.TransmittersPanel = null;
+      ctx.MainForm.TransmittersMNU.Checked = false;
     }
 
     private void CreateTransmitterItems()
@@ -62,7 +73,7 @@ namespace OrbiNom
         if (tx.IsUhf()) item.BackColor = Color.LightCyan;
         if (tx.service == "Amateur") item.Font = new(item.Font, FontStyle.Bold);
         if (!tx.alive || tx.status != "active") item.ForeColor = Color.Silver; //item.Font = new(item.Font, FontStyle.Strikeout);
-        
+
         // tooltip
         item.ToolTipText = tx.GetTooltipText();
 
@@ -80,31 +91,13 @@ namespace OrbiNom
         // band color
         var match = Regex.Match(t.Downlink, "^[0-9.]+");
         if (match.Success && float.TryParse(match.Groups[0].Value, out float freq))
-          if (freq >= 144&& freq <= 148) item.BackColor = Color.LightGoldenrodYellow;
+          if (freq >= 144 && freq <= 148) item.BackColor = Color.LightGoldenrodYellow;
           else if (freq >= 430 && freq <= 440) item.BackColor = Color.LightCyan;
 
         listView1.Items.Add(item);
       }
 
       listView1.EndUpdate();
-    }
-
-    private void ImageLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-    {
-      ImageLabel.LinkVisited = true;
-      Process.Start(new ProcessStartInfo($"https://db-satnogs.freetls.fastly.net/media/{Satellite.image}") { UseShellExecute = true });
-    }
-
-    private void WebsiteLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-    {
-      WebsiteLabel.LinkVisited = true;
-      Process.Start(new ProcessStartInfo(Satellite.website) { UseShellExecute = true });
-    }
-
-    private void SatnogsLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-    {
-      SatnogsLabel.LinkVisited = true;
-      Process.Start(new ProcessStartInfo($"https://db.satnogs.org/satellite/{Satellite.sat_id}") { UseShellExecute = true });
     }
 
     private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)

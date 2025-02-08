@@ -319,6 +319,7 @@ namespace OrbiNom
           var pass = SatLabelRects[rect];
           ctx.SatelliteSelector.SetSelectedPass(pass);
           ctx.SatelliteDetailsPanel?.SetSatellite(pass.Satellite);
+          ctx.TransmittersPanel?.SetSatellite(pass.Satellite);
         }
       }
     }

@@ -40,7 +40,7 @@
       GroupsTreePopupMenu = new ContextMenuStrip(components);
       RenameMNU2 = new ToolStripMenuItem();
       DeleteMNU2 = new ToolStripMenuItem();
-      PropertiesMNU2 = new ToolStripMenuItem();
+      DetailsMNU2 = new ToolStripMenuItem();
       ClearGroupMNU = new ToolStripMenuItem();
       panel3 = new Panel();
       CancelBtn = new Button();
@@ -49,7 +49,7 @@
       SatelliteListPopupMenu = new ContextMenuStrip(components);
       RenameSatMNU = new ToolStripMenuItem();
       AddToGroupMNU = new ToolStripMenuItem();
-      PropertiesSatMNU = new ToolStripMenuItem();
+      DetailsMNU = new ToolStripMenuItem();
       panel5 = new Panel();
       listView1 = new ListView();
       columnHeader1 = new ColumnHeader();
@@ -199,9 +199,9 @@
       // 
       // GroupsTreePopupMenu
       // 
-      GroupsTreePopupMenu.Items.AddRange(new ToolStripItem[] { RenameMNU2, DeleteMNU2, PropertiesMNU2, ClearGroupMNU });
+      GroupsTreePopupMenu.Items.AddRange(new ToolStripItem[] { RenameMNU2, DeleteMNU2, DetailsMNU2, ClearGroupMNU });
       GroupsTreePopupMenu.Name = "SatelliteListPopupMenu";
-      GroupsTreePopupMenu.Size = new Size(183, 92);
+      GroupsTreePopupMenu.Size = new Size(183, 114);
       GroupsTreePopupMenu.Opening += contextMenuStrip1_Opening;
       // 
       // RenameMNU2
@@ -221,13 +221,14 @@
       DeleteMNU2.Text = "Delete";
       DeleteMNU2.Click += DeleteMNU2_Click;
       // 
-      // PropertiesMNU2
+      // DetailsMNU2
       // 
-      PropertiesMNU2.Name = "PropertiesMNU2";
-      PropertiesMNU2.ShortcutKeyDisplayString = "Space";
-      PropertiesMNU2.Size = new Size(182, 22);
-      PropertiesMNU2.Text = "Properties...";
-      PropertiesMNU2.Click += PropertiesMNU2_Click;
+      DetailsMNU2.Name = "DetailsMNU2";
+      DetailsMNU2.ShortcutKeyDisplayString = "";
+      DetailsMNU2.ShortcutKeys = Keys.Control | Keys.D;
+      DetailsMNU2.Size = new Size(182, 22);
+      DetailsMNU2.Text = "Details...";
+      DetailsMNU2.Click += DetailsMNU2_Click;
       // 
       // ClearGroupMNU
       // 
@@ -280,16 +281,16 @@
       // 
       // SatelliteListPopupMenu
       // 
-      SatelliteListPopupMenu.Items.AddRange(new ToolStripItem[] { RenameSatMNU, AddToGroupMNU, PropertiesSatMNU });
+      SatelliteListPopupMenu.Items.AddRange(new ToolStripItem[] { RenameSatMNU, AddToGroupMNU, DetailsMNU });
       SatelliteListPopupMenu.Name = "SatelliteListPopupMenu";
-      SatelliteListPopupMenu.Size = new Size(183, 70);
+      SatelliteListPopupMenu.Size = new Size(205, 70);
       // 
       // RenameSatMNU
       // 
       RenameSatMNU.Name = "RenameSatMNU";
       RenameSatMNU.ShortcutKeyDisplayString = "";
       RenameSatMNU.ShortcutKeys = Keys.F2;
-      RenameSatMNU.Size = new Size(182, 22);
+      RenameSatMNU.Size = new Size(204, 22);
       RenameSatMNU.Text = "Rename";
       RenameSatMNU.Click += RenameSatMNU_Click;
       // 
@@ -298,17 +299,18 @@
       AddToGroupMNU.Name = "AddToGroupMNU";
       AddToGroupMNU.ShortcutKeyDisplayString = "";
       AddToGroupMNU.ShortcutKeys = Keys.Insert;
-      AddToGroupMNU.Size = new Size(182, 22);
+      AddToGroupMNU.Size = new Size(204, 22);
       AddToGroupMNU.Text = "Add to Group";
       AddToGroupMNU.Click += AddSatBtn_Click;
       // 
-      // PropertiesSatMNU
+      // DetailsMNU
       // 
-      PropertiesSatMNU.Name = "PropertiesSatMNU";
-      PropertiesSatMNU.ShortcutKeyDisplayString = "Space";
-      PropertiesSatMNU.Size = new Size(182, 22);
-      PropertiesSatMNU.Text = "Properties...";
-      PropertiesSatMNU.Click += PropertiesSatMNU_Click;
+      DetailsMNU.Name = "DetailsMNU";
+      DetailsMNU.ShortcutKeyDisplayString = "";
+      DetailsMNU.ShortcutKeys = Keys.Control | Keys.D;
+      DetailsMNU.Size = new Size(204, 22);
+      DetailsMNU.Text = "Satellite Details...";
+      DetailsMNU.Click += DetailsMNU_Click;
       // 
       // panel5
       // 
@@ -789,7 +791,7 @@
     private ColumnHeader columnHeader4;
     private ContextMenuStrip SatelliteListPopupMenu;
     private ToolStripMenuItem RenameSatMNU;
-    private ToolStripMenuItem PropertiesSatMNU;
+    private ToolStripMenuItem DetailsMNU;
     private Button CancelBtn;
     private Button OkBtn;
     private TreeView treeView2;
@@ -800,7 +802,7 @@
     private ToolTip toolTip1;
     private ContextMenuStrip GroupsTreePopupMenu;
     private ToolStripMenuItem RenameMNU2;
-    private ToolStripMenuItem PropertiesMNU2;
+    private ToolStripMenuItem DetailsMNU2;
     private ToolStripMenuItem DeleteMNU2;
     private ToolStripMenuItem ClearGroupMNU;
     private ToolStripMenuItem AddToGroupMNU;

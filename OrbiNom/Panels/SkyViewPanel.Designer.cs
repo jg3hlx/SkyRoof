@@ -86,6 +86,7 @@
       DrawPanel.Size = new Size(800, 425);
       DrawPanel.TabIndex = 3;
       DrawPanel.Paint += panel_Paint;
+      DrawPanel.DoubleClick += DrawPanel_DoubleClick;
       DrawPanel.MouseDown += DrawPanel_MouseDown;
       DrawPanel.MouseLeave += DrawPanel_MouseLeave;
       DrawPanel.MouseMove += DrawPanel_MouseMove;

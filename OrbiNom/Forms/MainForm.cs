@@ -3,6 +3,7 @@ using System.Net.NetworkInformation;
 using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrbiNom
 {
@@ -44,9 +45,6 @@ namespace OrbiNom
       ctx.Settings.Ui.StoreDockingLayout(DockHost);
       ctx.Settings.Ui.StoreWindowPosition(this);
       ctx.Settings.Ui.ClockUtcMode = Clock.UtcMode;
-
-      if (ctx.SatelliteDetailsPanel != null)
-        ctx.Settings.Ui.SatelliteDetailsPanel.SplitterDistance = ctx.SatelliteDetailsPanel.satelliteDetailsControl1.splitContainer1.SplitterDistance;
 
       ctx.Settings.SaveToFile();
     }
@@ -124,7 +122,7 @@ namespace OrbiNom
         SatDataStatusLabel.ToolTipText = SatDataLedLabel.ToolTipText = "Downloading TLE...";
 
 
-       await ctx.SatnogsDb.DownloadTle();
+        await ctx.SatnogsDb.DownloadTle();
         DownloadOk = true;
         Log.Information("TLE downloaded");
       }
@@ -168,7 +166,7 @@ namespace OrbiNom
       var dlg = new SatelliteGroupsForm();
       dlg.SetList(ctx);
       var rc = dlg.ShowDialog(this);
-      
+
       if (rc != DialogResult.OK) return;
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
       SatelliteSelector.SetSatelliteGroups();
@@ -188,6 +186,14 @@ namespace OrbiNom
         new SatelliteDetailsPanel(ctx).Show(DockHost, DockState.Float);
       else
         ctx.SatelliteDetailsPanel.Close();
+    }
+
+    private void TransmittersMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.TransmittersPanel == null)
+        new TransmittersPanel(ctx).Show(DockHost, DockState.Float);
+      else
+        ctx.TransmittersPanel.Close();
     }
 
     private void SatellitePassesMNU_Click(object sender, EventArgs e)
@@ -265,7 +271,7 @@ namespace OrbiNom
         $"TLE:                 {sett.LastTleTime.ToLocalTime():yyyy-MM-dd HH:mm}" +
         (DownloadOk ? "" : "\nDownload failed");
 
-      SatDataStatusLabel.ToolTipText = SatDataLedLabel.ToolTipText = tooltip;  
+      SatDataStatusLabel.ToolTipText = SatDataLedLabel.ToolTipText = tooltip;
     }
 
     DateTime StartTime;
@@ -298,6 +304,7 @@ namespace OrbiNom
       {
         case "OrbiNom.GroupViewPanel": return new GroupViewPanel(ctx);
         case "OrbiNom.SatelliteDetailsPanel": return new SatelliteDetailsPanel(ctx);
+        case "OrbiNom.TransmittersPanel": return new TransmittersPanel(ctx);
         case "OrbiNom.PassesPanel": return new PassesPanel(ctx);
         case "OrbiNom.TimelinePanel": return new TimelinePanel(ctx);
         case "OrbiNom.SkyViewPanel": return new SkyViewPanel(ctx);
@@ -408,6 +415,18 @@ namespace OrbiNom
       ctx.GroupViewPanel?.ShowSelectedSat();
       ctx.EarthViewPanel?.SetSatellite();
       ctx.SatelliteDetailsPanel?.SetSatellite();
+      ctx.TransmittersPanel?.SetSatellite();
+    }
+
+    private void SatelliteSelector_ClickedSatelliteChanged(object sender, EventArgs e)
+    {
+      var sat = SatelliteSelector.ClickedSatellite;
+
+      ctx.SatelliteDetailsPanel?.SetSatellite(sat);
+      ctx.TransmittersPanel?.SetSatellite(sat);
+      ctx.EarthViewPanel?.SetSatellite(sat);
+
+      //ctx.TransmittersPanel.Activate();
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)

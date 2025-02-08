@@ -45,18 +45,6 @@ namespace OrbiNom
       LoadGroup();
     }
 
-    private void listView1_Click(object sender, EventArgs e)
-    {
-      if (listView1.SelectedIndices.Count == 0) return;
-
-      var data = (ItemData)Items[listView1.SelectedIndices[0]].Tag!;
-      ctx.PassesPanel?.ShowPasses();
-      if (data.Pass != null) ctx.SatelliteSelector.SetSelectedPass(data.Pass);
-      ctx.SatelliteDetailsPanel?.SetSatellite(data.Sat);
-      ctx.EarthViewPanel?.SetSatellite(data.Sat);
-    }
-
-
     private void GroupViewPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
       ctx.GroupViewPanel = null;
@@ -173,6 +161,20 @@ namespace OrbiNom
       }
 
       listView1.Invalidate();
+    }
+
+    private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      if (listView1.SelectedIndices.Count == 0) return;
+
+      var data = (ItemData)Items[listView1.SelectedIndices[0]].Tag!;
+      
+      ctx.PassesPanel?.ShowPasses();
+      if (data.Pass != null)
+      {
+        ctx.SatelliteSelector.SetClickedSatellite(data.Pass.Satellite);
+        ctx.SatelliteSelector.SetSelectedPass(data.Pass);
+      }
     }
   }
 }

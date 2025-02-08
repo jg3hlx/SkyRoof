@@ -9,18 +9,23 @@ namespace OrbiNom
     public Context ctx;
     private bool changing;
     private SatelliteGroup group;
+    private SatnogsDbSatellite clickedSatellite;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public SatnogsDbSatellite[] GroupSatellites { get; private set; } = [];
-    
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] 
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public SatnogsDbSatellite SelectedSatellite { get; private set; }
-    
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public SatnogsDbSatellite ClickedSatellite { get => clickedSatellite; set => SetClickedSatellite(value); }
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] 
     public SatellitePass? SelectedPass { get; private set; }
 
     public event EventHandler? SelectedGroupChanged;
     public event EventHandler? SelectedSatelliteChanged;
+    public event EventHandler? ClickedSatelliteChanged;
     public event EventHandler? SelectedTransmitterChanged;
     public event EventHandler? SelectedPassChanged;
 
@@ -91,6 +96,12 @@ namespace OrbiNom
 
       SetTransmitters();
       //SetSelectedPass(null);
+    }
+
+    public void SetClickedSatellite(SatnogsDbSatellite value)
+    {
+      clickedSatellite = value;
+      ClickedSatelliteChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void SetTransmitters()

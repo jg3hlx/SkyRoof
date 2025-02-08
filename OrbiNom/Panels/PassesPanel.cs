@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using WeifenLuo.WinFormsUI.Docking;
 using VE3NEA;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using static OrbiNom.GroupViewPanel;
 
 namespace OrbiNom
 {
@@ -8,7 +10,7 @@ namespace OrbiNom
   {
     private readonly Context ctx;
     private List<ListViewItem> Items = new();
-    
+
     private readonly Font BoldFont;
     private readonly Pen PathPen = new Pen(Brushes.Teal, 2);
 
@@ -70,10 +72,16 @@ namespace OrbiNom
     {
       var item = listViewEx1.GetItemAt(e.X, e.Y);
       if (item == null) return;
-      var pass = (SatellitePass)item.Tag;
-      ctx.SatelliteDetailsPanel?.SetSatellite(pass.Satellite);
-      ctx.SatelliteSelector.SetSelectedPass(pass);
+      var pass = (SatellitePass)item.Tag!;
+      ctx.SatelliteSelector.SetClickedSatellite(pass.Satellite);
     }
+
+    private void listViewEx1_DoubleClick(object sender, EventArgs e)
+    {
+      var sat = ((SatellitePass)Items[listViewEx1.SelectedIndices[0]].Tag!).Satellite;
+      ctx.SatelliteSelector.SetSelectedSatellite(sat);
+    }
+
 
 
 
@@ -191,14 +199,14 @@ namespace OrbiNom
       e.Graphics.DrawString(text, listViewEx1.Font, Brushes.Black, rect);
 
       // start/end time
-      text = pass.Geostationary ? 
+      text = pass.Geostationary ?
         "Geostationary" : $"{pass.StartTime.ToLocalTime():yyyy-MM-dd  HH:mm:ss}  to  {pass.EndTime.ToLocalTime():HH:mm:ss}";
       size = e.Graphics.MeasureString(text, listViewEx1.Font);
       rect = new RectangleF(e.Bounds.X, e.Bounds.Y + e.Bounds.Height - size.Height - 2, size.Width, size.Height);
       e.Graphics.DrawString(text, listViewEx1.Font, Brushes.Black, rect);
 
       // duration / elevation
-      text = pass.Geostationary ? 
+      text = pass.Geostationary ?
         $"{pass.MaxElevation:F0}°" : $"{Utils.TimespanToString(pass.EndTime - pass.StartTime, false)}   {pass.MaxElevation:F0}°";
       size = e.Graphics.MeasureString(text, listViewEx1.Font);
       rect = new RectangleF(e.Bounds.X + w - size.Width, e.Bounds.Y + e.Bounds.Height - size.Height - 2, size.Width, size.Height);

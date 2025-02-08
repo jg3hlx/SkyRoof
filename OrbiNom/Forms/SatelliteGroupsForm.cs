@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using SGPdotNET.Observation;
 using SGPdotNET.TLE;
+using WeifenLuo.WinFormsUI.Docking;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrbiNom
@@ -330,18 +331,20 @@ namespace OrbiNom
     // keyboard shortcuts for menu items
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
-      if (listView1.Focused && keyData == Keys.Space) PropertiesSatMNU_Click(null, null);
-      else if (listView1.Focused && keyData == Keys.Right) AddSatBtn_Click(null, null);
-      else if (treeView1.Focused && keyData == Keys.Space) PropertiesMNU2_Click(null, null);
-      else return base.ProcessCmdKey(ref msg, keyData);
-      return true;
+      if (listView1.Focused && keyData == Keys.Right || treeView1.Focused && keyData == Keys.Space)
+      {
+        AddSatBtn_Click(null, null);
+        return true;
+      }
+        
+      return base.ProcessCmdKey(ref msg, keyData);      
     }
 
     private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
     {
       e.Cancel = treeView1.SelectedNode == null;
       ClearGroupMNU.Visible = treeView1.SelectedNode?.Level == 0;
-      PropertiesMNU2.Visible = treeView1.SelectedNode?.Level == 1;
+      DetailsMNU2.Visible = treeView1.SelectedNode?.Level == 1;
     }
 
     private void RenameSatMNU_Click(object sender, EventArgs e)
@@ -350,7 +353,7 @@ namespace OrbiNom
       item.BeginEdit();
     }
 
-    private void PropertiesSatMNU_Click(object sender, EventArgs e)
+    private void DetailsMNU_Click(object sender, EventArgs e)
     {
       var item = FilteredItems[listView1.SelectedIndices[0]];
       var sat = (SatnogsDbSatellite)item.Tag;
@@ -358,10 +361,11 @@ namespace OrbiNom
       ShowSatelliteDetails(sat);
     }
 
-    private void PropertiesMNU2_Click(object sender, EventArgs e)
+    private void DetailsMNU2_Click(object sender, EventArgs e)
     {
       if (treeView1.SelectedNode?.Level != 1) return;
       var sat = (SatnogsDbSatellite)treeView1.SelectedNode.Tag;
+
       ShowSatelliteDetails(sat);
     }
 
@@ -395,7 +399,6 @@ namespace OrbiNom
     private void ShowSatelliteDetails(SatnogsDbSatellite sat)
     {
       sat.ComputeOrbitDetails();
-
       SatelliteDetailsForm.ShowSatellite(sat, ParentForm);
     }
 
@@ -437,9 +440,9 @@ namespace OrbiNom
       var dst = treeView1.GetNodeAt(treeView1.PointToClient(new Point(e.X, e.Y)));
       treeView1.SelectedNode = dst;
 
-      if (CanDrop(e.Data, dst)) 
+      if (CanDrop(e.Data, dst))
         e.Effect = ModifierKeys.HasFlag(Keys.Control) ? DragDropEffects.Copy : DragDropEffects.Move;
-      else 
+      else
         e.Effect = DragDropEffects.None;
     }
 
@@ -470,7 +473,7 @@ namespace OrbiNom
       var existingSats = existingNodes.Cast<TreeNode>().Select(n => (SatnogsDbSatellite)n.Tag).ToList();
       var newNodes = sats.Except(existingSats).Select(NodeFromSat).ToList();
 
-      foreach (var node in newNodes) 
+      foreach (var node in newNodes)
         if (dst.Level == 0) existingNodes.Add(node);
         else existingNodes.Insert(dst.Index, node);
 
@@ -482,7 +485,7 @@ namespace OrbiNom
     {
       bool isGroup = src.Level == 0;
 
-      if (effect == DragDropEffects.Move) 
+      if (effect == DragDropEffects.Move)
         src.Remove();
       else
       {
@@ -530,36 +533,5 @@ namespace OrbiNom
       if (srcSats == null) return false;
       return srcSats.Except(dstSats).Count() > 0;
     }
-
-    //private List<SatnogsDbSatellite> GetSatsToDrop(IDataObject data, TreeNode? dst)
-    //{
-    //  var sats = new List<SatnogsDbSatellite>();
-    //  if (dst == null) return sats;
-    //
-    //  // dragging treeview node
-    //  var src = data.GetData(typeof(TreeNode)) as TreeNode;
-    //  if (src != null)
-    //  {
-    //    if (dst.Equals(src) ||
-    //      dst.Level > src.Level ||
-    //      dst.Equals(src.Parent) ||
-    //      dst.Nodes.Cast<TreeNode>().Select(n => n.Tag).Contains(src.Tag)
-    //      ) return sats;
-    //
-    //    sats.Add((SatnogsDbSatellite)src.Tag);
-    //  }
-    //  // dragging listview items
-    //  else
-    //  {
-    //    var items = data.GetData(typeof(ListView.SelectedListViewItemCollection)) as ListView.SelectedListViewItemCollection;
-    //    if (items == null) return sats;
-    //    sats.AddRange(items.Cast<ListViewItem>().Select(i => (SatnogsDbSatellite)i.Tag));
-    //  }
-    //
-    //  // verify result
-    //
-    //
-    //  return sats;
-    //}
   }
 }

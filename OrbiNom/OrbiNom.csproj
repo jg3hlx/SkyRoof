@@ -12,13 +12,22 @@
     <Authors>Alex VE3NEA</Authors>
     <AssemblyVersion>1.0.*</AssemblyVersion>
     <FileVersion></FileVersion>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Deterministic>False</Deterministic>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Deterministic>False</Deterministic>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Deterministic>False</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Deterministic>False</Deterministic>
   </PropertyGroup>
 
@@ -46,7 +55,7 @@
 
   <ItemGroup>
     <Reference Include="Pothosware.SoapySDR">
-      <HintPath>..\..\SoapySdrSharp\Pothosware.SoapySDR\bin\x64\Debug\net8.0\Pothosware.SoapySDR.dll</HintPath>
+      <HintPath>Pothosware.SoapySDR.dll</HintPath>
     </Reference>
     <Reference Include="SGP.NET">
       <HintPath>..\Vendor\SGP.NET\SGP.NET\bin\x64\Release\net6.0\SGP.NET.dll</HintPath>
@@ -97,6 +106,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="lib\SoapySDR\module0.8-3\sdrplay_api.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Pothosware.SoapySDR.deps.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Pothosware.SoapySDR.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Pothosware.SoapySDR.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="pthreadVC2.dll">

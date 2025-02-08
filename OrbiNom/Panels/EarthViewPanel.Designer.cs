@@ -58,6 +58,7 @@
       label1.Size = new Size(27, 19);
       label1.TabIndex = 2;
       label1.Text = "___";
+      label1.DoubleClick += label1_DoubleClick;
       // 
       // EarthViewPanel
       // 

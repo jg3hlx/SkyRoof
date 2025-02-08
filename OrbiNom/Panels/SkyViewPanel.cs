@@ -339,14 +339,23 @@ namespace OrbiNom
       }
     }
 
+    private SatellitePass ClickedPass;
     private void DrawPanel_MouseDown(object sender, MouseEventArgs e)
     {
       var rect = GetSatRectAt(new PointF(e.X, e.Y));
       if (!rect.IsEmpty)
       {
-        var pass = SatLabelRects[rect];
-        ctx.SatelliteSelector.SetSelectedSatellite(pass.Satellite);
+        ClickedPass = SatLabelRects[rect];
+        ctx.SatelliteSelector.SetClickedSatellite(ClickedPass.Satellite);
       }
+      else
+        ClickedPass = null;
+    }
+
+    private void DrawPanel_DoubleClick(object sender, EventArgs e)
+    {
+      if (ClickedPass != null)
+        ctx.SatelliteSelector.SetSelectedSatellite(ClickedPass.Satellite);
     }
 
     private void DrawPanel_MouseLeave(object sender, EventArgs e)
