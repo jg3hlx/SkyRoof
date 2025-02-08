@@ -117,13 +117,16 @@ namespace OrbiNom
 
     private List<SatelliteVisibilityPeriod> ComputeGeostationaryPasses(Satellite tracker)
     {
-      return new List<SatelliteVisibilityPeriod>
+      var elevation = GroundStation.Observe(tracker, DateTime.UtcNow).Elevation;
+      if (elevation < 0) return new();
+
+      return new ()
       {
         new SatelliteVisibilityPeriod(
           tracker,
           DateTime.UtcNow,
           DateTime.UtcNow + TimeSpan.FromDays(1),
-          GroundStation.Observe(tracker, DateTime.UtcNow).Elevation,
+          elevation,
           DateTime.UtcNow + TimeSpan.FromHours(12)
           )
       };

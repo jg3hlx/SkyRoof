@@ -139,11 +139,8 @@ namespace OrbiNom
 
     private List<TrackPoint> MakeTrack()
     {
-      //int setpCount = (int)Math.Max(2, (EndTime - StartTime) / TrackStep);
-      //TimeSpan step = (EndTime - StartTime) / setpCount;
-
       int stepCount = 63;
-      if (Satellite.norad_cat_id == 43700) stepCount = 3; // QO-100 does not move
+      if (Geostationary) stepCount = 3;
       TimeSpan step = (EndTime - StartTime) / stepCount;
       if (step < TimeSpan.FromSeconds(10)) step = TimeSpan.FromSeconds(10);
       stepCount = (int)Math.Round((EndTime - StartTime) / step);

@@ -13,6 +13,8 @@ namespace OrbiNom
 
     private readonly Font BoldFont;
     private readonly Pen PathPen = new Pen(Brushes.Teal, 2);
+    private SatellitePass? ClickedPass;
+    private Size DesignedSize;
 
 
     public PassesPanel()
@@ -23,6 +25,7 @@ namespace OrbiNom
     public PassesPanel(Context ctx)
     {
       InitializeComponent();
+      DesignedSize = Size;
 
       this.ctx = ctx;
       ctx.PassesPanel = this;
@@ -45,6 +48,17 @@ namespace OrbiNom
     {
       ctx.PassesPanel = null;
       ctx.MainForm.SatellitePassesMNU.Checked = false;
+    }
+
+    private void PassesPanel_Load(object sender, EventArgs e)
+    {
+      if (Size.Height == 260) // if default size, not from settings
+      {
+        FloatPane.FloatWindow.Size = DesignedSize;
+        FloatPane.FloatWindow.Location = new Point(
+          ctx.MainForm.Location.X + (ctx.MainForm.Width - DesignedSize.Width) / 2,
+          ctx.MainForm.Location.Y + (ctx.MainForm.Size.Height - DesignedSize.Height) / 2);
+      }
     }
 
     private void listViewEx1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -71,9 +85,15 @@ namespace OrbiNom
     private void listViewEx1_MouseDown(object sender, MouseEventArgs e)
     {
       var item = listViewEx1.GetItemAt(e.X, e.Y);
-      if (item == null) return;
-      var pass = (SatellitePass)item.Tag!;
-      ctx.SatelliteSelector.SetClickedSatellite(pass.Satellite);
+      if (item == null)
+        ClickedPass = null;
+      else
+      {
+        ClickedPass = (SatellitePass)item.Tag!;
+
+        if (e.Button == MouseButtons.Left)
+          ctx.SatelliteSelector.SetClickedSatellite(ClickedPass.Satellite);
+      }
     }
 
     private void listViewEx1_DoubleClick(object sender, EventArgs e)
@@ -254,6 +274,42 @@ namespace OrbiNom
       // item separator
       rect = new RectangleF(e.Bounds.X, e.Bounds.Y + h, e.Bounds.Width, 1);
       e.Graphics.FillRectangle(Brushes.Gray, rect);
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                    popup menu
+    //----------------------------------------------------------------------------------------------
+    private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+      SelectSatelliteMNU.Enabled = SatelliteDetailsMNU.Enabled = SatelliteTransmittersMNU.Enabled = ClickedPass != null;
+    }
+
+    private void SelectSatelliteMNU_Click(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetSelectedSatellite(ClickedPass.Satellite);
+    }
+
+    private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetClickedSatellite(ClickedPass.Satellite);
+
+      if (ctx.SatelliteDetailsPanel != null)
+        ctx.SatelliteDetailsPanel.Activate();
+      else
+        new SatelliteDetailsPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
+    }
+
+    private void SatelliteTransmittersMNU_Click(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetClickedSatellite(ClickedPass.Satellite);
+
+      if (ctx.TransmittersPanel != null)
+        ctx.TransmittersPanel.Activate();
+      else
+        new TransmittersPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
     }
   }
 }

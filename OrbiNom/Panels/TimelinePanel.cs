@@ -1,20 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using System.Data;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Numerics;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static OrbiNom.GroupViewPanel;
 
 namespace OrbiNom
 {
@@ -30,7 +16,8 @@ namespace OrbiNom
     private Context ctx;
     private double PixelsPerMinute;
     private DateTime LastAdvanceTime;
-    TimeSpan LeftSpan = TimeSpan.FromMinutes(5); // Now minus time at leftmost pixel
+    private Size DesignedSize;
+    private TimeSpan LeftSpan = TimeSpan.FromMinutes(5); // Now minus time at leftmost pixel
     double Zoom = 8;
 
 
@@ -40,6 +27,8 @@ namespace OrbiNom
     public TimelinePanel(Context ctx)
     {
       InitializeComponent();
+      DesignedSize = Size;
+
       this.ctx = ctx;
       ctx.TimelinePanel = this;
       ctx.MainForm.TimelineMNU.Checked = true;
@@ -51,6 +40,17 @@ namespace OrbiNom
     {
       ctx.TimelinePanel = null;
       ctx.MainForm.TimelineMNU.Checked = false;
+    }
+
+    private void TimelinePanel_Load(object sender, EventArgs e)
+    {
+      if (Size.Height == 260) // if default size, not from settings
+      {
+        FloatPane.FloatWindow.Size = DesignedSize;
+        FloatPane.FloatWindow.Location = new Point(
+          ctx.MainForm.Location.X + (ctx.MainForm.Width - DesignedSize.Width) / 2,
+          ctx.MainForm.Location.Y + (ctx.MainForm.Size.Height - DesignedSize.Height) / 2);
+      }
     }
 
     private void TimelinePanel_Resize(object sender, EventArgs e)
@@ -239,7 +239,7 @@ namespace OrbiNom
         var rect = new RectangleF(
           TimeToPixel(pass.CulminationTime, now) - size.Width / 2,
           y0 - (float)pass.MaxElevation * scaleY - size.Height,
-          size.Width+1, size.Height); // without +1 the last char is sometimes truncated
+          size.Width + 1, size.Height); // without +1 the last char is sometimes truncated
 
         g.DrawString(text, Font, Brushes.Black, rect);
         SatLabelRects[rect] = pass;
@@ -291,6 +291,7 @@ namespace OrbiNom
     private TimeSpan MouseDownLeftSpan;
     private Point MouseMovePos;
     private bool Dragging;
+    private SatellitePass ClickedPass;
 
     private void SatelliteTimelineControl_MouseWheel(object? sender, MouseEventArgs e)
     {
@@ -316,10 +317,12 @@ namespace OrbiNom
         var rect = GetSatRectAt(new PointF(e.X, e.Y));
         if (!rect.IsEmpty)
         {
-          var pass = SatLabelRects[rect];
-          ctx.SatelliteSelector.SetSelectedPass(pass);
-          ctx.SatelliteDetailsPanel?.SetSatellite(pass.Satellite);
-          ctx.TransmittersPanel?.SetSatellite(pass.Satellite);
+          ClickedPass = SatLabelRects[rect];
+          if (e.Button == MouseButtons.Left)
+          {
+            ctx.SatelliteSelector.SetClickedSatellite(ClickedPass.Satellite);
+            ctx.SatelliteSelector.SetSelectedPass(ClickedPass);
+          }
         }
       }
     }
@@ -386,17 +389,49 @@ namespace OrbiNom
 
     private void TimelinePanel_DoubleClick(object sender, EventArgs e)
     {
-      var rect = GetSatRectAt(new PointF(MouseMovePos.X, MouseMovePos.Y));
-      if (!rect.IsEmpty)
-      {
-        var pass = SatLabelRects[rect];
-        ctx.SatelliteSelector.SetSelectedSatellite(pass.Satellite);
-      }
+      if (ClickedPass != null)
+        ctx.SatelliteSelector.SetSelectedSatellite(ClickedPass.Satellite);
     }
 
     private void TimelinePanel_MouseLeave(object sender, EventArgs e)
     {
       toolTip1.Hide(this);
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                    popup menu
+    //----------------------------------------------------------------------------------------------
+    private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+      SelectSatelliteMNU.Enabled = SatelliteDetailsMNU.Enabled = SatelliteTransmittersMNU.Enabled = ClickedPass != null;
+    }
+
+    private void SelectSatelliteMNU_Click(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetSelectedSatellite(ClickedPass.Satellite);
+    }
+
+    private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetClickedSatellite(ClickedPass.Satellite);
+
+      if (ctx.SatelliteDetailsPanel != null)
+        ctx.SatelliteDetailsPanel.Activate();
+      else
+        new SatelliteDetailsPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
+    }
+
+    private void SatelliteTransmittersMNU_Click(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetClickedSatellite(ClickedPass.Satellite);
+
+      if (ctx.TransmittersPanel != null)
+        ctx.TransmittersPanel.Activate();
+      else
+        new TransmittersPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
     }
   }
 }

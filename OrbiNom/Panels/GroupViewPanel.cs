@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using SGPdotNET.Observation;
-using SGPdotNET.Propagation;
+﻿using System.Data;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -28,6 +18,9 @@ namespace OrbiNom
 
     private Context ctx;
     private int SortColumn = 2;
+    private SatnogsDbSatellite? ClickedSat;
+    private Size DesignedSize;
+
     public ListViewItem[] Items;
 
     public GroupViewPanel()
@@ -38,6 +31,7 @@ namespace OrbiNom
     public GroupViewPanel(Context ctx)
     {
       InitializeComponent();
+      DesignedSize = Size;
 
       this.ctx = ctx;
       ctx.GroupViewPanel = this;
@@ -61,7 +55,7 @@ namespace OrbiNom
       listView1.Invalidate();
 
       ShowSelectedSat();
-      GroupNameLabel.Text = group.Name;
+      GroupNameLabel.Text = $"Group:   {group.Name}";
     }
 
     private ListViewItem ItemFromSat(SatnogsDbSatellite sat)
@@ -95,18 +89,6 @@ namespace OrbiNom
 
       listView1.SelectedIndices.Clear();
       listView1.Invalidate();
-    }
-
-    private void listView1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
-    {
-      e.Item = Items[e.ItemIndex];
-    }
-
-    private void listView1_DoubleClick(object sender, EventArgs e)
-    {
-      var sat = ((ItemData)Items[listView1.SelectedIndices[0]].Tag!).Sat;
-      ctx.SatelliteSelector.SetSelectedSatellite(sat);
-      ShowSelectedSat();
     }
 
     public void UpdatePassTimes()
@@ -144,12 +126,6 @@ namespace OrbiNom
       listView1.Invalidate();
     }
 
-    private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
-    {
-      SortColumn = e.Column;
-      SortItems();
-    }
-
     private void SortItems()
     {
       switch (SortColumn)
@@ -163,18 +139,103 @@ namespace OrbiNom
       listView1.Invalidate();
     }
 
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        events
+    //----------------------------------------------------------------------------------------------
+    private void GroupViewPanel_Load(object sender, EventArgs e)
+    {
+      if (Size.Height == 260) // if default size, not from settings
+      {
+        FloatPane.FloatWindow.Size = DesignedSize;
+        FloatPane.FloatWindow.Location = new Point(
+          ctx.MainForm.Location.X + (ctx.MainForm.Width - DesignedSize.Width) / 2,
+          ctx.MainForm.Location.Y + (ctx.MainForm.Size.Height - DesignedSize.Height) / 2);
+      }
+    }
+    
+    private void listView1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+    {
+      e.Item = Items[e.ItemIndex];
+    }
+
+    private void listView1_DoubleClick(object sender, EventArgs e)
+    {
+      var sat = ((ItemData)Items[listView1.SelectedIndices[0]].Tag!).Sat;
+      ctx.SatelliteSelector.SetSelectedSatellite(sat);
+      ShowSelectedSat();
+    }
+
+    private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
+    {
+      SortColumn = e.Column;
+      SortItems();
+    }
+
     private void listView1_SelectedIndexChanged(object sender, EventArgs e)
     {
+      if (MouseButtons == MouseButtons.Right) return;
+
       if (listView1.SelectedIndices.Count == 0) return;
 
       var data = (ItemData)Items[listView1.SelectedIndices[0]].Tag!;
-      
+
       ctx.PassesPanel?.ShowPasses();
+
       if (data.Pass != null)
       {
         ctx.SatelliteSelector.SetClickedSatellite(data.Pass.Satellite);
         ctx.SatelliteSelector.SetSelectedPass(data.Pass);
       }
+    }
+
+    private void listView1_MouseDown(object sender, MouseEventArgs e)
+    {
+      if (e.Button == MouseButtons.Right)
+      {
+
+      }
+
+      var item = listView1.GetItemAt(e.X, e.Y);
+      ClickedSat = item == null ? null : ((ItemData)item.Tag!).Sat;
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                    popup menu
+    //----------------------------------------------------------------------------------------------
+    private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+      SelectSatelliteMNU.Enabled = SatelliteDetailsMNU.Enabled = SatelliteTransmittersMNU.Enabled = ClickedSat != null;
+    }
+
+    private void SelectSatelliteMNU_Click(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
+    }
+
+    private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetClickedSatellite(ClickedSat);
+
+      if (ctx.SatelliteDetailsPanel != null)
+        ctx.SatelliteDetailsPanel.Activate();
+      else
+        new SatelliteDetailsPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
+    }
+
+    private void SatelliteTransmittersMNU_Click(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetClickedSatellite(ClickedSat);
+
+      if (ctx.TransmittersPanel != null)
+        ctx.TransmittersPanel.Activate();
+      else
+        new TransmittersPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
     }
   }
 }

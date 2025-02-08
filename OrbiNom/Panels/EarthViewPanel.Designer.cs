@@ -43,7 +43,7 @@
       openglControl1.OpenGLVersion = SharpGL.Version.OpenGLVersion.OpenGL3_3;
       openglControl1.RenderContextType = SharpGL.RenderContextType.NativeWindow;
       openglControl1.RenderTrigger = SharpGL.RenderTrigger.TimerBased;
-      openglControl1.Size = new Size(299, 270);
+      openglControl1.Size = new Size(400, 379);
       openglControl1.TabIndex = 1;
       openglControl1.OpenGLInitialized += openglControl1_OpenGLInitialized;
       openglControl1.OpenGLDraw += openglControl1_OpenGLDraw;
@@ -64,12 +64,13 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(299, 270);
+      ClientSize = new Size(400, 379);
       Controls.Add(label1);
       Controls.Add(openglControl1);
       Name = "EarthViewPanel";
       Text = "Earth View";
       FormClosing += EarthViewPanel_FormClosing;
+      Load += EarthViewPanel_Load;
       ((System.ComponentModel.ISupportInitialize)openglControl1).EndInit();
       ResumeLayout(false);
       PerformLayout();

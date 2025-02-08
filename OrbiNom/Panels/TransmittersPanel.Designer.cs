@@ -45,7 +45,7 @@
       listView1.MultiSelect = false;
       listView1.Name = "listView1";
       listView1.ShowItemToolTips = true;
-      listView1.Size = new Size(450, 168);
+      listView1.Size = new Size(471, 325);
       listView1.Sorting = SortOrder.Ascending;
       listView1.TabIndex = 4;
       listView1.UseCompatibleStateImageBehavior = false;
@@ -73,7 +73,7 @@
       SatNameLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
       SatNameLabel.Location = new Point(0, 0);
       SatNameLabel.Name = "SatNameLabel";
-      SatNameLabel.Size = new Size(450, 23);
+      SatNameLabel.Size = new Size(471, 23);
       SatNameLabel.TabIndex = 10;
       SatNameLabel.Text = "___";
       SatNameLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -82,12 +82,13 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(450, 191);
+      ClientSize = new Size(471, 348);
       Controls.Add(listView1);
       Controls.Add(SatNameLabel);
       Name = "TransmittersPanel";
       Text = "Satellite Transmitters";
       FormClosing += TransmittersPanel_FormClosing;
+      Load += TransmittersPanel_Load;
       ResumeLayout(false);
     }
 

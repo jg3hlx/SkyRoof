@@ -207,7 +207,7 @@ namespace OrbiNom
     private void TimelineMNU_Click(object sender, EventArgs e)
     {
       if (ctx.TimelinePanel == null)
-        new TimelinePanel(ctx).Show(DockHost, DockState.DockRight);
+        new TimelinePanel(ctx).Show(DockHost, DockState.DockBottom);
       else
         ctx.TimelinePanel.Close();
     }
@@ -215,7 +215,7 @@ namespace OrbiNom
     private void SkyViewMNU_Click(object sender, EventArgs e)
     {
       if (ctx.SkyViewPanel == null)
-        new SkyViewPanel(ctx).Show(DockHost, DockState.DockRight);
+        new SkyViewPanel(ctx).Show(DockHost, DockState.Float);
       else
         ctx.SkyViewPanel.Close();
     }
@@ -223,7 +223,7 @@ namespace OrbiNom
     private void EarthViewMNU_Click(object sender, EventArgs e)
     {
       if (ctx.EarthViewPanel == null)
-        new EarthViewPanel(ctx).Show(DockHost, DockState.DockRight);
+        new EarthViewPanel(ctx).Show(DockHost, DockState.Float);
       else
         ctx.EarthViewPanel.Close();
     }

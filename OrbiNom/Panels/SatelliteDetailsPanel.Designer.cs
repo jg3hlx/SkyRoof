@@ -77,9 +77,9 @@
       LinksPanel.Controls.Add(WebsiteLabel);
       LinksPanel.Controls.Add(SatnogsLabel);
       LinksPanel.Dock = DockStyle.Bottom;
-      LinksPanel.Location = new Point(0, 431);
+      LinksPanel.Location = new Point(0, 565);
       LinksPanel.Name = "LinksPanel";
-      LinksPanel.Size = new Size(473, 19);
+      LinksPanel.Size = new Size(356, 19);
       LinksPanel.TabIndex = 6;
       // 
       // SatAkaLabel
@@ -87,7 +87,7 @@
       SatAkaLabel.Dock = DockStyle.Top;
       SatAkaLabel.Location = new Point(0, 23);
       SatAkaLabel.Name = "SatAkaLabel";
-      SatAkaLabel.Size = new Size(473, 23);
+      SatAkaLabel.Size = new Size(356, 23);
       SatAkaLabel.TabIndex = 7;
       SatAkaLabel.Text = "___";
       SatAkaLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -101,7 +101,7 @@
       SatellitePropertyGrid.Location = new Point(0, 46);
       SatellitePropertyGrid.Name = "SatellitePropertyGrid";
       SatellitePropertyGrid.PropertySort = PropertySort.Categorized;
-      SatellitePropertyGrid.Size = new Size(473, 385);
+      SatellitePropertyGrid.Size = new Size(356, 519);
       SatellitePropertyGrid.TabIndex = 8;
       SatellitePropertyGrid.ToolbarVisible = false;
       // 
@@ -111,7 +111,7 @@
       SatNameLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
       SatNameLabel.Location = new Point(0, 0);
       SatNameLabel.Name = "SatNameLabel";
-      SatNameLabel.Size = new Size(473, 23);
+      SatNameLabel.Size = new Size(356, 23);
       SatNameLabel.TabIndex = 9;
       SatNameLabel.Text = "___";
       SatNameLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -120,14 +120,16 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(473, 450);
+      ClientSize = new Size(356, 584);
       Controls.Add(SatellitePropertyGrid);
       Controls.Add(SatAkaLabel);
       Controls.Add(LinksPanel);
       Controls.Add(SatNameLabel);
       Name = "SatelliteDetailsPanel";
+      StartPosition = FormStartPosition.CenterParent;
       Text = "Satellite Details";
       FormClosing += SatelliteDetailsPanel_FormClosing;
+      Load += SatelliteDetailsPanel_Load;
       LinksPanel.ResumeLayout(false);
       LinksPanel.PerformLayout();
       ResumeLayout(false);

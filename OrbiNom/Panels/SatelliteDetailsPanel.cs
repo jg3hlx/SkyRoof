@@ -21,6 +21,7 @@ namespace OrbiNom
   {
     private readonly Context ctx;
     private SatnogsDbSatellite? Satellite;
+    private Size DesignedSize;
 
     public SatelliteDetailsPanel()
     {
@@ -29,23 +30,18 @@ namespace OrbiNom
     public SatelliteDetailsPanel(Context ctx)
     {
       InitializeComponent();
+      DesignedSize = Size;
 
       this.ctx = ctx;
       ctx.SatelliteDetailsPanel = this;
       ctx.MainForm.SatelliteDetailsMNU.Checked = true;
-      
-      SetSatellite();
-    }
 
-    private void SatelliteDetailsPanel_FormClosing(object sender, FormClosingEventArgs e)
-    {
-      ctx.SatelliteDetailsPanel = null;
-      ctx.MainForm.SatelliteDetailsMNU.Checked = false;
+      SetSatellite();
     }
 
     public void SetSatellite(SatnogsDbSatellite? sat = null)
     {
-      sat ??= ctx.SatelliteSelector.SelectedSatellite; 
+      sat ??= ctx.SatelliteSelector.SelectedSatellite;
       sat.ComputeOrbitDetails();
 
       Satellite = sat;
@@ -58,6 +54,24 @@ namespace OrbiNom
       WebsiteLabel.Visible = !string.IsNullOrEmpty(sat.website);
 
       SatellitePropertyGrid.SelectedObject = sat;
+    }
+
+    private void SatelliteDetailsPanel_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      ctx.SatelliteDetailsPanel = null;
+      ctx.MainForm.SatelliteDetailsMNU.Checked = false;
+    }
+
+    private void SatelliteDetailsPanel_Load(object sender, EventArgs e)
+    {
+      // by default, DockContent ignores the design-time Size and Location
+      if (Size.Height == 260) // if default size, not from settings
+      {
+        FloatPane.FloatWindow.Size = DesignedSize;
+        FloatPane.FloatWindow.Location = new Point(
+          ctx.MainForm.Location.X + (ctx.MainForm.Width - DesignedSize.Width) / 2,
+          ctx.MainForm.Location.Y + (ctx.MainForm.Size.Height - DesignedSize.Height) / 2);
+      }
     }
 
     private void ImageLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
