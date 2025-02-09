@@ -33,37 +33,45 @@
       SelectSatelliteMNU = new ToolStripMenuItem();
       SatelliteDetailsMNU = new ToolStripMenuItem();
       SatelliteTransmittersMNU = new ToolStripMenuItem();
+      EarthViewMNU = new ToolStripMenuItem();
       contextMenuStrip1.SuspendLayout();
       SuspendLayout();
       // 
       // contextMenuStrip1
       // 
-      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { SelectSatelliteMNU, SatelliteDetailsMNU, SatelliteTransmittersMNU });
+      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { SelectSatelliteMNU, SatelliteDetailsMNU, SatelliteTransmittersMNU, EarthViewMNU });
       contextMenuStrip1.Name = "contextMenuStrip1";
-      contextMenuStrip1.Size = new Size(206, 70);
+      contextMenuStrip1.Size = new Size(212, 114);
       contextMenuStrip1.Opening += contextMenuStrip1_Opening;
       // 
       // SelectSatelliteMNU
       // 
       SelectSatelliteMNU.Name = "SelectSatelliteMNU";
       SelectSatelliteMNU.ShortcutKeyDisplayString = "Dbl-Click";
-      SelectSatelliteMNU.Size = new Size(205, 22);
+      SelectSatelliteMNU.Size = new Size(211, 22);
       SelectSatelliteMNU.Text = "Select Satellite";
       SelectSatelliteMNU.Click += SelectSatelliteMNU_Click;
       // 
       // SatelliteDetailsMNU
       // 
       SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
-      SatelliteDetailsMNU.Size = new Size(205, 22);
+      SatelliteDetailsMNU.Size = new Size(211, 22);
       SatelliteDetailsMNU.Text = "Satellite Details...";
       SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
       // 
       // SatelliteTransmittersMNU
       // 
       SatelliteTransmittersMNU.Name = "SatelliteTransmittersMNU";
-      SatelliteTransmittersMNU.Size = new Size(205, 22);
+      SatelliteTransmittersMNU.Size = new Size(211, 22);
       SatelliteTransmittersMNU.Text = "Satellite Transmitters...";
       SatelliteTransmittersMNU.Click += SatelliteTransmittersMNU_Click;
+      // 
+      // EarthViewMNU
+      // 
+      EarthViewMNU.Name = "EarthViewMNU";
+      EarthViewMNU.Size = new Size(211, 22);
+      EarthViewMNU.Text = "Earth View from Satellite...";
+      EarthViewMNU.Click += EarthViewMNU_Click;
       // 
       // DockContentEx
       // 
@@ -81,5 +89,6 @@
     private ToolStripMenuItem SatelliteDetailsMNU;
     private ToolStripMenuItem SatelliteTransmittersMNU;
     protected ContextMenuStrip contextMenuStrip1;
+    private ToolStripMenuItem EarthViewMNU;
   }
 }

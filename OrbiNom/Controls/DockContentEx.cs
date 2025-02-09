@@ -62,5 +62,14 @@ namespace OrbiNom
         new TransmittersPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
     }
 
+    private void EarthViewMNU_Click(object sender, EventArgs e)
+    {
+      ctx.SatelliteSelector.SetClickedSatellite(ClickedSat!);
+
+      if (ctx.EarthViewPanel != null)
+        ctx.EarthViewPanel.Activate();
+      else
+        new EarthViewPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
+    }
   }
 }
