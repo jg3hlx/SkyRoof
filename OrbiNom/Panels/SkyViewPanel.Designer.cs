@@ -33,14 +33,9 @@
       RealTimeRadioBtn = new RadioButton();
       OrbitRadioBtn = new RadioButton();
       DrawPanel = new Panel();
-      contextMenuStrip1 = new ContextMenuStrip(components);
-      SelectSatelliteMNU = new ToolStripMenuItem();
-      SatelliteDetailsMNU = new ToolStripMenuItem();
-      SatelliteTransmittersMNU = new ToolStripMenuItem();
       toolTip1 = new ToolTip(components);
       FlowPanel = new FlowLayoutPanel();
       RadioButtonsPanel.SuspendLayout();
-      contextMenuStrip1.SuspendLayout();
       SuspendLayout();
       // 
       // RadioButtonsPanel
@@ -98,35 +93,6 @@
       DrawPanel.MouseMove += DrawPanel_MouseMove;
       DrawPanel.Resize += panel_Resize;
       // 
-      // contextMenuStrip1
-      // 
-      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { SelectSatelliteMNU, SatelliteDetailsMNU, SatelliteTransmittersMNU });
-      contextMenuStrip1.Name = "contextMenuStrip1";
-      contextMenuStrip1.Size = new Size(206, 70);
-      contextMenuStrip1.Opening += contextMenuStrip1_Opening;
-      // 
-      // SelectSatelliteMNU
-      // 
-      SelectSatelliteMNU.Name = "SelectSatelliteMNU";
-      SelectSatelliteMNU.ShortcutKeyDisplayString = "Dbl-Click";
-      SelectSatelliteMNU.Size = new Size(205, 22);
-      SelectSatelliteMNU.Text = "Select Satellite";
-      SelectSatelliteMNU.Click += SelectSatelliteMNU_Click;
-      // 
-      // SatelliteDetailsMNU
-      // 
-      SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
-      SatelliteDetailsMNU.Size = new Size(205, 22);
-      SatelliteDetailsMNU.Text = "Satellite Details...";
-      SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
-      // 
-      // SatelliteTransmittersMNU
-      // 
-      SatelliteTransmittersMNU.Name = "SatelliteTransmittersMNU";
-      SatelliteTransmittersMNU.Size = new Size(205, 22);
-      SatelliteTransmittersMNU.Text = "Satellite Transmitters...";
-      SatelliteTransmittersMNU.Click += SatelliteTransmittersMNU_Click;
-      // 
       // FlowPanel
       // 
       FlowPanel.AutoSize = true;
@@ -149,10 +115,8 @@
       Name = "SkyViewPanel";
       Text = "Sky View";
       FormClosing += SkyViewPanel_FormClosing;
-      Load += SkyViewPanel_Load;
       RadioButtonsPanel.ResumeLayout(false);
       RadioButtonsPanel.PerformLayout();
-      contextMenuStrip1.ResumeLayout(false);
       ResumeLayout(false);
       PerformLayout();
     }
@@ -165,9 +129,5 @@
     private Panel DrawPanel;
     private ToolTip toolTip1;
     private FlowLayoutPanel FlowPanel;
-    private ContextMenuStrip contextMenuStrip1;
-    private ToolStripMenuItem SelectSatelliteMNU;
-    private ToolStripMenuItem SatelliteDetailsMNU;
-    private ToolStripMenuItem SatelliteTransmittersMNU;
   }
 }

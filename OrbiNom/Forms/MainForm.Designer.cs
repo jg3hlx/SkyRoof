@@ -130,6 +130,7 @@
       // 
       // DockHost
       // 
+      DockHost.DefaultFloatWindowSize = new Size(445, 445);
       DockHost.Dock = DockStyle.Fill;
       DockHost.DockBackColor = Color.FromArgb(238, 238, 242);
       DockHost.Location = new Point(0, 64);

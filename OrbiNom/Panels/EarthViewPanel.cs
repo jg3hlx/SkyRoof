@@ -14,7 +14,6 @@ namespace OrbiNom
   public partial class EarthViewPanel : DockContent
   {
     private readonly Context ctx;
-    private readonly Font RegularFont, BoldFont;
     private OpenGL gl;
     private ShaderProgram ShaderProgram;
     private VertexBufferArray VertexBufferArray;
@@ -24,7 +23,6 @@ namespace OrbiNom
     private Sprite SatelliteSprite, HomeSprite, NorthSprite, SouthSprite;
     private double Footprint;
     private double Azimuth;
-    private Size DesignedSize;
 
     public GeoPoint Home, Center;
     public double Zoom = 1;
@@ -36,8 +34,7 @@ namespace OrbiNom
     public EarthViewPanel(Context ctx)
     {
       InitializeComponent();
-      DesignedSize = Size;
-
+      
       this.ctx = ctx;
       ctx.EarthViewPanel = this;
       ctx.MainForm.EarthViewMNU.Checked = true;
@@ -57,17 +54,6 @@ namespace OrbiNom
     {
       ctx.EarthViewPanel = null;
       ctx.MainForm.EarthViewMNU.Checked = false;
-    }
-
-    private void EarthViewPanel_Load(object sender, EventArgs e)
-    {
-      if (Size.Height == 260) // if default size, not from settings
-      {
-        FloatPane.FloatWindow.Size = DesignedSize;
-        FloatPane.FloatWindow.Location = new Point(
-          ctx.MainForm.Location.X + (ctx.MainForm.Width - DesignedSize.Width) / 2,
-          ctx.MainForm.Location.Y + (ctx.MainForm.Size.Height - DesignedSize.Height) / 2);
-      }
     }
 
     private void openglControl1_Resize(object sender, EventArgs e)

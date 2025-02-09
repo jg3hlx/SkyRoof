@@ -6,14 +6,12 @@ using SGPdotNET.Observation;
 
 namespace OrbiNom
 {
-  public partial class SkyViewPanel : DockContent
+  public partial class SkyViewPanel : DockContentEx
   {
     private readonly Context ctx;
     private SatellitePass? Pass;
     private Dictionary<RectangleF, SatellitePass> SatLabelRects = new();
-    private SatellitePass? ClickedPass;
-    private Size DesignedSize;
-
+    
     private readonly Font RegularFont, BoldFont;
     private readonly Image OkImage, XMarkImage, ArrowImage, SatImage;
     private readonly Brush BlueBrush = new SolidBrush(Color.FromArgb(230, 249, 255));
@@ -22,11 +20,10 @@ namespace OrbiNom
 
     public SkyViewPanel() { InitializeComponent(); }
 
-    public SkyViewPanel(Context ctx)
+    public SkyViewPanel(Context ctx) : base(ctx)
     {
       InitializeComponent();
-      DesignedSize = Size;
-
+      
       this.ctx = ctx;
       ctx.SkyViewPanel = this;
       ctx.MainForm.SkyViewMNU.Checked = true;
@@ -47,17 +44,6 @@ namespace OrbiNom
     {
       ctx.SkyViewPanel = null;
       ctx.MainForm.SkyViewMNU.Checked = false;
-    }
-
-    private void SkyViewPanel_Load(object sender, EventArgs e)
-    {
-      if (Size.Height == 260) // if default size, not from settings
-      {
-        FloatPane.FloatWindow.Size = DesignedSize;
-        FloatPane.FloatWindow.Location = new Point(
-          ctx.MainForm.Location.X + (ctx.MainForm.Width - DesignedSize.Width) / 2,
-          ctx.MainForm.Location.Y + (ctx.MainForm.Size.Height - DesignedSize.Height) / 2);
-      }
     }
     
     private void radioButton_CheckedChanged(object sender, EventArgs e)
@@ -359,18 +345,18 @@ namespace OrbiNom
       var rect = GetSatRectAt(new PointF(e.X, e.Y));
       if (!rect.IsEmpty)
       {
-        ClickedPass = SatLabelRects[rect];
+        ClickedSat = SatLabelRects[rect].Satellite;
         if (e.Button == MouseButtons.Left)
-          ctx.SatelliteSelector.SetClickedSatellite(ClickedPass.Satellite);
+          ctx.SatelliteSelector.SetClickedSatellite(ClickedSat);
       }
       else
-        ClickedPass = null;
+        ClickedSat = null;
     }
 
     private void DrawPanel_DoubleClick(object sender, EventArgs e)
     {
-      if (ClickedPass != null)
-        ctx.SatelliteSelector.SetSelectedSatellite(ClickedPass.Satellite);
+      if (ClickedSat != null)
+        ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
     }
 
     private void DrawPanel_MouseLeave(object sender, EventArgs e)
@@ -449,42 +435,6 @@ namespace OrbiNom
       bool breaksNeeded = count != ORBIT_LABEL_COUNT;
       for (int i = 2; i < count; i += 3)
         FlowPanel.SetFlowBreak(FlowPanel.Controls[i], breaksNeeded && i % 3 == 2);
-    }
-
-
-
-
-    //----------------------------------------------------------------------------------------------
-    //                                    popup menu
-    //----------------------------------------------------------------------------------------------
-    private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-    {
-      SelectSatelliteMNU.Enabled = SatelliteDetailsMNU.Enabled = SatelliteTransmittersMNU.Enabled = ClickedPass != null;
-    }
-
-    private void SelectSatelliteMNU_Click(object sender, EventArgs e)
-    {
-      ctx.SatelliteSelector.SetSelectedSatellite(ClickedPass.Satellite);
-    }
-
-    private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
-    {
-      ctx.SatelliteSelector.SetClickedSatellite(ClickedPass.Satellite);
-
-      if (ctx.SatelliteDetailsPanel != null)
-        ctx.SatelliteDetailsPanel.Activate();
-      else
-        new SatelliteDetailsPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
-    }
-
-    private void SatelliteTransmittersMNU_Click(object sender, EventArgs e)
-    {
-      ctx.SatelliteSelector.SetClickedSatellite(ClickedPass.Satellite);
-
-      if (ctx.TransmittersPanel != null)
-        ctx.TransmittersPanel.Activate();
-      else
-        new TransmittersPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
     }
   }
 }

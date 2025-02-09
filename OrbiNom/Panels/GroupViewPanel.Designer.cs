@@ -35,13 +35,8 @@
       columnHeader2 = new ColumnHeader();
       columnHeader3 = new ColumnHeader();
       columnHeader4 = new ColumnHeader();
-      contextMenuStrip1 = new ContextMenuStrip(components);
-      SelectSatelliteMNU = new ToolStripMenuItem();
-      SatelliteDetailsMNU = new ToolStripMenuItem();
-      SatelliteTransmittersMNU = new ToolStripMenuItem();
       imageList1 = new ImageList(components);
       GroupNameLabel = new Label();
-      contextMenuStrip1.SuspendLayout();
       SuspendLayout();
       // 
       // listView1
@@ -59,7 +54,7 @@
       listView1.Name = "listView1";
       listView1.ShowGroups = false;
       listView1.ShowItemToolTips = true;
-      listView1.Size = new Size(414, 230);
+      listView1.Size = new Size(414, 383);
       listView1.SmallImageList = imageList1;
       listView1.Sorting = SortOrder.Ascending;
       listView1.TabIndex = 8;
@@ -94,35 +89,6 @@
       columnHeader4.TextAlign = HorizontalAlignment.Right;
       columnHeader4.Width = 40;
       // 
-      // contextMenuStrip1
-      // 
-      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { SelectSatelliteMNU, SatelliteDetailsMNU, SatelliteTransmittersMNU });
-      contextMenuStrip1.Name = "contextMenuStrip1";
-      contextMenuStrip1.Size = new Size(206, 70);
-      contextMenuStrip1.Opening += contextMenuStrip1_Opening;
-      // 
-      // SelectSatelliteMNU
-      // 
-      SelectSatelliteMNU.Name = "SelectSatelliteMNU";
-      SelectSatelliteMNU.ShortcutKeyDisplayString = "Dbl-Click";
-      SelectSatelliteMNU.Size = new Size(205, 22);
-      SelectSatelliteMNU.Text = "Select Satellite";
-      SelectSatelliteMNU.Click += SelectSatelliteMNU_Click;
-      // 
-      // SatelliteDetailsMNU
-      // 
-      SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
-      SatelliteDetailsMNU.Size = new Size(205, 22);
-      SatelliteDetailsMNU.Text = "Satellite Details...";
-      SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
-      // 
-      // SatelliteTransmittersMNU
-      // 
-      SatelliteTransmittersMNU.Name = "SatelliteTransmittersMNU";
-      SatelliteTransmittersMNU.Size = new Size(205, 22);
-      SatelliteTransmittersMNU.Text = "Satellite Transmitters...";
-      SatelliteTransmittersMNU.Click += SatelliteTransmittersMNU_Click;
-      // 
       // imageList1
       // 
       imageList1.ColorDepth = ColorDepth.Depth32Bit;
@@ -145,14 +111,12 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(414, 253);
+      ClientSize = new Size(414, 406);
       Controls.Add(listView1);
       Controls.Add(GroupNameLabel);
       Name = "GroupViewPanel";
       Text = "Current Satellite Group";
       FormClosing += GroupViewPanel_FormClosing;
-      Load += GroupViewPanel_Load;
-      contextMenuStrip1.ResumeLayout(false);
       ResumeLayout(false);
     }
 
@@ -165,9 +129,5 @@
     public Label GroupNameLabel;
     private ImageList imageList1;
     private ColumnHeader columnHeader4;
-    private ContextMenuStrip contextMenuStrip1;
-    private ToolStripMenuItem SelectSatelliteMNU;
-    private ToolStripMenuItem SatelliteDetailsMNU;
-    private ToolStripMenuItem SatelliteTransmittersMNU;
   }
 }

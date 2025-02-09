@@ -70,7 +70,6 @@
       Name = "EarthViewPanel";
       Text = "Earth View";
       FormClosing += EarthViewPanel_FormClosing;
-      Load += EarthViewPanel_Load;
       ((System.ComponentModel.ISupportInitialize)openglControl1).EndInit();
       ResumeLayout(false);
       PerformLayout();

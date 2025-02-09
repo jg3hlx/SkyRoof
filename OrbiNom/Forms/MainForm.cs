@@ -183,7 +183,7 @@ namespace OrbiNom
     private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
     {
       if (ctx.SatelliteDetailsPanel == null)
-        new SatelliteDetailsPanel(ctx).Show(DockHost, DockState.Float);
+        ShowFloatingPanel(new SatelliteDetailsPanel(ctx));
       else
         ctx.SatelliteDetailsPanel.Close();
     }
@@ -191,7 +191,7 @@ namespace OrbiNom
     private void TransmittersMNU_Click(object sender, EventArgs e)
     {
       if (ctx.TransmittersPanel == null)
-        new TransmittersPanel(ctx).Show(DockHost, DockState.Float);
+        ShowFloatingPanel(new TransmittersPanel(ctx));
       else
         ctx.TransmittersPanel.Close();
     }
@@ -215,7 +215,7 @@ namespace OrbiNom
     private void SkyViewMNU_Click(object sender, EventArgs e)
     {
       if (ctx.SkyViewPanel == null)
-        new SkyViewPanel(ctx).Show(DockHost, DockState.Float);
+        ShowFloatingPanel(new SkyViewPanel(ctx));
       else
         ctx.SkyViewPanel.Close();
     }
@@ -223,7 +223,7 @@ namespace OrbiNom
     private void EarthViewMNU_Click(object sender, EventArgs e)
     {
       if (ctx.EarthViewPanel == null)
-        new EarthViewPanel(ctx).Show(DockHost, DockState.Float);
+        ShowFloatingPanel(new EarthViewPanel(ctx));
       else
         ctx.EarthViewPanel.Close();
     }
@@ -293,6 +293,17 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                     docking
     //----------------------------------------------------------------------------------------------
+    private void ShowFloatingPanel(DockContent panel)
+    {
+      var rect = panel.Bounds;
+      rect.Offset(                  
+        ctx.MainForm.Location.X + (ctx.MainForm.Width - panel.Width) / 2,
+        ctx.MainForm.Location.Y + (ctx.MainForm.Size.Height - panel.Height) / 2
+        );
+
+      panel.Show(DockHost, rect);
+    }
+    
     private void SetDefaultDockingLayout()
     {
       GroupViewMNU_Click(null, null);

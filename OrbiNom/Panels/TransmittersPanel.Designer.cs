@@ -88,7 +88,6 @@
       Name = "TransmittersPanel";
       Text = "Satellite Transmitters";
       FormClosing += TransmittersPanel_FormClosing;
-      Load += TransmittersPanel_Load;
       ResumeLayout(false);
     }
 

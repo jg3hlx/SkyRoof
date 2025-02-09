@@ -7,7 +7,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace OrbiNom
 {
-  public partial class GroupViewPanel : DockContent
+  public partial class GroupViewPanel : DockContentEx
   {
     public class ItemData
     {
@@ -16,28 +16,27 @@ namespace OrbiNom
       public ItemData(SatnogsDbSatellite sat) { Sat = sat; }
     }
 
-    private Context ctx;
     private int SortColumn = 2;
-    private SatnogsDbSatellite? ClickedSat;
-    private Size DesignedSize;
-
     public ListViewItem[] Items;
+
+
 
     public GroupViewPanel()
     {
       InitializeComponent();
     }
 
-    public GroupViewPanel(Context ctx)
+    public GroupViewPanel(Context ctx) : base(ctx)
     {
       InitializeComponent();
-      DesignedSize = Size;
 
-      this.ctx = ctx;
-      ctx.GroupViewPanel = this;
-      ctx.MainForm.GroupViewMNU.Checked = true;
+
+      this.ctx.GroupViewPanel = this;
+      this.ctx.MainForm.GroupViewMNU.Checked = true;
       LoadGroup();
     }
+
+
 
     private void GroupViewPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
@@ -145,17 +144,6 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                        events
     //----------------------------------------------------------------------------------------------
-    private void GroupViewPanel_Load(object sender, EventArgs e)
-    {
-      if (Size.Height == 260) // if default size, not from settings
-      {
-        FloatPane.FloatWindow.Size = DesignedSize;
-        FloatPane.FloatWindow.Location = new Point(
-          ctx.MainForm.Location.X + (ctx.MainForm.Width - DesignedSize.Width) / 2,
-          ctx.MainForm.Location.Y + (ctx.MainForm.Size.Height - DesignedSize.Height) / 2);
-      }
-    }
-    
     private void listView1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
     {
       e.Item = Items[e.ItemIndex];
@@ -193,49 +181,8 @@ namespace OrbiNom
 
     private void listView1_MouseDown(object sender, MouseEventArgs e)
     {
-      if (e.Button == MouseButtons.Right)
-      {
-
-      }
-
       var item = listView1.GetItemAt(e.X, e.Y);
       ClickedSat = item == null ? null : ((ItemData)item.Tag!).Sat;
-    }
-
-
-
-
-    //----------------------------------------------------------------------------------------------
-    //                                    popup menu
-    //----------------------------------------------------------------------------------------------
-    private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-    {
-      SelectSatelliteMNU.Enabled = SatelliteDetailsMNU.Enabled = SatelliteTransmittersMNU.Enabled = ClickedSat != null;
-    }
-
-    private void SelectSatelliteMNU_Click(object sender, EventArgs e)
-    {
-      ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
-    }
-
-    private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
-    {
-      ctx.SatelliteSelector.SetClickedSatellite(ClickedSat);
-
-      if (ctx.SatelliteDetailsPanel != null)
-        ctx.SatelliteDetailsPanel.Activate();
-      else
-        new SatelliteDetailsPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
-    }
-
-    private void SatelliteTransmittersMNU_Click(object sender, EventArgs e)
-    {
-      ctx.SatelliteSelector.SetClickedSatellite(ClickedSat);
-
-      if (ctx.TransmittersPanel != null)
-        ctx.TransmittersPanel.Activate();
-      else
-        new TransmittersPanel(ctx).Show(ctx.MainForm.DockHost, DockState.Float);
     }
   }
 }

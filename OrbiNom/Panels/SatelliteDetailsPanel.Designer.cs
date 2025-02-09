@@ -129,7 +129,6 @@
       StartPosition = FormStartPosition.CenterParent;
       Text = "Satellite Details";
       FormClosing += SatelliteDetailsPanel_FormClosing;
-      Load += SatelliteDetailsPanel_Load;
       LinksPanel.ResumeLayout(false);
       LinksPanel.PerformLayout();
       ResumeLayout(false);

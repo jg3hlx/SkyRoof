@@ -28,7 +28,6 @@
     /// </summary>
     private void InitializeComponent()
     {
-      components = new System.ComponentModel.Container();
       flowLayoutPanel1 = new FlowLayoutPanel();
       CurrentSatBtn = new RadioButton();
       GroupBtn = new RadioButton();
@@ -36,13 +35,8 @@
       panel1 = new Panel();
       listViewEx1 = new VE3NEA.ListViewEx();
       columnHeader1 = new ColumnHeader();
-      contextMenuStrip1 = new ContextMenuStrip(components);
-      SelectSatelliteMNU = new ToolStripMenuItem();
-      SatelliteDetailsMNU = new ToolStripMenuItem();
-      SatelliteTransmittersMNU = new ToolStripMenuItem();
       flowLayoutPanel1.SuspendLayout();
       panel1.SuspendLayout();
-      contextMenuStrip1.SuspendLayout();
       SuspendLayout();
       // 
       // flowLayoutPanel1
@@ -124,35 +118,6 @@
       listViewEx1.MouseDown += listViewEx1_MouseDown;
       listViewEx1.Resize += listViewEx1_Resize;
       // 
-      // contextMenuStrip1
-      // 
-      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { SelectSatelliteMNU, SatelliteDetailsMNU, SatelliteTransmittersMNU });
-      contextMenuStrip1.Name = "contextMenuStrip1";
-      contextMenuStrip1.Size = new Size(206, 70);
-      contextMenuStrip1.Opening += contextMenuStrip1_Opening;
-      // 
-      // SelectSatelliteMNU
-      // 
-      SelectSatelliteMNU.Name = "SelectSatelliteMNU";
-      SelectSatelliteMNU.ShortcutKeyDisplayString = "Dbl-Click";
-      SelectSatelliteMNU.Size = new Size(205, 22);
-      SelectSatelliteMNU.Text = "Select Satellite";
-      SelectSatelliteMNU.Click += SelectSatelliteMNU_Click;
-      // 
-      // SatelliteDetailsMNU
-      // 
-      SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
-      SatelliteDetailsMNU.Size = new Size(205, 22);
-      SatelliteDetailsMNU.Text = "Satellite Details...";
-      SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
-      // 
-      // SatelliteTransmittersMNU
-      // 
-      SatelliteTransmittersMNU.Name = "SatelliteTransmittersMNU";
-      SatelliteTransmittersMNU.Size = new Size(205, 22);
-      SatelliteTransmittersMNU.Text = "Satellite Transmitters...";
-      SatelliteTransmittersMNU.Click += SatelliteTransmittersMNU_Click;
-      // 
       // PassesPanel
       // 
       AutoScaleMode = AutoScaleMode.Inherit;
@@ -162,11 +127,9 @@
       Name = "PassesPanel";
       Text = "Satellite Passes";
       FormClosing += PassesPanel_FormClosing;
-      Load += PassesPanel_Load;
       flowLayoutPanel1.ResumeLayout(false);
       flowLayoutPanel1.PerformLayout();
       panel1.ResumeLayout(false);
-      contextMenuStrip1.ResumeLayout(false);
       ResumeLayout(false);
     }
 
@@ -179,9 +142,5 @@
     private RadioButton AllBtn;
     private VE3NEA.ListViewEx listViewEx1;
     private ColumnHeader columnHeader1;
-    private ContextMenuStrip contextMenuStrip1;
-    private ToolStripMenuItem SelectSatelliteMNU;
-    private ToolStripMenuItem SatelliteDetailsMNU;
-    private ToolStripMenuItem SatelliteTransmittersMNU;
   }
 }

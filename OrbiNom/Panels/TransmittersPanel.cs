@@ -17,8 +17,7 @@ namespace OrbiNom
   {
     private Context ctx;
     private SatnogsDbSatellite? Satellite;
-    private Size DesignedSize;
-
+    
     public TransmittersPanel()
     {
       InitializeComponent();
@@ -27,8 +26,7 @@ namespace OrbiNom
     public TransmittersPanel(Context ctx)
     {
       InitializeComponent();
-      DesignedSize = Size;
-
+      
       this.ctx = ctx;
       ctx.TransmittersPanel = this;
       ctx.MainForm.TransmittersMNU.Checked = true;
@@ -105,17 +103,6 @@ namespace OrbiNom
     private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
     {
       listView1.Sort();
-    }
-
-    private void TransmittersPanel_Load(object sender, EventArgs e)
-    {
-      if (Size.Height == 260) // if default size, not from settings
-      {
-        FloatPane.FloatWindow.Size = DesignedSize;
-        FloatPane.FloatWindow.Location = new Point(
-          ctx.MainForm.Location.X + (ctx.MainForm.Width - DesignedSize.Width) / 2,
-          ctx.MainForm.Location.Y + (ctx.MainForm.Size.Height - DesignedSize.Height) / 2);
-      }
     }
   }
 }
