@@ -43,6 +43,45 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\Vendor\SoapySDR\libusb-1.0.dll" Link="libusb-1.0.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\pthreadVC2.dll" Link="pthreadVC2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SDR\airspy.dll" Link="lib\SoapySDR\modules0.8-3\airspy.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SDR\airspySupport.dll" Link="lib\SoapySDR\modules0.8-3\airspySupport.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SDR\airspySupport.pdb" Link="lib\SoapySDR\modules0.8-3\airspySupport.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SDR\rtlsdr.dll" Link="lib\SoapySDR\modules0.8-3\rtlsdr.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SDR\rtlsdrSupport.dll" Link="lib\SoapySDR\modules0.8-3\rtlsdrSupport.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SDR\rtlsdrSupport.pdb" Link="lib\SoapySDR\modules0.8-3\rtlsdrSupport.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SDR\sdrPlaySupport.dll" Link="lib\SoapySDR\modules0.8-3\sdrPlaySupport.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SDR\sdrPlaySupport.pdb" Link="lib\SoapySDR\modules0.8-3\sdrPlaySupport.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SoapySDR.dll" Link="SoapySDR.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SoapySDR.pdb" Link="SoapySDR.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DockPanelSuite" Version="3.1.1" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
@@ -54,9 +93,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Pothosware.SoapySDR">
-      <HintPath>Pothosware.SoapySDR.dll</HintPath>
-    </Reference>
     <Reference Include="SGP.NET">
       <HintPath>..\Vendor\SGP.NET\SGP.NET\bin\x64\Release\net6.0\SGP.NET.dll</HintPath>
     </Reference>
@@ -81,57 +117,19 @@
     <None Update="libusb-1.0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="lib\SoapySDR\module0.8-3\airspy.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\SoapySDR\module0.8-3\airspySupport.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\SoapySDR\module0.8-3\airspySupport.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\SoapySDR\module0.8-3\rtlsdr.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\SoapySDR\module0.8-3\rtlsdrSupport.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\SoapySDR\module0.8-3\rtlsdrSupport.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\SoapySDR\module0.8-3\sdrPlaySupport.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\SoapySDR\module0.8-3\sdrPlaySupport.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\SoapySDR\module0.8-3\sdrplay_api.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Pothosware.SoapySDR.deps.json">
+    <None Update="lib\SoapySDR\modules0.8-3\sdrplay_api.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Pothosware.SoapySDR.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Pothosware.SoapySDR.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="pthreadVC2.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="SoapySDR.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="SoapySDR.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="SoapySDRCSharpSWIG.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="SoapySDRCSharpSWIG.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="lib\SoapySDR\modules0.8-3\" />
   </ItemGroup>
 
 </Project>

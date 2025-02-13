@@ -296,14 +296,14 @@ namespace OrbiNom
     private void ShowFloatingPanel(DockContent panel)
     {
       var rect = panel.Bounds;
-      rect.Offset(                  
+      rect.Offset(
         ctx.MainForm.Location.X + (ctx.MainForm.Width - panel.Width) / 2,
         ctx.MainForm.Location.Y + (ctx.MainForm.Size.Height - panel.Height) / 2
         );
 
       panel.Show(DockHost, rect);
     }
-    
+
     private void SetDefaultDockingLayout()
     {
       GroupViewMNU_Click(null, null);
@@ -459,6 +459,14 @@ namespace OrbiNom
       ctx.PassesPanel?.ShowPasses();
       ctx.EarthViewPanel?.SetGridSquare();
       ctx.SkyViewPanel?.ClearPass();
+    }
+
+    private void SdrDevicesMNU_Click(object sender, EventArgs e)
+    {
+      var dlg = new SdrDevicesDialog();
+      var rc = dlg.ShowDialog();
+      if (rc != DialogResult.OK) return;
+
     }
   }
 }

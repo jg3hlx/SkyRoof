@@ -245,6 +245,7 @@
       SdrDevicesMNU.Name = "SdrDevicesMNU";
       SdrDevicesMNU.Size = new Size(216, 22);
       SdrDevicesMNU.Text = "SDR Devices...";
+      SdrDevicesMNU.Click += SdrDevicesMNU_Click;
       // 
       // SettingsMNU
       // 

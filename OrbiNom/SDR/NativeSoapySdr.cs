@@ -1,0 +1,133 @@
+﻿using System.Runtime.InteropServices;
+
+namespace VE3NEA
+{
+  [StructLayout(LayoutKind.Sequential)]
+  public class NativeSoapySdr
+  {
+    public enum Direction { Tx, Rx }
+
+    public enum SoapySDRArgInfoType {Bool, Int, Float, String }
+
+    public struct SoapySDRKwargs
+    {
+      public int size;
+      public IntPtr keys;
+      public IntPtr vals;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SoapySDRRange
+    {
+      public double minimum;
+      public double maximum;
+      public double step;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SoapySDRArgInfo
+    {
+      public IntPtr key;
+      public IntPtr value;
+      public IntPtr name;
+      public IntPtr description;
+      public IntPtr units;
+      public SoapySDRArgInfoType type;
+      public SoapySDRRange range;
+      public nint numOptions;
+      public IntPtr options;
+      public IntPtr optionNames;
+    }
+
+
+
+    public const string DLL_NAME = "SoapySDR";
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern int SoapySDRDevice_lastStatus();
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern string SoapySDRDevice_lastError();
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern IntPtr SoapySDRDevice_enumerateStrArgs(string args, out nint length);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern void SoapySDRKwargsList_clear(IntPtr args, nint length);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern void SoapySDRKwargs_clear(IntPtr args);
+    
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern void SoapySDRArgInfo_clear(IntPtr info);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_make(IntPtr args);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern SoapySDRRange SoapySDRDevice_getGainRange(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_getFrequencyRange(IntPtr device, Direction direction, nint channel, out nint length);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_getSampleRateRange(IntPtr device, Direction direction, nint channel, out nint length);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_getBandwidthRange(IntPtr device, Direction direction, nint channel, out nint length);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern double SoapySDRDevice_getGain(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern double SoapySDRDevice_getFrequency(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern double SoapySDRDevice_getSampleRate(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern double SoapySDRDevice_getBandwidth(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_getSettingInfo(IntPtr device, out nint length);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern int SoapySDRDevice_unmake(IntPtr device);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern double SoapySDRDevice_getGainElement(IntPtr device, Direction direction, nint channel, string name);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_listGains(IntPtr device, Direction direction, nint channel, out nint length);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern SoapySDRRange SoapySDRDevice_getGainElementRange(IntPtr device, Direction direction, nint channel, string name);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_listAntennas(IntPtr device, Direction direction, nint channel, out nint length);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern IntPtr SoapySDRDevice_getAntenna(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern bool SoapySDRDevice_hasDCOffsetMode(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern bool SoapySDRDevice_getDCOffsetMode(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern bool SoapySDRDevice_hasIQBalanceMode(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern bool SoapySDRDevice_getIQBalanceMode(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern bool SoapySDRDevice_hasGainMode(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern bool SoapySDRDevice_getGainMode(IntPtr device, Direction direction, nint channel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_readSetting(IntPtr device, string key);    
+  }
+}

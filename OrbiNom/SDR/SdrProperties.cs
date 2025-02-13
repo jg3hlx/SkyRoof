@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.ComponentModel;
-using Pothosware.SoapySDR;
+using static VE3NEA.NativeSoapySdr;
 
-namespace OrbiNom
+namespace VE3NEA
 {
   //------------------------------------------------------------------------------------------------
-  //                                     SdrProperties
+  //                               SdrProperties collection
   //------------------------------------------------------------------------------------------------
   public class SdrProperties : CollectionBase, ICustomTypeDescriptor
   {
@@ -29,8 +29,6 @@ namespace OrbiNom
       get => (SdrProperty)List[index];
       set => List[index] = value;      
     }
-
-
 
 
     public AttributeCollection GetAttributes()
@@ -88,7 +86,7 @@ namespace OrbiNom
       PropertyDescriptor[] newProps = new PropertyDescriptor[Count];
       for (int i = 0; i < Count; i++)
       {
-        SdrProperty prop = (SdrProperty)this[i];
+        SdrProperty prop = this[i];
         newProps[i] = new SdrPropertyDescriptor(ref prop, attributes);
       }
 
@@ -111,12 +109,14 @@ namespace OrbiNom
   {
     public string Name => ArgInfo.Name;
     public string Value;
-    public ArgInfo ArgInfo;
+    public SoapySDRArgInfo ArgInfo;
+    public bool IsCommon;
 
-    public SdrProperty(ArgInfo argInfo, string value)
+    public SdrProperty(SoapySDRArgInfo argInfo, string value, bool isCommon = true)
     {
       ArgInfo = argInfo;
       Value = value;
+      IsCommon = isCommon;
     }
   }
 
@@ -147,27 +147,23 @@ namespace OrbiNom
 
     public override object? GetValue(object? component)
     {
-      switch (Property.ArgInfo.ArgType)
+      switch (Property.ArgInfo.Type)
       {
-        case ArgInfo.Type.Bool: return Property.Value == "true";
-        case ArgInfo.Type.Int: return int.Parse(Property.Value);
-        case ArgInfo.Type.Float: return float.Parse(Property.Value);
+        case SoapySDRArgInfoType.Bool: return Property.Value == "true";
+        case SoapySDRArgInfoType.Int: return int.Parse(Property.Value);
+        case SoapySDRArgInfoType.Float: return float.Parse(Property.Value);
         default: return OptionToName();
       }
     }
 
     private string OptionToName()
     {
-      int index = Property.ArgInfo.Options.IndexOf(Property.Value);
-      if (index < 0 || index >= Property.ArgInfo.OptionNames.Count) return Property.Value;
-      return Property.ArgInfo.OptionNames[index];
+      return Property.ArgInfo.Options.FirstOrDefault(x => x.Value == Property.Value).Key ?? Property.Value;
     }
 
-    private string NameToOption(string value)
+    private string NameToOption(string name)
     {
-      int index = Property.ArgInfo.OptionNames.IndexOf(value);
-      if (index < 0 || index >= Property.ArgInfo.Options.Count) return value;
-      return Property.ArgInfo.Options[index];
+      return Property.ArgInfo.Options.GetValueOrDefault(name) ?? name;
     }
 
     public override string Description => Property.ArgInfo.Description;
@@ -179,16 +175,16 @@ namespace OrbiNom
 
     public override void SetValue(object? component, object? value)
     {
-      switch (Property.ArgInfo.ArgType)
+      switch (Property.ArgInfo.Type)
       {
-        case ArgInfo.Type.Bool: 
+        case SoapySDRArgInfoType.Bool: 
           Property.Value = value?.ToString()?.ToLower() ?? ""; 
           break;
 
-        case ArgInfo.Type.Int:
+        case SoapySDRArgInfoType.Int:
           Property.Value = NumericToString((int)value);
           break;
-        case ArgInfo.Type.Float:
+        case SoapySDRArgInfoType.Float:
           Property.Value = NumericToString((float)value);
           break;
 
@@ -200,8 +196,8 @@ namespace OrbiNom
 
     private string NumericToString(double value)
     {
-      if (Property.ArgInfo.Range.Minimum != 0 || Property.ArgInfo.Range.Maximum != 0)
-        value = Math.Max(Property.ArgInfo.Range.Minimum, Math.Min(Property.ArgInfo.Range.Maximum, value));        
+      if (Property.ArgInfo.Range.minimum != 0 || Property.ArgInfo.Range.maximum != 0)
+        value = Math.Max(Property.ArgInfo.Range.minimum, Math.Min(Property.ArgInfo.Range.maximum, value));        
       
       return value.ToString();
     }
@@ -214,11 +210,11 @@ namespace OrbiNom
 
     private Type GetTypeFromArgInfo()
     {
-      switch (Property.ArgInfo.ArgType)
+      switch (Property.ArgInfo.Type)
       {
-        case ArgInfo.Type.Bool: return typeof(bool);
-        case ArgInfo.Type.Int: return typeof(int);
-        case ArgInfo.Type.Float: return typeof(float);
+        case SoapySDRArgInfoType.Bool: return typeof(bool);
+        case SoapySDRArgInfoType.Int: return typeof(int);
+        case SoapySDRArgInfoType.Float: return typeof(float);
         default: return typeof(string);
       }
     }
@@ -227,7 +223,7 @@ namespace OrbiNom
 
     private TypeConverter GetTypeConverter()
     {
-      if (Property.ArgInfo.ArgType == ArgInfo.Type.String && Property.ArgInfo.Options.Count > 0)
+      if (Property.ArgInfo.Type == SoapySDRArgInfoType.String && Property.ArgInfo.Options.Count > 0)
         return new OptionConverter(Property.ArgInfo);
       else 
         return base.Converter;
@@ -242,9 +238,9 @@ namespace OrbiNom
   //------------------------------------------------------------------------------------------------
   public class OptionConverter : StringConverter
   {
-    private readonly ArgInfo argInfo;
+    private readonly SoapySDRArgInfo argInfo;
 
-    public OptionConverter(ArgInfo argInfo)
+    public OptionConverter(SoapySDRArgInfo argInfo)
     {
       this.argInfo = argInfo;
     }
@@ -255,8 +251,7 @@ namespace OrbiNom
 
     public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext? context)
     {
-      var options = argInfo.OptionNames.Count > 0 ? argInfo.OptionNames : argInfo.Options;
-      var coll = new StandardValuesCollection(options.ToArray());
+      var coll = new StandardValuesCollection(argInfo.Options.Keys);
       return coll;
     }
   }
