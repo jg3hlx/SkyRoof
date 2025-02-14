@@ -1,33 +1,34 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.ComponentModel;
+using System.Runtime.InteropServices;
 using static VE3NEA.NativeSoapySdr;
 
 namespace VE3NEA
 {
   public class SoapySdrDeviceInfo
   {
-    private readonly SoapySDRKwargs KwArgs;
-    public SoapySDRRange[] FrequencyRange, SampleRateRange, BandwidthRange;
     private IntPtr Device;
-    public double SampleRate;
-    public double Bandwidth;
-    public double Frequency;
-    public double Gain;
+    internal bool Present;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string Name { get => KwArgs["label"]; }
+    public SoapySDRKwargs KwArgs;
+    public SoapySDRRange[] FrequencyRange, SampleRateRange, BandwidthRange;
+    public SoapySDRRange GainRange;
+    public double SampleRate, Bandwidth, Frequency, Gain, Ppm;
     public SdrProperties Properties = new();
 
-    public string Name { get => KwArgs["label"]; }
-    public SoapySDRRange GainRange;
+    public SoapySdrDeviceInfo() { }
 
     public SoapySdrDeviceInfo(SoapySDRKwargs kwArgs)
     {
       KwArgs = kwArgs;
 
       Device = CreateDevice();
-
       ReadCapabilities();
       ReadProperties();
+      ReleaseDevice(Device);
 
-      ReleaseDevice();
+      Present = true;
     }
 
     public IntPtr CreateDevice()
@@ -39,11 +40,17 @@ namespace VE3NEA
       return device;
     }
 
-    public void ReleaseDevice()
+    public void ReleaseDevice(IntPtr device)
     {
-      if (Device != IntPtr.Zero) SoapySDRDevice_unmake(Device);
+      if (device != IntPtr.Zero) SoapySDRDevice_unmake(device);
     }
 
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                 private methods
+    //----------------------------------------------------------------------------------------------
     private void ReadCapabilities()
     {
       // gain range
@@ -65,14 +72,14 @@ namespace VE3NEA
       SoapySdr.CheckError();
       BandwidthRange = SoapySdrHelper.MarshalRangeArray(ptr, length);
 
-      // scalar params
-      Gain = SoapySDRDevice_getGain(Device, Direction.Rx, 0);
-      SoapySdr.CheckError();
-      Frequency = SoapySDRDevice_getFrequency(Device, Direction.Rx, 0);
-      SoapySdr.CheckError();
+      // scalars
       SampleRate = SoapySDRDevice_getSampleRate(Device, Direction.Rx, 0);
       SoapySdr.CheckError();
       Bandwidth = SoapySDRDevice_getBandwidth(Device, Direction.Rx, 0);
+      SoapySdr.CheckError();
+      Frequency = SoapySDRDevice_getFrequency(Device, Direction.Rx, 0);
+      SoapySdr.CheckError();
+      Gain = SoapySDRDevice_getGain(Device, Direction.Rx, 0);
       SoapySdr.CheckError();
     }
 
@@ -81,6 +88,7 @@ namespace VE3NEA
       Properties.Clear();
 
       // model-specific properties
+
       var ptr = SoapySDRDevice_getSettingInfo(Device, out nint length);
       SoapySdr.CheckError();
       var argsInfo = SoapySdrHelper.MarshalArgsInfoArray(ptr, length);
@@ -88,89 +96,89 @@ namespace VE3NEA
       var properties = argsInfo.Select(s => new SdrProperty(s, ReadSetting(s.Key), false)).ToList();
       foreach (SdrProperty p in properties) Properties.Add(p);
 
-      SoapySDRArgInfo argInfo;
-      string value;
-      SdrProperty property;
+
+      // common properties
 
       // antenna
-      argInfo = new SoapySDRArgInfo();
-      argInfo.Type = SoapySDRArgInfoType.String;
-      argInfo.Name = "Antenna";
-      argInfo.Description = "Antenna Input Selection";
-      argInfo.Options = ListAntennas(Direction.Rx, 0);
-      value = GetAntenna(Device, Direction.Rx, 0);
-      property = new SdrProperty(argInfo, value);
-      Properties.Add(property);
+      AddCommonProperty(
+        SoapySDRArgInfoType.String,
+        "Antenna",
+        "Antenna Input Selection",
+        GetAntenna(Device, Direction.Rx, 0),
+        ListAntennas(Direction.Rx, 0));
 
       // DC offset
       if (SoapySDRDevice_hasDCOffsetMode(Device, Direction.Rx, 0))
-      {
-        argInfo = new SoapySDRArgInfo();
-        argInfo.Type = SoapySDRArgInfoType.Bool;
-        argInfo.Name = "DCOffsetMode";
-        argInfo.Description = "Enable or disable automatic frontend DC offset correction";
-        value = SoapySDRDevice_getDCOffsetMode(Device, Direction.Rx, 0) ? "True" : "False";
-        property = new SdrProperty(argInfo, value);
-        Properties.Add(property);
-      }
+        AddCommonProperty(
+          SoapySDRArgInfoType.Bool,
+          "DCOffsetMode",
+          "Automatic frontend DC offset correction",
+          SoapySDRDevice_getDCOffsetMode(Device, Direction.Rx, 0) ? "True" : "False");
 
       // IQ balance
       if (SoapySDRDevice_hasIQBalanceMode(Device, Direction.Rx, 0))
-      {
-        argInfo = new SoapySDRArgInfo();
-        argInfo.Type = SoapySDRArgInfoType.Bool;
-        argInfo.Name = "IQBalanceMode";
-        argInfo.Description = "Enable or disable automatic frontend IQ balance correction";
-        value = SoapySDRDevice_getIQBalanceMode(Device, Direction.Rx, 0) ? "True" : "False";
-        property = new SdrProperty(argInfo, value);
-        Properties.Add(property);
-      }
+        AddCommonProperty(
+          SoapySDRArgInfoType.Bool,
+          "IQBalanceMode",
+          "Automatic frontend IQ balance correction",
+           SoapySDRDevice_getIQBalanceMode(Device, Direction.Rx, 0) ? "True" : "False");
 
       // AGC
       if (SoapySDRDevice_hasGainMode(Device, Direction.Rx, 0))
-      {
-        argInfo = new SoapySDRArgInfo();
-        argInfo.Type = SoapySDRArgInfoType.Bool;
-        argInfo.Name = "GainMode";
-        argInfo.Description = "Enable or disable automatic gain control on the chain";
-        value = SoapySDRDevice_getGainMode(Device, Direction.Rx, 0) ? "True" : "False";
-        property = new SdrProperty(argInfo, value);
-        Properties.Add(property);
-      }
+        AddCommonProperty(
+          SoapySDRArgInfoType.Bool,
+          "GainMode",
+          "Automatic gain control on the chain",
+           SoapySDRDevice_getGainMode(Device, Direction.Rx, 0) ? "True" : "False");
 
       // Gains
       var gainNames = ListGains(Direction.Rx, 0);
       foreach (string gainName in gainNames)
       {
-        argInfo = new SoapySDRArgInfo();
-        argInfo.Type = SoapySDRArgInfoType.Float;
-        argInfo.Name = gainName + " Gain";
-        argInfo.Key = gainName;
-        argInfo.Range = SoapySDRDevice_getGainElementRange(Device, Direction.Rx, 0, gainName);
-        SoapySdr.CheckError();
-        value = SoapySDRDevice_getGainElement(Device, Direction.Rx, 0, gainName).ToString();
-        SoapySdr.CheckError();
-        property = new SdrProperty(argInfo, value, false);
-        Properties.Add(property);
+        AddCommonProperty(
+          SoapySDRArgInfoType.Float,
+          gainName + " Gain",
+          "",
+           SoapySDRDevice_getGainElement(Device, Direction.Rx, 0, gainName).ToString(),
+           null,
+           SoapySDRDevice_getGainElementRange(Device, Direction.Rx, 0, gainName));
+        Properties.Last().IsCommon = false;
       }
     }
 
-    private Dictionary<string, string>? ListAntennas(Direction rx, int v)
+    private void AddCommonProperty(SoapySDRArgInfoType type, string name, string description, 
+      string value, Dictionary<string, string>? options = null, SoapySDRRange range = new())
     {
-      var ptr = SoapySDRDevice_listAntennas(Device, Direction.Rx, 0, out nint length);
-      var values = SoapySdrHelper.MarshalStringArray(ptr, length);
-      return values.ToDictionary(item => item);
-    }
+      var argInfo = new SoapySDRArgInfo();
+      argInfo.Type =type;
+      argInfo.Name = name;
+      argInfo.Description = description;
+      argInfo.Options = options ?? new(); 
+      argInfo.Range = range;
 
-    public static string GetAntenna(IntPtr device, Direction direction, nint channel)
-    {
-      IntPtr ptr = SoapySDRDevice_getAntenna(device, direction, channel);
-      return Marshal.PtrToStringAnsi(ptr);
+      var property = new SdrProperty(argInfo, value);
+      Properties.Add(property);
     }
 
     private string ReadSetting(string key)
     {
       IntPtr ptr = SoapySDRDevice_readSetting(Device, key);
+      SoapySdr.CheckError();
+      return Marshal.PtrToStringAnsi(ptr);
+    }
+
+    private Dictionary<string, string>? ListAntennas(Direction rx, int v)
+    {
+      var ptr = SoapySDRDevice_listAntennas(Device, Direction.Rx, 0, out nint length);
+      SoapySdr.CheckError();
+      var values = SoapySdrHelper.MarshalStringArray(ptr, length);
+      return values.ToDictionary(item => item);
+    }
+
+    private static string GetAntenna(IntPtr device, Direction direction, nint channel)
+    {
+      IntPtr ptr = SoapySDRDevice_getAntenna(device, direction, channel);
+      SoapySdr.CheckError();
       return Marshal.PtrToStringAnsi(ptr);
     }
 

@@ -248,6 +248,14 @@ namespace OrbiNom
       new AboutBox().ShowDialog();
     }
 
+    private void SdrDevicesMNU_Click(object sender, EventArgs e)
+    {
+      var dlg = new SdrDevicesDialog(ctx);
+      var rc = dlg.ShowDialog();
+      if (rc != DialogResult.OK) return;
+
+    }
+
 
 
 
@@ -287,6 +295,21 @@ namespace OrbiNom
 
       CpuLoadlabel.Text = $"    CPU Load: {usage:F1}%";
     }
+
+    private void SdrStatus_Click(object sender, EventArgs e)
+    {
+      SdrDevicesMNU_Click(sender, e);
+    }
+    private void StatusLabel_MouseEnter(object sender, EventArgs e)
+    {
+      Cursor = Cursors.Hand;
+    }
+
+    private void StatusLabel_MouseLeave(object sender, EventArgs e)
+    {
+      Cursor = Cursors.Default;
+    }
+
 
 
 
@@ -459,14 +482,6 @@ namespace OrbiNom
       ctx.PassesPanel?.ShowPasses();
       ctx.EarthViewPanel?.SetGridSquare();
       ctx.SkyViewPanel?.ClearPass();
-    }
-
-    private void SdrDevicesMNU_Click(object sender, EventArgs e)
-    {
-      var dlg = new SdrDevicesDialog();
-      var rc = dlg.ShowDialog();
-      if (rc != DialogResult.OK) return;
-
     }
   }
 }

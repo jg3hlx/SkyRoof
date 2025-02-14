@@ -35,10 +35,10 @@ namespace OrbiNom
       cancelBtn = new Button();
       label1 = new Label();
       Grid = new PropertyGrid();
-      imageList1 = new ImageList(components);
-      toolTip = new ToolTip(components);
       PropertyGridMenu = new ContextMenuStrip(components);
       resetToolStripMenuItem = new ToolStripMenuItem();
+      imageList1 = new ImageList(components);
+      toolTip = new ToolTip(components);
       listBox1 = new ListBox();
       PropertyGridMenu.SuspendLayout();
       SuspendLayout();
@@ -79,19 +79,13 @@ namespace OrbiNom
       // Grid
       // 
       Grid.BackColor = SystemColors.Control;
+      Grid.ContextMenuStrip = PropertyGridMenu;
       Grid.Location = new Point(13, 34);
       Grid.Margin = new Padding(4, 3, 4, 3);
       Grid.Name = "Grid";
       Grid.Size = new Size(249, 313);
       Grid.TabIndex = 1;
       Grid.ToolbarVisible = false;
-      Grid.PropertyValueChanged += Grid_PropertyValueChanged;
-      // 
-      // imageList1
-      // 
-      imageList1.ColorDepth = ColorDepth.Depth32Bit;
-      imageList1.ImageSize = new Size(16, 16);
-      imageList1.TransparentColor = Color.Transparent;
       // 
       // PropertyGridMenu
       // 
@@ -104,17 +98,25 @@ namespace OrbiNom
       resetToolStripMenuItem.Name = "resetToolStripMenuItem";
       resetToolStripMenuItem.Size = new Size(102, 22);
       resetToolStripMenuItem.Text = "Reset";
-      resetToolStripMenuItem.Click += ResetToolStripMenuItem_Click;
+      resetToolStripMenuItem.Click += ResetMNU_Click;
+      // 
+      // imageList1
+      // 
+      imageList1.ColorDepth = ColorDepth.Depth32Bit;
+      imageList1.ImageSize = new Size(16, 16);
+      imageList1.TransparentColor = Color.Transparent;
       // 
       // listBox1
       // 
       listBox1.DisplayMember = "Name";
-      listBox1.FormattingEnabled = true;
+      listBox1.DrawMode = DrawMode.OwnerDrawFixed;
       listBox1.Location = new Point(269, 34);
       listBox1.Name = "listBox1";
-      listBox1.Size = new Size(268, 139);
+      listBox1.Size = new Size(268, 132);
       listBox1.TabIndex = 9;
+      listBox1.DrawItem += listBox1_DrawItem;
       listBox1.SelectedIndexChanged += listBox1_SelectedIndexChanged;
+      listBox1.MouseDown += listBox1_MouseDown;
       // 
       // SdrDevicesDialog
       // 
@@ -133,8 +135,7 @@ namespace OrbiNom
       Name = "SdrDevicesDialog";
       StartPosition = FormStartPosition.CenterParent;
       Text = "SDR Devices";
-      Load += SdrDevicesDialog_Load;
-      Shown += this.SdrDevicesDialog_Shown;
+      FormClosing += SdrDevicesDialog_FormClosing;
       PropertyGridMenu.ResumeLayout(false);
       ResumeLayout(false);
       PerformLayout();

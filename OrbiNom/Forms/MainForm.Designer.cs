@@ -344,6 +344,9 @@
       SdrLedLabel.Size = new Size(21, 30);
       SdrLedLabel.Text = "n";
       SdrLedLabel.ToolTipText = "Disabled";
+      SdrLedLabel.Click += SdrStatus_Click;
+      SdrLedLabel.MouseEnter += StatusLabel_MouseEnter;
+      SdrLedLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
       // SdrStatusLabel
       // 
@@ -353,6 +356,9 @@
       SdrStatusLabel.Text = "SDR  ";
       SdrStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
       SdrStatusLabel.ToolTipText = "Disabled";
+      SdrStatusLabel.Click += SdrStatus_Click;
+      SdrStatusLabel.MouseEnter += StatusLabel_MouseEnter;
+      SdrStatusLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
       // SoundcardLedLabel
       // 

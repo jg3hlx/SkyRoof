@@ -8,6 +8,7 @@ namespace OrbiNom
   {
     public UiSettings Ui = new();
     public SatelliteSettings Satellites = new();
+    public SdrSettings Sdr = new();
 
 
 

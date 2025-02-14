@@ -133,6 +133,26 @@ namespace OrbiNom.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] radio_button_off {
+            get {
+                object obj = ResourceManager.GetObject("radio_button_off", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] radio_button_on {
+            get {
+                object obj = ResourceManager.GetObject("radio_button_on", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] S {
             get {
                 object obj = ResourceManager.GetObject("S", resourceCulture);

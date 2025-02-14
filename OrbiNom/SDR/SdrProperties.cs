@@ -5,32 +5,10 @@ using static VE3NEA.NativeSoapySdr;
 namespace VE3NEA
 {
   //------------------------------------------------------------------------------------------------
-  //                               SdrProperties collection
+  //                            SdrProperties, editable in PropertyGrid 
   //------------------------------------------------------------------------------------------------
-  public class SdrProperties : CollectionBase, ICustomTypeDescriptor
+  public class SdrProperties : List<SdrProperty>, ICustomTypeDescriptor
   {
-    public void Add(SdrProperty Value)
-    {
-      List.Add(Value);
-    }
-
-    public void Remove(string Name)
-    {
-      foreach (SdrProperty property in List)
-        if (property.Name == Name)
-        {
-          List.Remove(property);
-          return;
-        }
-    }
-
-    public SdrProperty this[int index]
-    {
-      get => (SdrProperty)List[index];
-      set => List[index] = value;      
-    }
-
-
     public AttributeCollection GetAttributes()
     {
       return TypeDescriptor.GetAttributes(this, true);
@@ -107,7 +85,9 @@ namespace VE3NEA
   //------------------------------------------------------------------------------------------------
   public class SdrProperty
   {
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Name => ArgInfo.Name;
+
     public string Value;
     public SoapySDRArgInfo ArgInfo;
     public bool IsCommon;
@@ -129,6 +109,10 @@ namespace VE3NEA
   public class SdrPropertyDescriptor : PropertyDescriptor
   {
     SdrProperty Property;
+
+    public override string Category { get => Property.IsCommon ? "Common" : "Model-specific"; }
+
+
     public SdrPropertyDescriptor(ref SdrProperty property, Attribute[] attrs) : base(property.Name, attrs)
     {
       Property = property;

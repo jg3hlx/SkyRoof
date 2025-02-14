@@ -13,70 +13,82 @@ namespace OrbiNom
 {
   public partial class SdrDevicesDialog : Form
   {
-    private SoapySdrDeviceInfo Sdr;
+    private readonly Context ctx;
+    private readonly Image RadioOnImage, RadioOffImage;
+    public List<SoapySdrDeviceInfo> Devices;
 
     public SdrDevicesDialog()
     {
       InitializeComponent();
     }
-    private void Grid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+
+    public SdrDevicesDialog(Context ctx)
     {
-      string helpKeyword = PropertyGridEx.GetItemProperty(e.ChangedItem, "HelpKeyword");
+      InitializeComponent();
+      this.ctx = ctx;
+      BuildDeviceList();
 
-      switch (helpKeyword)
-      {
-        case "JTSkimmer.AirspySettings.VgaGain":
-        case "JTSkimmer.AirspySettings.MixerGain":
-          ValidateGain(e, 15);
-          break;
-
-        case "JTSkimmer.AirspySettings.LnaGain":
-          ValidateGain(e, 14);
-          break;
-      }
+      using (var ms = new MemoryStream(Properties.Resources.radio_button_on)) { RadioOnImage = Image.FromStream(ms); }
+      using (var ms = new MemoryStream(Properties.Resources.radio_button_off)) { RadioOffImage = Image.FromStream(ms); }
     }
 
-
-    private void ValidateGain(PropertyValueChangedEventArgs e, byte maxValue)
+    private void BuildDeviceList()
     {
-      //      // ensure that the value is in range
-      //      if ((byte)e.ChangedItem.Value > maxValue)
-      //        e.ChangedItem.PropertyDescriptor.SetValue(e.ChangedItem.Parent.Value, maxValue);
-      //
-      //      // only in custom gain mode
-      //      var sett = (AirspySettings)Grid.SelectedObject;
-      //      if (sett.GainMode != AirspyGainMode.Custom)
-      //      {
-      //        e.ChangedItem.PropertyDescriptor.SetValue(e.ChangedItem.Parent.Value, e.OldValue);
-      //        MessageBox.Show($"This setting has effect only when Gain Mode is set to Custom", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-      //      }
+      Devices = Utils.DeepClone(ctx.Settings.Sdr.Devices);
+      var oldNames = Devices.Select(x => x.Name).ToList();
+
+      var presentDevices = SoapySdr.EnumerateDevices();
+      var presentNames = presentDevices.Select(x => x.Name).ToList();
+
+      foreach (var dev in Devices) dev.Present = presentNames.Contains(dev.Name);
+      Devices.AddRange(presentDevices.Where(dev => !oldNames.Contains(dev.Name)));
+
+      listBox1.Items.Clear();
+      listBox1.Items.AddRange(Devices.ToArray());
+
+      int index = Devices.FindIndex(dev => dev.Name == ctx.Settings.Sdr.SelectedDeviceName);
+      if (index == -1) index = 0;
+      if (listBox1.Items.Count > index) listBox1.SelectedIndex = index;
     }
 
-    private void ResetToolStripMenuItem_Click(object sender, EventArgs e)
+    private void ResetMNU_Click(object sender, EventArgs e)
     {
       Grid.ResetSelectedProperty();
     }
 
-    private void ShowSdrList()
-    {
-      listBox1.Items.Clear();
-      listBox1.Items.AddRange(SoapySdr.EnumerateDevices());
-      if (listBox1.Items.Count > 0) listBox1.SelectedIndex = 0;
-    }
-
-    private void SdrDevicesDialog_Load(object sender, EventArgs e)
-    {
-      ShowSdrList();
-    }
-
     private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
-      Sdr = (SoapySdrDeviceInfo)listBox1.Items[listBox1.SelectedIndex];
-      Grid.SelectedObject = Sdr.Properties;
+      var sdr = (SoapySdrDeviceInfo)listBox1.Items[listBox1.SelectedIndex];
+      Grid.SelectedObject = sdr.Properties;
+      listBox1.Invalidate();
     }
 
-    private void SdrDevicesDialog_Shown(object sender, EventArgs e)
+    private void SdrDevicesDialog_FormClosing(object sender, FormClosingEventArgs e)
     {
+      if (DialogResult == DialogResult.OK)
+      {
+        ctx.Settings.Sdr.Devices = Devices;
+        string? selectedName = Devices.Count >= 0 ? Devices[listBox1.SelectedIndex].Name : null;
+        ctx.Settings.Sdr.SelectedDeviceName = selectedName;
+      }
+    }
+
+    private void listBox1_DrawItem(object sender, DrawItemEventArgs e)
+    {
+      var selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+      Brush brush = selected ? Brushes.LightBlue : Brushes.White;
+      e.Graphics.FillRectangle(brush, e.Bounds);
+
+      var image = e.Index == listBox1.SelectedIndex ? RadioOnImage : RadioOffImage;
+      e.Graphics.DrawImage(image, e.Bounds.Left, e.Bounds.Top);
+
+      brush = Devices[e.Index].Present ? Brushes.Black : Brushes.Gray;
+      e.Graphics.DrawString(Devices[e.Index].Name, listBox1.Font, brush, e.Bounds.Left + image.Width, e.Bounds.Top);
+    }
+
+    private void listBox1_MouseDown(object sender, MouseEventArgs e)
+    {
+      listBox1.Invalidate();
     }
   }
 }
