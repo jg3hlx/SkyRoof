@@ -54,13 +54,10 @@ namespace OrbiNom
       if (listBox1.Items.Count > index) listBox1.SelectedIndex = index;
     }
 
-    private void ResetMNU_Click(object sender, EventArgs e)
-    {
-      Grid.ResetSelectedProperty();
-    }
-
     private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
+      if (listBox1.SelectedIndex == -1) return;
+
       var sdr = (SoapySdrDeviceInfo)listBox1.Items[listBox1.SelectedIndex];
       SelectedDeviceName = sdr.Name;
       Grid.SelectedObject = sdr.Properties;
@@ -79,7 +76,7 @@ namespace OrbiNom
     private void listBox1_DrawItem(object sender, DrawItemEventArgs e)
     {
       var selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-      Brush brush = selected ? Brushes.Lavender: Brushes.White;
+      Brush brush = selected ? Brushes.Lavender : Brushes.White;
       e.Graphics.FillRectangle(brush, e.Bounds);
 
       if (e.Index < 0 || e.Index >= Devices.Count) return;
@@ -93,6 +90,7 @@ namespace OrbiNom
 
     private void listBox1_MouseDown(object sender, MouseEventArgs e)
     {
+      ClickedItemIndex = listBox1.IndexFromPoint(e.Location);
       listBox1.Invalidate();
     }
 
@@ -108,6 +106,28 @@ namespace OrbiNom
     {
       base.WndProc(ref m);
       if (m.Msg == WM_DEVICECHANGE && m.WParam == DBT_DEVNODES_CHANGED) Invoke(BuildDeviceList);
+    }
+
+
+    int ClickedItemIndex;
+    private void SelectSdrMNU_Click(object sender, EventArgs e)
+    {
+      listBox1.SelectedIndex = ClickedItemIndex;
+    }
+
+    private void DeleteSdrMNU_Click(object sender, EventArgs e)
+    {
+      Devices.RemoveAt(ClickedItemIndex);
+      listBox1.Items.RemoveAt(ClickedItemIndex);
+      if (listBox1.SelectedIndex == -1 && listBox1.Items.Count > 0)
+        listBox1.SelectedIndex = 0;
+    }
+
+    private void DeviceListMenu_Opening(object sender, CancelEventArgs e)
+    {
+      bool itemPresent = ClickedItemIndex >= 0 && ClickedItemIndex < listBox1.Items.Count;
+      SelectSdrMNU.Enabled = itemPresent;
+      DeleteSdrMNU.Enabled = itemPresent && !Devices[ClickedItemIndex].Present;
     }
   }
 }

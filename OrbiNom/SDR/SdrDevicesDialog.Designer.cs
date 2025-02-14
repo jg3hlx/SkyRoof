@@ -35,19 +35,21 @@ namespace OrbiNom
       cancelBtn = new Button();
       label1 = new Label();
       Grid = new PropertyGrid();
-      PropertyGridMenu = new ContextMenuStrip(components);
-      resetToolStripMenuItem = new ToolStripMenuItem();
+      DeviceListMenu = new ContextMenuStrip(components);
+      SelectSdrMNU = new ToolStripMenuItem();
+      DeleteSdrMNU = new ToolStripMenuItem();
       imageList1 = new ImageList(components);
       toolTip = new ToolTip(components);
       listBox1 = new ListBox();
-      PropertyGridMenu.SuspendLayout();
+      label2 = new Label();
+      DeviceListMenu.SuspendLayout();
       SuspendLayout();
       // 
       // okBtn
       // 
       okBtn.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
       okBtn.DialogResult = DialogResult.OK;
-      okBtn.Location = new Point(350, 324);
+      okBtn.Location = new Point(24, 324);
       okBtn.Margin = new Padding(4, 3, 4, 3);
       okBtn.Name = "okBtn";
       okBtn.Size = new Size(88, 27);
@@ -59,7 +61,7 @@ namespace OrbiNom
       // 
       cancelBtn.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
       cancelBtn.DialogResult = DialogResult.Cancel;
-      cancelBtn.Location = new Point(446, 324);
+      cancelBtn.Location = new Point(120, 324);
       cancelBtn.Margin = new Padding(4, 3, 4, 3);
       cancelBtn.Name = "cancelBtn";
       cancelBtn.Size = new Size(88, 27);
@@ -70,7 +72,7 @@ namespace OrbiNom
       // label1
       // 
       label1.AutoSize = true;
-      label1.Location = new Point(286, 12);
+      label1.Location = new Point(12, 9);
       label1.Name = "label1";
       label1.Size = new Size(71, 15);
       label1.TabIndex = 8;
@@ -79,26 +81,33 @@ namespace OrbiNom
       // Grid
       // 
       Grid.BackColor = SystemColors.Control;
-      Grid.ContextMenuStrip = PropertyGridMenu;
-      Grid.Location = new Point(13, 34);
+      Grid.Location = new Point(297, 27);
       Grid.Margin = new Padding(4, 3, 4, 3);
       Grid.Name = "Grid";
-      Grid.Size = new Size(249, 313);
+      Grid.Size = new Size(249, 324);
       Grid.TabIndex = 1;
       Grid.ToolbarVisible = false;
       // 
-      // PropertyGridMenu
+      // DeviceListMenu
       // 
-      PropertyGridMenu.Items.AddRange(new ToolStripItem[] { resetToolStripMenuItem });
-      PropertyGridMenu.Name = "PropertyGridMenu";
-      PropertyGridMenu.Size = new Size(103, 26);
+      DeviceListMenu.Items.AddRange(new ToolStripItem[] { SelectSdrMNU, DeleteSdrMNU });
+      DeviceListMenu.Name = "PropertyGridMenu";
+      DeviceListMenu.Size = new Size(181, 70);
+      DeviceListMenu.Opening += DeviceListMenu_Opening;
       // 
-      // resetToolStripMenuItem
+      // SelectSdrMNU
       // 
-      resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-      resetToolStripMenuItem.Size = new Size(102, 22);
-      resetToolStripMenuItem.Text = "Reset";
-      resetToolStripMenuItem.Click += ResetMNU_Click;
+      SelectSdrMNU.Name = "SelectSdrMNU";
+      SelectSdrMNU.Size = new Size(180, 22);
+      SelectSdrMNU.Text = "Select";
+      SelectSdrMNU.Click += SelectSdrMNU_Click;
+      // 
+      // DeleteSdrMNU
+      // 
+      DeleteSdrMNU.Name = "DeleteSdrMNU";
+      DeleteSdrMNU.Size = new Size(180, 22);
+      DeleteSdrMNU.Text = "Delete";
+      DeleteSdrMNU.Click += DeleteSdrMNU_Click;
       // 
       // imageList1
       // 
@@ -108,15 +117,25 @@ namespace OrbiNom
       // 
       // listBox1
       // 
+      listBox1.ContextMenuStrip = DeviceListMenu;
       listBox1.DisplayMember = "Name";
       listBox1.DrawMode = DrawMode.OwnerDrawFixed;
-      listBox1.Location = new Point(269, 34);
+      listBox1.Location = new Point(12, 27);
       listBox1.Name = "listBox1";
-      listBox1.Size = new Size(268, 132);
+      listBox1.Size = new Size(268, 100);
       listBox1.TabIndex = 9;
       listBox1.DrawItem += listBox1_DrawItem;
       listBox1.SelectedIndexChanged += listBox1_SelectedIndexChanged;
       listBox1.MouseDown += listBox1_MouseDown;
+      // 
+      // label2
+      // 
+      label2.AutoSize = true;
+      label2.Location = new Point(310, 9);
+      label2.Name = "label2";
+      label2.Size = new Size(111, 15);
+      label2.TabIndex = 10;
+      label2.Text = "SDR DEvice Settings";
       // 
       // SdrDevicesDialog
       // 
@@ -124,7 +143,8 @@ namespace OrbiNom
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       CancelButton = cancelBtn;
-      ClientSize = new Size(547, 363);
+      ClientSize = new Size(558, 363);
+      Controls.Add(label2);
       Controls.Add(listBox1);
       Controls.Add(Grid);
       Controls.Add(label1);
@@ -136,7 +156,7 @@ namespace OrbiNom
       StartPosition = FormStartPosition.CenterParent;
       Text = "SDR Devices";
       FormClosing += SdrDevicesDialog_FormClosing;
-      PropertyGridMenu.ResumeLayout(false);
+      DeviceListMenu.ResumeLayout(false);
       ResumeLayout(false);
       PerformLayout();
     }
@@ -149,8 +169,10 @@ namespace OrbiNom
     private PropertyGrid Grid;
     private ImageList imageList1;
     private ToolTip toolTip;
-    private ContextMenuStrip PropertyGridMenu;
-    private ToolStripMenuItem resetToolStripMenuItem;
+    private ContextMenuStrip DeviceListMenu;
+    private ToolStripMenuItem SelectSdrMNU;
     private ListBox listBox1;
+    private Label label2;
+    private ToolStripMenuItem DeleteSdrMNU;
   }
 }
