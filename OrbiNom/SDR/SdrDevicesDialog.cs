@@ -16,6 +16,7 @@ namespace OrbiNom
     private readonly Context ctx;
     private readonly Image RadioOnImage, RadioOffImage;
     public List<SoapySdrDeviceInfo> Devices;
+    private string SelectedDeviceName;
 
     public SdrDevicesDialog()
     {
@@ -26,10 +27,12 @@ namespace OrbiNom
     {
       InitializeComponent();
       this.ctx = ctx;
-      BuildDeviceList();
 
       using (var ms = new MemoryStream(Properties.Resources.radio_button_on)) { RadioOnImage = Image.FromStream(ms); }
       using (var ms = new MemoryStream(Properties.Resources.radio_button_off)) { RadioOffImage = Image.FromStream(ms); }
+
+      SelectedDeviceName = ctx.Settings.Sdr.SelectedDeviceName;
+      BuildDeviceList();
     }
 
     private void BuildDeviceList()
@@ -46,7 +49,7 @@ namespace OrbiNom
       listBox1.Items.Clear();
       listBox1.Items.AddRange(Devices.ToArray());
 
-      int index = Devices.FindIndex(dev => dev.Name == ctx.Settings.Sdr.SelectedDeviceName);
+      var index = Devices.FindIndex(dev => dev.Name == SelectedDeviceName);
       if (index == -1) index = 0;
       if (listBox1.Items.Count > index) listBox1.SelectedIndex = index;
     }
@@ -59,6 +62,7 @@ namespace OrbiNom
     private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
       var sdr = (SoapySdrDeviceInfo)listBox1.Items[listBox1.SelectedIndex];
+      SelectedDeviceName = sdr.Name;
       Grid.SelectedObject = sdr.Properties;
       listBox1.Invalidate();
     }
@@ -68,16 +72,17 @@ namespace OrbiNom
       if (DialogResult == DialogResult.OK)
       {
         ctx.Settings.Sdr.Devices = Devices;
-        string? selectedName = Devices.Count >= 0 ? Devices[listBox1.SelectedIndex].Name : null;
-        ctx.Settings.Sdr.SelectedDeviceName = selectedName;
+        ctx.Settings.Sdr.SelectedDeviceName = SelectedDeviceName;
       }
     }
 
     private void listBox1_DrawItem(object sender, DrawItemEventArgs e)
     {
       var selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-      Brush brush = selected ? Brushes.LightBlue : Brushes.White;
+      Brush brush = selected ? Brushes.Lavender: Brushes.White;
       e.Graphics.FillRectangle(brush, e.Bounds);
+
+      if (e.Index < 0 || e.Index >= Devices.Count) return;
 
       var image = e.Index == listBox1.SelectedIndex ? RadioOnImage : RadioOffImage;
       e.Graphics.DrawImage(image, e.Bounds.Left, e.Bounds.Top);
@@ -89,6 +94,20 @@ namespace OrbiNom
     private void listBox1_MouseDown(object sender, MouseEventArgs e)
     {
       listBox1.Invalidate();
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                              usb device list changed
+    //----------------------------------------------------------------------------------------------
+    private const int WM_DEVICECHANGE = 0x219;
+    private const int DBT_DEVNODES_CHANGED = 7;
+    protected override void WndProc(ref Message m)
+    {
+      base.WndProc(ref m);
+      if (m.Msg == WM_DEVICECHANGE && m.WParam == DBT_DEVNODES_CHANGED) Invoke(BuildDeviceList);
     }
   }
 }
