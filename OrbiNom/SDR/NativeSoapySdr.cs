@@ -47,7 +47,7 @@ namespace VE3NEA
     public static extern int SoapySDRDevice_lastStatus();
 
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern string SoapySDRDevice_lastError();
+    public static extern IntPtr SoapySDRDevice_lastError();
 
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr SoapySDRDevice_enumerateStrArgs(string args, out nint length);
@@ -128,6 +128,19 @@ namespace VE3NEA
     public static extern bool SoapySDRDevice_getGainMode(IntPtr device, Direction direction, nint channel);
 
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr SoapySDRDevice_readSetting(IntPtr device, string key);    
+    public static extern IntPtr SoapySDRDevice_readSetting(IntPtr device, string key);
+
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_setGain(IntPtr device, Direction direction, nint channel, double value);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_setFrequency(IntPtr device, Direction direction, nint channel, double frequency, IntPtr args);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_setSampleRate(IntPtr device, Direction direction, nint channel, double rate);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_setBandwidth(IntPtr device, Direction direction, nint channel, double bw);    
   }
 }

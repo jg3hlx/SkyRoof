@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VE3NEA;
 
 namespace OrbiNom
 {
@@ -23,6 +24,7 @@ namespace OrbiNom
     public TimelinePanel? TimelinePanel;
     public SkyViewPanel? SkyViewPanel;
     public EarthViewPanel? EarthViewPanel;
-    internal TransmittersPanel? TransmittersPanel;
+    public TransmittersPanel? TransmittersPanel;
+    public SoapySdrDevice? Sdr;
   }
 }

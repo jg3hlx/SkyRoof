@@ -1,9 +1,8 @@
 using System.Diagnostics;
-using System.Net.NetworkInformation;
+using MathNet.Numerics;
 using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrbiNom
 {
@@ -37,6 +36,7 @@ namespace OrbiNom
       ctx.Settings.Ui.RestoreWindowPosition(this);
       if (!ctx.Settings.Ui.RestoreDockingLayout(this)) SetDefaultDockingLayout();
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
+      StartSdrIfEnabled();
     }
 
     private void MainForm_FormClosing(object sender, EventArgs e)
@@ -62,6 +62,87 @@ namespace OrbiNom
       else
         Environment.Exit(1); // unable to proceed without user details, terminate app
     }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        sdr
+    //----------------------------------------------------------------------------------------------
+    private void StartSdrIfEnabled()
+    {
+      var sdrProperties = ctx.Settings.Sdr.Devices.FirstOrDefault(d => d.Name == ctx.Settings.Sdr.SelectedDeviceName);
+      ctx.Sdr = sdrProperties == null ? null : new(sdrProperties);
+
+      if (ctx.Sdr != null)
+      {
+        ctx.Sdr.StateChanged += Sdr_StateChanged;
+        ctx.Sdr.DataAvailable += Sdr_DataAvailable;
+        if (ctx.Settings.Sdr.Enabled) ctx.Sdr.Enabled = true;
+      }
+
+      UpdateSdrLabel();
+    }
+
+    private void StopSdr()
+    {
+      ctx.Sdr?.Dispose();
+      ctx.Sdr = null;
+
+      UpdateSdrLabel();
+    }
+
+    private void Sdr_StateChanged(object? sender, EventArgs e)
+    {
+      UpdateSdrLabel();
+    }
+
+    private void ToggleEnabled()
+    {
+      StopSdr();
+      ctx.Settings.Sdr.Enabled = !ctx.Settings.Sdr.Enabled;
+      StartSdrIfEnabled();
+    }
+
+    private void Sdr_DataAvailable(object? sender, DataEventArgs<Complex32> e)
+    {
+      Console.Beep();
+    }
+
+    private void UpdateSdrLabel()
+    {
+      Color color;
+      string tooltip;
+
+      if (ctx.Sdr == null || !ctx.Sdr.Enabled)
+      {
+        color = Color.Gray;
+        tooltip = "Disabled";
+      }
+      else if (ctx.Sdr.IsRunning())
+      {
+        color = Color.Lime;
+        tooltip = $"{ctx.Sdr.Info.Name}   Running";
+      }
+      else
+      {
+        color = Color.Red;
+        tooltip = $"{ctx.Sdr.Info.Name}   FAILED";
+      }
+
+      SdrLedLabel.ForeColor = color;
+      SdrLedLabel.ToolTipText = SdrStatusLabel.ToolTipText = tooltip;
+    }
+
+    private void EditSdrDevices()
+    {
+      StopSdr();
+      var dlg = new SdrDevicesDialog(ctx);
+      var rc = dlg.ShowDialog();
+      if (rc != DialogResult.OK) return;
+      StartSdrIfEnabled();
+    }
+
 
 
 
@@ -250,10 +331,7 @@ namespace OrbiNom
 
     private void SdrDevicesMNU_Click(object sender, EventArgs e)
     {
-      var dlg = new SdrDevicesDialog(ctx);
-      var rc = dlg.ShowDialog();
-      if (rc != DialogResult.OK) return;
-
+      EditSdrDevices();
     }
 
 
@@ -298,8 +376,9 @@ namespace OrbiNom
 
     private void SdrStatus_Click(object sender, EventArgs e)
     {
-      SdrDevicesMNU_Click(sender, e);
+      ToggleEnabled();
     }
+
     private void StatusLabel_MouseEnter(object sender, EventArgs e)
     {
       Cursor = Cursors.Hand;
@@ -358,14 +437,19 @@ namespace OrbiNom
 
     private void timer_Tick(object sender, EventArgs e)
     {
-      ctx.EarthViewPanel?.Advance();
-
-      // 1/8 s ticks
+      // 8 Hz (125 ms) ticks
       TickCount += 1;
+
+      EightHzTick();
       if (TickCount % (TICKS_PER_SECOND / 4) == 0) FourHertzTick();
       if (TickCount % TICKS_PER_SECOND == 0) OneSecondTick();
       if (TickCount % (TICKS_PER_SECOND * 60) == 0) OneMinuteTick();
       if (TickCount % (TICKS_PER_SECOND * 3600) == 0) OneHourTick();
+    }
+
+    private void EightHzTick()
+    {
+      ctx.EarthViewPanel?.Advance();
     }
 
     private void FourHertzTick()
@@ -379,10 +463,10 @@ namespace OrbiNom
       ctx.GroupViewPanel?.UpdatePassTimes();
       ctx.PassesPanel?.UpdatePassTimes();
       ctx.TimelinePanel?.Advance();
+      ctx.Sdr?.Retry();
 
       ShowCpuUsage();
     }
-
     private void OneMinuteTick()
     {
       ctx.GroupPasses.PredictMorePasses();

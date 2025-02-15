@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace VE3NEA
 {
@@ -35,10 +36,29 @@ namespace VE3NEA
       return result;
     }
 
+    public static IntPtr CreateDevice(SoapySDRKwargs kwArgs)
+    {
+      IntPtr nativeKwargs = kwArgs.ToNative();
+      var device = NativeSoapySdr.SoapySDRDevice_make(nativeKwargs);
+      Marshal.FreeHGlobal(nativeKwargs);
+      SoapySdr.CheckError();
+      return device;
+    }
+
+    public static void ReleaseDevice(IntPtr device)
+    {
+      if (device != IntPtr.Zero) NativeSoapySdr.SoapySDRDevice_unmake(device);
+    }
+
     public static void CheckError()
     {
-      if (NativeSoapySdr.SoapySDRDevice_lastStatus() != 0)
-        throw new Exception("SoapySDR error: " + NativeSoapySdr.SoapySDRDevice_lastError());
+      int errorCode = NativeSoapySdr.SoapySDRDevice_lastStatus();
+      if (errorCode != 0)
+      {
+        IntPtr ptr = NativeSoapySdr.SoapySDRDevice_lastError();
+        string errorMessage = Marshal.PtrToStringAnsi(ptr) ?? $"Unknown error {errorCode}";
+        throw new Exception($"SoapySDR error: {errorMessage}");
+      }
     }
   }
 }

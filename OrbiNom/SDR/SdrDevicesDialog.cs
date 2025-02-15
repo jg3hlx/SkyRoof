@@ -54,6 +54,12 @@ namespace OrbiNom
       if (listBox1.Items.Count > index) listBox1.SelectedIndex = index;
     }
 
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                       events
+    //----------------------------------------------------------------------------------------------
     private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (listBox1.SelectedIndex == -1) return;
@@ -88,26 +94,18 @@ namespace OrbiNom
       e.Graphics.DrawString(Devices[e.Index].Name, listBox1.Font, brush, e.Bounds.Left + image.Width, e.Bounds.Top);
     }
 
+    private void DeviceListMenu_Opening(object sender, CancelEventArgs e)
+    {
+      bool itemPresent = ClickedItemIndex >= 0 && ClickedItemIndex < listBox1.Items.Count;
+      SelectSdrMNU.Enabled = itemPresent;
+      DeleteSdrMNU.Enabled = itemPresent && !Devices[ClickedItemIndex].Present;
+    }
+    
     private void listBox1_MouseDown(object sender, MouseEventArgs e)
     {
       ClickedItemIndex = listBox1.IndexFromPoint(e.Location);
       listBox1.Invalidate();
     }
-
-
-
-
-    //----------------------------------------------------------------------------------------------
-    //                              usb device list changed
-    //----------------------------------------------------------------------------------------------
-    private const int WM_DEVICECHANGE = 0x219;
-    private const int DBT_DEVNODES_CHANGED = 7;
-    protected override void WndProc(ref Message m)
-    {
-      base.WndProc(ref m);
-      if (m.Msg == WM_DEVICECHANGE && m.WParam == DBT_DEVNODES_CHANGED) Invoke(BuildDeviceList);
-    }
-
 
     int ClickedItemIndex;
     private void SelectSdrMNU_Click(object sender, EventArgs e)
@@ -123,11 +121,19 @@ namespace OrbiNom
         listBox1.SelectedIndex = 0;
     }
 
-    private void DeviceListMenu_Opening(object sender, CancelEventArgs e)
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                              usb device list changed
+    //----------------------------------------------------------------------------------------------
+    private const int WM_DEVICECHANGE = 0x219;
+    private const int DBT_DEVNODES_CHANGED = 7;
+    protected override void WndProc(ref Message m)
     {
-      bool itemPresent = ClickedItemIndex >= 0 && ClickedItemIndex < listBox1.Items.Count;
-      SelectSdrMNU.Enabled = itemPresent;
-      DeleteSdrMNU.Enabled = itemPresent && !Devices[ClickedItemIndex].Present;
+      base.WndProc(ref m);
+      if (m.Msg == WM_DEVICECHANGE && m.WParam == DBT_DEVNODES_CHANGED)
+        Invoke(BuildDeviceList);
     }
   }
 }

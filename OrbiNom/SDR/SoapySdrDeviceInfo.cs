@@ -23,26 +23,12 @@ namespace VE3NEA
     {
       KwArgs = kwArgs;
 
-      Device = CreateDevice();
+      Device = SoapySdr.CreateDevice(kwArgs);
       ReadCapabilities();
       ReadProperties();
-      ReleaseDevice(Device);
+      SoapySdr.ReleaseDevice(Device);
 
       Present = true;
-    }
-
-    public IntPtr CreateDevice()
-    {
-      IntPtr nativeKwargs = KwArgs.ToNative();
-      var device = SoapySDRDevice_make(nativeKwargs);
-      Marshal.FreeHGlobal(nativeKwargs);
-      SoapySdr.CheckError();
-      return device;
-    }
-
-    public void ReleaseDevice(IntPtr device)
-    {
-      if (device != IntPtr.Zero) SoapySDRDevice_unmake(device);
     }
 
 
