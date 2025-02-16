@@ -106,7 +106,7 @@ namespace OrbiNom
 
     private void Sdr_DataAvailable(object? sender, DataEventArgs<Complex32> e)
     {
-      Console.Beep();
+      //Invoke(Console.Beep);
     }
 
     private void UpdateSdrLabel()
@@ -117,17 +117,20 @@ namespace OrbiNom
       if (ctx.Sdr == null || !ctx.Sdr.Enabled)
       {
         color = Color.Gray;
-        tooltip = "Disabled";
+        if (string.IsNullOrEmpty(ctx.Settings.Sdr.SelectedDeviceName))
+          tooltip = "Not configured. Click to configure";
+        else
+          tooltip = $"{ctx.Settings.Sdr.SelectedDeviceName}   Disabled\nClick to enable";
       }
       else if (ctx.Sdr.IsRunning())
       {
         color = Color.Lime;
-        tooltip = $"{ctx.Sdr.Info.Name}   Running";
+        tooltip = $"{ctx.Sdr.Info.Name}   Running\nClick to disable";
       }
       else
       {
         color = Color.Red;
-        tooltip = $"{ctx.Sdr.Info.Name}   FAILED";
+        tooltip = $"{ctx.Settings.Sdr.SelectedDeviceName}   FAILED\nClick to disable";
       }
 
       SdrLedLabel.ForeColor = color;
@@ -139,7 +142,6 @@ namespace OrbiNom
       StopSdr();
       var dlg = new SdrDevicesDialog(ctx);
       var rc = dlg.ShowDialog();
-      if (rc != DialogResult.OK) return;
       StartSdrIfEnabled();
     }
 
@@ -376,7 +378,10 @@ namespace OrbiNom
 
     private void SdrStatus_Click(object sender, EventArgs e)
     {
-      ToggleEnabled();
+      if (string.IsNullOrEmpty(ctx.Settings.Sdr.SelectedDeviceName))
+        EditSdrDevices();
+      else      
+        ToggleEnabled();
     }
 
     private void StatusLabel_MouseEnter(object sender, EventArgs e)
@@ -433,7 +438,7 @@ namespace OrbiNom
     //                                       timer
     //----------------------------------------------------------------------------------------------
     private const int TICKS_PER_SECOND = 8;
-    long TickCount;
+    nuint TickCount;
 
     private void timer_Tick(object sender, EventArgs e)
     {

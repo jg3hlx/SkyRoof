@@ -7,7 +7,30 @@ namespace VE3NEA
   {
     public enum Direction { Tx, Rx }
 
-    public enum SoapySDRArgInfoType {Bool, Int, Float, String }
+    public enum SoapySDRArgInfoType { Bool, Int, Float, String }
+
+    [Flags]
+    public enum SoapySdrFlags
+    {
+      None = 0,
+      SOAPY_SDR_END_BURST = 2,
+      SOAPY_SDR_HAS_TIME = 4,
+      SOAPY_SDR_END_ABRUPT = 8,
+      SOAPY_SDR_ONE_PACKET = 16,
+      SOAPY_SDR_MORE_FRAGMENTS = 32,
+      SOAPY_SDR_WAIT_TRIGGER = 64
+    }
+
+    public enum SoapySdrError
+    {
+      SOAPY_SDR_TIMEOUT = -1,
+      SOAPY_SDR_STREAM_ERROR = -2,
+      SOAPY_SDR_CORRUPTION = -3,
+      SOAPY_SDR_OVERFLOW = -4,
+      SOAPY_SDR_NOT_SUPPORTED = -5,
+      SOAPY_SDR_TIME_ERROR = -6,
+      SOAPY_SDR_UNDERFLOW = -7
+    }
 
     public struct SoapySDRKwargs
     {
@@ -57,7 +80,7 @@ namespace VE3NEA
 
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
     public static extern void SoapySDRKwargs_clear(IntPtr args);
-    
+
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
     public static extern void SoapySDRArgInfo_clear(IntPtr info);
 
@@ -130,7 +153,6 @@ namespace VE3NEA
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr SoapySDRDevice_readSetting(IntPtr device, string key);
 
-
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr SoapySDRDevice_setGain(IntPtr device, Direction direction, nint channel, double value);
 
@@ -141,6 +163,28 @@ namespace VE3NEA
     public static extern IntPtr SoapySDRDevice_setSampleRate(IntPtr device, Direction direction, nint channel, double rate);
 
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr SoapySDRDevice_setBandwidth(IntPtr device, Direction direction, nint channel, double bw);    
+    public static extern IntPtr SoapySDRDevice_setBandwidth(IntPtr device, Direction direction, nint channel, double bw);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_setupStream(IntPtr device, Direction direction, string format, IntPtr channels, nint numChans, IntPtr args);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern nint SoapySDRDevice_getStreamMTU(IntPtr device, IntPtr stream);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern SoapySdrError SoapySDRDevice_activateStream(IntPtr device, IntPtr stream, SoapySdrFlags flags, long timeNs, nint numElems);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern int SoapySDRDevice_readStream(IntPtr device, IntPtr stream, IntPtr buffs, nint numElems,
+       out SoapySdrFlags flags, out long timeNs, long timeoutUs);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern SoapySdrError SoapySDRDevice_deactivateStream(IntPtr device, IntPtr stream, SoapySdrFlags flags, out long timeNs);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDRDevice_enumerate(IntPtr args, out nint length);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern int SoapySDRDevice_closeStream(IntPtr device, IntPtr stream);
   }
 }

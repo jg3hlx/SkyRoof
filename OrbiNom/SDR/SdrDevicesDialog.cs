@@ -16,7 +16,7 @@ namespace OrbiNom
     private readonly Context ctx;
     private readonly Image RadioOnImage, RadioOffImage;
     public List<SoapySdrDeviceInfo> Devices;
-    private string SelectedDeviceName;
+    private string? SelectedDeviceName;
 
     public SdrDevicesDialog()
     {
@@ -62,7 +62,11 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
-      if (listBox1.SelectedIndex == -1) return;
+      if (listBox1.SelectedIndex == -1)
+      {
+        SelectedDeviceName = null;
+        return;
+      }
 
       var sdr = (SoapySdrDeviceInfo)listBox1.Items[listBox1.SelectedIndex];
       SelectedDeviceName = sdr.Name;

@@ -56,8 +56,24 @@ namespace VE3NEA
       if (errorCode != 0)
       {
         IntPtr ptr = NativeSoapySdr.SoapySDRDevice_lastError();
-        string errorMessage = Marshal.PtrToStringAnsi(ptr) ?? $"Unknown error {errorCode}";
+        string errorMessage = Marshal.PtrToStringAnsi(ptr) ?? $"Unknown error";
         throw new Exception($"SoapySDR error: {errorMessage}");
+      }
+    }
+
+    internal static bool DeviceExists(SoapySDRKwargs kwArgs)
+    {
+      IntPtr nativeKwargs = kwArgs.ToNative();
+      try
+      {
+        IntPtr ptr = NativeSoapySdr.SoapySDRDevice_enumerate(nativeKwargs, out nint length);
+        CheckError();
+
+        return ptr != IntPtr.Zero && length > 0;
+      }
+      finally
+      {
+        Marshal.FreeHGlobal(nativeKwargs);
       }
     }
   }
