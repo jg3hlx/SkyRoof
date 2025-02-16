@@ -47,6 +47,8 @@ namespace OrbiNom
       ctx.Settings.Ui.ClockUtcMode = Clock.UtcMode;
 
       ctx.Settings.SaveToFile();
+
+      ctx.Sdr?.Stop();
     }
 
     private void EnsureUserDetails()
@@ -86,9 +88,8 @@ namespace OrbiNom
 
     private void StopSdr()
     {
-      ctx.Sdr?.Dispose();
+      ctx.Sdr?.Stop();
       ctx.Sdr = null;
-
       UpdateSdrLabel();
     }
 

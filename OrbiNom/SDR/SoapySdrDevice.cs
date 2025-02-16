@@ -151,7 +151,7 @@ namespace VE3NEA
         }
         catch (Exception ex)
         {
-          Log.Error(ex, $"{ Info.Name} read failed");
+          Log.Error(ex, $"{Info.Name} read failed");
           break;
         }
 
