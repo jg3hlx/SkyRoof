@@ -75,10 +75,14 @@ namespace OrbiNom
         ClickedSat = null;
       else
       {
-        ClickedSat = ((SatellitePass)item.Tag!).Satellite;
+        var pass = (SatellitePass)item.Tag!;
+        ClickedSat = pass.Satellite;
 
         if (e.Button == MouseButtons.Left)
+        {
           ctx.SatelliteSelector.SetClickedSatellite(ClickedSat);
+          ctx.SatelliteSelector.SetSelectedPass(pass);
+        }
       }
     }
 
