@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
 using MathNet.Numerics;
 using Serilog;
 using static VE3NEA.NativeSoapySdr;
@@ -9,17 +8,17 @@ namespace VE3NEA
   public class SoapySdrDevice : IDisposable
   {
     private IntPtr Device;
+    private SoapySdrStream? Stream;
     private Thread? Thread;
-    private bool Stopping;
-    DataEventArgs<Complex32> Args = new();
-    private bool enabled;
-    private bool Started;
-    private IntPtr Stream;
-    private float[] FloatSamples;
+
     public readonly SoapySdrDeviceInfo Info;
+    private bool Started;
+    private bool Stopping;
+
     public double Frequency { get => Info.Frequency; set => SetFrequency(value); }
     public double Gain { get => Info.Gain; set => SetGain(value); }
     public bool Enabled { get => enabled; set => SetEnabled(value); }
+    private bool enabled;
 
     public event EventHandler? StateChanged;
     public event EventHandler<DataEventArgs<Complex32>>? DataAvailable;
@@ -44,8 +43,6 @@ namespace VE3NEA
       if (value)
       {
         TryStart(true);
-        if (!Started)
-          Debug.WriteLine($"Failed to start {Info.Name}, will keep trying");
       }
       else
       {
@@ -60,7 +57,6 @@ namespace VE3NEA
       try
       {
         Start();
-
         Started = true;
         StateChanged?.Invoke(this, EventArgs.Empty);
       }
@@ -76,14 +72,15 @@ namespace VE3NEA
     {
       if (IsRunning()) return;
 
-      if (Started) // was running but then failed
+      // was started but is no longer running
+      if (Started) 
       {
         Started = false;
         Log.Error($"{Info.Name} failed, restarting");
         StateChanged?.Invoke(this, EventArgs.Empty);
       }
 
-      if (enabled && !Started) TryStart(false);
+      if (Enabled && !Started) TryStart(false);
     }
 
     public bool IsRunning()
@@ -99,7 +96,8 @@ namespace VE3NEA
     //----------------------------------------------------------------------------------------------
     public void Start()
     {      
-      if (!SoapySdr.DeviceExists(Info.KwArgs)) throw new Exception($"Device {Info.Name} is no longer available");
+      if (!SoapySdr.DeviceExists(Info.KwArgs)) 
+        throw new Exception($"Device {Info.Name} is no longer available");
 
       Device = SoapySdr.CreateDevice(Info.KwArgs);
       SetAllParams();
@@ -121,33 +119,15 @@ namespace VE3NEA
       Thread = null;
     }
 
-    private nint samplesPerBlock, floatsPerBlock;
-
     private void ThreadProcedure()
     {
-      Stream = SetupStream();
-
-      long timeout = 300_000; // microseconds
-
-      samplesPerBlock = SoapySDRDevice_getStreamMTU(Device, Stream);
-      floatsPerBlock = 2 * samplesPerBlock;
-      Args.Data = new Complex32[samplesPerBlock];
-      FloatSamples = new float[floatsPerBlock];
-
-      SoapySDRDevice_activateStream(Device, Stream, SoapySdrFlags.None, 0, 0);
+      Stream = new(Device);
 
       while (!Stopping)
         try
         {
-          int floatCount = ReadStream(FloatSamples, out SoapySdrFlags flags, timeout);
-          SoapySdr.CheckError();
-          if (floatCount < 0) throw new Exception($"Error code {(SoapySdrError)floatCount}");
-
-          Args.Count = floatCount / 2;
-          for (int i = 0; i < Args.Count; i++) 
-            Args.Data[i] = new Complex32(FloatSamples[i * 2], FloatSamples[i * 2 + 1]);
-
-          DataAvailable?.Invoke(this, Args);
+          Stream.ReadStream();
+          DataAvailable?.Invoke(this, Stream.Args);
         }
         catch (Exception ex)
         {
@@ -155,75 +135,12 @@ namespace VE3NEA
           break;
         }
 
-      SoapySDRDevice_deactivateStream(Device, Stream, 0, out long timeNs);
-      SoapySDRDevice_closeStream(Device, Stream);
-      Stream = IntPtr.Zero;
+      Stream.Dispose();
+      Stream = null;
       SoapySdr.ReleaseDevice(Device);
       Device = IntPtr.Zero;
 
       StateChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    private void SetAllParams()
-    {
-      // {!} set all properties here
-
-      
-      SoapySDRDevice_setSampleRate(Device, Direction.Rx, 0, Info.SampleRate);
-      SoapySdr.CheckError();
-      SoapySDRDevice_setBandwidth(Device, Direction.Rx, 0, Info.Bandwidth);
-      SoapySdr.CheckError();
-
-      SetFrequency(Frequency);
-      SetGain(Gain);
-    }
-
-
-
-    //----------------------------------------------------------------------------------------------
-    //                                     stream
-    //----------------------------------------------------------------------------------------------
-    public IntPtr SetupStream()
-    {
-      nint[] channels = [0];
-      IntPtr ptr = IntPtr.Zero;
-
-      try
-      {
-        int size = Marshal.SizeOf(typeof(nint));
-        ptr = Marshal.AllocHGlobal(size);
-        Marshal.Copy(channels, 0, ptr, 1);
-        return SoapySDRDevice_setupStream(Device, Direction.Rx, "CF32", ptr, 1, IntPtr.Zero);
-      }
-      finally
-      {
-        SoapySdr.CheckError();
-        if (ptr != IntPtr.Zero) Marshal.FreeHGlobal(ptr);
-      }
-    }
-
-    public int ReadStream(float[] buff, out SoapySdrFlags flags, long timeoutUs)
-    {
-      IntPtr buffsPtr = IntPtr.Zero;
-      GCHandle buffHandle = default;
-
-      // {!} todo: do this once
-      try
-      {
-        if (buff != null && buff.Length > 0)
-        {
-          buffHandle = GCHandle.Alloc(buff, GCHandleType.Pinned);
-          IntPtr[] buffsArray = [buffHandle.AddrOfPinnedObject()];
-          buffsPtr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(IntPtr)) * buffsArray.Length);
-          Marshal.Copy(buffsArray, 0, buffsPtr, buffsArray.Length);
-        }
-        return SoapySDRDevice_readStream(Device, Stream, buffsPtr, buff!.Length, out flags, out long timeNs, timeoutUs);
-      }
-      finally
-      {
-        if (buffsPtr != IntPtr.Zero) Marshal.FreeHGlobal(buffsPtr);
-        if (buffHandle.IsAllocated) buffHandle.Free();
-      }
     }
 
 
@@ -232,15 +149,18 @@ namespace VE3NEA
     //----------------------------------------------------------------------------------------------
     //                                     set params
     //----------------------------------------------------------------------------------------------
-    private void SetGain(double value)
+    private void SetAllParams()
     {
-      Info.Gain = (float)Math.Min(Info.GainRange.maximum, Math.Max(Info.GainRange.minimum, value));
+      // {!} set all properties here
 
-      if (Device != IntPtr.Zero)
-      {
-        SoapySDRDevice_setGain(Device, Direction.Rx, 0, Info.Gain);
-        SoapySdr.CheckError();
-      }
+
+      SoapySDRDevice_setSampleRate(Device, Direction.Rx, 0, Info.SampleRate);
+      SoapySdr.CheckError();
+      SoapySDRDevice_setBandwidth(Device, Direction.Rx, 0, Info.Bandwidth);
+      SoapySdr.CheckError();
+
+      SetFrequency(Frequency);
+      SetGain(Gain);
     }
 
     private void SetFrequency(double value)
@@ -252,6 +172,17 @@ namespace VE3NEA
       }
       else
         Log.Error($"Attempted to set an invalid frequency for {Info.Name}: {value} Hz");
+    }
+
+    private void SetGain(double value)
+    {
+      Info.Gain = (float)Math.Min(Info.GainRange.maximum, Math.Max(Info.GainRange.minimum, value));
+
+      if (Device != IntPtr.Zero)
+      {
+        SoapySDRDevice_setGain(Device, Direction.Rx, 0, Info.Gain);
+        SoapySdr.CheckError();
+      }
     }
 
 

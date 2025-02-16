@@ -48,7 +48,7 @@ namespace OrbiNom
 
       ctx.Settings.SaveToFile();
 
-      ctx.Sdr?.Stop();
+      ctx.Sdr?.Dispose();
     }
 
     private void EnsureUserDetails()
@@ -88,14 +88,14 @@ namespace OrbiNom
 
     private void StopSdr()
     {
-      ctx.Sdr?.Stop();
+      ctx.Sdr?.Dispose();
       ctx.Sdr = null;
       UpdateSdrLabel();
     }
 
     private void Sdr_StateChanged(object? sender, EventArgs e)
     {
-      UpdateSdrLabel();
+      BeginInvoke(UpdateSdrLabel);
     }
 
     private void ToggleEnabled()
@@ -346,14 +346,13 @@ namespace OrbiNom
     public void ShowSatDataStatus()
     {
       var sett = ctx.Settings.Satellites;
+      bool upToDate =
+        sett.LastDownloadTime < DateTime.UtcNow.AddDays(-LIST_DOWNLOAD_DAYS) &&
+        sett.LastTleTime < DateTime.UtcNow.AddDays(-TLE_DOWNLOAD_DAYS);
 
-      if (sett.LastDownloadTime < DateTime.UtcNow.AddDays(-LIST_DOWNLOAD_DAYS) &&
-        sett.LastTleTime < DateTime.UtcNow.AddDays(-TLE_DOWNLOAD_DAYS))
-        SatDataLedLabel.ForeColor = Color.Red;
-      else if (!DownloadOk)
-        SatDataLedLabel.ForeColor = Color.Gold;
-      else
-        SatDataLedLabel.ForeColor = Color.Lime;
+      if (upToDate) SatDataLedLabel.ForeColor = Color.Red;
+      else if (!DownloadOk) SatDataLedLabel.ForeColor = Color.Gold;
+      else SatDataLedLabel.ForeColor = Color.Lime;
 
       string tooltip =
         $"Satellite List:  {sett.LastDownloadTime.ToLocalTime():yyyy-MM-dd HH:mm}\n" +
@@ -365,7 +364,6 @@ namespace OrbiNom
 
     DateTime StartTime;
     double StartSeconds;
-
     private void ShowCpuUsage()
     {
       var time = DateTime.UtcNow;
@@ -379,7 +377,7 @@ namespace OrbiNom
 
     private void SdrStatus_Click(object sender, EventArgs e)
     {
-      if (string.IsNullOrEmpty(ctx.Settings.Sdr.SelectedDeviceName))
+      if (ModifierKeys.HasFlag(Keys.Control) || string.IsNullOrEmpty(ctx.Settings.Sdr.SelectedDeviceName))
         EditSdrDevices();
       else      
         ToggleEnabled();
