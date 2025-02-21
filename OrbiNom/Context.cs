@@ -26,5 +26,6 @@ namespace OrbiNom
     public EarthViewPanel? EarthViewPanel;
     public TransmittersPanel? TransmittersPanel;
     public SoapySdrDevice? Sdr;
+    internal WaterfallPanel? WaterfallPanel;
   }
 }

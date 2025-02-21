@@ -14,7 +14,9 @@ namespace VE3NEA
     public SoapySDRKwargs KwArgs;
     public SoapySDRRange[] FrequencyRange, SampleRateRange, BandwidthRange;
     public SoapySDRRange GainRange;
-    public double SampleRate, Bandwidth, Frequency, Gain, Ppm;
+    public double SampleRate, Bandwidth, Frequency, Gain;
+    public double Ppm => GetPpm();
+
     public SdrProperties Properties = new();
 
     public SoapySdrDeviceInfo() { }
@@ -58,7 +60,7 @@ namespace VE3NEA
       SoapySdr.CheckError();
       BandwidthRange = SoapySdrHelper.MarshalRangeArray(ptr, length);
 
-      // scalars
+      // initial values
       SampleRate = SoapySDRDevice_getSampleRate(Device, Direction.Rx, 0);
       SoapySdr.CheckError();
       Bandwidth = SoapySDRDevice_getBandwidth(Device, Direction.Rx, 0);
@@ -72,16 +74,6 @@ namespace VE3NEA
     private void ReadProperties()
     {
       Properties.Clear();
-
-      // model-specific properties
-
-      var ptr = SoapySDRDevice_getSettingInfo(Device, out nint length);
-      SoapySdr.CheckError();
-      var argsInfo = SoapySdrHelper.MarshalArgsInfoArray(ptr, length);
-
-      var properties = argsInfo.Select(s => new SdrProperty(s, ReadSetting(s.Key), false)).ToList();
-      foreach (SdrProperty p in properties) Properties.Add(p);
-
 
       // common properties
 
@@ -117,7 +109,24 @@ namespace VE3NEA
           "Automatic gain control on the chain",
            SoapySDRDevice_getGainMode(Device, Direction.Rx, 0) ? "True" : "False");
 
-      // Gains
+      // PPM
+      AddCommonProperty(
+        SoapySDRArgInfoType.Float,
+        "PPM",
+        "SDR clock correction, Parts Per Million",
+        "0");
+
+
+      // model-specific properties
+
+      var ptr = SoapySDRDevice_getSettingInfo(Device, out nint length);
+      SoapySdr.CheckError();
+      var argsInfo = SoapySdrHelper.MarshalArgsInfoArray(ptr, length);
+
+      var properties = argsInfo.Select(s => new SdrProperty(s, ReadSetting(s.Key), false)).ToList();
+      foreach (SdrProperty p in properties) Properties.Add(p);
+
+      // gains
       var gainNames = ListGains(Direction.Rx, 0);
       foreach (string gainName in gainNames)
       {
@@ -173,6 +182,11 @@ namespace VE3NEA
       var ptr = SoapySDRDevice_listGains(Device, Direction.Rx, 0, out nint count);
       SoapySdr.CheckError();
       return SoapySdrHelper.MarshalStringArray(ptr, count);
+    }
+
+    private double GetPpm()
+    {
+      return double.Parse(Properties.Find(p => p.Name == "PPM")!.Value);
     }
   }
 }

@@ -37,9 +37,6 @@ namespace OrbiNom
     public double Zoom = 1.95f;
     public double Pan = 0;
 
-    public new bool Enabled;
-
-    //public event MouseEventHandler? MouseWheel;
 
 
 
@@ -49,14 +46,7 @@ namespace OrbiNom
     public WaterfallControl()
     {
       InitializeComponent();
-
-      //OpenglControl.MouseWheel += OpenglControl_MouseWheel;
     }
-
-    //private void OpenglControl_MouseWheel(object? sender, MouseEventArgs e)
-    //{
-    //  MouseWheel?.Invoke(sender, e);
-    //}
 
     private void OpenglControl_OpenGLInitialized(object sender, EventArgs e)
     {
@@ -278,21 +268,5 @@ namespace OrbiNom
         OpenglControl.Invalidate();
       });
     }
-
-    //// pass mouse events to parent
-    //protected override void WndProc(ref Message m)
-    //{
-    //  const int WM_NCHITTEST = 0x0084;
-    //  const int HTTRANSPARENT = (-1);
-    //
-    //  if (m.Msg == WM_NCHITTEST)
-    //  {
-    //    m.Result = (IntPtr)HTTRANSPARENT;
-    //  }
-    //  else
-    //  {
-    //    base.WndProc(ref m);
-    //  }
-    //}
   }
 }

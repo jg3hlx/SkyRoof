@@ -186,5 +186,23 @@ namespace VE3NEA
 
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
     public static extern int SoapySDRDevice_closeStream(IntPtr device, IntPtr stream);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern SoapySdrError SoapySDRDevice_writeSetting(IntPtr device, string key, string value);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern SoapySdrError SoapySDRDevice_setAntenna(IntPtr device, Direction direction, nint channel, string name);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern SoapySdrError SoapySDRDevice_setDCOffsetMode(IntPtr device, Direction direction, nint channel, bool automatic);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern SoapySdrError SoapySDRDevice_setIQBalanceMode(IntPtr device, Direction direction, nint channel, bool automatic);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern SoapySdrError SoapySDRDevice_setGainMode(IntPtr device, Direction direction, nint channel, bool automatic);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern SoapySdrError SoapySDRDevice_setGainElement(IntPtr device, Direction direction, nint channel, string name, double value);
   }
 }

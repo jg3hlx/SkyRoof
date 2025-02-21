@@ -1,5 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading.Channels;
+using System.Xml.Linq;
 using MathNet.Numerics;
+using Newtonsoft.Json.Linq;
 using Serilog;
 using static VE3NEA.NativeSoapySdr;
 
@@ -151,27 +155,84 @@ namespace VE3NEA
     //----------------------------------------------------------------------------------------------
     private void SetAllParams()
     {
-      // {!} set all properties here
+      SdrProperty? setting;      
 
+      // settings
+      var settings = Info.Properties.Where(p => !string.IsNullOrEmpty(p.ArgInfo.Key));
+      foreach (var sett in settings)
+      {
+        SoapySDRDevice_writeSetting(Device, sett.ArgInfo.Key, sett.Value);
+        SoapySdr.CheckError();
+      }
+
+      // antenna
+      setting = Info.Properties.First(p => p.Name == "Antenna");
+      SoapySDRDevice_setAntenna(Device, Direction.Rx, 0, setting.Value);
+      SoapySdr.CheckError();
+
+      // DC
+      setting = Info.Properties.FirstOrDefault(p => p.Name == "DCOffsetMode");
+      if (setting != null)
+      {
+        SoapySDRDevice_setDCOffsetMode(Device, Direction.Rx, 0, setting.Value == "True");
+        SoapySdr.CheckError();
+      }
+
+      // IQ
+      setting = Info.Properties.FirstOrDefault(p => p.Name == "IQBalanceMode");
+      if (setting != null)
+      {
+        SoapySDRDevice_setIQBalanceMode(Device, Direction.Rx, 0, setting.Value == "True");
+        SoapySdr.CheckError();
+      }
+
+      // AGC
+      setting = Info.Properties.FirstOrDefault(p => p.Name == "GainMode");
+      if (setting != null)
+      {
+        SoapySDRDevice_setGainMode(Device, Direction.Rx, 0, setting.Value == "True");
+        SoapySdr.CheckError();
+      }
+
+      // Gains
+      var gainSettings = Info.Properties.Where(p => p.Name.EndsWith(" Gain"));
+      foreach (var sett in gainSettings)
+      {
+        string gainName = sett.Name.Substring(0, sett.Name.Length - 5);
+        SoapySDRDevice_setGainElement(Device, Direction.Rx, 0, gainName, double.Parse(sett.Value));
+        SoapySDRDevice_writeSetting(Device, gainName, sett.Value);
+        SoapySdr.CheckError();
+      }
+
+
+      // non-browsable 
 
       SoapySDRDevice_setSampleRate(Device, Direction.Rx, 0, Info.SampleRate);
       SoapySdr.CheckError();
+      
       SoapySDRDevice_setBandwidth(Device, Direction.Rx, 0, Info.Bandwidth);
       SoapySdr.CheckError();
 
       SetFrequency(Frequency);
+      
       SetGain(Gain);
     }
 
-    private void SetFrequency(double value)
+    private void SetFrequency(double frequency)
     {
-      if (Info.FrequencyRange.Any(r => value >= r.minimum && value <= r.maximum))
+      if (Info.FrequencyRange.Any(r => frequency >= r.minimum && frequency <= r.maximum))
       {
-        Info.Frequency = value;
-        SoapySDRDevice_setFrequency(Device, Direction.Rx, 0, value, IntPtr.Zero);
+        Info.Frequency = frequency;
+
+        if (Device != IntPtr.Zero)
+        {
+          double correctedFrequency = frequency * (1 + Info.Ppm * 1e-6);
+          SoapySDRDevice_setFrequency(Device, Direction.Rx, 0, correctedFrequency, IntPtr.Zero);
+          SoapySdr.CheckError();
+        }
       }
       else
-        Log.Error($"Attempted to set an invalid frequency for {Info.Name}: {value} Hz");
+        Log.Error($"Attempted to set an invalid frequency for {Info.Name}: {frequency} Hz");
     }
 
     private void SetGain(double value)

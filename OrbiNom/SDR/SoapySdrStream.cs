@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 using MathNet.Numerics;
+using Serilog;
 using static VE3NEA.NativeSoapySdr;
 
 namespace VE3NEA
@@ -77,7 +73,14 @@ namespace VE3NEA
     {
       int sampleCount = SoapySDRDevice_readStream(Device, Stream, BuffsPtr, SamplesPerBlock, out SoapySdrFlags flags, out long timeNs, timeout);
       SoapySdr.CheckError();
-      if (sampleCount < 0) throw new Exception($"Error code {(SoapySdrError)sampleCount}");
+      if (sampleCount < 0)
+      {
+        var errorCode = (SoapySdrError)sampleCount;
+        if (errorCode == SoapySdrError.SOAPY_SDR_OVERFLOW) 
+          Log.Error("SoapySDR readStream overflow");
+        else
+        throw new Exception($"Error code {errorCode}");
+      }
 
       Args.Count = sampleCount;
       for (int i = 0; i < Args.Count; i++)

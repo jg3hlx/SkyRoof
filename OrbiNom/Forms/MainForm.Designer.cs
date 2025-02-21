@@ -204,6 +204,7 @@
       WaterfallMNU.Name = "WaterfallMNU";
       WaterfallMNU.Size = new Size(182, 22);
       WaterfallMNU.Text = "Waterfall";
+      WaterfallMNU.Click += WaterfallMNU_Click;
       // 
       // TimelineMNU
       // 

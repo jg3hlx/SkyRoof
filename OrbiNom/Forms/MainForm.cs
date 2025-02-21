@@ -36,6 +36,8 @@ namespace OrbiNom
       ctx.Settings.Ui.RestoreWindowPosition(this);
       if (!ctx.Settings.Ui.RestoreDockingLayout(this)) SetDefaultDockingLayout();
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
+
+      SetupDsp();
       StartSdrIfEnabled();
     }
 
@@ -49,6 +51,8 @@ namespace OrbiNom
       ctx.Settings.SaveToFile();
 
       ctx.Sdr?.Dispose();
+
+      Fft<float>.SaveWisdom();
     }
 
     private void EnsureUserDetails()
@@ -71,6 +75,23 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                        sdr
     //----------------------------------------------------------------------------------------------
+    internal WidebandSpectrumAnalyzer SpectrumAnalyzer;
+
+    private void SetupDsp()
+    {
+      Fft<float>.LoadWisdom(Path.Combine(Utils.GetUserDataFolder(), "wsjtx_wisdom.dat"));
+      
+      SpectrumAnalyzer = new(WaterfallControl.SPECTRA_WIDTH, 6_000_000);
+      SpectrumAnalyzer.SpectrumAvailable += Spect_SpectrumAvailable;
+
+      
+    }
+
+    private void Spect_SpectrumAvailable(object? sender, DataEventArgs<float> e)
+    {
+      ctx.WaterfallPanel?.WaterfallControl?.AppendSpectrum(e.Data);
+    }
+
     private void StartSdrIfEnabled()
     {
       var sdrProperties = ctx.Settings.Sdr.Devices.FirstOrDefault(d => d.Name == ctx.Settings.Sdr.SelectedDeviceName);
@@ -80,6 +101,9 @@ namespace OrbiNom
       {
         ctx.Sdr.StateChanged += Sdr_StateChanged;
         ctx.Sdr.DataAvailable += Sdr_DataAvailable;
+
+        ConfigureWaterfall();
+        
         if (ctx.Settings.Sdr.Enabled) ctx.Sdr.Enabled = true;
       }
 
@@ -98,7 +122,7 @@ namespace OrbiNom
       BeginInvoke(UpdateSdrLabel);
     }
 
-    private void ToggleEnabled()
+    private void ToggleSdrEnabled()
     {
       StopSdr();
       ctx.Settings.Sdr.Enabled = !ctx.Settings.Sdr.Enabled;
@@ -107,7 +131,19 @@ namespace OrbiNom
 
     private void Sdr_DataAvailable(object? sender, DataEventArgs<Complex32> e)
     {
-      //Invoke(Console.Beep);
+      SpectrumAnalyzer?.StartProcessing(e);
+    }
+
+
+    internal void ConfigureWaterfall()
+    {
+      if (ctx.WaterfallPanel == null ||
+        ctx.Sdr?.Info == null ||
+        SpectrumAnalyzer == null
+        ) return;
+
+      SpectrumAnalyzer.Spectrum.Step = ctx.Sdr.Info.SampleRate;
+      ctx.WaterfallPanel?.SetPassband(ctx.Sdr.Info.Frequency, ctx.Sdr.Info.SampleRate);
     }
 
     private void UpdateSdrLabel()
@@ -312,6 +348,14 @@ namespace OrbiNom
         ctx.EarthViewPanel.Close();
     }
 
+    private void WaterfallMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.WaterfallPanel == null)
+        ShowFloatingPanel(new WaterfallPanel(ctx));
+      else
+        ctx.WaterfallPanel.Close();
+    }
+
     private void SettingsMNU_Click(object sender, EventArgs e)
     {
       new SettingsDialog(ctx).ShowDialog();
@@ -336,6 +380,7 @@ namespace OrbiNom
     {
       EditSdrDevices();
     }
+
 
 
 
@@ -379,8 +424,8 @@ namespace OrbiNom
     {
       if (ModifierKeys.HasFlag(Keys.Control) || string.IsNullOrEmpty(ctx.Settings.Sdr.SelectedDeviceName))
         EditSdrDevices();
-      else      
-        ToggleEnabled();
+      else
+        ToggleSdrEnabled();
     }
 
     private void StatusLabel_MouseEnter(object sender, EventArgs e)
@@ -426,6 +471,7 @@ namespace OrbiNom
         case "OrbiNom.TimelinePanel": return new TimelinePanel(ctx);
         case "OrbiNom.SkyViewPanel": return new SkyViewPanel(ctx);
         case "OrbiNom.EarthViewPanel": return new EarthViewPanel(ctx);
+        case "OrbiNom.WaterfallPanel": return new WaterfallPanel(ctx);
         default: return null;
       }
     }
@@ -570,6 +616,15 @@ namespace OrbiNom
       ctx.PassesPanel?.ShowPasses();
       ctx.EarthViewPanel?.SetGridSquare();
       ctx.SkyViewPanel?.ClearPass();
+    }
+
+    internal void SuggestSdrSettings(SoapySdrDeviceInfo info)
+    {
+      info.Frequency = 436_500_000;
+      info.SampleRate = 6_000_000;
+
+      // todo: derive settings from capabilities
+
     }
   }
 }

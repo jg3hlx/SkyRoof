@@ -37,18 +37,25 @@ namespace OrbiNom
 
     private void BuildDeviceList()
     {
+      // previously detected devices
       Devices = Utils.DeepClone(ctx.Settings.Sdr.Devices);
       var oldNames = Devices.Select(x => x.Name).ToList();
 
+      // currently available devices
       var presentDevices = SoapySdr.EnumerateDevices();
       var presentNames = presentDevices.Select(x => x.Name).ToList();
 
+      // keep previous 
       foreach (var dev in Devices) dev.Present = presentNames.Contains(dev.Name);
-      Devices.AddRange(presentDevices.Where(dev => !oldNames.Contains(dev.Name)));
+      
+      // add new
+      var newDevices = presentDevices.Where(dev => !oldNames.Contains(dev.Name));
+      foreach (var dev in newDevices) ctx.MainForm.SuggestSdrSettings(dev);
+      Devices.AddRange(newDevices);
 
+      // to listbox
       listBox1.Items.Clear();
       listBox1.Items.AddRange(Devices.ToArray());
-
       var index = Devices.FindIndex(dev => dev.Name == SelectedDeviceName);
       if (index == -1) index = 0;
       if (listBox1.Items.Count > index) listBox1.SelectedIndex = index;
