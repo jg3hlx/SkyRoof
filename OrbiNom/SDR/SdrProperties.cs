@@ -90,13 +90,13 @@ namespace VE3NEA
 
     public string Value;
     public SoapySDRArgInfo ArgInfo;
-    public bool IsCommon;
+    public string Category;
 
-    public SdrProperty(SoapySDRArgInfo argInfo, string value, bool isCommon = true)
+    public SdrProperty(SoapySDRArgInfo argInfo, string value, string category)
     {
       ArgInfo = argInfo;
       Value = value;
-      IsCommon = isCommon;
+      Category = category;
     }
   }
 
@@ -110,7 +110,7 @@ namespace VE3NEA
   {
     SdrProperty Property;
 
-    public override string Category { get => Property.IsCommon ? "Common" : "Model-specific"; }
+    public override string Category => Property.Category;
 
 
     public SdrPropertyDescriptor(ref SdrProperty property, Attribute[] attrs) : base(property.Name, attrs)

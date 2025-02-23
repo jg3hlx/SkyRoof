@@ -6,6 +6,6 @@ namespace OrbiNom
   {
     public List<SoapySdrDeviceInfo> Devices = new();
     public string? SelectedDeviceName;
-    public bool Enabled;
+    public bool Enabled = true;
   }
 }

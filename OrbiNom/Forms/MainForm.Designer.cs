@@ -92,7 +92,7 @@
       Toolbar.Dock = DockStyle.Top;
       Toolbar.Location = new Point(0, 24);
       Toolbar.Name = "Toolbar";
-      Toolbar.Size = new Size(1200, 40);
+      Toolbar.Size = new Size(1200, 70);
       Toolbar.TabIndex = 0;
       // 
       // SatelliteSelector
@@ -100,7 +100,7 @@
       SatelliteSelector.Dock = DockStyle.Left;
       SatelliteSelector.Location = new Point(0, 0);
       SatelliteSelector.Name = "SatelliteSelector";
-      SatelliteSelector.Size = new Size(619, 38);
+      SatelliteSelector.Size = new Size(496, 68);
       SatelliteSelector.TabIndex = 2;
       SatelliteSelector.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
       SatelliteSelector.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
@@ -109,12 +109,12 @@
       // 
       // ClockPanel
       // 
+      ClockPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       ClockPanel.Controls.Add(Clock);
-      ClockPanel.Dock = DockStyle.Right;
       ClockPanel.Location = new Point(1056, 0);
       ClockPanel.Name = "ClockPanel";
       ClockPanel.Padding = new Padding(3);
-      ClockPanel.Size = new Size(142, 38);
+      ClockPanel.Size = new Size(142, 43);
       ClockPanel.TabIndex = 1;
       // 
       // Clock
@@ -124,7 +124,7 @@
       Clock.Location = new Point(3, 3);
       Clock.Margin = new Padding(2, 3, 2, 3);
       Clock.Name = "Clock";
-      Clock.Size = new Size(136, 32);
+      Clock.Size = new Size(136, 37);
       Clock.TabIndex = 1;
       Clock.UtcMode = true;
       // 
@@ -133,11 +133,11 @@
       DockHost.DefaultFloatWindowSize = new Size(445, 445);
       DockHost.Dock = DockStyle.Fill;
       DockHost.DockBackColor = Color.FromArgb(238, 238, 242);
-      DockHost.Location = new Point(0, 64);
+      DockHost.Location = new Point(0, 94);
       DockHost.Name = "DockHost";
       DockHost.Padding = new Padding(6);
       DockHost.ShowAutoHideContentOnHover = false;
-      DockHost.Size = new Size(1200, 611);
+      DockHost.Size = new Size(1200, 581);
       DockHost.TabIndex = 4;
       DockHost.Theme = vS2015LightTheme1;
       // 
@@ -515,7 +515,6 @@
     public ToolStripMenuItem WaterfallMNU;
     public ToolStripMenuItem GroupViewMNU;
     public ToolStripMenuItem SatelliteDetailsMNU;
-    private SatelliteSelector SatelliteSelector;
     public ToolStripMenuItem SatellitePassesMNU;
     private System.Windows.Forms.Timer timer;
     public ToolStripMenuItem TimelineMNU;
@@ -541,5 +540,6 @@
     private ToolTip toolTip1;
     private ToolStripMenuItem DownloadTleMNU;
     public ToolStripMenuItem TransmittersMNU;
+    public SatelliteSelector SatelliteSelector;
   }
 }

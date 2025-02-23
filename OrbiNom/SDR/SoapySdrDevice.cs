@@ -22,6 +22,9 @@ namespace VE3NEA
     public double Frequency { get => Info.Frequency; set => SetFrequency(value); }
     public double Gain { get => Info.Gain; set => SetGain(value); }
     public bool Enabled { get => enabled; set => SetEnabled(value); }
+    public int NormalizedGain { get => GetNormalizedGain();  set => SetNormalizedGain(value); }
+    public bool IsSingleGain => Info.Properties.Find(p => p.Name == "Single Gain")!.Value == "true";
+
     private bool enabled;
 
     public event EventHandler? StateChanged;
@@ -174,7 +177,7 @@ namespace VE3NEA
       setting = Info.Properties.FirstOrDefault(p => p.Name == "DCOffsetMode");
       if (setting != null)
       {
-        SoapySDRDevice_setDCOffsetMode(Device, Direction.Rx, 0, setting.Value == "True");
+        SoapySDRDevice_setDCOffsetMode(Device, Direction.Rx, 0, setting.Value == "true");
         SoapySdr.CheckError();
       }
 
@@ -182,28 +185,33 @@ namespace VE3NEA
       setting = Info.Properties.FirstOrDefault(p => p.Name == "IQBalanceMode");
       if (setting != null)
       {
-        SoapySDRDevice_setIQBalanceMode(Device, Direction.Rx, 0, setting.Value == "True");
+        SoapySDRDevice_setIQBalanceMode(Device, Direction.Rx, 0, setting.Value == "true");
         SoapySdr.CheckError();
       }
 
       // AGC
-      setting = Info.Properties.FirstOrDefault(p => p.Name == "GainMode");
+      setting = Info.Properties.FirstOrDefault(p => p.Name == "AGC");
       if (setting != null)
       {
-        SoapySDRDevice_setGainMode(Device, Direction.Rx, 0, setting.Value == "True");
+        SoapySDRDevice_setGainMode(Device, Direction.Rx, 0, setting.Value == "true");
         SoapySdr.CheckError();
       }
 
-      // Gains
-      var gainSettings = Info.Properties.Where(p => p.Name.EndsWith(" Gain"));
-      foreach (var sett in gainSettings)
+      // gains
+
+      
+
+      if (IsSingleGain)
+        SetGain(Gain);
+      else
       {
-        string gainName = sett.Name.Substring(0, sett.Name.Length - 5);
-        SoapySDRDevice_setGainElement(Device, Direction.Rx, 0, gainName, double.Parse(sett.Value));
-        SoapySDRDevice_writeSetting(Device, gainName, sett.Value);
-        SoapySdr.CheckError();
+        var gainSettings = Info.Properties.Where(p => p.Category == "Stage Gains");
+        foreach (var sett in gainSettings)
+        {
+          SoapySDRDevice_setGainElement(Device, Direction.Rx, 0, sett.Name, double.Parse(sett.Value));
+          SoapySdr.CheckError();
+        }
       }
-
 
       // non-browsable 
 
@@ -215,7 +223,6 @@ namespace VE3NEA
 
       SetFrequency(Frequency);
       
-      SetGain(Gain);
     }
 
     private void SetFrequency(double frequency)
@@ -245,6 +252,19 @@ namespace VE3NEA
         SoapySdr.CheckError();
       }
     }
+
+    private void SetNormalizedGain(int value)
+    {
+      double gain = Info.GainRange.minimum + value / 100d * (Info.GainRange.maximum - Info.GainRange.minimum);
+      SetGain(gain);
+    }
+
+    private int GetNormalizedGain()
+    {
+      double normalized = (Gain - Info.GainRange.minimum) / (Info.GainRange.maximum - Info.GainRange.minimum);
+      return (int)Math.Round(100 * normalized);
+    }
+
 
 
 

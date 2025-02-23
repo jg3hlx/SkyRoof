@@ -26,6 +26,8 @@ namespace OrbiNom
       ctx.AllPasses = new(ctx, false);
 
       timer.Interval = 1000 / TICKS_PER_SECOND;
+
+      SatelliteSelector.GainSlider.Scroll += GainSlider_Scroll;
     }
 
     private void MainForm_Load(object sender, EventArgs e)
@@ -102,6 +104,8 @@ namespace OrbiNom
         ctx.Sdr.StateChanged += Sdr_StateChanged;
         ctx.Sdr.DataAvailable += Sdr_DataAvailable;
 
+        SatelliteSelector.GainSlider.Enabled = ctx.Sdr.IsSingleGain;
+        SatelliteSelector.GainSlider.Value = ctx.Sdr.NormalizedGain;
         ConfigureWaterfall();
         
         if (ctx.Settings.Sdr.Enabled) ctx.Sdr.Enabled = true;
@@ -134,6 +138,12 @@ namespace OrbiNom
       SpectrumAnalyzer?.StartProcessing(e);
     }
 
+
+    private void GainSlider_Scroll(object? sender, EventArgs e)
+    {
+      if (ctx.Sdr == null) return;
+      ctx.Sdr.NormalizedGain = SatelliteSelector.GainSlider.Value;
+    }
 
     internal void ConfigureWaterfall()
     {
@@ -618,10 +628,29 @@ namespace OrbiNom
       ctx.SkyViewPanel?.ClearPass();
     }
 
+
+
+
+
     internal void SuggestSdrSettings(SoapySdrDeviceInfo info)
     {
       info.Frequency = 436_500_000;
-      info.SampleRate = 6_000_000;
+      info.Gain = info.GainRange.maximum;
+
+
+      if (info.Name.ToLower().Contains("rtl"))
+      {
+        info.SampleRate = 3_100_000;
+      }
+      else if (info.Name.ToLower().Contains("airspy"))
+      {
+        info.SampleRate = 6_000_000;
+      }
+      else if (info.Name.ToLower().Contains("sdrplay"))
+      {
+        info.SampleRate = 6_000_000;
+      }
+
 
       // todo: derive settings from capabilities
 

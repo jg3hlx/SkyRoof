@@ -20,7 +20,7 @@ namespace OrbiNom
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public SatnogsDbSatellite ClickedSatellite { get => clickedSatellite; set => SetClickedSatellite(value); }
 
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public SatellitePass? SelectedPass { get; private set; }
 
     public event EventHandler? SelectedGroupChanged;
@@ -257,7 +257,7 @@ namespace OrbiNom
       if (tx.IsUhf()) bacBrush = Brushes.LightCyan;
       if (tx.service == "Amateur") font = new(font, FontStyle.Bold);
       if (!tx.alive || tx.status != "active") foreBrush = Brushes.Silver;
-      
+
       e.Graphics.FillRectangle(bacBrush, e.Bounds);
       e.Graphics.DrawString(tx.description, font, foreBrush, e.Bounds);
       e.DrawFocusRectangle();

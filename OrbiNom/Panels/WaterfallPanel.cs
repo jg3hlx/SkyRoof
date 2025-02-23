@@ -116,6 +116,8 @@ namespace OrbiNom
       return scaleControl1.CenterFrequency + dx * scaleControl1.Bandwidth / scaleControl1.width;
     }
 
+
+    // {!} todo: use max. bandwidth instead
     private const float MinZoom = 1.97f;
     
     private void ValidateWaterfallViewport()

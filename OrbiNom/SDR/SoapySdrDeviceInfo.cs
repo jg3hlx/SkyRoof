@@ -91,7 +91,7 @@ namespace VE3NEA
           SoapySDRArgInfoType.Bool,
           "DCOffsetMode",
           "Automatic frontend DC offset correction",
-          SoapySDRDevice_getDCOffsetMode(Device, Direction.Rx, 0) ? "True" : "False");
+          SoapySDRDevice_getDCOffsetMode(Device, Direction.Rx, 0) ? "true" : "false");
 
       // IQ balance
       if (SoapySDRDevice_hasIQBalanceMode(Device, Direction.Rx, 0))
@@ -99,15 +99,15 @@ namespace VE3NEA
           SoapySDRArgInfoType.Bool,
           "IQBalanceMode",
           "Automatic frontend IQ balance correction",
-           SoapySDRDevice_getIQBalanceMode(Device, Direction.Rx, 0) ? "True" : "False");
+           SoapySDRDevice_getIQBalanceMode(Device, Direction.Rx, 0) ? "true" : "false");
 
       // AGC
       if (SoapySDRDevice_hasGainMode(Device, Direction.Rx, 0))
         AddCommonProperty(
           SoapySDRArgInfoType.Bool,
-          "GainMode",
+          "AGC",
           "Automatic gain control on the chain",
-           SoapySDRDevice_getGainMode(Device, Direction.Rx, 0) ? "True" : "False");
+           SoapySDRDevice_getGainMode(Device, Direction.Rx, 0) ? "true" : "false");
 
       // PPM
       AddCommonProperty(
@@ -116,6 +116,13 @@ namespace VE3NEA
         "SDR clock correction, Parts Per Million",
         "0");
 
+      // Single Gain
+      AddCommonProperty(
+        SoapySDRArgInfoType.Bool,
+        "Single Gain",
+        "When true, gain is controlled by a slider, individual stage gains are ignored",
+        "true");
+
 
       // model-specific properties
 
@@ -123,7 +130,7 @@ namespace VE3NEA
       SoapySdr.CheckError();
       var argsInfo = SoapySdrHelper.MarshalArgsInfoArray(ptr, length);
 
-      var properties = argsInfo.Select(s => new SdrProperty(s, ReadSetting(s.Key), false)).ToList();
+      var properties = argsInfo.Select(s => new SdrProperty(s, ReadSetting(s.Key), "Model-specific")).ToList();
       foreach (SdrProperty p in properties) Properties.Add(p);
 
       // gains
@@ -132,12 +139,12 @@ namespace VE3NEA
       {
         AddCommonProperty(
           SoapySDRArgInfoType.Float,
-          gainName + " Gain",
+          gainName,
           "",
            SoapySDRDevice_getGainElement(Device, Direction.Rx, 0, gainName).ToString(),
            null,
            SoapySDRDevice_getGainElementRange(Device, Direction.Rx, 0, gainName));
-        Properties.Last().IsCommon = false;
+        Properties.Last().Category = "Stage Gains";
       }
     }
 
@@ -151,7 +158,7 @@ namespace VE3NEA
       argInfo.Options = options ?? new(); 
       argInfo.Range = range;
 
-      var property = new SdrProperty(argInfo, value);
+      var property = new SdrProperty(argInfo, value, "Common");
       Properties.Add(property);
     }
 
