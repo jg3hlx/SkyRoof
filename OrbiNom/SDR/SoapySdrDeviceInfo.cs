@@ -14,7 +14,13 @@ namespace VE3NEA
     public SoapySDRKwargs KwArgs;
     public SoapySDRRange[] FrequencyRange, SampleRateRange, BandwidthRange;
     public SoapySDRRange GainRange;
-    public double SampleRate, Bandwidth, Frequency, Gain;
+
+    public double SampleRate;
+    public double MaxBandwidth;
+
+    public double HardwareBandwidth;
+    public double Frequency;
+    public double Gain;
     public double Ppm => GetPpm();
 
     public SdrProperties Properties = new();
@@ -63,7 +69,7 @@ namespace VE3NEA
       // initial values
       SampleRate = SoapySDRDevice_getSampleRate(Device, Direction.Rx, 0);
       SoapySdr.CheckError();
-      Bandwidth = SoapySDRDevice_getBandwidth(Device, Direction.Rx, 0);
+      HardwareBandwidth = SoapySDRDevice_getBandwidth(Device, Direction.Rx, 0);
       SoapySdr.CheckError();
       Frequency = SoapySDRDevice_getFrequency(Device, Direction.Rx, 0);
       SoapySdr.CheckError();

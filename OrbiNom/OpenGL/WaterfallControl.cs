@@ -268,5 +268,10 @@ namespace OrbiNom
         OpenglControl.Invalidate();
       });
     }
+
+    internal void Clear()
+    {
+      IndexedTexture.ClearBitmap();
+    }
   }
 }

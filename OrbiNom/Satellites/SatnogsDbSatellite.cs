@@ -244,7 +244,7 @@ namespace OrbiNom
       else if (Flags.HasFlag(SatelliteFlags.Transceiver)) radio = "Transceiver";
       ComputeOrbitDetails();
 
-      string tooltipText = $"{names}\nstatus: {status}\ncountries: {countries}";
+      string tooltipText = $"{names}\nNORAD: {norad_cat_id}\nstatus: {status}\ncountries: {countries}";
       if (Tle != null) tooltipText +=
           $"\nTLE: available\nperiod: {Period} min.\ninclination: {Inclination}°\n" +
           $"footprint: {Footprint} km\naltitude: {Altitude}";

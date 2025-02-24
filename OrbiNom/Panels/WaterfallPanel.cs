@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OrbiNom.SDR;
 using SharpGL.SceneGraph.Lighting;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -15,7 +16,7 @@ namespace OrbiNom
   public partial class WaterfallPanel : DockContent
   {
     private Context ctx;
-    double SdrCenterFrequency, Bandwidth, SamplingRate;
+    double SdrCenterFrequency, SamplingRate, MaxBandwidth;
 
 
     public WaterfallPanel()
@@ -30,6 +31,10 @@ namespace OrbiNom
 
       ctx.WaterfallPanel = this;
       ctx.MainForm.WaterfallMNU.Checked = true;
+
+      ScaleControl.CenterFrequency = SdrConst.UHF_CENTER_FREQUENCY;
+      ScaleControl.VisibleBandwidth = SdrConst.MAX_BANDWIDTH;
+
       ctx.MainForm.ConfigureWaterfall();
 
       WaterfallControl.OpenglControl.MouseDown += WaterfallControl_MouseDown;
@@ -43,13 +48,20 @@ namespace OrbiNom
       ctx.WaterfallPanel = null;
       ctx.MainForm.WaterfallMNU.Checked = false;
     }
-    internal void SetPassband(double frequency, double samplingRate)
+    internal void SetPassband(double frequency, double samplingRate, double maxBandwidth)
     {
+      bool maxBandwidthChanged = MaxBandwidth != maxBandwidth;
+
       SdrCenterFrequency = frequency;
       SamplingRate = samplingRate;
+      MaxBandwidth = maxBandwidth;
 
-      scaleControl1.CenterFrequency = frequency;
-      scaleControl1.Bandwidth = samplingRate / WaterfallControl.Zoom;
+      ScaleControl.CenterFrequency = frequency;
+      ScaleControl.VisibleBandwidth = maxBandwidth;
+
+      WaterfallControl.Zoom = samplingRate / maxBandwidth;
+      WaterfallControl.Pan = 0;
+      if (maxBandwidthChanged) WaterfallControl.Clear();
     }
 
 
@@ -66,7 +78,7 @@ namespace OrbiNom
     private void WaterfallControl_MouseDown(object? sender, MouseEventArgs e)
     {
       MouseDownX = MouseMoveX = e.X;
-      MouseDownFrequency = scaleControl1.CenterFrequency;
+      MouseDownFrequency = ScaleControl.CenterFrequency;
       Cursor = Cursors.NoMoveHoriz;
     }
 
@@ -74,16 +86,15 @@ namespace OrbiNom
     {
       if (e.X == MouseMoveX) return;
       MouseMoveX = e.X;
-      //UpdateLabels(e);
 
       if (e.Button != MouseButtons.Left) return;
 
       var dx = MouseMoveX - MouseDownX;
-      scaleControl1.CenterFrequency = MouseDownFrequency - dx * scaleControl1.Bandwidth / scaleControl1.width;
+      ScaleControl.CenterFrequency = MouseDownFrequency - dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
       ValidateWaterfallViewport();
-      scaleControl1.Refresh();
+      ScaleControl.Refresh();
 
-      WaterfallControl.Pan = (SdrCenterFrequency - scaleControl1.CenterFrequency) / scaleControl1.Bandwidth * 2;
+      WaterfallControl.Pan = (SdrCenterFrequency - ScaleControl.CenterFrequency) / ScaleControl.VisibleBandwidth * 2;
       WaterfallControl.OpenglControl.Refresh();
     }
 
@@ -95,43 +106,40 @@ namespace OrbiNom
     private void WaterfallControl_MouseWheel(object? sender, MouseEventArgs e)
     {
       double freq = PixelToFreq(e.X);
-      double dx = e.X - scaleControl1.width / 2;
+      double dx = e.X - ScaleControl.width / 2;
 
-      scaleControl1.Bandwidth = scaleControl1.Bandwidth * Math.Pow(1.2, -e.Delta / 120);
+      ScaleControl.VisibleBandwidth = ScaleControl.VisibleBandwidth * Math.Pow(1.2, -e.Delta / 120);
       ValidateWaterfallViewport();
 
-      scaleControl1.CenterFrequency = freq - dx / scaleControl1.width * scaleControl1.Bandwidth;
+      ScaleControl.CenterFrequency = freq - dx / ScaleControl.width * ScaleControl.VisibleBandwidth;
       ValidateWaterfallViewport();
 
-      WaterfallControl.Zoom = SamplingRate / scaleControl1.Bandwidth;
-      WaterfallControl.Pan = (SdrCenterFrequency - scaleControl1.CenterFrequency) / scaleControl1.Bandwidth * 2;
+      WaterfallControl.Zoom = SamplingRate / ScaleControl.VisibleBandwidth;
+      WaterfallControl.Pan = (SdrCenterFrequency - ScaleControl.CenterFrequency) / ScaleControl.VisibleBandwidth * 2;
 
-      scaleControl1.Refresh();
+      ScaleControl.Refresh();
       WaterfallControl.OpenglControl.Refresh();
     }
 
     public double PixelToFreq(float x)
     {
-      double dx = x - scaleControl1.width / 2d;
-      return scaleControl1.CenterFrequency + dx * scaleControl1.Bandwidth / scaleControl1.width;
+      double dx = x - ScaleControl.width / 2d;
+      return ScaleControl.CenterFrequency + dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
     }
 
 
-    // {!} todo: use max. bandwidth instead
-    private const float MinZoom = 1.97f;
-    
+    private const double MinHzPerPixel = 20;
     private void ValidateWaterfallViewport()
     {
-      double maxBW = SamplingRate / MinZoom;
-      double minBW = scaleControl1.width / 0.05;
-      double bandwidth = Math.Min(maxBW, Math.Max(minBW, scaleControl1.Bandwidth));
+      double minBandwidth = ScaleControl.width * MinHzPerPixel;
+      double visibleBandwidth = Math.Min(MaxBandwidth, Math.Max(minBandwidth, ScaleControl.VisibleBandwidth));
 
-      double minFreq = SdrCenterFrequency - maxBW / 2 + bandwidth / 2;
-      double maxFreq = SdrCenterFrequency + maxBW / 2 - bandwidth / 2;
-      double centerFrequency = Math.Max(minFreq, Math.Min(maxFreq, scaleControl1.CenterFrequency));
+      double minFreq = SdrCenterFrequency - MaxBandwidth / 2 + visibleBandwidth / 2;
+      double maxFreq = SdrCenterFrequency + MaxBandwidth / 2 - visibleBandwidth / 2;
+      double centerFrequency = Math.Max(minFreq, Math.Min(maxFreq, ScaleControl.CenterFrequency));
 
-      scaleControl1.Bandwidth = bandwidth;
-      scaleControl1.CenterFrequency = centerFrequency;
+      ScaleControl.VisibleBandwidth = visibleBandwidth;
+      ScaleControl.CenterFrequency = centerFrequency;
     }
   }
 }

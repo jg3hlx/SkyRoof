@@ -29,7 +29,7 @@
     private void InitializeComponent()
     {
       splitContainer1 = new SplitContainer();
-      scaleControl1 = new FrequencyScale();
+      ScaleControl = new FrequencyScale();
       WaterfallControl = new WaterfallControl();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
@@ -47,7 +47,7 @@
       // 
       // splitContainer1.Panel1
       // 
-      splitContainer1.Panel1.Controls.Add(scaleControl1);
+      splitContainer1.Panel1.Controls.Add(ScaleControl);
       // 
       // splitContainer1.Panel2
       // 
@@ -58,11 +58,11 @@
       // 
       // scaleControl1
       // 
-      scaleControl1.Dock = DockStyle.Fill;
-      scaleControl1.Location = new Point(0, 0);
-      scaleControl1.Name = "scaleControl1";
-      scaleControl1.Size = new Size(800, 79);
-      scaleControl1.TabIndex = 0;
+      ScaleControl.Dock = DockStyle.Fill;
+      ScaleControl.Location = new Point(0, 0);
+      ScaleControl.Name = "scaleControl1";
+      ScaleControl.Size = new Size(800, 79);
+      ScaleControl.TabIndex = 0;
       // 
       // waterfallControl
       // 
@@ -92,6 +92,6 @@
 
     private SplitContainer splitContainer1;
     public WaterfallControl WaterfallControl;
-    private FrequencyScale scaleControl1;
+    private FrequencyScale ScaleControl;
   }
 }

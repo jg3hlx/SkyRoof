@@ -104,7 +104,7 @@ namespace OrbiNom
         ctx.Sdr.StateChanged += Sdr_StateChanged;
         ctx.Sdr.DataAvailable += Sdr_DataAvailable;
 
-        SatelliteSelector.GainSlider.Enabled = ctx.Sdr.IsSingleGain;
+        SatelliteSelector.GainSlider.Enabled = ctx.Sdr.CanChangeGain;
         SatelliteSelector.GainSlider.Value = ctx.Sdr.NormalizedGain;
         ConfigureWaterfall();
         
@@ -145,6 +145,7 @@ namespace OrbiNom
       ctx.Sdr.NormalizedGain = SatelliteSelector.GainSlider.Value;
     }
 
+
     internal void ConfigureWaterfall()
     {
       if (ctx.WaterfallPanel == null ||
@@ -153,7 +154,12 @@ namespace OrbiNom
         ) return;
 
       SpectrumAnalyzer.Spectrum.Step = ctx.Sdr.Info.SampleRate;
-      ctx.WaterfallPanel?.SetPassband(ctx.Sdr.Info.Frequency, ctx.Sdr.Info.SampleRate);
+
+      ctx.WaterfallPanel?.SetPassband(
+        ctx.Sdr.Info.Frequency,
+        ctx.Sdr.Info.SampleRate,
+        ctx.Sdr.Info.MaxBandwidth
+        );
     }
 
     private void UpdateSdrLabel()
@@ -638,17 +644,24 @@ namespace OrbiNom
       info.Gain = info.GainRange.maximum;
 
 
-      if (info.Name.ToLower().Contains("rtl"))
-      {
-        info.SampleRate = 3_100_000;
-      }
-      else if (info.Name.ToLower().Contains("airspy"))
+      if (info.Name.ToLower().Contains("airspy"))
       {
         info.SampleRate = 6_000_000;
+        info.MaxBandwidth = 3_100_000;
+      }
+      if (info.Name.ToLower().Contains("rtl"))
+      {
+        info.SampleRate = 3_200_000;
+        info.MaxBandwidth = 2_100_000;
       }
       else if (info.Name.ToLower().Contains("sdrplay"))
       {
-        info.SampleRate = 6_000_000;
+        //info.SampleRate = 8_000_000;
+        //info.HardwareBandwidth = 5_000_000;
+        //info.MaxBandwidth = 3_100_000;
+        info.SampleRate = 4_000_000;
+        info.HardwareBandwidth = 5_000_000;
+        info.MaxBandwidth = 3_100_000;
       }
 
 

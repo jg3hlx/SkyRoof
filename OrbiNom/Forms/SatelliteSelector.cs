@@ -262,5 +262,10 @@ namespace OrbiNom
       e.Graphics.DrawString(tx.description, font, foreBrush, e.Bounds);
       e.DrawFocusRectangle();
     }
+
+    private void GainSlider_ValueChanged(object sender, EventArgs e)
+    {
+      toolTip1.SetToolTip(GainSlider, $"RF Gain: {GainSlider.Value}");
+    }
   }
 }

@@ -318,7 +318,8 @@ namespace OrbiNom
     private void OkBtn_Click(object sender, EventArgs e)
     {
       SaveGroups();
-      Close();
+      DialogResult = DialogResult.OK;
+      //Close();
     }
 
 

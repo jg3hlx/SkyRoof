@@ -7,7 +7,7 @@ namespace VE3NEA
 {
   internal class SoapySdrStream : IDisposable
   {
-    private const long timeout = 300_000; // microseconds
+    private const long timeout = 1_000_000; // microseconds
 
     private readonly IntPtr Device;
     private IntPtr Stream;

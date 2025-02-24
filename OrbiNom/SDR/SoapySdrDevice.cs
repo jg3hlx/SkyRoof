@@ -20,10 +20,11 @@ namespace VE3NEA
     private bool Stopping;
 
     public double Frequency { get => Info.Frequency; set => SetFrequency(value); }
-    public double Gain { get => Info.Gain; set => SetGain(value); }
     public bool Enabled { get => enabled; set => SetEnabled(value); }
     public int NormalizedGain { get => GetNormalizedGain();  set => SetNormalizedGain(value); }
-    public bool IsSingleGain => Info.Properties.Find(p => p.Name == "Single Gain")!.Value == "true";
+    public bool IsSingleGain => Info.Properties.GetByName("Single Gain")!.Value == "true";
+
+    public bool CanChangeGain => IsSingleGain && Info.Properties.GetByName("AGC")!.Value != "true";
 
     private bool enabled;
 
@@ -202,7 +203,7 @@ namespace VE3NEA
       
 
       if (IsSingleGain)
-        SetGain(Gain);
+        SetGain(Info.Gain);
       else
       {
         var gainSettings = Info.Properties.Where(p => p.Category == "Stage Gains");
@@ -218,7 +219,7 @@ namespace VE3NEA
       SoapySDRDevice_setSampleRate(Device, Direction.Rx, 0, Info.SampleRate);
       SoapySdr.CheckError();
       
-      SoapySDRDevice_setBandwidth(Device, Direction.Rx, 0, Info.Bandwidth);
+      SoapySDRDevice_setBandwidth(Device, Direction.Rx, 0, Info.HardwareBandwidth);
       SoapySdr.CheckError();
 
       SetFrequency(Frequency);
@@ -246,7 +247,7 @@ namespace VE3NEA
     {
       Info.Gain = (float)Math.Min(Info.GainRange.maximum, Math.Max(Info.GainRange.minimum, value));
 
-      if (Device != IntPtr.Zero)
+      if (CanChangeGain && Device != IntPtr.Zero)
       {
         SoapySDRDevice_setGain(Device, Direction.Rx, 0, Info.Gain);
         SoapySdr.CheckError();
@@ -261,7 +262,7 @@ namespace VE3NEA
 
     private int GetNormalizedGain()
     {
-      double normalized = (Gain - Info.GainRange.minimum) / (Info.GainRange.maximum - Info.GainRange.minimum);
+      double normalized = (Info.Gain - Info.GainRange.minimum) / (Info.GainRange.maximum - Info.GainRange.minimum);
       return (int)Math.Round(100 * normalized);
     }
 

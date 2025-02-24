@@ -15,7 +15,7 @@ namespace OrbiNom
     private static readonly double[] TickMults = { 2, 2.5, 2 };
     
     public double CenterFrequency;
-    internal double Bandwidth;
+    internal double VisibleBandwidth;
     internal int width;
     internal int height;
 
@@ -41,8 +41,8 @@ namespace OrbiNom
 
     private void DrawTicks(Graphics g)
     {
-      double leftFreq = CenterFrequency - Bandwidth / 2;
-      double pixPerHz = width / Bandwidth;
+      double leftFreq = CenterFrequency - VisibleBandwidth / 2;
+      double pixPerHz = width / VisibleBandwidth;
 
       //select tick step
       double TickStep = 200;
@@ -86,7 +86,7 @@ namespace OrbiNom
     private double FreqToPixel(double f)
     {
       double df = f - CenterFrequency;
-      double dx = df * width / Bandwidth;
+      double dx = df * width / VisibleBandwidth;
       return width / 2d + dx;
     }
 

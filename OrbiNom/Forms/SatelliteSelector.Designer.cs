@@ -115,6 +115,7 @@
       GainSlider.TabIndex = 16;
       GainSlider.TickFrequency = 10;
       toolTip1.SetToolTip(GainSlider, "SDR Gain");
+      GainSlider.ValueChanged += GainSlider_ValueChanged;
       // 
       // comboBox1
       // 

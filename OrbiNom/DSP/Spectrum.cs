@@ -139,7 +139,7 @@ namespace OrbiNom
     private float ComputeMedian(float[] data)
     {
       Array.Copy(data, MedianComputationBuffer, FftSize);
-      return ArrayStatistics.PercentileInplace(MedianComputationBuffer, 20);
+      return ArrayStatistics.PercentileInplace(MedianComputationBuffer, 50);
     }
 
     // generic arithmetic is a pain. originally it was one line:

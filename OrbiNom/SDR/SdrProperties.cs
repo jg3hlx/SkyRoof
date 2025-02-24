@@ -9,6 +9,11 @@ namespace VE3NEA
   //------------------------------------------------------------------------------------------------
   public class SdrProperties : List<SdrProperty>, ICustomTypeDescriptor
   {
+    public SdrProperty? GetByName(string name)
+    {
+      return Find(x => x.Name == name);
+    }
+
     public AttributeCollection GetAttributes()
     {
       return TypeDescriptor.GetAttributes(this, true);
