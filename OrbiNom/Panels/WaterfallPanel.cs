@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OrbiNom.SDR;
 using SharpGL.SceneGraph.Lighting;
 using WeifenLuo.WinFormsUI.Docking;
 

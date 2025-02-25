@@ -72,7 +72,7 @@
       SatelliteComboBox.FormattingEnabled = true;
       SatelliteComboBox.Location = new Point(57, 37);
       SatelliteComboBox.Name = "SatelliteComboBox";
-      SatelliteComboBox.Size = new Size(121, 24);
+      SatelliteComboBox.Size = new Size(140, 24);
       SatelliteComboBox.TabIndex = 11;
       SatelliteComboBox.DrawItem += SatelliteComboBox_DrawItem;
       SatelliteComboBox.SelectedIndexChanged += SatelliteComboBox_SelectedIndexChanged;
@@ -93,7 +93,7 @@
       GroupComboBox.FormattingEnabled = true;
       GroupComboBox.Location = new Point(57, 8);
       GroupComboBox.Name = "GroupComboBox";
-      GroupComboBox.Size = new Size(121, 23);
+      GroupComboBox.Size = new Size(140, 23);
       GroupComboBox.TabIndex = 9;
       GroupComboBox.SelectedIndexChanged += GroupComboBox_SelectedIndexChanged;
       // 

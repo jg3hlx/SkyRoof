@@ -111,10 +111,10 @@
       // 
       ClockPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       ClockPanel.Controls.Add(Clock);
-      ClockPanel.Location = new Point(1056, 0);
+      ClockPanel.Location = new Point(1096, 0);
       ClockPanel.Name = "ClockPanel";
       ClockPanel.Padding = new Padding(3);
-      ClockPanel.Size = new Size(142, 43);
+      ClockPanel.Size = new Size(102, 54);
       ClockPanel.TabIndex = 1;
       // 
       // Clock
@@ -124,7 +124,7 @@
       Clock.Location = new Point(3, 3);
       Clock.Margin = new Padding(2, 3, 2, 3);
       Clock.Name = "Clock";
-      Clock.Size = new Size(136, 37);
+      Clock.Size = new Size(96, 48);
       Clock.TabIndex = 1;
       Clock.UtcMode = true;
       // 

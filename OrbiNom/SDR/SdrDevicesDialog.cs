@@ -33,6 +33,13 @@ namespace OrbiNom
 
       SelectedDeviceName = ctx.Settings.Sdr.SelectedDeviceName;
       BuildDeviceList();
+
+      listBox1.PreviewKeyDown += ListBox1_PreviewKeyDown;
+    }
+
+    private void ListBox1_PreviewKeyDown(object? sender, PreviewKeyDownEventArgs e)
+    {
+      if (e.KeyCode == Keys.Delete) DeleteSdrMNU.PerformClick();
     }
 
     private void BuildDeviceList()
@@ -126,6 +133,12 @@ namespace OrbiNom
 
     private void DeleteSdrMNU_Click(object sender, EventArgs e)
     {
+      bool itemPresent = ClickedItemIndex >= 0 && ClickedItemIndex < listBox1.Items.Count;
+      if (!itemPresent) return;
+      
+      bool devicePresent = Devices[ClickedItemIndex].Present;
+      if (devicePresent) return;
+
       Devices.RemoveAt(ClickedItemIndex);
       listBox1.Items.RemoveAt(ClickedItemIndex);
       if (listBox1.SelectedIndex == -1 && listBox1.Items.Count > 0)

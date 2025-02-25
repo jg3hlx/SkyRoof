@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
+using OrbiNom;
 using static VE3NEA.NativeSoapySdr;
 
 namespace VE3NEA
@@ -200,6 +201,39 @@ namespace VE3NEA
     private double GetPpm()
     {
       return double.Parse(Properties.Find(p => p.Name == "PPM")!.Value);
+    }
+
+    internal void ValidateRateAndBandwidth()
+    {
+      SampleRate = GetBestMatch(SampleRateRange, SampleRate);
+
+      // max bandwidth <= 0.9 rate
+      MaxBandwidth = Math.Min(SdrConst.MAX_BANDWIDTH, MaxBandwidth);
+      MaxBandwidth = Math.Min(0.9 * SampleRate, MaxBandwidth);
+
+      // hardware filter bandwidth
+      HardwareBandwidth = GetBestMatch(BandwidthRange, 1.1 * MaxBandwidth);
+    }
+
+    private double GetBestMatch(SoapySDRRange[] ranges, double value)
+    {
+      if (ranges.Length == 0) return value;
+
+      double result = 0;
+
+      // is requested value supported?
+      if (ranges.Any(r => value >= r.minimum && value <= r.maximum))
+        result = value;
+
+      // if not supported, find the lowest supported above the requested value
+      if (result == 0)
+        result = ranges.Select(range => range.minimum).Where(v => v > value).DefaultIfEmpty().Min();
+
+      // if not found, use the highest suported (which is below the requested value)
+      if (result == 0)
+        result = ranges.Select(range => range.maximum).Max();
+
+      return result;
     }
   }
 }

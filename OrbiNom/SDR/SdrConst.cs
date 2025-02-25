@@ -1,4 +1,4 @@
-﻿namespace OrbiNom.SDR
+﻿namespace OrbiNom
 {
   public static class SdrConst
   {

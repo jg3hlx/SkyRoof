@@ -49,11 +49,10 @@
       // 
       // dateLabel
       // 
-      dateLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       dateLabel.AutoSize = true;
       dateLabel.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
       dateLabel.ForeColor = Color.Aqua;
-      dateLabel.Location = new Point(95, 2);
+      dateLabel.Location = new Point(4, 30);
       dateLabel.Margin = new Padding(2, 0, 2, 0);
       dateLabel.Name = "dateLabel";
       dateLabel.RightToLeft = RightToLeft.No;
@@ -64,12 +63,11 @@
       // 
       // utcLabel
       // 
-      utcLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       utcLabel.AutoSize = true;
       utcLabel.BackColor = Color.Aqua;
       utcLabel.Cursor = Cursors.Hand;
       utcLabel.Font = new Font("Microsoft Sans Serif", 5F, FontStyle.Bold, GraphicsUnit.Point, 0);
-      utcLabel.Location = new Point(115, 20);
+      utcLabel.Location = new Point(65, 33);
       utcLabel.Margin = new Padding(2, 0, 2, 0);
       utcLabel.Name = "utcLabel";
       utcLabel.RightToLeft = RightToLeft.No;
@@ -88,7 +86,7 @@
       Controls.Add(timeLabel);
       Margin = new Padding(2, 3, 2, 3);
       Name = "Clock";
-      Size = new Size(144, 32);
+      Size = new Size(96, 50);
       ResumeLayout(false);
       PerformLayout();
     }

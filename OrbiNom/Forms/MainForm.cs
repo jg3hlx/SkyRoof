@@ -649,7 +649,7 @@ namespace OrbiNom
         info.SampleRate = 6_000_000;
         info.MaxBandwidth = 3_100_000;
       }
-      if (info.Name.ToLower().Contains("rtl"))
+      else if (info.Name.ToLower().Contains("rtl"))
       {
         info.SampleRate = 3_200_000;
         info.MaxBandwidth = 2_100_000;
@@ -659,14 +659,18 @@ namespace OrbiNom
         //info.SampleRate = 8_000_000;
         //info.HardwareBandwidth = 5_000_000;
         //info.MaxBandwidth = 3_100_000;
+      
         info.SampleRate = 4_000_000;
         info.HardwareBandwidth = 5_000_000;
         info.MaxBandwidth = 3_100_000;
       }
+      else
+      {
+        info.SampleRate = 4_000_000;
+        info.MaxBandwidth = 3_100_000;
+      }
 
-
-      // todo: derive settings from capabilities
-
+      info.ValidateRateAndBandwidth();
+      }
     }
-  }
 }
