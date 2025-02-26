@@ -82,11 +82,11 @@ namespace OrbiNom
     private void SetupDsp()
     {
       Fft<float>.LoadWisdom(Path.Combine(Utils.GetUserDataFolder(), "wsjtx_wisdom.dat"));
-      
+
       SpectrumAnalyzer = new(WaterfallControl.SPECTRA_WIDTH, 6_000_000);
       SpectrumAnalyzer.SpectrumAvailable += Spect_SpectrumAvailable;
 
-      
+
     }
 
     private void Spect_SpectrumAvailable(object? sender, DataEventArgs<float> e)
@@ -107,7 +107,7 @@ namespace OrbiNom
         SatelliteSelector.GainSlider.Enabled = ctx.Sdr.CanChangeGain;
         SatelliteSelector.GainSlider.Value = ctx.Sdr.NormalizedGain;
         ConfigureWaterfall();
-        
+
         if (ctx.Settings.Sdr.Enabled) ctx.Sdr.Enabled = true;
       }
 
@@ -197,6 +197,42 @@ namespace OrbiNom
       var rc = dlg.ShowDialog();
       StartSdrIfEnabled();
     }
+
+    internal void SuggestSdrSettings(SoapySdrDeviceInfo info)
+    {
+      info.Frequency = 436_500_000;
+      info.Gain = info.GainRange.maximum;
+
+
+      if (info.Name.ToLower().Contains("airspy"))
+      {
+        info.SampleRate = 6_000_000;
+        info.MaxBandwidth = 3_100_000;
+      }
+      else if (info.Name.ToLower().Contains("rtl"))
+      {
+        info.SampleRate = 3_200_000;
+        info.MaxBandwidth = 2_100_000;
+      }
+      else if (info.Name.ToLower().Contains("sdrplay"))
+      {
+        //info.SampleRate = 8_000_000;
+        //info.HardwareBandwidth = 5_000_000;
+        //info.MaxBandwidth = 3_100_000;
+
+        info.SampleRate = 4_000_000;
+        info.HardwareBandwidth = 5_000_000;
+        info.MaxBandwidth = 3_100_000;
+      }
+      else
+      {
+        info.SampleRate = 4_000_000;
+        info.MaxBandwidth = 3_100_000;
+      }
+
+      info.ValidateRateAndBandwidth();
+    }
+
 
 
 
@@ -522,6 +558,7 @@ namespace OrbiNom
     {
       Clock.ShowTime();
       ctx.SkyViewPanel?.Advance();
+      ctx.WaterfallPanel?.ScaleControl?.Invalidate();
     }
 
     private void OneSecondTick()
@@ -538,6 +575,7 @@ namespace OrbiNom
       ctx.GroupPasses.PredictMorePasses();
       ctx.AllPasses.PredictMorePasses();
       ctx.PassesPanel?.ShowPasses();
+      ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
     }
 
     private void OneHourTick()
@@ -569,6 +607,7 @@ namespace OrbiNom
 
       ctx.PassesPanel?.ShowPasses();
       ctx.SkyViewPanel?.ClearPass();
+      ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
 
       ShowSatDataStatus();
     }
@@ -585,6 +624,7 @@ namespace OrbiNom
       ctx.GroupViewPanel?.LoadGroup(); // replace passes attached to sats
       ctx.PassesPanel?.ShowPasses();
       ctx.SkyViewPanel?.ClearPass();
+      ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
     }
 
     private void SatelliteSelector_SelectedGroupChanged(object sender, EventArgs e)
@@ -633,44 +673,5 @@ namespace OrbiNom
       ctx.EarthViewPanel?.SetGridSquare();
       ctx.SkyViewPanel?.ClearPass();
     }
-
-
-
-
-
-    internal void SuggestSdrSettings(SoapySdrDeviceInfo info)
-    {
-      info.Frequency = 436_500_000;
-      info.Gain = info.GainRange.maximum;
-
-
-      if (info.Name.ToLower().Contains("airspy"))
-      {
-        info.SampleRate = 6_000_000;
-        info.MaxBandwidth = 3_100_000;
-      }
-      else if (info.Name.ToLower().Contains("rtl"))
-      {
-        info.SampleRate = 3_200_000;
-        info.MaxBandwidth = 2_100_000;
-      }
-      else if (info.Name.ToLower().Contains("sdrplay"))
-      {
-        //info.SampleRate = 8_000_000;
-        //info.HardwareBandwidth = 5_000_000;
-        //info.MaxBandwidth = 3_100_000;
-      
-        info.SampleRate = 4_000_000;
-        info.HardwareBandwidth = 5_000_000;
-        info.MaxBandwidth = 3_100_000;
-      }
-      else
-      {
-        info.SampleRate = 4_000_000;
-        info.MaxBandwidth = 3_100_000;
-      }
-
-      info.ValidateRateAndBandwidth();
-      }
-    }
+  }
 }

@@ -9,6 +9,11 @@ namespace OrbiNom
 {
   public class Context
   {
+    // resources
+    internal readonly Font AwesomeFont8 = FontAwesomeFactory.Create(8);
+    internal readonly Font AwesomeFont14 = FontAwesomeFactory.Create(14);
+    internal readonly PaletteManager PaletteManager = new PaletteManager();
+
     // data
     public Settings Settings = new();
     public SatnogsDb SatnogsDb;

@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -72,8 +73,6 @@ namespace OrbiNom
       DrawDateLabels(e.Graphics, now);
       DrawtimeLabels(e.Graphics, now);
       DrawPasses(e.Graphics, now);
-
-      //g.DrawString($"x0 = {X0:F1}   zoom = {Zoom:F3} pix/min = {PixelsPerMinute:F3}", Font, Brushes.Black, 5, 5);
     }
 
 
@@ -115,7 +114,9 @@ namespace OrbiNom
         g.DrawLine(Pens.Black, x2, ClientSize.Height - ScaleHeight, x2, ClientSize.Height);
 
         string label = $"{date1:MMM dd}";
-        var size = TextRenderer.MeasureText(label, Font);
+        var size = TextRenderer.MeasureText(label, Font, Size, TextFormatFlags.NoPadding);
+        size.Width += 3;
+
         if (x2 - x1 > size.Width + 15)
           g.DrawString(label, Font, Brushes.Black, (x1 + x2 - size.Width) / 2, ClientSize.Height - size.Height - 1);
 
@@ -160,7 +161,8 @@ namespace OrbiNom
       while (x < ClientSize.Width)
       {
         string label = $"{time:HH:mm}";
-        var size = TextRenderer.MeasureText(label, Font);
+        var size = TextRenderer.MeasureText(label, Font, Size, TextFormatFlags.NoPadding);
+        size.Width += 3;
         g.DrawString(label, Font, Brushes.Black, x - size.Width / 2, ClientSize.Height - ScaleHeight + 7);
 
         g.DrawLine(Pens.Black, x, ClientSize.Height - ScaleHeight, x, ClientSize.Height - ScaleHeight + 10);
@@ -222,13 +224,14 @@ namespace OrbiNom
 
         // label
         string text = pass.Satellite.name;
-        var size = TextRenderer.MeasureText(text, Font);
+        var size = TextRenderer.MeasureText(text, Font, Size, TextFormatFlags.NoPadding);
+        size.Width += 3;
         var rect = new RectangleF(
           TimeToPixel(pass.CulminationTime, now) - size.Width / 2,
           y0 - (float)pass.MaxElevation * scaleY - size.Height,
           size.Width + 1, size.Height); // without +1 the last char is sometimes truncated
 
-        g.DrawString(text, Font, Brushes.Black, rect);
+        g.DrawString(text, Font, Brushes.Black, rect.Left, rect.Top);
         SatLabelRects[rect] = pass;
       }
     }

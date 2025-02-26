@@ -28,9 +28,11 @@
     /// </summary>
     private void InitializeComponent()
     {
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WaterfallPanel));
       splitContainer1 = new SplitContainer();
       ScaleControl = new FrequencyScale();
       WaterfallControl = new WaterfallControl();
+      SlidersBtn = new Button();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -47,6 +49,7 @@
       // 
       // splitContainer1.Panel1
       // 
+      splitContainer1.Panel1.Controls.Add(SlidersBtn);
       splitContainer1.Panel1.Controls.Add(ScaleControl);
       // 
       // splitContainer1.Panel2
@@ -56,21 +59,34 @@
       splitContainer1.SplitterDistance = 79;
       splitContainer1.TabIndex = 0;
       // 
-      // scaleControl1
+      // ScaleControl
       // 
       ScaleControl.Dock = DockStyle.Fill;
       ScaleControl.Location = new Point(0, 0);
-      ScaleControl.Name = "scaleControl1";
+      ScaleControl.Name = "ScaleControl";
       ScaleControl.Size = new Size(800, 79);
       ScaleControl.TabIndex = 0;
       // 
-      // waterfallControl
+      // WaterfallControl
       // 
       WaterfallControl.Dock = DockStyle.Fill;
       WaterfallControl.Location = new Point(0, 0);
-      WaterfallControl.Name = "waterfallControl";
+      WaterfallControl.Name = "WaterfallControl";
       WaterfallControl.Size = new Size(800, 367);
       WaterfallControl.TabIndex = 0;
+      // 
+      // SlidersBtn
+      // 
+      SlidersBtn.BackColor = SystemColors.Control;
+      SlidersBtn.FlatStyle = FlatStyle.Popup;
+      SlidersBtn.ForeColor = Color.SteelBlue;
+      SlidersBtn.Image = (Image)resources.GetObject("SlidersBtn.Image");
+      SlidersBtn.Location = new Point(3, 3);
+      SlidersBtn.Name = "SlidersBtn";
+      SlidersBtn.Size = new Size(31, 28);
+      SlidersBtn.TabIndex = 4;
+      SlidersBtn.UseVisualStyleBackColor = false;
+      SlidersBtn.Click += SlidersBtn_Click;
       // 
       // WaterfallPanel
       // 
@@ -92,6 +108,7 @@
 
     private SplitContainer splitContainer1;
     public WaterfallControl WaterfallControl;
-    private FrequencyScale ScaleControl;
+    public FrequencyScale ScaleControl;
+    private Button SlidersBtn;
   }
 }

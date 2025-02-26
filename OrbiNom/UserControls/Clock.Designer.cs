@@ -66,12 +66,12 @@
       utcLabel.AutoSize = true;
       utcLabel.BackColor = Color.Aqua;
       utcLabel.Cursor = Cursors.Hand;
-      utcLabel.Font = new Font("Microsoft Sans Serif", 5F, FontStyle.Bold, GraphicsUnit.Point, 0);
-      utcLabel.Location = new Point(65, 33);
+      utcLabel.Font = new Font("Microsoft Sans Serif", 6F, FontStyle.Bold, GraphicsUnit.Point, 0);
+      utcLabel.Location = new Point(62, 34);
       utcLabel.Margin = new Padding(2, 0, 2, 0);
       utcLabel.Name = "utcLabel";
       utcLabel.RightToLeft = RightToLeft.No;
-      utcLabel.Size = new Size(21, 7);
+      utcLabel.Size = new Size(25, 9);
       utcLabel.TabIndex = 2;
       utcLabel.Text = "UTC";
       utcLabel.Click += utcLabel_Click;
@@ -80,7 +80,7 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      BackColor = Color.MidnightBlue;
+      BackColor = Color.DarkBlue;
       Controls.Add(utcLabel);
       Controls.Add(dateLabel);
       Controls.Add(timeLabel);

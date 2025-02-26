@@ -44,6 +44,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Vendor\fa2cs\FontAwesomeIcons.cs" Link="FontAwesomeIcons.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\Vendor\fontawesome-free-6.4.2-web\fa-solid-900.ttf" Link="fa-solid-900.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\Vendor\SoapySDR\libusb-1.0.dll" Link="libusb-1.0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

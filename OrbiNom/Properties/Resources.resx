@@ -166,4 +166,7 @@
   <data name="radio_button_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\radiobutton\radio_button_on.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="DefaultPalettes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DefaultPalettes.txt;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

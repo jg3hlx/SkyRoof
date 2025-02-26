@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SharpGL;
 using SharpGL.SceneGraph.Lighting;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -14,7 +15,7 @@ namespace OrbiNom
 {
   public partial class WaterfallPanel : DockContent
   {
-    private Context ctx;
+    public Context ctx;
     double SdrCenterFrequency, SamplingRate, MaxBandwidth;
 
 
@@ -31,8 +32,9 @@ namespace OrbiNom
       ctx.WaterfallPanel = this;
       ctx.MainForm.WaterfallMNU.Checked = true;
 
-      ScaleControl.CenterFrequency = SdrConst.UHF_CENTER_FREQUENCY;
-      ScaleControl.VisibleBandwidth = SdrConst.MAX_BANDWIDTH;
+      ScaleControl.ctx = ctx;
+      ScaleControl.BuildLabels();
+      ScaleControl.MouseWheel += WaterfallControl_MouseWheel;
 
       ctx.MainForm.ConfigureWaterfall();
 
@@ -78,7 +80,7 @@ namespace OrbiNom
     {
       MouseDownX = MouseMoveX = e.X;
       MouseDownFrequency = ScaleControl.CenterFrequency;
-      Cursor = Cursors.NoMoveHoriz;
+      WaterfallControl.Cursor = Cursors.NoMoveHoriz;
     }
 
     private void WaterfallControl_MouseMove(object? sender, MouseEventArgs e)
@@ -99,7 +101,7 @@ namespace OrbiNom
 
     private void WaterfallControl_MouseUp(object? sender, MouseEventArgs e)
     {
-      Cursor = Cursors.Cross;
+      WaterfallControl.Cursor = Cursors.Cross;
     }
 
     private void WaterfallControl_MouseWheel(object? sender, MouseEventArgs e)
@@ -139,6 +141,13 @@ namespace OrbiNom
 
       ScaleControl.VisibleBandwidth = visibleBandwidth;
       ScaleControl.CenterFrequency = centerFrequency;
+    }
+
+    private void SlidersBtn_Click(object sender, EventArgs e)
+    {
+      var dlg = new WaterfallSildersDlg(ctx);
+      dlg.Location = WaterfallControl.PointToScreen(new Point(2, 2));
+      dlg.Show();
     }
   }
 }
