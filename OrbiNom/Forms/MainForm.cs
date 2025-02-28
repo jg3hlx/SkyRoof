@@ -50,6 +50,9 @@ namespace OrbiNom
       ctx.Settings.Ui.StoreWindowPosition(this);
       ctx.Settings.Ui.ClockUtcMode = Clock.UtcMode;
 
+      if (ctx.WaterfallPanel != null)
+        ctx.Settings.Waterfall.SplitterDistance = ctx.WaterfallPanel.SplitContainer.SplitterDistance;
+
       ctx.Settings.SaveToFile();
 
       ctx.Sdr?.Dispose();
@@ -153,7 +156,7 @@ namespace OrbiNom
         SpectrumAnalyzer == null
         ) return;
 
-      SpectrumAnalyzer.Spectrum.Step = ctx.Sdr.Info.SampleRate;
+      SetWaterfallSpeed();
 
       ctx.WaterfallPanel?.SetPassband(
         ctx.Sdr.Info.Frequency,
@@ -196,6 +199,17 @@ namespace OrbiNom
       var dlg = new SdrDevicesDialog(ctx);
       var rc = dlg.ShowDialog();
       StartSdrIfEnabled();
+    }
+
+
+    internal void SetWaterfallSpeed()
+    {
+      if (ctx.Sdr != null)
+        SpectrumAnalyzer.Spectrum.Step =
+          ctx.Sdr.Info.SampleRate / ctx.Settings.Waterfall.Speed;
+
+      if (ctx.WaterfallPanel?.WaterfallControl != null)      
+        ctx.WaterfallPanel.WaterfallControl.ScrollSpeed = ctx.Settings.Waterfall.Speed;
     }
 
     internal void SuggestSdrSettings(SoapySdrDeviceInfo info)

@@ -29,35 +29,50 @@
     private void InitializeComponent()
     {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WaterfallPanel));
-      splitContainer1 = new SplitContainer();
+      SplitContainer = new SplitContainer();
+      SlidersBtn = new Button();
       ScaleControl = new FrequencyScale();
       WaterfallControl = new WaterfallControl();
-      SlidersBtn = new Button();
-      ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
-      splitContainer1.Panel1.SuspendLayout();
-      splitContainer1.Panel2.SuspendLayout();
-      splitContainer1.SuspendLayout();
+      label1 = new Label();
+      ((System.ComponentModel.ISupportInitialize)SplitContainer).BeginInit();
+      SplitContainer.Panel1.SuspendLayout();
+      SplitContainer.Panel2.SuspendLayout();
+      SplitContainer.SuspendLayout();
       SuspendLayout();
       // 
-      // splitContainer1
+      // SplitContainer
       // 
-      splitContainer1.Dock = DockStyle.Fill;
-      splitContainer1.FixedPanel = FixedPanel.Panel1;
-      splitContainer1.Location = new Point(0, 0);
-      splitContainer1.Name = "splitContainer1";
-      splitContainer1.Orientation = Orientation.Horizontal;
+      SplitContainer.Dock = DockStyle.Fill;
+      SplitContainer.FixedPanel = FixedPanel.Panel1;
+      SplitContainer.Location = new Point(0, 0);
+      SplitContainer.Name = "SplitContainer";
+      SplitContainer.Orientation = Orientation.Horizontal;
       // 
-      // splitContainer1.Panel1
+      // SplitContainer.Panel1
       // 
-      splitContainer1.Panel1.Controls.Add(SlidersBtn);
-      splitContainer1.Panel1.Controls.Add(ScaleControl);
+      SplitContainer.Panel1.Controls.Add(label1);
+      SplitContainer.Panel1.Controls.Add(SlidersBtn);
+      SplitContainer.Panel1.Controls.Add(ScaleControl);
       // 
-      // splitContainer1.Panel2
+      // SplitContainer.Panel2
       // 
-      splitContainer1.Panel2.Controls.Add(WaterfallControl);
-      splitContainer1.Size = new Size(800, 450);
-      splitContainer1.SplitterDistance = 79;
-      splitContainer1.TabIndex = 0;
+      SplitContainer.Panel2.Controls.Add(WaterfallControl);
+      SplitContainer.Size = new Size(800, 450);
+      SplitContainer.SplitterDistance = 79;
+      SplitContainer.TabIndex = 0;
+      // 
+      // SlidersBtn
+      // 
+      SlidersBtn.BackColor = SystemColors.Control;
+      SlidersBtn.FlatStyle = FlatStyle.Popup;
+      SlidersBtn.ForeColor = Color.SteelBlue;
+      SlidersBtn.Image = (Image)resources.GetObject("SlidersBtn.Image");
+      SlidersBtn.Location = new Point(3, 3);
+      SlidersBtn.Name = "SlidersBtn";
+      SlidersBtn.Size = new Size(31, 28);
+      SlidersBtn.TabIndex = 4;
+      SlidersBtn.UseVisualStyleBackColor = false;
+      SlidersBtn.Click += SlidersBtn_Click;
       // 
       // ScaleControl
       // 
@@ -75,32 +90,30 @@
       WaterfallControl.Size = new Size(800, 367);
       WaterfallControl.TabIndex = 0;
       // 
-      // SlidersBtn
+      // label1
       // 
-      SlidersBtn.BackColor = SystemColors.Control;
-      SlidersBtn.FlatStyle = FlatStyle.Popup;
-      SlidersBtn.ForeColor = Color.SteelBlue;
-      SlidersBtn.Image = (Image)resources.GetObject("SlidersBtn.Image");
-      SlidersBtn.Location = new Point(3, 3);
-      SlidersBtn.Name = "SlidersBtn";
-      SlidersBtn.Size = new Size(31, 28);
-      SlidersBtn.TabIndex = 4;
-      SlidersBtn.UseVisualStyleBackColor = false;
-      SlidersBtn.Click += SlidersBtn_Click;
+      label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      label1.AutoSize = true;
+      label1.Location = new Point(750, 10);
+      label1.Name = "label1";
+      label1.Size = new Size(38, 15);
+      label1.TabIndex = 5;
+      label1.Text = "label1";
       // 
       // WaterfallPanel
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       ClientSize = new Size(800, 450);
-      Controls.Add(splitContainer1);
+      Controls.Add(SplitContainer);
       Name = "WaterfallPanel";
       Text = "Waterfall";
       FormClosing += WaterfallPanel_FormClosing;
-      splitContainer1.Panel1.ResumeLayout(false);
-      splitContainer1.Panel2.ResumeLayout(false);
-      ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
-      splitContainer1.ResumeLayout(false);
+      SplitContainer.Panel1.ResumeLayout(false);
+      SplitContainer.Panel1.PerformLayout();
+      SplitContainer.Panel2.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)SplitContainer).EndInit();
+      SplitContainer.ResumeLayout(false);
       ResumeLayout(false);
     }
 
@@ -110,5 +123,7 @@
     public WaterfallControl WaterfallControl;
     public FrequencyScale ScaleControl;
     private Button SlidersBtn;
+    public SplitContainer SplitContainer;
+    private Label label1;
   }
 }

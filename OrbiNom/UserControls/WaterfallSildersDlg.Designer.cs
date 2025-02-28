@@ -136,11 +136,11 @@
       SpeedTrackbar.AutoSize = false;
       SpeedTrackbar.LargeChange = 1;
       SpeedTrackbar.Location = new Point(5, 79);
+      SpeedTrackbar.Maximum = 4;
       SpeedTrackbar.Name = "SpeedTrackbar";
       SpeedTrackbar.Size = new Size(150, 32);
       SpeedTrackbar.TabIndex = 3;
       toolTip1.SetToolTip(SpeedTrackbar, "Scrolling Speed, pixels/s");
-      SpeedTrackbar.Value = 5;
       SpeedTrackbar.ValueChanged += Trackbar_ValueChanged;
       // 
       // label4

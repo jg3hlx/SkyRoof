@@ -29,6 +29,7 @@ namespace OrbiNom
     private ShaderProgram ShaderProgram;
     private IndexedTexture IndexedTexture;
     private Palette Palette = new();
+    internal double VisibleBandwidth = SdrConst.MAX_BANDWIDTH;
 
     public float Fps;
 
@@ -36,6 +37,7 @@ namespace OrbiNom
     public float Contrast = 0.5f;
     public double Zoom = 1.95f;
     public double Pan = 0;
+    public double ScrollSpeed = 1;
 
 
 
@@ -226,10 +228,15 @@ namespace OrbiNom
       UpdateFps();
     }
 
-    // correct brightness for spectrum shrinking
+
+    // correct brightness for spectrum shrinking, horizontal and vertical
     private float computeBrightness()
     {
-      return Brightness + 0.03679f * (float)Math.Log(Zoom * ClientSize.Width) - 0.6657f;
+      double pixPerHz = OpenglControl.Size.Width / VisibleBandwidth;
+      double a = 0.21821866 * ScrollSpeed + 1.96776626;
+      double b = -1.19227144 * ScrollSpeed + 55.37794533;
+      double brightness = a * Math.Log(pixPerHz) + b;    // 0..100
+      return Brightness + (float)(brightness / 50 - 1);  //  -1..1
     }
 
     int frameCount;

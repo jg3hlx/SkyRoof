@@ -44,7 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Vendor\fa2cs\FontAwesomeIcons.cs" Link="FontAwesomeIcons.cs" />
+    <Compile Include="..\Vendor\fa2cs\FontAwesomeIcons.cs" Link="ControlsEx\FontAwesomeIcons.cs" />
   </ItemGroup>
 
   <ItemGroup>

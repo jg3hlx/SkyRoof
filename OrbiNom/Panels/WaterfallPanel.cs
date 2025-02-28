@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MathNet.Numerics;
 using SharpGL;
 using SharpGL.SceneGraph.Lighting;
 using WeifenLuo.WinFormsUI.Docking;
@@ -32,11 +33,13 @@ namespace OrbiNom
       ctx.WaterfallPanel = this;
       ctx.MainForm.WaterfallMNU.Checked = true;
 
+      SplitContainer.SplitterDistance = ctx.Settings.Waterfall.SplitterDistance;
+      ApplySettings();
+      ctx.MainForm.ConfigureWaterfall();
+
       ScaleControl.ctx = ctx;
       ScaleControl.BuildLabels();
       ScaleControl.MouseWheel += WaterfallControl_MouseWheel;
-
-      ctx.MainForm.ConfigureWaterfall();
 
       WaterfallControl.OpenglControl.MouseDown += WaterfallControl_MouseDown;
       WaterfallControl.OpenglControl.MouseMove += WaterfallControl_MouseMove;
@@ -48,7 +51,22 @@ namespace OrbiNom
     {
       ctx.WaterfallPanel = null;
       ctx.MainForm.WaterfallMNU.Checked = false;
+
+      ctx.Settings.Waterfall.SplitterDistance = SplitContainer.SplitterDistance;
     }
+
+    public void ApplySettings()
+    {
+      var sett = ctx.Settings.Waterfall;
+      WaterfallControl.Brightness = sett.Brightness;
+      WaterfallControl.Contrast = sett.Contrast;
+      int paletteIndex = Math.Min(ctx.PaletteManager.Palettes.Count() - 1, sett.PaletteIndex);
+      WaterfallControl.SetPalette(ctx.PaletteManager.Palettes[paletteIndex]);
+      WaterfallControl.Refresh();
+
+      ctx.MainForm.SetWaterfallSpeed();
+    }
+
     internal void SetPassband(double frequency, double samplingRate, double maxBandwidth)
     {
       bool maxBandwidthChanged = MaxBandwidth != maxBandwidth;
@@ -116,6 +134,7 @@ namespace OrbiNom
       ValidateWaterfallViewport();
 
       WaterfallControl.Zoom = SamplingRate / ScaleControl.VisibleBandwidth;
+      label1.Text = $"{ScaleControl.VisibleBandwidth / ScaleControl.Size.Width:F3} Hz/pix";
       WaterfallControl.Pan = (SdrCenterFrequency - ScaleControl.CenterFrequency) / ScaleControl.VisibleBandwidth * 2;
 
       ScaleControl.Refresh();
@@ -141,6 +160,7 @@ namespace OrbiNom
 
       ScaleControl.VisibleBandwidth = visibleBandwidth;
       ScaleControl.CenterFrequency = centerFrequency;
+      WaterfallControl.VisibleBandwidth = visibleBandwidth;
     }
 
     private void SlidersBtn_Click(object sender, EventArgs e)

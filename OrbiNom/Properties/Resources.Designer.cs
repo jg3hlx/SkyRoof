@@ -83,16 +83,6 @@ namespace OrbiNom.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] DefaultPalettes {
-            get {
-                object obj = ResourceManager.GetObject("DefaultPalettes", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] dxcc {
             get {
                 object obj = ResourceManager.GetObject("dxcc", resourceCulture);

@@ -55,7 +55,7 @@ namespace OrbiNom
     }
 
 
-    private readonly int[] Speeds = new int[] { 1, 2, 4, 8, 15, 30, 60, 120 };
+    private readonly int[] Speeds = [1, 2, 4, 8, 12, 16];
 
     private void Trackbar_ValueChanged(object sender, EventArgs e)
     {
@@ -65,33 +65,33 @@ namespace OrbiNom
 
       if (changing) return;
       DialogToSettings();
-//{!}      ctx.MainForm.ApplySettingsToWaterfall();
+      ctx.WaterfallPanel?.ApplySettings();
     }
 
     private void SettingsToDialog()
     {
       changing = true;
-//{!}      var sett = ctx.Settings.Waterfall;
+      var sett = ctx.Settings.Waterfall;
 
-//      BrightnessTrackbar.Value = (int)(50 * (1 + sett.Brightness));
-//      ContrastTrackbar.Value = (int)(100 * sett.Contrast);
-//
-//      SpeedTrackbar.Maximum = Speeds.Length - 1;
-//      SpeedTrackbar.Value = Array.IndexOf(Speeds, sett.Speed);
-//
-//      PaletteComboBox.DataSource = ctx.PaletteManager.Palettes;
-//      PaletteComboBox.SelectedIndex = Math.Max(0, Math.Min(ctx.PaletteManager.Palettes.Count() - 1, sett.PaletteIndex));
-//
-//      changing = false;
+      BrightnessTrackbar.Value = (int)(50 * (1 + sett.Brightness));
+      ContrastTrackbar.Value = (int)(100 * sett.Contrast);
+
+      SpeedTrackbar.Maximum = Speeds.Length - 1;
+      SpeedTrackbar.Value = Array.IndexOf(Speeds, sett.Speed);
+
+      PaletteComboBox.DataSource = ctx.PaletteManager.Palettes;
+      PaletteComboBox.SelectedIndex = Math.Max(0, Math.Min(ctx.PaletteManager.Palettes.Count() - 1, sett.PaletteIndex));
+
+      changing = false;
     }
 
     private void DialogToSettings()
     {
-//{!}      var sett = ctx.Settings.Waterfall;
-//      sett.Brightness = BrightnessTrackbar.Value / 50f - 1; // 0..100 -> -1..1
-//      sett.Contrast = ContrastTrackbar.Value / 100f;        // 0..100 -> 0..1
-//      sett.Speed = Speeds[SpeedTrackbar.Value];
-//      sett.PaletteIndex = PaletteComboBox.SelectedIndex;
+      var sett = ctx.Settings.Waterfall;
+      sett.Brightness = BrightnessTrackbar.Value / 50f - 1; // 0..100 -> -1..1
+      sett.Contrast = ContrastTrackbar.Value / 100f;        // 0..100 -> 0..1
+      sett.Speed = Speeds[SpeedTrackbar.Value];
+      sett.PaletteIndex = PaletteComboBox.SelectedIndex;
     }
   }
 }
