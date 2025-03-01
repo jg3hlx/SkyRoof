@@ -238,5 +238,10 @@ namespace OrbiNom
           }
         }
     }
+
+    internal TransmitterLabel? GetLabelUnderCursor(Point location)
+    {
+      return Labels.FirstOrDefault(label => label.Rect.Contains(location));
+    }
   }
 }

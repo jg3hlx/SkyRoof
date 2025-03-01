@@ -1,0 +1,140 @@
+;This file was created by Graph (http://www.padowan.dk)
+;Do not change this file from other programs.
+[Graph]
+Version = 4.4.2.543
+MinVersion = 2.5
+OS = Windows NT 6.2 
+
+[Axes]
+xMin = 0.0003
+xMax = 0.1
+xTickUnit = 10
+xGridUnit = 10
+xLogScl = 1
+xShowGrid = 1
+xLabel = Hz / pix
+yMin = -20
+yMax = 50
+yTickUnit = 5
+yGridUnit = 5
+yShowGrid = 1
+yLabel = Brightness
+yAxisCross = 1
+AxesColor = clBlue
+GridColor = 0x00FF9999
+ShowLegend = 0
+Radian = 1
+AxesStyle = 2
+LegendPlacement = 0
+LegendPos = 0.000340602965787859,61.3138686131387
+
+[PointSeries1]
+FillColor = clFuchsia
+LineColor = clPurple
+Size = 3
+Style = 0
+LineStyle = 0
+LabelPosition = 1
+PointCount = 5
+Points = 0.05,48;0.016667,46;0.004695,43;0.00188,42;0.000365,39;
+LegendText = 1
+
+[PointSeries2]
+FillColor = clFuchsia
+LineColor = clPurple
+Size = 3
+Style = 0
+LineStyle = 0
+LabelPosition = 1
+PointCount = 5
+Points = 0.05,46;0.016667,42;0.004695,39;0.00188,37;0.000365,33;
+LegendText = 2
+
+[PointSeries3]
+FillColor = clFuchsia
+LineColor = clPurple
+Size = 3
+Style = 0
+LineStyle = 0
+LabelPosition = 1
+PointCount = 5
+Points = 0.05,42;0.016667,38;0.004695,33;0.00188,31;0.000365,27;
+LegendText = 4
+
+[PointSeries4]
+FillColor = clFuchsia
+LineColor = clPurple
+Size = 3
+Style = 0
+LineStyle = 0
+LabelPosition = 1
+PointCount = 5
+Points = 0.05,36;0.016667,31;0.004695,26;0.00188,21;0.000365,17;
+LegendText = 8
+
+[PointSeries5]
+FillColor = clFuchsia
+LineColor = clPurple
+Size = 3
+Style = 0
+LineStyle = 0
+LabelPosition = 1
+PointCount = 5
+Points = 0.05,31;0.016667,24;0.004695,19;0.00188,15;0.000365,10;
+LegendText = 12
+
+[PointSeries6]
+FillColor = clFuchsia
+LineColor = clPurple
+Size = 3
+Style = 0
+LineStyle = 0
+LabelPosition = 1
+PointCount = 5
+Points = 0.05,19;0.016667,10;0.004695,5;0.00188,0;0.000365,-9;
+LegendText = 16
+
+[Func1]
+FuncType = 0
+y = 1.83153872*ln(x)+53.35968769
+LegendText = f(x)=1.8315*ln(x)+53.3597; R²=0.9926
+Color = clFuchsia
+
+[Func2]
+FuncType = 0
+y = 2.57254994*ln(x)+53.10830094
+LegendText = f(x)=2.5725*ln(x)+53.1083; R²=0.9912
+Color = clFuchsia
+
+[Func3]
+FuncType = 0
+y = 3.06263557*ln(x)+50.51981147
+LegendText = f(x)=3.0626*ln(x)+50.5198; R²=0.9838
+Color = clFuchsia
+
+[Func4]
+FuncType = 0
+y = 3.9513044*ln(x)+47.25524518
+LegendText = f(x)=3.9513*ln(x)+47.2552; R²=0.9848
+Color = clFuchsia
+
+[Func5]
+FuncType = 0
+y = 4.20670523*ln(x)+42.21619503
+LegendText = f(x)=4.2067*ln(x)+42.2162; R²=0.9803
+Color = clFuchsia
+
+[Func6]
+FuncType = 0
+y = 5.57401922*ln(x)+34.59727581
+LegendText = f(x)=5.574*ln(x)+34.5973; R²=0.9767
+Color = clFuchsia
+
+[Data]
+TextLabelCount = 0
+FuncCount = 6
+PointSeriesCount = 6
+ShadeCount = 0
+RelationCount = 0
+OleObjectCount = 0
+

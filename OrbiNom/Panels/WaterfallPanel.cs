@@ -11,6 +11,7 @@ using MathNet.Numerics;
 using SharpGL;
 using SharpGL.SceneGraph.Lighting;
 using WeifenLuo.WinFormsUI.Docking;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace OrbiNom
 {
@@ -40,6 +41,7 @@ namespace OrbiNom
       ScaleControl.ctx = ctx;
       ScaleControl.BuildLabels();
       ScaleControl.MouseWheel += WaterfallControl_MouseWheel;
+      ScaleControl.MouseMove += ScaleControl_MouseMove;
 
       WaterfallControl.OpenglControl.MouseDown += WaterfallControl_MouseDown;
       WaterfallControl.OpenglControl.MouseMove += WaterfallControl_MouseMove;
@@ -89,7 +91,7 @@ namespace OrbiNom
 
 
     //----------------------------------------------------------------------------------------------
-    //                                 mouse over waterfall
+    //                                         mouse 
     //----------------------------------------------------------------------------------------------
     int MouseDownX, MouseMoveX;
     double MouseDownFrequency;
@@ -139,6 +141,30 @@ namespace OrbiNom
 
       ScaleControl.Refresh();
       WaterfallControl.OpenglControl.Refresh();
+    }
+
+    private void ScaleControl_MouseMove(object? sender, MouseEventArgs e)
+    {
+      TransmitterLabel? labelUnderCursor = ScaleControl.GetLabelUnderCursor(e.Location);
+      if (labelUnderCursor == null)
+      {
+        toolTip1.Hide(ScaleControl);
+        toolTip1.ToolTipTitle = null;
+        ScaleControl.Cursor = Cursors.Default;
+      }
+      else if (toolTip1.ToolTipTitle != labelUnderCursor.Pass.Satellite.name)
+      {
+        var parts = labelUnderCursor.Pass.GetTooltipText(true);
+        string tooltip = $"{parts[0]}  ({parts[2]})\n{parts[4]}\n{parts[5]}\n{labelUnderCursor.Tooltip}";
+
+        if (tooltip != toolTip1.GetToolTip(this))
+        {
+          Point location = new((int)labelUnderCursor.Rect.Right + 1, (int)labelUnderCursor.Rect.Top);
+          toolTip1.ToolTipTitle = labelUnderCursor.Pass.Satellite.name;
+          toolTip1.Show(tooltip, ScaleControl, location);
+          ScaleControl.Cursor = Cursors.Hand;
+        }
+      }
     }
 
     public double PixelToFreq(float x)

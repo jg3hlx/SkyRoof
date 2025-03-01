@@ -28,12 +28,14 @@
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WaterfallPanel));
       SplitContainer = new SplitContainer();
+      label1 = new Label();
       SlidersBtn = new Button();
       ScaleControl = new FrequencyScale();
       WaterfallControl = new WaterfallControl();
-      label1 = new Label();
+      toolTip1 = new ToolTip(components);
       ((System.ComponentModel.ISupportInitialize)SplitContainer).BeginInit();
       SplitContainer.Panel1.SuspendLayout();
       SplitContainer.Panel2.SuspendLayout();
@@ -60,6 +62,16 @@
       SplitContainer.Size = new Size(800, 450);
       SplitContainer.SplitterDistance = 79;
       SplitContainer.TabIndex = 0;
+      // 
+      // label1
+      // 
+      label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      label1.AutoSize = true;
+      label1.Location = new Point(750, 10);
+      label1.Name = "label1";
+      label1.Size = new Size(38, 15);
+      label1.TabIndex = 5;
+      label1.Text = "label1";
       // 
       // SlidersBtn
       // 
@@ -90,16 +102,6 @@
       WaterfallControl.Size = new Size(800, 367);
       WaterfallControl.TabIndex = 0;
       // 
-      // label1
-      // 
-      label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      label1.AutoSize = true;
-      label1.Location = new Point(750, 10);
-      label1.Name = "label1";
-      label1.Size = new Size(38, 15);
-      label1.TabIndex = 5;
-      label1.Text = "label1";
-      // 
       // WaterfallPanel
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -125,5 +127,6 @@
     private Button SlidersBtn;
     public SplitContainer SplitContainer;
     private Label label1;
+    private ToolTip toolTip1;
   }
 }

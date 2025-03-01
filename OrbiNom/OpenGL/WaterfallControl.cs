@@ -230,6 +230,8 @@ namespace OrbiNom
 
 
     // correct brightness for spectrum shrinking, horizontal and vertical
+    // the formula is a linear regression of the brightness vs. log resolution
+    // where the slope and intercept are functions of the scrolling speed
     private float computeBrightness()
     {
       double pixPerHz = OpenglControl.Size.Width / VisibleBandwidth;

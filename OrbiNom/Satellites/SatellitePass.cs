@@ -86,16 +86,22 @@ namespace OrbiNom
     {
       if (Geostationary) return [$"Geostationary   orbit #{OrbitNumber}", "", "", "", "", ""];
 
+      var elevation = GetTrackPointAt(DateTime.UtcNow).Observation.Elevation.Degrees;
+      var nextElevation = GetTrackPointAt(DateTime.UtcNow.AddMinutes(1)).Observation.Elevation.Degrees;
+      string upDpwn = nextElevation > elevation ? "↑" : "↓";
+  
       string[] tooltip = new string[6];
 
       if (EndTime < DateTime.UtcNow) tooltip[0] = "Ended.";
       else if (StartTime < DateTime.UtcNow) tooltip[0] = $"LOS ↓  in {Utils.TimespanToString(EndTime - DateTime.UtcNow, showSeconds)}";
       else tooltip[0] = $"AOS ↑  in {Utils.TimespanToString(StartTime - DateTime.UtcNow, showSeconds)}";
 
+
+
       tooltip[1] = $"{StartTime.ToLocalTime():yyyy-MM-dd}";
       tooltip[2] = $"{StartTime.ToLocalTime():HH:mm:ss} to {EndTime.ToLocalTime():HH:mm:ss}";
       tooltip[3] = $"Duration: {Utils.TimespanToString(EndTime - StartTime, false)}";
-      tooltip[4] = $"Max Elevation: {MaxElevation:F0}°";
+      tooltip[4] = $"Elevation: {elevation:F0}º {upDpwn}  (Max {MaxElevation:F0}º)";
       tooltip[5] = $"Orbit: #{OrbitNumber}";
 
       return tooltip;
