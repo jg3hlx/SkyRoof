@@ -54,14 +54,20 @@
       return $"{low / 1000:N0} - {high / 1000:N0}";
     }
 
-    public bool IsVhf()
+    public bool IsVhf(long? freq = null)
     {
-      return downlink_low >= 144000000 && downlink_low <= 148000000;
+      freq ??= downlink_low;
+      if (!freq.HasValue) return false;
+
+      return freq >= 144000000 && freq <= 148000000;
     }
 
-    public bool IsUhf()
+    public bool IsUhf(long? freq = null)
     {
-      return downlink_low >= 430000000 && downlink_low <= 440000000;
+      freq ??= downlink_low;
+      if (!freq.HasValue) return false;
+
+      return freq >= 430000000 && freq <= 440000000;
     }
 
     public bool IsHamBand() { return IsVhf() || IsUhf(); }

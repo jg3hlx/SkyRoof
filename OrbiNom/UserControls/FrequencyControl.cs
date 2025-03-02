@@ -43,12 +43,15 @@ namespace OrbiNom.UserControls
 
     private void UpdateAllControls()
     {
-      FrequencyLabel.Text = Frequency.HasValue ? $"{Frequency:n0}" : "000,000,000";
+      DownlinkFrequencyLabel.Text = Frequency.HasValue ? $"{Frequency:n0}" : "000,000,000";
 
       if (Satellite == null)
       {
-        SatelliteLabel.Text = "No satellite";
-        FrequencyLabel.ForeColor = Color.Silver;
+        SatelliteLabel.Text = "No Satellite";
+        DownlinkFrequencyLabel.ForeColor = Color.Gray;
+
+        UplinkLabel.Text = "No Uplink";
+        UplinkFrequencyLabel.ForeColor = Color.Gray;
       }
       else
       {
@@ -56,12 +59,26 @@ namespace OrbiNom.UserControls
         bool isAboveHorizon = Observation.Elevation.Degrees > 0;
 
         SatelliteLabel.Text = $"{Satellite.name}  {Transmitter.description}";
+        UplinkLabel.Text = "Uplink";
 
         if (Transmitter.IsUhf())
-          FrequencyLabel.ForeColor = isAboveHorizon ? Color.Cyan : Color.Teal;
+          DownlinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Cyan : Color.Teal;
         else if (Transmitter.IsVhf())
-          FrequencyLabel.ForeColor = isAboveHorizon ? Color.Yellow : Color.Olive;
-        else FrequencyLabel.ForeColor = isAboveHorizon ? Color.White : Color.Silver;
+          DownlinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Yellow : Color.Olive;
+        else DownlinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.White : Color.Gray;
+
+
+        var txFreq = Transmitter.invert ? Transmitter.uplink_high : Transmitter.uplink_low;
+        UplinkLabel.Text = txFreq.HasValue ? "Uplink" : "No Uplink";
+        UplinkFrequencyLabel.Text = txFreq.HasValue ? $"{txFreq:n0}" : "000,000,000";
+
+        if (!txFreq.HasValue)
+          UplinkFrequencyLabel.ForeColor = Color.Gray;
+        else if (Transmitter.IsUhf(txFreq))
+          UplinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Cyan : Color.Teal;
+        else if (Transmitter.IsVhf(txFreq))
+          UplinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Yellow : Color.Olive;
+        else UplinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.White : Color.Gray;
       }
     }
 

@@ -31,9 +31,11 @@
       components = new System.ComponentModel.Container();
       Toolbar = new Panel();
       DownlinkFrequencyControl = new UserControls.FrequencyControl();
+      panel1 = new Panel();
       SatelliteSelector = new SatelliteSelector();
       ClockPanel = new Panel();
       Clock = new VE3NEA.Clock.Clock();
+      panel2 = new Panel();
       DockHost = new WeifenLuo.WinFormsUI.Docking.DockPanel();
       vS2015LightTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015LightTheme();
       menuStrip1 = new MenuStrip();
@@ -87,31 +89,41 @@
       // 
       // Toolbar
       // 
-      Toolbar.BorderStyle = BorderStyle.FixedSingle;
       Toolbar.Controls.Add(DownlinkFrequencyControl);
+      Toolbar.Controls.Add(panel1);
       Toolbar.Controls.Add(SatelliteSelector);
       Toolbar.Controls.Add(ClockPanel);
+      Toolbar.Controls.Add(panel2);
       Toolbar.Dock = DockStyle.Top;
       Toolbar.Location = new Point(0, 24);
       Toolbar.Name = "Toolbar";
-      Toolbar.Size = new Size(1200, 70);
+      Toolbar.Size = new Size(1302, 70);
       Toolbar.TabIndex = 0;
       // 
       // DownlinkFrequencyControl
       // 
       DownlinkFrequencyControl.BorderStyle = BorderStyle.FixedSingle;
       DownlinkFrequencyControl.Dock = DockStyle.Left;
-      DownlinkFrequencyControl.Location = new Point(496, 0);
+      DownlinkFrequencyControl.Location = new Point(510, 0);
       DownlinkFrequencyControl.Name = "DownlinkFrequencyControl";
-      DownlinkFrequencyControl.Size = new Size(342, 68);
+      DownlinkFrequencyControl.Size = new Size(682, 70);
       DownlinkFrequencyControl.TabIndex = 3;
+      // 
+      // panel1
+      // 
+      panel1.Dock = DockStyle.Left;
+      panel1.Location = new Point(506, 0);
+      panel1.Name = "panel1";
+      panel1.Size = new Size(4, 70);
+      panel1.TabIndex = 4;
       // 
       // SatelliteSelector
       // 
+      SatelliteSelector.BorderStyle = BorderStyle.FixedSingle;
       SatelliteSelector.Dock = DockStyle.Left;
-      SatelliteSelector.Location = new Point(0, 0);
+      SatelliteSelector.Location = new Point(4, 0);
       SatelliteSelector.Name = "SatelliteSelector";
-      SatelliteSelector.Size = new Size(496, 68);
+      SatelliteSelector.Size = new Size(502, 70);
       SatelliteSelector.TabIndex = 2;
       SatelliteSelector.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
       SatelliteSelector.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
@@ -123,7 +135,7 @@
       // 
       ClockPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       ClockPanel.Controls.Add(Clock);
-      ClockPanel.Location = new Point(1096, 0);
+      ClockPanel.Location = new Point(1200, 0);
       ClockPanel.Name = "ClockPanel";
       ClockPanel.Padding = new Padding(3);
       ClockPanel.Size = new Size(102, 54);
@@ -140,6 +152,14 @@
       Clock.TabIndex = 1;
       Clock.UtcMode = true;
       // 
+      // panel2
+      // 
+      panel2.Dock = DockStyle.Left;
+      panel2.Location = new Point(0, 0);
+      panel2.Name = "panel2";
+      panel2.Size = new Size(4, 70);
+      panel2.TabIndex = 5;
+      // 
       // DockHost
       // 
       DockHost.DefaultFloatWindowSize = new Size(445, 445);
@@ -149,7 +169,7 @@
       DockHost.Name = "DockHost";
       DockHost.Padding = new Padding(6);
       DockHost.ShowAutoHideContentOnHover = false;
-      DockHost.Size = new Size(1200, 581);
+      DockHost.Size = new Size(1302, 581);
       DockHost.TabIndex = 4;
       DockHost.Theme = vS2015LightTheme1;
       // 
@@ -158,7 +178,7 @@
       menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, GroupViewPanelMNU, toolsToolStripMenuItem, helpToolStripMenuItem });
       menuStrip1.Location = new Point(0, 0);
       menuStrip1.Name = "menuStrip1";
-      menuStrip1.Size = new Size(1200, 24);
+      menuStrip1.Size = new Size(1302, 24);
       menuStrip1.TabIndex = 5;
       menuStrip1.Text = "menuStrip1";
       // 
@@ -339,7 +359,7 @@
       StatusStrip.Location = new Point(0, 675);
       StatusStrip.Name = "StatusStrip";
       StatusStrip.ShowItemToolTips = true;
-      StatusStrip.Size = new Size(1200, 35);
+      StatusStrip.Size = new Size(1302, 35);
       StatusStrip.TabIndex = 6;
       StatusStrip.Text = "statusStrip1";
       // 
@@ -482,7 +502,7 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(1200, 710);
+      ClientSize = new Size(1302, 710);
       Controls.Add(DockHost);
       Controls.Add(Toolbar);
       Controls.Add(menuStrip1);
@@ -554,5 +574,7 @@
     public ToolStripMenuItem TransmittersMNU;
     public SatelliteSelector SatelliteSelector;
     private UserControls.FrequencyControl DownlinkFrequencyControl;
+    private Panel panel1;
+    private Panel panel2;
   }
 }

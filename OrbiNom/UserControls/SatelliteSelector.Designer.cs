@@ -153,6 +153,7 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
+      BorderStyle = BorderStyle.FixedSingle;
       Controls.Add(TuneToBtn);
       Controls.Add(GainSlider);
       Controls.Add(label4);
@@ -164,7 +165,7 @@
       Controls.Add(GroupComboBox);
       Controls.Add(label1);
       Name = "SatelliteSelector";
-      Size = new Size(500, 65);
+      Size = new Size(498, 63);
       ((System.ComponentModel.ISupportInitialize)GainSlider).EndInit();
       ResumeLayout(false);
       PerformLayout();
