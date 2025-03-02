@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -42,6 +43,7 @@ namespace OrbiNom
       ScaleControl.BuildLabels();
       ScaleControl.MouseWheel += WaterfallControl_MouseWheel;
       ScaleControl.MouseMove += ScaleControl_MouseMove;
+      ScaleControl.MouseDown += ScaleControl_MouseDown;
 
       WaterfallControl.OpenglControl.MouseDown += WaterfallControl_MouseDown;
       WaterfallControl.OpenglControl.MouseMove += WaterfallControl_MouseMove;
@@ -165,6 +167,27 @@ namespace OrbiNom
           ScaleControl.Cursor = Cursors.Hand;
         }
       }
+    }
+
+    private void ScaleControl_MouseDown(object? sender, MouseEventArgs e)
+    {
+      TransmitterLabel? label = ScaleControl.GetLabelUnderCursor(e.Location);
+
+      // tune to frequency
+      if (label == null)
+        ctx.DownlinkFrequencyControl.SetFrequency(PixelToFreq(e.X));
+
+      // select transmitter if in current group
+      else if (ctx.SatelliteSelector.GroupSatellites.Contains(label.Pass.Satellite))
+      {
+        ctx.SatelliteSelector.SetSelectedSatellite(label.Pass.Satellite);
+        ctx.SatelliteSelector.SetSelectedTransmitter(label.Transmitters?.FirstOrDefault());
+      }
+
+      // just tune to transmitter
+      else
+        ctx.DownlinkFrequencyControl.SetTransmitter(
+          label.Transmitters?.FirstOrDefault(), label.Pass.Satellite);
     }
 
     public double PixelToFreq(float x)

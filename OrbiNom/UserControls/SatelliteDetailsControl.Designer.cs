@@ -75,6 +75,7 @@
       // 
       // SatellitePropertyGrid
       // 
+      SatellitePropertyGrid.BackColor = SystemColors.Control;
       SatellitePropertyGrid.DisabledItemForeColor = SystemColors.WindowText;
       SatellitePropertyGrid.Dock = DockStyle.Fill;
       SatellitePropertyGrid.HelpVisible = false;
@@ -97,7 +98,7 @@
       // 
       // listView1
       // 
-      listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3 });
+      listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader3, columnHeader2 });
       listView1.Dock = DockStyle.Fill;
       listView1.FullRowSelect = true;
       listView1.LabelWrap = false;

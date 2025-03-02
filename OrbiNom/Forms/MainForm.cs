@@ -17,7 +17,10 @@ namespace OrbiNom
 
       ctx.MainForm = this;
       ctx.SatelliteSelector = SatelliteSelector;
+      ctx.DownlinkFrequencyControl = DownlinkFrequencyControl;
       SatelliteSelector.ctx = ctx;
+      DownlinkFrequencyControl.ctx = ctx;
+
       ctx.Settings.LoadFromFile();
 
       EnsureUserDetails();
@@ -208,7 +211,7 @@ namespace OrbiNom
         SpectrumAnalyzer.Spectrum.Step =
           ctx.Sdr.Info.SampleRate / ctx.Settings.Waterfall.Speed;
 
-      if (ctx.WaterfallPanel?.WaterfallControl != null)      
+      if (ctx.WaterfallPanel?.WaterfallControl != null)
         ctx.WaterfallPanel.WaterfallControl.ScrollSpeed = ctx.Settings.Waterfall.Speed;
     }
 
@@ -671,6 +674,14 @@ namespace OrbiNom
     {
       SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
       ctx.SkyViewPanel?.SetPass(pass);
+    }
+
+
+    private void SatelliteSelector_SelectedTransmitterChanged(object sender, EventArgs e)
+    {
+      DownlinkFrequencyControl.SetTransmitter(
+        SatelliteSelector.SelectedTransmitter, 
+        SatelliteSelector.SelectedSatellite);
     }
 
     internal void SetGridSquare()

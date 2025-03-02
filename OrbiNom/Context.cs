@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OrbiNom.UserControls;
 using VE3NEA;
 
 namespace OrbiNom
@@ -22,7 +23,9 @@ namespace OrbiNom
 
     // panels
     public MainForm MainForm;
+    public FrequencyControl DownlinkFrequencyControl;
     public SatelliteSelector SatelliteSelector;
+
     public GroupViewPanel? GroupViewPanel;
     public SatelliteDetailsPanel? SatelliteDetailsPanel;
     public PassesPanel? PassesPanel;
@@ -31,6 +34,6 @@ namespace OrbiNom
     public EarthViewPanel? EarthViewPanel;
     public TransmittersPanel? TransmittersPanel;
     public SoapySdrDevice? Sdr;
-    internal WaterfallPanel? WaterfallPanel;
+    public WaterfallPanel? WaterfallPanel;
   }
 }

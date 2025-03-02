@@ -11,6 +11,13 @@ namespace OrbiNom
     private SatelliteGroup group;
     private SatnogsDbSatellite clickedSatellite;
 
+    public event EventHandler? SelectedGroupChanged;
+    public event EventHandler? SelectedSatelliteChanged;
+    public event EventHandler? ClickedSatelliteChanged;
+    public event EventHandler? SelectedTransmitterChanged;
+    public event EventHandler? SelectedPassChanged;
+
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public SatnogsDbSatellite[] GroupSatellites { get; private set; } = [];
 
@@ -23,11 +30,9 @@ namespace OrbiNom
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public SatellitePass? SelectedPass { get; private set; }
 
-    public event EventHandler? SelectedGroupChanged;
-    public event EventHandler? SelectedSatelliteChanged;
-    public event EventHandler? ClickedSatelliteChanged;
-    public event EventHandler? SelectedTransmitterChanged;
-    public event EventHandler? SelectedPassChanged;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public SatnogsDbTransmitter SelectedTransmitter { get; private set; }
+
 
     public SatelliteSelector()
     {
@@ -71,9 +76,10 @@ namespace OrbiNom
       SetSelectedSatellite();
     }
 
-
     public void SetSelectedSatellite(SatnogsDbSatellite satellite)
     {
+      if (SelectedSatellite == satellite) return;
+
       if (group.SatelliteIds.Contains(satellite.sat_id))
       {
         group.SelectedSatId = satellite.sat_id;
@@ -121,19 +127,36 @@ namespace OrbiNom
       var sett = ctx.Settings.Satellites;
 
       var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(SelectedSatellite.sat_id);
-      var tx = SelectedSatellite.Transmitters.FirstOrDefault(t => t.uuid == cust.SelectedTransmitter);
+      SelectedTransmitter = SelectedSatellite.Transmitters.FirstOrDefault(t => t.uuid == cust.SelectedTransmitter);
 
-      if (tx == null)
+      if (SelectedTransmitter == null)
       {
-        tx = SelectedSatellite.Transmitters[0];
-        cust.SelectedTransmitter = tx.uuid;
+        SelectedTransmitter = SelectedSatellite.Transmitters[0];
+        cust.SelectedTransmitter = SelectedTransmitter.uuid;
       }
 
 
       changing = true;
-      TransmitterComboBox.SelectedItem = tx;
-      toolTip1.SetToolTip(TransmitterComboBox, tx.GetTooltipText());
+      TransmitterComboBox.SelectedItem = SelectedTransmitter;
+      toolTip1.SetToolTip(TransmitterComboBox, SelectedTransmitter.GetTooltipText());
       changing = false;
+    }
+
+    public void SetSelectedTransmitter(SatnogsDbTransmitter? tx)
+    {
+      if (tx == null) return;
+
+      if (SelectedSatellite.Transmitters.Contains(tx))
+      {
+        SelectedTransmitter = tx;
+        var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(SelectedSatellite.sat_id);
+        cust.SelectedTransmitter = tx.uuid;
+
+        SetSelectedTransmitter();
+        OnSelectedTransmitterChanged();
+      }
+      else
+        Console.Beep();
     }
 
     public void SetSelectedPass(SatellitePass? pass)
@@ -177,14 +200,7 @@ namespace OrbiNom
     {
       if (changing) return;
 
-      // new selection to settings
-      var tx = (SatnogsDbTransmitter)TransmitterComboBox.SelectedItem!;
-      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(SelectedSatellite.sat_id);
-      cust.SelectedTransmitter = tx.uuid;
-
-      toolTip1.SetToolTip(TransmitterComboBox, tx.GetTooltipText());
-
-      OnSelectedTransmitterChanged();
+      SetSelectedTransmitter((SatnogsDbTransmitter)TransmitterComboBox.SelectedItem!);
     }
 
 
@@ -253,8 +269,9 @@ namespace OrbiNom
 
       var tx = (SatnogsDbTransmitter)TransmitterComboBox.Items[e.Index];
 
-      if (tx.IsUhf()) bacBrush = Brushes.LightGoldenrodYellow;
       if (tx.IsUhf()) bacBrush = Brushes.LightCyan;
+      else if (tx.IsVhf()) bacBrush = Brushes.LightGoldenrodYellow;
+
       if (tx.service == "Amateur") font = new(font, FontStyle.Bold);
       if (!tx.alive || tx.status != "active") foreBrush = Brushes.Silver;
 
@@ -266,6 +283,11 @@ namespace OrbiNom
     private void GainSlider_ValueChanged(object sender, EventArgs e)
     {
       toolTip1.SetToolTip(GainSlider, $"RF Gain: {GainSlider.Value}");
+    }
+
+    private void TuneToBtn_Click(object sender, EventArgs e)
+    {
+      ctx.DownlinkFrequencyControl.SetTransmitter(SelectedTransmitter, SelectedSatellite);
     }
   }
 }

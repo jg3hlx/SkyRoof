@@ -52,8 +52,8 @@ namespace OrbiNom
         // columns
         var item = new ListViewItem([
           tx.description,
-          SatnogsDbTransmitter.FormatFrequencyRange(tx.uplink_low, tx.uplink_high),
           SatnogsDbTransmitter.FormatFrequencyRange(tx.downlink_low, tx.downlink_high, tx.invert),
+          SatnogsDbTransmitter.FormatFrequencyRange(tx.uplink_low, tx.uplink_high),
         ]);
         item.Group = listView1.Groups[0];
 
@@ -72,7 +72,7 @@ namespace OrbiNom
       // JE9PEL transmitters
       foreach (var t in Satellite.JE9PELtransmitters)
       {
-        var item = new ListViewItem([t.Mode, t.Uplink, t.Downlink]);
+        var item = new ListViewItem([t.Mode, t.Downlink, t.Uplink]);
         item.Group = listView1.Groups[1];
         if (t.Status != "active") item.ForeColor = Color.Silver;
         item.ToolTipText = t.GetTooltipText();

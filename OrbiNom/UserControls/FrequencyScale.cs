@@ -131,21 +131,21 @@ namespace OrbiNom
         DrawSpan(label, g);
 
       // draw labels
-      Labels = Labels.OrderByDescending(l => l.x).ToList();
+      var labels = Labels.Where(l => l.x >= 0 && l.x <= width).OrderByDescending(l => l.x).ToList();
       LastXPositions.Clear();
-      foreach (var label in Labels) DrawLabel(g, label, now);
+      foreach (var label in labels) DrawLabel(g, label, now);
 
-      foreach (var label in Labels)
+      foreach (var label in labels)
         if (label.Pass.EndTime < now && label.Pass.EndTime > now.AddMinutes(-30))
           DrawTriangle(label, g, Brushes.Silver);
 
       // future
-      foreach (var label in Labels)
+      foreach (var label in labels)
         if (label.Pass.StartTime > now && label.Pass.StartTime < now.AddMinutes(5))
           DrawTriangle(label, g, Brushes.White);
 
       // current
-      foreach (var label in Labels)
+      foreach (var label in labels)
         if (label.Pass.StartTime <= now && label.Pass.EndTime >= now)
           DrawTriangle(label, g, Brushes.Lime);
     }
@@ -199,10 +199,10 @@ namespace OrbiNom
 
     private void DrawTriangle(TransmitterLabel label, Graphics g, Brush brush)
     {
-      if (label.Span != null) return;
+      if (label.Span != null && label.Span != 0) return;
       if (label.x < 0 || label.x > width) return;
 
-      int y = height;
+      int y = height - 1;
 
       PointF[] points = {
         new PointF(label.x, y),

@@ -152,5 +152,10 @@ namespace OrbiNom
       var myLocation = new GeodeticCoordinate(Angle.FromRadians(pos.LatitudeRad), Angle.FromRadians(pos.LongitudeRad), 0);
       GroundStation = new GroundStation(myLocation);
     }
+
+    internal TopocentricObservation ObserveSatellite(SatnogsDbSatellite satellite, DateTime utcNow)
+    {
+      return GroundStation.Observe(satellite.Tracker, utcNow);
+    }
   }
 }

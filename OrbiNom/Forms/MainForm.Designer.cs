@@ -30,6 +30,7 @@
     {
       components = new System.ComponentModel.Container();
       Toolbar = new Panel();
+      DownlinkFrequencyControl = new UserControls.FrequencyControl();
       SatelliteSelector = new SatelliteSelector();
       ClockPanel = new Panel();
       Clock = new VE3NEA.Clock.Clock();
@@ -78,7 +79,6 @@
       NoiseFloorLabel = new ToolStripStatusLabel();
       CpuLoadlabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
-      frequencyControl11 = new UserControls.FrequencyControl();
       Toolbar.SuspendLayout();
       ClockPanel.SuspendLayout();
       menuStrip1.SuspendLayout();
@@ -88,7 +88,7 @@
       // Toolbar
       // 
       Toolbar.BorderStyle = BorderStyle.FixedSingle;
-      Toolbar.Controls.Add(frequencyControl11);
+      Toolbar.Controls.Add(DownlinkFrequencyControl);
       Toolbar.Controls.Add(SatelliteSelector);
       Toolbar.Controls.Add(ClockPanel);
       Toolbar.Dock = DockStyle.Top;
@@ -96,6 +96,15 @@
       Toolbar.Name = "Toolbar";
       Toolbar.Size = new Size(1200, 70);
       Toolbar.TabIndex = 0;
+      // 
+      // DownlinkFrequencyControl
+      // 
+      DownlinkFrequencyControl.BorderStyle = BorderStyle.FixedSingle;
+      DownlinkFrequencyControl.Dock = DockStyle.Left;
+      DownlinkFrequencyControl.Location = new Point(496, 0);
+      DownlinkFrequencyControl.Name = "DownlinkFrequencyControl";
+      DownlinkFrequencyControl.Size = new Size(342, 68);
+      DownlinkFrequencyControl.TabIndex = 3;
       // 
       // SatelliteSelector
       // 
@@ -107,6 +116,7 @@
       SatelliteSelector.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
       SatelliteSelector.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
       SatelliteSelector.ClickedSatelliteChanged += SatelliteSelector_ClickedSatelliteChanged;
+      SatelliteSelector.SelectedTransmitterChanged += SatelliteSelector_SelectedTransmitterChanged;
       SatelliteSelector.SelectedPassChanged += SatelliteSelector_SelectedPassChanged;
       // 
       // ClockPanel
@@ -468,14 +478,6 @@
       CpuLoadlabel.Text = "CPU Load: 00.0%";
       CpuLoadlabel.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // frequencyControl11
-      // 
-      frequencyControl11.Dock = DockStyle.Left;
-      frequencyControl11.Location = new Point(496, 0);
-      frequencyControl11.Name = "frequencyControl11";
-      frequencyControl11.Size = new Size(342, 68);
-      frequencyControl11.TabIndex = 3;
-      // 
       // MainForm
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -551,6 +553,6 @@
     private ToolStripMenuItem DownloadTleMNU;
     public ToolStripMenuItem TransmittersMNU;
     public SatelliteSelector SatelliteSelector;
-    private UserControls.FrequencyControl frequencyControl11;
+    private UserControls.FrequencyControl DownlinkFrequencyControl;
   }
 }

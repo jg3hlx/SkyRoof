@@ -30,14 +30,14 @@
     {
       listView1 = new ListView();
       columnHeader1 = new ColumnHeader();
-      columnHeader2 = new ColumnHeader();
       columnHeader3 = new ColumnHeader();
+      columnHeader2 = new ColumnHeader();
       SatNameLabel = new Label();
       SuspendLayout();
       // 
       // listView1
       // 
-      listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3 });
+      listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader3, columnHeader2 });
       listView1.Dock = DockStyle.Fill;
       listView1.FullRowSelect = true;
       listView1.LabelWrap = false;
@@ -51,21 +51,22 @@
       listView1.UseCompatibleStateImageBehavior = false;
       listView1.View = View.Details;
       listView1.ColumnClick += listView1_ColumnClick;
+      listView1.DoubleClick += listView1_DoubleClick;
       // 
       // columnHeader1
       // 
       columnHeader1.Text = "Transmitter";
       columnHeader1.Width = 200;
       // 
-      // columnHeader2
-      // 
-      columnHeader2.Text = "Uplink";
-      columnHeader2.Width = 120;
-      // 
       // columnHeader3
       // 
       columnHeader3.Text = "Downlink";
       columnHeader3.Width = 120;
+      // 
+      // columnHeader2
+      // 
+      columnHeader2.Text = "Uplink";
+      columnHeader2.Width = 120;
       // 
       // SatNameLabel
       // 

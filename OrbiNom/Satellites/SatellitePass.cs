@@ -82,6 +82,11 @@ namespace OrbiNom
       return GroundStation.Observe(Satellite.Tracker, utc);
     }
 
+    internal bool IsActive()
+    {
+      return StartTime < DateTime.UtcNow && EndTime > DateTime.UtcNow;
+    }
+
     internal string[] GetTooltipText(bool showSeconds = true)
     {
       if (Geostationary) return [$"Geostationary   orbit #{OrbitNumber}", "", "", "", "", ""];
