@@ -87,13 +87,46 @@ namespace OrbiNom
       if (maxBandwidthChanged) WaterfallControl.Clear();
     }
 
+    public double PixelToFreq(float x)
+    {
+      double dx = x - ScaleControl.width / 2d;
+      return ScaleControl.CenterFrequency + dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
+    }
+
+    private void SlidersBtn_Click(object sender, EventArgs e)
+    {
+      var dlg = new WaterfallSildersDlg(ctx);
+      dlg.Location = WaterfallControl.PointToScreen(new Point(2, 2));
+      dlg.Show();
+    }
+
+    private const double MinHzPerPixel = 20;
+    private void ValidateWaterfallViewport()
+    {
+      double minBandwidth = ScaleControl.width * MinHzPerPixel;
+      double visibleBandwidth = Math.Min(MaxBandwidth, Math.Max(minBandwidth, ScaleControl.VisibleBandwidth));
+
+      double minFreq = SdrCenterFrequency - MaxBandwidth / 2 + visibleBandwidth / 2;
+      double maxFreq = SdrCenterFrequency + MaxBandwidth / 2 - visibleBandwidth / 2;
+      double centerFrequency = Math.Max(minFreq, Math.Min(maxFreq, ScaleControl.CenterFrequency));
+
+      ScaleControl.VisibleBandwidth = visibleBandwidth;
+      ScaleControl.CenterFrequency = centerFrequency;
+      WaterfallControl.VisibleBandwidth = visibleBandwidth;
+    }
+
+    private void WaterfallControl_Resize(object sender, EventArgs e)
+    {
+      ScaleControl.HistoryRowCount = WaterfallControl.Height;
+    }
+
 
 
 
 
 
     //----------------------------------------------------------------------------------------------
-    //                                         mouse 
+    //                                   waterfall mouse 
     //----------------------------------------------------------------------------------------------
     int MouseDownX, MouseMoveX;
     double MouseDownFrequency;
@@ -145,6 +178,12 @@ namespace OrbiNom
       WaterfallControl.OpenglControl.Refresh();
     }
 
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                    scale mouse 
+    //----------------------------------------------------------------------------------------------
     private void ScaleControl_MouseMove(object? sender, MouseEventArgs e)
     {
       TransmitterLabel? labelUnderCursor = ScaleControl.GetLabelUnderCursor(e.Location);
@@ -152,7 +191,7 @@ namespace OrbiNom
       {
         toolTip1.Hide(ScaleControl);
         toolTip1.ToolTipTitle = null;
-        ScaleControl.Cursor = Cursors.Default;
+        ScaleControl.Cursor = Cursors.Cross;
       }
       else if (toolTip1.ToolTipTitle != labelUnderCursor.Pass.Satellite.name)
       {
@@ -186,37 +225,12 @@ namespace OrbiNom
 
       // just tune to transmitter
       else
+      {
+        ctx.SatelliteSelector.SetClickedSatellite(label.Pass.Satellite);
+        ctx.SatelliteSelector.SetSelectedPass(label.Pass);
         ctx.DownlinkFrequencyControl.SetTransmitter(
           label.Transmitters?.FirstOrDefault(), label.Pass.Satellite);
-    }
-
-    public double PixelToFreq(float x)
-    {
-      double dx = x - ScaleControl.width / 2d;
-      return ScaleControl.CenterFrequency + dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
-    }
-
-
-    private const double MinHzPerPixel = 20;
-    private void ValidateWaterfallViewport()
-    {
-      double minBandwidth = ScaleControl.width * MinHzPerPixel;
-      double visibleBandwidth = Math.Min(MaxBandwidth, Math.Max(minBandwidth, ScaleControl.VisibleBandwidth));
-
-      double minFreq = SdrCenterFrequency - MaxBandwidth / 2 + visibleBandwidth / 2;
-      double maxFreq = SdrCenterFrequency + MaxBandwidth / 2 - visibleBandwidth / 2;
-      double centerFrequency = Math.Max(minFreq, Math.Min(maxFreq, ScaleControl.CenterFrequency));
-
-      ScaleControl.VisibleBandwidth = visibleBandwidth;
-      ScaleControl.CenterFrequency = centerFrequency;
-      WaterfallControl.VisibleBandwidth = visibleBandwidth;
-    }
-
-    private void SlidersBtn_Click(object sender, EventArgs e)
-    {
-      var dlg = new WaterfallSildersDlg(ctx);
-      dlg.Location = WaterfallControl.PointToScreen(new Point(2, 2));
-      dlg.Show();
+      }
     }
   }
 }

@@ -34,6 +34,7 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
+      Cursor = Cursors.Cross;
       Name = "FrequencyScale";
       Size = new Size(357, 87);
       Paint += FrequencyScale_Paint;

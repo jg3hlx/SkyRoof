@@ -101,6 +101,7 @@
       WaterfallControl.Name = "WaterfallControl";
       WaterfallControl.Size = new Size(800, 367);
       WaterfallControl.TabIndex = 0;
+      WaterfallControl.Resize += WaterfallControl_Resize;
       // 
       // WaterfallPanel
       // 

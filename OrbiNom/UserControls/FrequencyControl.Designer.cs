@@ -32,20 +32,18 @@
       DownlinkFrequencyLabel = new Label();
       DopplerCheckbox = new CheckBox();
       ManualCheckbox = new CheckBox();
-      DopplerUpDown = new NumericUpDown();
-      ManualUpDown = new NumericUpDown();
+      DownlinkManualSpinner = new NumericUpDown();
       label2 = new Label();
       label1 = new Label();
-      numericUpDown1 = new NumericUpDown();
-      numericUpDown2 = new NumericUpDown();
+      UplinkManualSpinner = new NumericUpDown();
       checkBox1 = new CheckBox();
       checkBox2 = new CheckBox();
       UplinkFrequencyLabel = new Label();
       UplinkLabel = new Label();
-      ((System.ComponentModel.ISupportInitialize)DopplerUpDown).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)ManualUpDown).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)numericUpDown2).BeginInit();
+      DownlinkDopplerLabel = new Label();
+      UplinkDopplerLabel = new Label();
+      ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)UplinkManualSpinner).BeginInit();
       SuspendLayout();
       // 
       // SatelliteLabel
@@ -72,7 +70,7 @@
       // DopplerCheckbox
       // 
       DopplerCheckbox.AutoSize = true;
-      DopplerCheckbox.Location = new Point(190, 9);
+      DopplerCheckbox.Location = new Point(190, 8);
       DopplerCheckbox.Name = "DopplerCheckbox";
       DopplerCheckbox.Size = new Size(68, 19);
       DopplerCheckbox.TabIndex = 3;
@@ -82,36 +80,25 @@
       // ManualCheckbox
       // 
       ManualCheckbox.AutoSize = true;
-      ManualCheckbox.Location = new Point(190, 38);
+      ManualCheckbox.Location = new Point(190, 37);
       ManualCheckbox.Name = "ManualCheckbox";
       ManualCheckbox.Size = new Size(66, 19);
       ManualCheckbox.TabIndex = 4;
       ManualCheckbox.Text = "Manual";
       ManualCheckbox.UseVisualStyleBackColor = true;
       // 
-      // DopplerUpDown
+      // DownlinkManualSpinner
       // 
-      DopplerUpDown.DecimalPlaces = 3;
-      DopplerUpDown.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
-      DopplerUpDown.Location = new Point(264, 8);
-      DopplerUpDown.Maximum = new decimal(new int[] { 25, 0, 0, 0 });
-      DopplerUpDown.Minimum = new decimal(new int[] { 25, 0, 0, int.MinValue });
-      DopplerUpDown.Name = "DopplerUpDown";
-      DopplerUpDown.Size = new Size(68, 23);
-      DopplerUpDown.TabIndex = 5;
-      DopplerUpDown.Value = new decimal(new int[] { 20, 0, 0, 0 });
-      // 
-      // ManualUpDown
-      // 
-      ManualUpDown.DecimalPlaces = 3;
-      ManualUpDown.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
-      ManualUpDown.Location = new Point(264, 37);
-      ManualUpDown.Maximum = new decimal(new int[] { 25, 0, 0, 0 });
-      ManualUpDown.Minimum = new decimal(new int[] { 25, 0, 0, int.MinValue });
-      ManualUpDown.Name = "ManualUpDown";
-      ManualUpDown.Size = new Size(68, 23);
-      ManualUpDown.TabIndex = 6;
-      ManualUpDown.Value = new decimal(new int[] { 20, 0, 0, int.MinValue });
+      DownlinkManualSpinner.DecimalPlaces = 3;
+      DownlinkManualSpinner.Font = new Font("Segoe UI", 10F);
+      DownlinkManualSpinner.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
+      DownlinkManualSpinner.Location = new Point(258, 35);
+      DownlinkManualSpinner.Maximum = new decimal(new int[] { 25, 0, 0, 0 });
+      DownlinkManualSpinner.Minimum = new decimal(new int[] { 25, 0, 0, int.MinValue });
+      DownlinkManualSpinner.Name = "DownlinkManualSpinner";
+      DownlinkManualSpinner.Size = new Size(70, 25);
+      DownlinkManualSpinner.TabIndex = 6;
+      DownlinkManualSpinner.Value = new decimal(new int[] { 20, 0, 0, int.MinValue });
       // 
       // label2
       // 
@@ -133,29 +120,17 @@
       label1.TabIndex = 14;
       label1.Text = "↑";
       // 
-      // numericUpDown1
+      // UplinkManualSpinner
       // 
-      numericUpDown1.DecimalPlaces = 3;
-      numericUpDown1.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
-      numericUpDown1.Location = new Point(599, 37);
-      numericUpDown1.Maximum = new decimal(new int[] { 25, 0, 0, 0 });
-      numericUpDown1.Minimum = new decimal(new int[] { 25, 0, 0, int.MinValue });
-      numericUpDown1.Name = "numericUpDown1";
-      numericUpDown1.Size = new Size(68, 23);
-      numericUpDown1.TabIndex = 13;
-      numericUpDown1.Value = new decimal(new int[] { 20, 0, 0, int.MinValue });
-      // 
-      // numericUpDown2
-      // 
-      numericUpDown2.DecimalPlaces = 3;
-      numericUpDown2.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
-      numericUpDown2.Location = new Point(599, 8);
-      numericUpDown2.Maximum = new decimal(new int[] { 25, 0, 0, 0 });
-      numericUpDown2.Minimum = new decimal(new int[] { 25, 0, 0, int.MinValue });
-      numericUpDown2.Name = "numericUpDown2";
-      numericUpDown2.Size = new Size(68, 23);
-      numericUpDown2.TabIndex = 12;
-      numericUpDown2.Value = new decimal(new int[] { 20, 0, 0, 0 });
+      UplinkManualSpinner.DecimalPlaces = 3;
+      UplinkManualSpinner.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
+      UplinkManualSpinner.Location = new Point(599, 37);
+      UplinkManualSpinner.Maximum = new decimal(new int[] { 25, 0, 0, 0 });
+      UplinkManualSpinner.Minimum = new decimal(new int[] { 25, 0, 0, int.MinValue });
+      UplinkManualSpinner.Name = "UplinkManualSpinner";
+      UplinkManualSpinner.Size = new Size(68, 23);
+      UplinkManualSpinner.TabIndex = 13;
+      UplinkManualSpinner.Value = new decimal(new int[] { 20, 0, 0, int.MinValue });
       // 
       // checkBox1
       // 
@@ -198,31 +173,51 @@
       UplinkLabel.TabIndex = 8;
       UplinkLabel.Text = "Uplink";
       // 
+      // DownlinkDopplerLabel
+      // 
+      DownlinkDopplerLabel.BackColor = Color.White;
+      DownlinkDopplerLabel.Font = new Font("Segoe UI", 9.5F);
+      DownlinkDopplerLabel.Location = new Point(258, 6);
+      DownlinkDopplerLabel.Name = "DownlinkDopplerLabel";
+      DownlinkDopplerLabel.Size = new Size(55, 20);
+      DownlinkDopplerLabel.TabIndex = 15;
+      DownlinkDopplerLabel.Text = "+20,000";
+      DownlinkDopplerLabel.TextAlign = ContentAlignment.MiddleRight;
+      // 
+      // UplinkDopplerLabel
+      // 
+      UplinkDopplerLabel.BackColor = Color.White;
+      UplinkDopplerLabel.Font = new Font("Segoe UI", 9.5F);
+      UplinkDopplerLabel.Location = new Point(599, 6);
+      UplinkDopplerLabel.Name = "UplinkDopplerLabel";
+      UplinkDopplerLabel.Size = new Size(55, 20);
+      UplinkDopplerLabel.TabIndex = 16;
+      UplinkDopplerLabel.Text = "+20,000";
+      UplinkDopplerLabel.TextAlign = ContentAlignment.MiddleRight;
+      // 
       // FrequencyControl
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       BorderStyle = BorderStyle.FixedSingle;
+      Controls.Add(UplinkDopplerLabel);
+      Controls.Add(DownlinkDopplerLabel);
       Controls.Add(label1);
-      Controls.Add(numericUpDown1);
-      Controls.Add(numericUpDown2);
+      Controls.Add(UplinkManualSpinner);
       Controls.Add(checkBox1);
       Controls.Add(checkBox2);
       Controls.Add(UplinkFrequencyLabel);
       Controls.Add(UplinkLabel);
       Controls.Add(label2);
-      Controls.Add(ManualUpDown);
-      Controls.Add(DopplerUpDown);
+      Controls.Add(DownlinkManualSpinner);
       Controls.Add(ManualCheckbox);
       Controls.Add(DopplerCheckbox);
       Controls.Add(DownlinkFrequencyLabel);
       Controls.Add(SatelliteLabel);
       Name = "FrequencyControl";
       Size = new Size(679, 66);
-      ((System.ComponentModel.ISupportInitialize)DopplerUpDown).EndInit();
-      ((System.ComponentModel.ISupportInitialize)ManualUpDown).EndInit();
-      ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
-      ((System.ComponentModel.ISupportInitialize)numericUpDown2).EndInit();
+      ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).EndInit();
+      ((System.ComponentModel.ISupportInitialize)UplinkManualSpinner).EndInit();
       ResumeLayout(false);
       PerformLayout();
     }
@@ -233,15 +228,15 @@
     private Label DownlinkFrequencyLabel;
     private CheckBox DopplerCheckbox;
     private CheckBox ManualCheckbox;
-    private NumericUpDown DopplerUpDown;
-    private NumericUpDown ManualUpDown;
+    private NumericUpDown DownlinkManualSpinner;
     private Label label2;
     private Label label1;
-    private NumericUpDown numericUpDown1;
-    private NumericUpDown numericUpDown2;
+    private NumericUpDown UplinkManualSpinner;
     private CheckBox checkBox1;
     private CheckBox checkBox2;
     private Label UplinkFrequencyLabel;
     private Label UplinkLabel;
+    private Label DownlinkDopplerLabel;
+    private Label UplinkDopplerLabel;
   }
 }

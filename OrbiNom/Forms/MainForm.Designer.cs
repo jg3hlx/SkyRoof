@@ -30,7 +30,7 @@
     {
       components = new System.ComponentModel.Container();
       Toolbar = new Panel();
-      DownlinkFrequencyControl = new UserControls.FrequencyControl();
+      FrequencyControl = new UserControls.FrequencyControl();
       panel1 = new Panel();
       SatelliteSelector = new SatelliteSelector();
       ClockPanel = new Panel();
@@ -89,7 +89,7 @@
       // 
       // Toolbar
       // 
-      Toolbar.Controls.Add(DownlinkFrequencyControl);
+      Toolbar.Controls.Add(FrequencyControl);
       Toolbar.Controls.Add(panel1);
       Toolbar.Controls.Add(SatelliteSelector);
       Toolbar.Controls.Add(ClockPanel);
@@ -102,12 +102,12 @@
       // 
       // DownlinkFrequencyControl
       // 
-      DownlinkFrequencyControl.BorderStyle = BorderStyle.FixedSingle;
-      DownlinkFrequencyControl.Dock = DockStyle.Left;
-      DownlinkFrequencyControl.Location = new Point(510, 0);
-      DownlinkFrequencyControl.Name = "DownlinkFrequencyControl";
-      DownlinkFrequencyControl.Size = new Size(682, 70);
-      DownlinkFrequencyControl.TabIndex = 3;
+      FrequencyControl.BorderStyle = BorderStyle.FixedSingle;
+      FrequencyControl.Dock = DockStyle.Left;
+      FrequencyControl.Location = new Point(510, 0);
+      FrequencyControl.Name = "DownlinkFrequencyControl";
+      FrequencyControl.Size = new Size(682, 70);
+      FrequencyControl.TabIndex = 3;
       // 
       // panel1
       // 
@@ -573,7 +573,7 @@
     private ToolStripMenuItem DownloadTleMNU;
     public ToolStripMenuItem TransmittersMNU;
     public SatelliteSelector SatelliteSelector;
-    private UserControls.FrequencyControl DownlinkFrequencyControl;
+    private UserControls.FrequencyControl FrequencyControl;
     private Panel panel1;
     private Panel panel2;
   }

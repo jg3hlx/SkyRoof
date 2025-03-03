@@ -19,6 +19,8 @@ namespace OrbiNom
 
     public Context ctx;
     private List<TransmitterLabel> Labels = new();
+    private List<TransmitterLabel> VisibleLabels = new();
+    
     private readonly List<float> LastXPositions = new();
     private Brush BlueSpanBrush = new SolidBrush(Color.FromArgb(20, Color.Blue));
     private Brush GraySpanBrush = new SolidBrush(Color.FromArgb(20, Color.Gray));
@@ -27,8 +29,9 @@ namespace OrbiNom
 
     public double CenterFrequency = SdrConst.UHF_CENTER_FREQUENCY;
     internal double VisibleBandwidth = SdrConst.MAX_BANDWIDTH;
+    internal int HistoryRowCount = 1500;
     internal int width;
-    internal int height;
+    private int height;
 
     public FrequencyScale()
     {
@@ -118,34 +121,45 @@ namespace OrbiNom
       }
     }
 
+    private bool IsLabelVisible(TransmitterLabel label)
+    {
+      // vertical
+      var historyLength = TimeSpan.FromSeconds(HistoryRowCount / ctx.Settings.Waterfall.Speed);
+      if (label.Pass.EndTime < DateTime.UtcNow - historyLength) return false;
+
+      // horizontal
+      if (label.Span != null) return true;
+      return label.x >= 0 && label.x <= width;
+    }
+
     private void DrawTransmitters(Graphics g)
     {
       if (Labels.Count == 0) return;
+
+      // recompute labels' X
       var now = DateTime.UtcNow;
+      foreach (var label in Labels) label.x = (float)DopplerFreqToPixel(label.Pass, now, label.Frequency);
+      VisibleLabels = Labels.Where(IsLabelVisible).OrderByDescending(label => label.x).ToList();
 
-      // recompute label's X
-      foreach (var label in Labels)
-        label.x = (float)DopplerFreqToPixel(label.Pass, now, label.Frequency);
-
-      foreach (var label in Labels.Where(lb => lb.Span != null))
-        DrawSpan(label, g);
+      // draw spans
+      foreach (var label in Labels.Where(lb => lb.Span != null)) DrawSpan(label, g);
 
       // draw labels
-      var labels = Labels.Where(l => l.x >= 0 && l.x <= width).OrderByDescending(l => l.x).ToList();
       LastXPositions.Clear();
-      foreach (var label in labels) DrawLabel(g, label, now);
+      foreach (var label in VisibleLabels) DrawLabel(g, label, now);
 
-      foreach (var label in labels)
-        if (label.Pass.EndTime < now && label.Pass.EndTime > now.AddMinutes(-30))
+      // past triangles
+      foreach (var label in VisibleLabels)
+        if (label.Pass.EndTime < now)
           DrawTriangle(label, g, Brushes.Silver);
 
-      // future
-      foreach (var label in labels)
+      // future triangles
+      foreach (var label in VisibleLabels)
         if (label.Pass.StartTime > now && label.Pass.StartTime < now.AddMinutes(5))
           DrawTriangle(label, g, Brushes.White);
 
-      // current
-      foreach (var label in labels)
+      // current triangles
+      foreach (var label in VisibleLabels)
         if (label.Pass.StartTime <= now && label.Pass.EndTime >= now)
           DrawTriangle(label, g, Brushes.Lime);
     }
@@ -232,16 +246,13 @@ namespace OrbiNom
           var freqs = transmitters.Where(tx => tx.downlink_low.HasValue).Select(tx => (long)tx.downlink_low!).Distinct();
 
           foreach (var freq in freqs)
-          {
-            var label = new TransmitterLabel(pass, freq);
-            Labels.Add(label);
-          }
+            Labels.Add(new TransmitterLabel(pass, freq));
         }
     }
 
     internal TransmitterLabel? GetLabelUnderCursor(Point location)
     {
-      return Labels.FirstOrDefault(label => label.Rect.Contains(location));
+      return VisibleLabels.FirstOrDefault(label => label.Rect.Contains(location));
     }
   }
 }

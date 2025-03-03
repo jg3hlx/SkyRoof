@@ -17,9 +17,9 @@ namespace OrbiNom
 
       ctx.MainForm = this;
       ctx.SatelliteSelector = SatelliteSelector;
-      ctx.DownlinkFrequencyControl = DownlinkFrequencyControl;
+      ctx.DownlinkFrequencyControl = FrequencyControl;
       SatelliteSelector.ctx = ctx;
-      DownlinkFrequencyControl.ctx = ctx;
+      FrequencyControl.ctx = ctx;
 
       ctx.Settings.LoadFromFile();
 
@@ -208,8 +208,7 @@ namespace OrbiNom
     internal void SetWaterfallSpeed()
     {
       if (ctx.Sdr != null)
-        SpectrumAnalyzer.Spectrum.Step =
-          ctx.Sdr.Info.SampleRate / ctx.Settings.Waterfall.Speed;
+        SpectrumAnalyzer.Spectrum.Step = ctx.Sdr.Info.SampleRate / ctx.Settings.Waterfall.Speed;
 
       if (ctx.WaterfallPanel?.WaterfallControl != null)
         ctx.WaterfallPanel.WaterfallControl.ScrollSpeed = ctx.Settings.Waterfall.Speed;
@@ -576,6 +575,7 @@ namespace OrbiNom
       Clock.ShowTime();
       ctx.SkyViewPanel?.Advance();
       ctx.WaterfallPanel?.ScaleControl?.Invalidate();
+      FrequencyControl?.UpdateDoppler();
     }
 
     private void OneSecondTick()
@@ -679,7 +679,7 @@ namespace OrbiNom
 
     private void SatelliteSelector_SelectedTransmitterChanged(object sender, EventArgs e)
     {
-      DownlinkFrequencyControl.SetTransmitter(
+      FrequencyControl.SetTransmitter(
         SatelliteSelector.SelectedTransmitter, 
         SatelliteSelector.SelectedSatellite);
     }
