@@ -32,7 +32,7 @@ namespace OrbiNom
     {
       this.ctx = ctx;
       OnlyGroup = onlyGroup;
-      PredictionTimeSpan = onlyGroup ? TimeSpan.FromDays(2) : TimeSpan.FromHours(1);
+      PredictionTimeSpan = onlyGroup ? TimeSpan.FromDays(2) : TimeSpan.FromHours(2);
 
       CreateGroundStation(ctx.Settings.User.Square);
     }
@@ -156,6 +156,12 @@ namespace OrbiNom
     internal TopocentricObservation ObserveSatellite(SatnogsDbSatellite satellite, DateTime utcNow)
     {
       return GroundStation.Observe(satellite.Tracker, utcNow);
+    }
+
+    internal SatellitePass? GetNextPass(SatnogsDbSatellite satellite)
+    {
+      var now = DateTime.UtcNow;
+      return ComputePassesFor(satellite, now, now.AddDays(1)).OrderBy(pass => pass.StartTime).FirstOrDefault();
     }
   }
 }

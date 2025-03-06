@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Data;
+using Newtonsoft.Json.Linq;
 using VE3NEA;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrbiNom
 {
@@ -78,7 +80,7 @@ namespace OrbiNom
 
     public void SetSelectedSatellite(SatnogsDbSatellite satellite)
     {
-      if (SelectedSatellite == satellite) return;
+      //if (SelectedSatellite == satellite) return;
 
       if (group.SatelliteIds.Contains(satellite.sat_id))
       {
@@ -94,6 +96,7 @@ namespace OrbiNom
     {
       var sett = ctx.Settings.Satellites;
       SelectedSatellite = ctx.SatnogsDb.GetSatellite(group.SelectedSatId);
+      clickedSatellite = SelectedSatellite;
 
       changing = true;
       SatelliteComboBox.SelectedItem = SelectedSatellite;
@@ -124,22 +127,20 @@ namespace OrbiNom
 
     private void SetSelectedTransmitter()
     {
-      var sett = ctx.Settings.Satellites;
-
-      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(SelectedSatellite.sat_id);
-      SelectedTransmitter = SelectedSatellite.Transmitters.FirstOrDefault(t => t.uuid == cust.SelectedTransmitter);
-
-      if (SelectedTransmitter == null)
-      {
-        SelectedTransmitter = SelectedSatellite.Transmitters[0];
-        cust.SelectedTransmitter = SelectedTransmitter.uuid;
-      }
-
+      SelectedTransmitter = GetSelectedTransmitter(SelectedSatellite);
 
       changing = true;
       TransmitterComboBox.SelectedItem = SelectedTransmitter;
       toolTip1.SetToolTip(TransmitterComboBox, SelectedTransmitter.GetTooltipText());
       changing = false;
+    }
+
+    public SatnogsDbTransmitter GetSelectedTransmitter(SatnogsDbSatellite sat)
+    {
+      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(sat.sat_id);
+
+      cust.SelectedTransmitterId ??= sat.Transmitters[0].uuid;
+      return sat.Transmitters.First(t => t.uuid == cust.SelectedTransmitterId);
     }
 
     public void SetSelectedTransmitter(SatnogsDbTransmitter? tx)
@@ -150,7 +151,7 @@ namespace OrbiNom
       {
         SelectedTransmitter = tx;
         var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(SelectedSatellite.sat_id);
-        cust.SelectedTransmitter = tx.uuid;
+        cust.SelectedTransmitterId = tx.uuid;
 
         SetSelectedTransmitter();
         OnSelectedTransmitterChanged();
@@ -218,6 +219,7 @@ namespace OrbiNom
 
     private void OnSelectedSatelliteChanged()
     {
+      clickedSatellite = SelectedSatellite;
       SelectedSatelliteChanged?.Invoke(this, EventArgs.Empty);
       SelectedTransmitterChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -287,7 +289,11 @@ namespace OrbiNom
 
     private void TuneToBtn_Click(object sender, EventArgs e)
     {
-      ctx.DownlinkFrequencyControl.SetTransmitter(SelectedTransmitter, SelectedSatellite);
+      SetSelectedSatellite(SelectedSatellite);
+
+      var now = DateTime.UtcNow;
+      var pass = ctx.AllPasses.GetNextPass(SelectedSatellite);
+      SetSelectedPass(pass);
     }
   }
 }

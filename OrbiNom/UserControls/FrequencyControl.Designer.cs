@@ -30,14 +30,14 @@
     {
       SatelliteLabel = new Label();
       DownlinkFrequencyLabel = new Label();
-      DopplerCheckbox = new CheckBox();
-      ManualCheckbox = new CheckBox();
+      DownlinkDopplerCheckbox = new CheckBox();
+      DownlinkManualCheckbox = new CheckBox();
       DownlinkManualSpinner = new NumericUpDown();
       label2 = new Label();
       label1 = new Label();
       UplinkManualSpinner = new NumericUpDown();
-      checkBox1 = new CheckBox();
-      checkBox2 = new CheckBox();
+      UplinkManualCheckbox = new CheckBox();
+      UplinkDopperCheckbox = new CheckBox();
       UplinkFrequencyLabel = new Label();
       UplinkLabel = new Label();
       DownlinkDopplerLabel = new Label();
@@ -67,31 +67,33 @@
       DownlinkFrequencyLabel.Text = "000,000,000";
       DownlinkFrequencyLabel.TextAlign = ContentAlignment.MiddleCenter;
       // 
-      // DopplerCheckbox
+      // DownlinkDopplerCheckbox
       // 
-      DopplerCheckbox.AutoSize = true;
-      DopplerCheckbox.Location = new Point(190, 8);
-      DopplerCheckbox.Name = "DopplerCheckbox";
-      DopplerCheckbox.Size = new Size(68, 19);
-      DopplerCheckbox.TabIndex = 3;
-      DopplerCheckbox.Text = "Doppler";
-      DopplerCheckbox.UseVisualStyleBackColor = true;
+      DownlinkDopplerCheckbox.AutoSize = true;
+      DownlinkDopplerCheckbox.Location = new Point(190, 8);
+      DownlinkDopplerCheckbox.Name = "DownlinkDopplerCheckbox";
+      DownlinkDopplerCheckbox.Size = new Size(68, 19);
+      DownlinkDopplerCheckbox.TabIndex = 3;
+      DownlinkDopplerCheckbox.Text = "Doppler";
+      DownlinkDopplerCheckbox.UseVisualStyleBackColor = true;
+      DownlinkDopplerCheckbox.CheckedChanged += DownlinkDopplerCheckbox_CheckedChanged;
       // 
-      // ManualCheckbox
+      // DownlinkManualCheckbox
       // 
-      ManualCheckbox.AutoSize = true;
-      ManualCheckbox.Location = new Point(190, 37);
-      ManualCheckbox.Name = "ManualCheckbox";
-      ManualCheckbox.Size = new Size(66, 19);
-      ManualCheckbox.TabIndex = 4;
-      ManualCheckbox.Text = "Manual";
-      ManualCheckbox.UseVisualStyleBackColor = true;
+      DownlinkManualCheckbox.AutoSize = true;
+      DownlinkManualCheckbox.Location = new Point(190, 37);
+      DownlinkManualCheckbox.Name = "DownlinkManualCheckbox";
+      DownlinkManualCheckbox.Size = new Size(66, 19);
+      DownlinkManualCheckbox.TabIndex = 4;
+      DownlinkManualCheckbox.Text = "Manual";
+      DownlinkManualCheckbox.UseVisualStyleBackColor = true;
+      DownlinkManualCheckbox.CheckedChanged += DownlinkManualCheckbox_CheckedChanged;
       // 
       // DownlinkManualSpinner
       // 
       DownlinkManualSpinner.DecimalPlaces = 3;
       DownlinkManualSpinner.Font = new Font("Segoe UI", 10F);
-      DownlinkManualSpinner.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
+      DownlinkManualSpinner.Increment = new decimal(new int[] { 2, 0, 0, 131072 });
       DownlinkManualSpinner.Location = new Point(258, 35);
       DownlinkManualSpinner.Maximum = new decimal(new int[] { 25, 0, 0, 0 });
       DownlinkManualSpinner.Minimum = new decimal(new int[] { 25, 0, 0, int.MinValue });
@@ -99,6 +101,7 @@
       DownlinkManualSpinner.Size = new Size(70, 25);
       DownlinkManualSpinner.TabIndex = 6;
       DownlinkManualSpinner.Value = new decimal(new int[] { 20, 0, 0, int.MinValue });
+      DownlinkManualSpinner.ValueChanged += DownlinkManualSpinner_ValueChanged;
       // 
       // label2
       // 
@@ -123,7 +126,7 @@
       // UplinkManualSpinner
       // 
       UplinkManualSpinner.DecimalPlaces = 3;
-      UplinkManualSpinner.Increment = new decimal(new int[] { 5, 0, 0, 131072 });
+      UplinkManualSpinner.Increment = new decimal(new int[] { 2, 0, 0, 131072 });
       UplinkManualSpinner.Location = new Point(599, 37);
       UplinkManualSpinner.Maximum = new decimal(new int[] { 25, 0, 0, 0 });
       UplinkManualSpinner.Minimum = new decimal(new int[] { 25, 0, 0, int.MinValue });
@@ -132,25 +135,25 @@
       UplinkManualSpinner.TabIndex = 13;
       UplinkManualSpinner.Value = new decimal(new int[] { 20, 0, 0, int.MinValue });
       // 
-      // checkBox1
+      // UplinkManualCheckbox
       // 
-      checkBox1.AutoSize = true;
-      checkBox1.Location = new Point(525, 38);
-      checkBox1.Name = "checkBox1";
-      checkBox1.Size = new Size(66, 19);
-      checkBox1.TabIndex = 11;
-      checkBox1.Text = "Manual";
-      checkBox1.UseVisualStyleBackColor = true;
+      UplinkManualCheckbox.AutoSize = true;
+      UplinkManualCheckbox.Location = new Point(525, 38);
+      UplinkManualCheckbox.Name = "UplinkManualCheckbox";
+      UplinkManualCheckbox.Size = new Size(66, 19);
+      UplinkManualCheckbox.TabIndex = 11;
+      UplinkManualCheckbox.Text = "Manual";
+      UplinkManualCheckbox.UseVisualStyleBackColor = true;
       // 
-      // checkBox2
+      // UplinkDopperCheckbox
       // 
-      checkBox2.AutoSize = true;
-      checkBox2.Location = new Point(525, 9);
-      checkBox2.Name = "checkBox2";
-      checkBox2.Size = new Size(68, 19);
-      checkBox2.TabIndex = 10;
-      checkBox2.Text = "Doppler";
-      checkBox2.UseVisualStyleBackColor = true;
+      UplinkDopperCheckbox.AutoSize = true;
+      UplinkDopperCheckbox.Location = new Point(525, 9);
+      UplinkDopperCheckbox.Name = "UplinkDopperCheckbox";
+      UplinkDopperCheckbox.Size = new Size(68, 19);
+      UplinkDopperCheckbox.TabIndex = 10;
+      UplinkDopperCheckbox.Text = "Doppler";
+      UplinkDopperCheckbox.UseVisualStyleBackColor = true;
       // 
       // UplinkFrequencyLabel
       // 
@@ -204,14 +207,14 @@
       Controls.Add(DownlinkDopplerLabel);
       Controls.Add(label1);
       Controls.Add(UplinkManualSpinner);
-      Controls.Add(checkBox1);
-      Controls.Add(checkBox2);
+      Controls.Add(UplinkManualCheckbox);
+      Controls.Add(UplinkDopperCheckbox);
       Controls.Add(UplinkFrequencyLabel);
       Controls.Add(UplinkLabel);
       Controls.Add(label2);
       Controls.Add(DownlinkManualSpinner);
-      Controls.Add(ManualCheckbox);
-      Controls.Add(DopplerCheckbox);
+      Controls.Add(DownlinkManualCheckbox);
+      Controls.Add(DownlinkDopplerCheckbox);
       Controls.Add(DownlinkFrequencyLabel);
       Controls.Add(SatelliteLabel);
       Name = "FrequencyControl";
@@ -226,14 +229,14 @@
 
     private Label SatelliteLabel;
     private Label DownlinkFrequencyLabel;
-    private CheckBox DopplerCheckbox;
-    private CheckBox ManualCheckbox;
+    private CheckBox DownlinkDopplerCheckbox;
+    private CheckBox DownlinkManualCheckbox;
     private NumericUpDown DownlinkManualSpinner;
     private Label label2;
     private Label label1;
     private NumericUpDown UplinkManualSpinner;
-    private CheckBox checkBox1;
-    private CheckBox checkBox2;
+    private CheckBox UplinkManualCheckbox;
+    private CheckBox UplinkDopperCheckbox;
     private Label UplinkFrequencyLabel;
     private Label UplinkLabel;
     private Label DownlinkDopplerLabel;

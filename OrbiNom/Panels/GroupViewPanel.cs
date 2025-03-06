@@ -100,7 +100,7 @@ namespace OrbiNom
         var data = item.Tag as ItemData;
         if (data.Pass == null || data.Pass.EndTime < now)
         {
-          data.Pass = ctx.AllPasses.ComputePassesFor(data.Sat, now, now.AddDays(1)).OrderBy(pass => pass.StartTime).FirstOrDefault();
+          data.Pass = ctx.AllPasses.GetNextPass(data.Sat);
           changed = true;
         }
 
@@ -170,13 +170,9 @@ namespace OrbiNom
 
       var data = (ItemData)Items[listView1.SelectedIndices[0]].Tag!;
 
+      ctx.SatelliteSelector.SetClickedSatellite(data.Sat);
       ctx.PassesPanel?.ShowPasses();
-
-      if (data.Pass != null)
-      {
-        ctx.SatelliteSelector.SetClickedSatellite(data.Pass.Satellite);
-        ctx.SatelliteSelector.SetSelectedPass(data.Pass);
-      }
+      if (data.Pass != null) ctx.SatelliteSelector.SetSelectedPass(data.Pass);
     }
 
     private void listView1_MouseDown(object sender, MouseEventArgs e)

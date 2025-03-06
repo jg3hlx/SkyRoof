@@ -214,7 +214,7 @@ namespace OrbiNom
 
       // tune to frequency
       if (label == null)
-        ctx.DownlinkFrequencyControl.SetFrequency(PixelToFreq(e.X));
+        ctx.FrequencyControl.SetFrequency(PixelToFreq(e.X));
 
       // select transmitter if in current group
       else if (ctx.SatelliteSelector.GroupSatellites.Contains(label.Pass.Satellite))
@@ -228,7 +228,7 @@ namespace OrbiNom
       {
         ctx.SatelliteSelector.SetClickedSatellite(label.Pass.Satellite);
         ctx.SatelliteSelector.SetSelectedPass(label.Pass);
-        ctx.DownlinkFrequencyControl.SetTransmitter(
+        ctx.FrequencyControl.SetTransmitter(
           label.Transmitters?.FirstOrDefault(), label.Pass.Satellite);
       }
     }

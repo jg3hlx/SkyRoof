@@ -107,15 +107,13 @@ namespace OrbiNom
 
       if (CurrentSatBtn.Checked)
       {
-        // selected in the Selector panel
-        var sat = ctx.SatelliteSelector.SelectedSatellite;
-        // currently highlighted in the Group View panel
-        if (ctx.GroupViewPanel != null && ctx.GroupViewPanel.listView1.SelectedIndices.Count > 0)
-        {
-          int idx = ctx.GroupViewPanel.listView1.SelectedIndices[0];
-          sat = ((GroupViewPanel.ItemData)ctx.GroupViewPanel.Items[idx].Tag).Sat;
-        }
+        // selected in the Selector panel or on the frequency scale
+        var sat = ctx.SatelliteSelector.ClickedSatellite;
 
+        // sat in group, show 3-day prediction
+        if (!ctx.SatelliteSelector.GroupSatellites.Contains(sat))
+          passes = ctx.AllPasses.Passes;
+        // else show 2-hour prediction
         passes = passes.Where(p => p.Satellite == sat);
       }
 
@@ -126,7 +124,7 @@ namespace OrbiNom
       else
       {
         passes = ctx.AllPasses.Passes;
-        endTime = startTime + TimeSpan.FromHours(1);
+        endTime = startTime + TimeSpan.FromHours(2);
       }
 
       passes = passes.Where(pass => pass.EndTime >= startTime && pass.StartTime < endTime);

@@ -8,7 +8,9 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SGPdotNET.Observation;
 using SharpGL.SceneGraph.Assets;
+using VE3NEA;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace OrbiNom
@@ -56,11 +58,18 @@ namespace OrbiNom
       return width / 2d + dx;
     }
 
-    private double DopplerFreqToPixel(SatellitePass pass, DateTime time, long freq)
+    private double DopplerFreqToPixel(SatellitePass pass, DateTime time, double freq)
     {
-      var point = pass.GetTrackPointAt(time);
-      var f = freq * (1 - point.Observation.RangeRate / 3e5);
-      return FreqToPixel(f);
+      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(pass.Satellite.sat_id);
+
+      if (cust.DownlinkDopplerCorrectionEnabled)
+      {
+        var point = pass.GetTrackPointAt(time);
+        freq *= 1 - point.Observation.RangeRate / 3e5;
+      }
+      if (cust.DownlinkManualCorrectionEnabled) freq += cust.DownlinkManualCorrection;
+
+      return FreqToPixel(freq);
     }
 
 
@@ -142,7 +151,7 @@ namespace OrbiNom
       VisibleLabels = Labels.Where(IsLabelVisible).OrderByDescending(label => label.x).ToList();
 
       // draw spans
-      foreach (var label in Labels.Where(lb => lb.Span != null)) DrawSpan(label, g);
+      foreach (var label in VisibleLabels.Where(lb => lb.Span != null)) DrawSpan(label, g);
 
       // draw labels
       LastXPositions.Clear();
@@ -193,6 +202,14 @@ namespace OrbiNom
       // selected sat BG
       if (label.Pass.Satellite == ctx.SatelliteSelector.SelectedSatellite)
         g.FillRectangle(Brushes.Aqua, label.Rect);
+
+      // clicked sat border
+      if (label.Pass.Satellite == ctx.SatelliteSelector.ClickedSatellite)
+      {
+        var rect = label.Rect;
+        rect.Inflate(2, 2);
+        g.DrawRectangle(Pens.Red, rect);
+      }
 
       // sat name
       var brush = label.Pass.StartTime <= now && label.Pass.EndTime >= now ? Brushes.Blue : Brushes.Gray;

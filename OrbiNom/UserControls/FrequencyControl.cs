@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SGPdotNET.Observation;
+using VE3NEA;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrbiNom.UserControls
@@ -19,11 +20,19 @@ namespace OrbiNom.UserControls
     public SatnogsDbTransmitter? Transmitter;
     public SatnogsDbSatellite? Satellite;
     private double? Frequency;
-    TopocentricObservation Observation;
+    private TopocentricObservation Observation;
+    private bool Changing;
 
     public FrequencyControl()
     {
       InitializeComponent();
+    }
+
+    public void SetTransmitter()
+    {
+      SetTransmitter(
+        ctx.SatelliteSelector.SelectedTransmitter,
+        ctx.SatelliteSelector.SelectedSatellite);
     }
 
     public void SetTransmitter(SatnogsDbTransmitter? transmitter, SatnogsDbSatellite satellite)
@@ -32,6 +41,8 @@ namespace OrbiNom.UserControls
       Satellite = satellite;
       Frequency = Transmitter.downlink_low;
       UpdateAllControls();
+
+      Console.Beep();
     }
 
     internal void SetFrequency(double frequency)
@@ -93,10 +104,7 @@ namespace OrbiNom.UserControls
     {
       //var now = DateTime.UtcNow;
       //if (Pass == null || Pass.EndTime < now)
-      //  Pass = ctx.AllPasses
-      //    .ComputePassesFor(Satellite, now, now.AddDays(1))
-      //    .OrderBy(pass => pass.StartTime)
-      //    .FirstOrDefault();
+      //  Pass = ctx.AllPasses.GetNextPass(Satellite);
     }
 
     // 4-Hz timer tick
@@ -120,15 +128,48 @@ namespace OrbiNom.UserControls
         }
         else
         {
-          UplinkDopplerLabel.Text = "0,000";
+          UplinkDopplerLabel.Text = "N/A";
           SetFieldColors(txFreq);
         }
+
+        var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(Satellite.sat_id);
+        Changing = true;
+        DownlinkDopplerCheckbox.Checked = cust.DownlinkDopplerCorrectionEnabled;
+        DownlinkManualCheckbox.Checked = cust.DownlinkManualCorrectionEnabled;
+        DownlinkManualSpinner.Value = (decimal)(cust.DownlinkManualCorrection / 1000f);
+        Changing = false;
       }
       else
       {
-        DownlinkDopplerLabel.Text = "0,000";
+        DownlinkDopplerLabel.Text = "N/A";
+
+        Changing = true;
+        DownlinkManualSpinner.Value = 0;
+        Changing = false;
+
         SetFieldColors(null);
       }
+    }
+
+    private void DownlinkManualSpinner_ValueChanged(object sender, EventArgs e)
+    {
+      if (Changing || Satellite == null) return;
+      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(Satellite.sat_id);
+      cust.DownlinkManualCorrection = (int)(DownlinkManualSpinner.Value * 1000);
+    }
+
+    private void DownlinkManualCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+      if (Changing || Satellite == null) return;
+      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(Satellite.sat_id);
+      cust.DownlinkManualCorrectionEnabled = DownlinkManualCheckbox.Checked;
+    }
+
+    private void DownlinkDopplerCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+      if (Changing || Satellite == null) return;
+      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(Satellite.sat_id);
+      cust.DownlinkDopplerCorrectionEnabled = DownlinkDopplerCheckbox.Checked;
     }
   }
 }

@@ -83,7 +83,11 @@ namespace OrbiNom
   {
     public string sat_id;
     public string? Name;
-    public string? SelectedTransmitter;
+    public string? SelectedTransmitterId;
+    public int DownlinkDopplerCorrection;
+    public int DownlinkManualCorrection;
+    public bool DownlinkDopplerCorrectionEnabled = true;
+    public bool DownlinkManualCorrectionEnabled = true;
   }
 
   public class SatelliteGroup

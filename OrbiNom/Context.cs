@@ -23,7 +23,7 @@ namespace OrbiNom
 
     // panels
     public MainForm MainForm;
-    public FrequencyControl DownlinkFrequencyControl;
+    public FrequencyControl FrequencyControl;
     public SatelliteSelector SatelliteSelector;
 
     public GroupViewPanel? GroupViewPanel;

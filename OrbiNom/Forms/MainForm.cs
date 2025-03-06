@@ -17,7 +17,7 @@ namespace OrbiNom
 
       ctx.MainForm = this;
       ctx.SatelliteSelector = SatelliteSelector;
-      ctx.DownlinkFrequencyControl = FrequencyControl;
+      ctx.FrequencyControl = FrequencyControl;
       SatelliteSelector.ctx = ctx;
       FrequencyControl.ctx = ctx;
 
@@ -629,6 +629,21 @@ namespace OrbiNom
       ShowSatDataStatus();
     }
 
+    internal void SetGridSquare()
+    {
+      // update data
+      ctx.GroupPasses = new(ctx, true);
+      ctx.GroupPasses.FullRebuild();
+      ctx.AllPasses = new(ctx, false);
+      ctx.AllPasses.FullRebuild();
+
+      ctx.SatelliteSelector.SetSelectedPass(null);
+      ctx.GroupViewPanel?.LoadGroup();
+      ctx.PassesPanel?.ShowPasses();
+      ctx.EarthViewPanel?.SetGridSquare();
+      ctx.SkyViewPanel?.ClearPass();
+    }
+
     private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
     {
       ctx.Settings.Satellites.LastTleTime = DateTime.UtcNow;
@@ -649,6 +664,7 @@ namespace OrbiNom
       ctx.GroupViewPanel?.LoadGroup();
       ctx.GroupPasses.FullRebuild();
       ctx.PassesPanel?.ShowPasses();
+      ctx.SkyViewPanel?.ClearPass();
     }
 
     private void SatelliteSelector_SelectedSatelliteChanged(object sender, EventArgs e)
@@ -657,6 +673,7 @@ namespace OrbiNom
       ctx.EarthViewPanel?.SetSatellite();
       ctx.SatelliteDetailsPanel?.SetSatellite();
       ctx.TransmittersPanel?.SetSatellite();
+      ctx.PassesPanel?.ShowPasses();
     }
 
     private void SatelliteSelector_ClickedSatelliteChanged(object sender, EventArgs e)
@@ -666,16 +683,10 @@ namespace OrbiNom
       ctx.SatelliteDetailsPanel?.SetSatellite(sat);
       ctx.TransmittersPanel?.SetSatellite(sat);
       ctx.EarthViewPanel?.SetSatellite(sat);
+      ctx.PassesPanel?.ShowPasses();
 
-      //ctx.TransmittersPanel.Activate();
+      ctx.FrequencyControl.SetTransmitter(SatelliteSelector.GetSelectedTransmitter(sat), sat); 
     }
-
-    private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)
-    {
-      SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
-      ctx.SkyViewPanel?.SetPass(pass);
-    }
-
 
     private void SatelliteSelector_SelectedTransmitterChanged(object sender, EventArgs e)
     {
@@ -684,19 +695,10 @@ namespace OrbiNom
         SatelliteSelector.SelectedSatellite);
     }
 
-    internal void SetGridSquare()
+    private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)
     {
-      // update data
-      ctx.GroupPasses = new(ctx, true);
-      ctx.GroupPasses.FullRebuild();
-      ctx.AllPasses = new(ctx, false);
-      ctx.AllPasses.FullRebuild();
-
-      ctx.SatelliteSelector.SetSelectedPass(null);
-      ctx.GroupViewPanel?.LoadGroup();
-      ctx.PassesPanel?.ShowPasses();
-      ctx.EarthViewPanel?.SetGridSquare();
-      ctx.SkyViewPanel?.ClearPass();
+      SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
+      ctx.SkyViewPanel?.SetPass(pass);
     }
   }
 }
