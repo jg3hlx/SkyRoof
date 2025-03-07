@@ -30,6 +30,9 @@
     {
       components = new System.ComponentModel.Container();
       Toolbar = new Panel();
+      VolumeLabel = new Label();
+      label2 = new Label();
+      VolumeTrackbar = new TrackBar();
       FrequencyControl = new UserControls.FrequencyControl();
       panel1 = new Panel();
       SatelliteSelector = new SatelliteSelector();
@@ -82,6 +85,7 @@
       CpuLoadlabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       Toolbar.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)VolumeTrackbar).BeginInit();
       ClockPanel.SuspendLayout();
       menuStrip1.SuspendLayout();
       StatusStrip.SuspendLayout();
@@ -89,6 +93,9 @@
       // 
       // Toolbar
       // 
+      Toolbar.Controls.Add(VolumeLabel);
+      Toolbar.Controls.Add(label2);
+      Toolbar.Controls.Add(VolumeTrackbar);
       Toolbar.Controls.Add(FrequencyControl);
       Toolbar.Controls.Add(panel1);
       Toolbar.Controls.Add(SatelliteSelector);
@@ -97,15 +104,49 @@
       Toolbar.Dock = DockStyle.Top;
       Toolbar.Location = new Point(0, 24);
       Toolbar.Name = "Toolbar";
-      Toolbar.Size = new Size(1302, 70);
+      Toolbar.Size = new Size(1457, 70);
       Toolbar.TabIndex = 0;
       // 
-      // DownlinkFrequencyControl
+      // VolumeLabel
+      // 
+      VolumeLabel.BackColor = SystemColors.Control;
+      VolumeLabel.Location = new Point(1293, 3);
+      VolumeLabel.MinimumSize = new Size(40, 0);
+      VolumeLabel.Name = "VolumeLabel";
+      VolumeLabel.Size = new Size(55, 32);
+      VolumeLabel.TabIndex = 18;
+      VolumeLabel.Text = "0";
+      VolumeLabel.TextAlign = ContentAlignment.MiddleCenter;
+      // 
+      // label2
+      // 
+      label2.AutoSize = true;
+      label2.Location = new Point(1198, 10);
+      label2.Name = "label2";
+      label2.Size = new Size(47, 15);
+      label2.TabIndex = 17;
+      label2.Text = "Volume";
+      // 
+      // VolumeTrackbar
+      // 
+      VolumeTrackbar.AutoSize = false;
+      VolumeTrackbar.LargeChange = 1;
+      VolumeTrackbar.Location = new Point(1198, 32);
+      VolumeTrackbar.Maximum = 0;
+      VolumeTrackbar.Minimum = -50;
+      VolumeTrackbar.Name = "VolumeTrackbar";
+      VolumeTrackbar.Size = new Size(150, 32);
+      VolumeTrackbar.TabIndex = 16;
+      VolumeTrackbar.TickFrequency = 10;
+      VolumeTrackbar.Value = -25;
+      VolumeTrackbar.Scroll += VolumeTrackbar_ValueChanged;
+      // 
+      // FrequencyControl
       // 
       FrequencyControl.BorderStyle = BorderStyle.FixedSingle;
       FrequencyControl.Dock = DockStyle.Left;
       FrequencyControl.Location = new Point(510, 0);
-      FrequencyControl.Name = "DownlinkFrequencyControl";
+      FrequencyControl.Name = "FrequencyControl";
       FrequencyControl.Size = new Size(682, 70);
       FrequencyControl.TabIndex = 3;
       // 
@@ -135,7 +176,7 @@
       // 
       ClockPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       ClockPanel.Controls.Add(Clock);
-      ClockPanel.Location = new Point(1200, 0);
+      ClockPanel.Location = new Point(1355, 0);
       ClockPanel.Name = "ClockPanel";
       ClockPanel.Padding = new Padding(3);
       ClockPanel.Size = new Size(102, 54);
@@ -169,7 +210,7 @@
       DockHost.Name = "DockHost";
       DockHost.Padding = new Padding(6);
       DockHost.ShowAutoHideContentOnHover = false;
-      DockHost.Size = new Size(1302, 581);
+      DockHost.Size = new Size(1457, 581);
       DockHost.TabIndex = 4;
       DockHost.Theme = vS2015LightTheme1;
       // 
@@ -178,7 +219,7 @@
       menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, GroupViewPanelMNU, toolsToolStripMenuItem, helpToolStripMenuItem });
       menuStrip1.Location = new Point(0, 0);
       menuStrip1.Name = "menuStrip1";
-      menuStrip1.Size = new Size(1302, 24);
+      menuStrip1.Size = new Size(1457, 24);
       menuStrip1.TabIndex = 5;
       menuStrip1.Text = "menuStrip1";
       // 
@@ -359,7 +400,7 @@
       StatusStrip.Location = new Point(0, 675);
       StatusStrip.Name = "StatusStrip";
       StatusStrip.ShowItemToolTips = true;
-      StatusStrip.Size = new Size(1302, 35);
+      StatusStrip.Size = new Size(1457, 35);
       StatusStrip.TabIndex = 6;
       StatusStrip.Text = "statusStrip1";
       // 
@@ -400,7 +441,9 @@
       SoundcardLedLabel.Name = "SoundcardLedLabel";
       SoundcardLedLabel.Size = new Size(21, 30);
       SoundcardLedLabel.Text = "n";
-      SoundcardLedLabel.Visible = false;
+      SoundcardLedLabel.Click += SoundcardLabel_Click;
+      SoundcardLedLabel.MouseEnter += StatusLabel_MouseEnter;
+      SoundcardLedLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
       // SoundcardStatusLabel
       // 
@@ -409,7 +452,9 @@
       SoundcardStatusLabel.Size = new Size(82, 30);
       SoundcardStatusLabel.Text = "Soundcard  ";
       SoundcardStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
-      SoundcardStatusLabel.Visible = false;
+      SoundcardStatusLabel.Click += SoundcardLabel_Click;
+      SoundcardStatusLabel.MouseEnter += StatusLabel_MouseEnter;
+      SoundcardStatusLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
       // VacLedLabel
       // 
@@ -418,7 +463,9 @@
       VacLedLabel.Name = "VacLedLabel";
       VacLedLabel.Size = new Size(21, 30);
       VacLedLabel.Text = "n";
-      VacLedLabel.Visible = false;
+      VacLedLabel.Click += VacLabel_Click;
+      VacLedLabel.MouseEnter += StatusLabel_MouseEnter;
+      VacLedLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
       // VacStatusLabel
       // 
@@ -427,7 +474,9 @@
       VacStatusLabel.Size = new Size(43, 30);
       VacStatusLabel.Text = "VAC  ";
       VacStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
-      VacStatusLabel.Visible = false;
+      VacStatusLabel.Click += VacLabel_Click;
+      VacStatusLabel.MouseEnter += StatusLabel_MouseEnter;
+      VacStatusLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
       // OmniRigLedLabel
       // 
@@ -502,7 +551,7 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(1302, 710);
+      ClientSize = new Size(1457, 710);
       Controls.Add(DockHost);
       Controls.Add(Toolbar);
       Controls.Add(menuStrip1);
@@ -513,6 +562,8 @@
       FormClosing += MainForm_FormClosing;
       Load += MainForm_Load;
       Toolbar.ResumeLayout(false);
+      Toolbar.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)VolumeTrackbar).EndInit();
       ClockPanel.ResumeLayout(false);
       menuStrip1.ResumeLayout(false);
       menuStrip1.PerformLayout();
@@ -576,5 +627,8 @@
     private UserControls.FrequencyControl FrequencyControl;
     private Panel panel1;
     private Panel panel2;
+    private Label label2;
+    public TrackBar VolumeTrackbar;
+    private Label VolumeLabel;
   }
 }

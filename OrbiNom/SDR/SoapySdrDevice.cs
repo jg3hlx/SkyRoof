@@ -93,7 +93,8 @@ namespace VE3NEA
 
     public bool IsRunning()
     {
-      return Thread?.IsAlive ?? false;
+      return Device != IntPtr.Zero; 
+      //Thread?.IsAlive ?? false;
     }
 
 

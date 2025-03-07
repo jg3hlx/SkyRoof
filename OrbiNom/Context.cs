@@ -15,17 +15,18 @@ namespace OrbiNom
     internal readonly Font AwesomeFont14 = FontAwesomeFactory.Create(14);
     internal readonly PaletteManager PaletteManager = new PaletteManager();
 
-    // data
+    // satellite data
     public Settings Settings = new();
     public SatnogsDb SatnogsDb;
     public SatellitePasses GroupPasses;
     public SatellitePasses AllPasses;
 
-    // panels
+    // main form
     public MainForm MainForm;
     public FrequencyControl FrequencyControl;
     public SatelliteSelector SatelliteSelector;
 
+    // panels
     public GroupViewPanel? GroupViewPanel;
     public SatelliteDetailsPanel? SatelliteDetailsPanel;
     public PassesPanel? PassesPanel;
@@ -35,5 +36,10 @@ namespace OrbiNom
     public TransmittersPanel? TransmittersPanel;
     public SoapySdrDevice? Sdr;
     public WaterfallPanel? WaterfallPanel;
+
+    // soundcards
+    public readonly Soundcard SpeakerSoundcard = new();
+    public readonly Soundcard VacSoundcard = new();
+    public Slicer? Slicer;
   }
 }

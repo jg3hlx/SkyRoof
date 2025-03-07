@@ -1,6 +1,7 @@
 ﻿using VE3NEA;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using JTSkimmer;
 
 namespace OrbiNom
 {
@@ -17,6 +18,8 @@ namespace OrbiNom
     public UserSettings User { get; set; } = new();
 
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public AudioSettings Audio { get; set; } = new();
 
     private static string GetFileName()
     {

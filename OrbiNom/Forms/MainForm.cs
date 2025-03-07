@@ -27,10 +27,13 @@ namespace OrbiNom
 
       ctx.GroupPasses = new(ctx, true);
       ctx.AllPasses = new(ctx, false);
-
       timer.Interval = 1000 / TICKS_PER_SECOND;
 
       SatelliteSelector.GainSlider.Scroll += GainSlider_Scroll;
+
+      ctx.SpeakerSoundcard.StateChanged += Soundcard_StateChanged;
+      ctx.VacSoundcard.StateChanged += Soundcard_StateChanged;
+      ApplyAudioSettings();
     }
 
     private void MainForm_Load(object sender, EventArgs e)
@@ -52,14 +55,15 @@ namespace OrbiNom
       ctx.Settings.Ui.StoreDockingLayout(DockHost);
       ctx.Settings.Ui.StoreWindowPosition(this);
       ctx.Settings.Ui.ClockUtcMode = Clock.UtcMode;
-
       if (ctx.WaterfallPanel != null)
         ctx.Settings.Waterfall.SplitterDistance = ctx.WaterfallPanel.SplitContainer.SplitterDistance;
-
       ctx.Settings.SaveToFile();
 
+      // dispose sdr and dsp
       ctx.Sdr?.Dispose();
-
+      ctx.Slicer?.Dispose();
+      ctx.SpeakerSoundcard.Dispose();
+      ctx.VacSoundcard?.Dispose();
       Fft<float>.SaveWisdom();
     }
 
@@ -84,7 +88,7 @@ namespace OrbiNom
     //                                        sdr
     //----------------------------------------------------------------------------------------------
     internal WidebandSpectrumAnalyzer SpectrumAnalyzer;
-
+    
     private void SetupDsp()
     {
       Fft<float>.LoadWisdom(Path.Combine(Utils.GetUserDataFolder(), "wsjtx_wisdom.dat"));
@@ -113,6 +117,7 @@ namespace OrbiNom
         SatelliteSelector.GainSlider.Enabled = ctx.Sdr.CanChangeGain;
         SatelliteSelector.GainSlider.Value = ctx.Sdr.NormalizedGain;
         ConfigureWaterfall();
+        ConfigureSlicer();
 
         if (ctx.Settings.Sdr.Enabled) ctx.Sdr.Enabled = true;
       }
@@ -142,6 +147,7 @@ namespace OrbiNom
     private void Sdr_DataAvailable(object? sender, DataEventArgs<Complex32> e)
     {
       SpectrumAnalyzer?.StartProcessing(e);
+      ctx.Slicer?.StartProcessing(e);
     }
 
 
@@ -166,6 +172,20 @@ namespace OrbiNom
         ctx.Sdr.Info.SampleRate,
         ctx.Sdr.Info.MaxBandwidth
         );
+    }
+
+    private void ConfigureSlicer()
+    {
+      if (ctx.Slicer != null) ctx.Slicer?.Dispose();
+
+      ctx.Slicer = new Slicer(ctx.Sdr.Info.SampleRate);
+      ctx.Slicer.DataAvailable += Slicer_DataAvailable;
+    }
+ 
+    private void Slicer_DataAvailable(object? sender, DataEventArgs<float> e)
+    {
+      ctx.SpeakerSoundcard.AddSamples(e.Data);
+      ctx.VacSoundcard.AddSamples(e.Data);
     }
 
     private void UpdateSdrLabel()
@@ -253,11 +273,68 @@ namespace OrbiNom
 
 
 
+    //----------------------------------------------------------------------------------------------
+    //                                     soundcards
+    //----------------------------------------------------------------------------------------------
+    internal void ApplyAudioSettings()
+    {
+      var sett = ctx.Settings.Audio;
+
+      ctx.SpeakerSoundcard.SetDeviceId(sett.SpeakerSoundcard);
+      VolumeTrackbar.Value = sett.SoundcardVolume;
+      SetSoundcardVolume();
+
+      ctx.VacSoundcard.SetDeviceId(sett.Vac);
+      ctx.VacSoundcard.Volume = Dsp.FromDb2(sett.VacVolume);
+
+      ctx.SpeakerSoundcard.Enabled = ctx.Settings.Audio.SpeakerEnabled;
+      ctx.VacSoundcard.Enabled = ctx.Settings.Audio.VacEnabled;
+      //ctx.Slicer.Enabled = ctx.Settings.Audio.SpeakerEnabled || ctx.Settings.Audio.VacEnabled;
+    }
+
+    private void Soundcard_StateChanged(object? sender, EventArgs e)
+    {
+      ShowSoundcardLabels();
+    }
+
+    private void VolumeTrackbar_ValueChanged(object sender, EventArgs e)
+    {
+      SetSoundcardVolume();
+    }
+
+    private void SetSoundcardVolume()
+    {
+      VolumeLabel.Text = $"{VolumeTrackbar.Value} dB";
+      ctx.Settings.Audio.SoundcardVolume = VolumeTrackbar.Value;
+      ctx.SpeakerSoundcard.Volume = Dsp.FromDb2(ctx.Settings.Audio.SoundcardVolume);
+    }
+
+    public void ShowSoundcardLabels()
+    {
+      if (!ctx.SpeakerSoundcard.Enabled)
+        SoundcardLedLabel.ForeColor = Color.Gray;
+      else if (!ctx.SpeakerSoundcard.IsPlaying())
+        SoundcardLedLabel.ForeColor = Color.Red;
+      else
+        SoundcardLedLabel.ForeColor = Color.Lime;
+
+      if (!ctx.VacSoundcard.Enabled)
+        VacLedLabel.ForeColor = Color.Gray;
+      else if (!ctx.VacSoundcard.IsPlaying())
+        VacLedLabel.ForeColor = Color.Red;
+      else
+        VacLedLabel.ForeColor = Color.Lime;
+
+      SoundcardStatusLabel.ToolTipText = ctx.SpeakerSoundcard.GetDisplayName();
+      VacStatusLabel.ToolTipText = ctx.VacSoundcard.GetDisplayName();
+    }
+
+
+
 
     //----------------------------------------------------------------------------------------------
     //                                      sat data
     //----------------------------------------------------------------------------------------------
-
     const int LIST_DOWNLOAD_DAYS = 7;
     const int TLE_DOWNLOAD_DAYS = 1;
 
@@ -506,6 +583,20 @@ namespace OrbiNom
       Cursor = Cursors.Default;
     }
 
+    private void SoundcardLabel_Click(object sender, EventArgs e)
+    {
+      ctx.SpeakerSoundcard.Enabled = !ctx.SpeakerSoundcard.Enabled;
+      ShowSoundcardLabels();
+    }
+
+    private void VacLabel_Click(object sender, EventArgs e)
+    {
+      ctx.VacSoundcard.Enabled = !ctx.VacSoundcard.Enabled;
+      ShowSoundcardLabels();
+    }
+
+
+
 
 
 
@@ -685,13 +776,13 @@ namespace OrbiNom
       ctx.EarthViewPanel?.SetSatellite(sat);
       ctx.PassesPanel?.ShowPasses();
 
-      ctx.FrequencyControl.SetTransmitter(SatelliteSelector.GetSelectedTransmitter(sat), sat); 
+      ctx.FrequencyControl.SetTransmitter(SatelliteSelector.GetSelectedTransmitter(sat), sat);
     }
 
     private void SatelliteSelector_SelectedTransmitterChanged(object sender, EventArgs e)
     {
       FrequencyControl.SetTransmitter(
-        SatelliteSelector.SelectedTransmitter, 
+        SatelliteSelector.SelectedTransmitter,
         SatelliteSelector.SelectedSatellite);
     }
 

@@ -35,14 +35,12 @@ namespace OrbiNom.UserControls
         ctx.SatelliteSelector.SelectedSatellite);
     }
 
-    public void SetTransmitter(SatnogsDbTransmitter? transmitter, SatnogsDbSatellite satellite)
+    public void SetTransmitter(SatnogsDbTransmitter transmitter, SatnogsDbSatellite satellite)
     {
       Transmitter = transmitter;
       Satellite = satellite;
       Frequency = Transmitter.downlink_low;
       UpdateAllControls();
-
-      Console.Beep();
     }
 
     internal void SetFrequency(double frequency)

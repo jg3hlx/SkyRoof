@@ -62,15 +62,15 @@ namespace OrbiNom
     }
 
 
-    public void Process(T[] data)
+    public void Process(DataEventArgs<T> args)
     {
 
       int readPos = 0;
 
-      while (readPos < data.Length)
+      while (readPos < args.Count)
       {
-        int copyCount = Math.Min(BufferLength - WritePos, data.Length - readPos);
-        Array.Copy(data, readPos, Buffer, WritePos, copyCount);
+        int copyCount = Math.Min(BufferLength - WritePos, args.Count - readPos);
+        Array.Copy(args.Data, readPos, Buffer, WritePos, copyCount);
         readPos += copyCount;
         WritePos += copyCount;
 

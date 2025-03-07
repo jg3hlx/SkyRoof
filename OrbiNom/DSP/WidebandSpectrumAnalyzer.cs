@@ -25,7 +25,7 @@ namespace OrbiNom
 
     protected override void Process(DataEventArgs<Complex32> args)    
     {
-      Spectrum.Process(args.Data);
+      Spectrum.Process(args);
     }
 
     private void Spectrum_SpectrumAvailable(object? sender, DataEventArgs<float> e)
