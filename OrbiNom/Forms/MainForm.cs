@@ -167,11 +167,7 @@ namespace OrbiNom
 
       SetWaterfallSpeed();
 
-      ctx.WaterfallPanel?.SetPassband(
-        ctx.Sdr.Info.Frequency,
-        ctx.Sdr.Info.SampleRate,
-        ctx.Sdr.Info.MaxBandwidth
-        );
+      ctx.WaterfallPanel?.SetPassband();
     }
 
     private void ConfigureSlicer()

@@ -1,27 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using SGPdotNET.Observation;
+﻿using SGPdotNET.Observation;
 using VE3NEA;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace OrbiNom.UserControls
+namespace OrbiNom
 {
   public partial class FrequencyControl : UserControl
   {
     public Context ctx;
     public SatnogsDbTransmitter? Transmitter;
     public SatnogsDbSatellite? Satellite;
-    private double? Frequency;
+    public double? Frequency;
     private TopocentricObservation Observation;
     private bool Changing;
+    public double? CorrectedDownlinkFrequency;
 
     public FrequencyControl()
     {
@@ -41,12 +31,16 @@ namespace OrbiNom.UserControls
       Satellite = satellite;
       Frequency = Transmitter.downlink_low;
       UpdateAllControls();
+      UpdateDoppler();
+      SetReceivedFrequency();
+      ctx.WaterfallPanel?.BringInView(CorrectedDownlinkFrequency!.Value);
     }
 
     internal void SetFrequency(double frequency)
     {
       Satellite = null;
-      Frequency = frequency;
+      CorrectedDownlinkFrequency = Frequency = frequency;
+      SetReceivedFrequency();
       UpdateAllControls();
     }
 
@@ -112,16 +106,18 @@ namespace OrbiNom.UserControls
       {
         Observation = ctx.AllPasses.ObserveSatellite(Satellite, DateTime.UtcNow);
 
-        double freq = (double)Frequency! * -Observation.RangeRate / 3e5;
-        string sign = freq > 0 ? "+" : "";
-        DownlinkDopplerLabel.Text = $"{sign}{freq:n0}";
+        double doppler = (double)Frequency! * -Observation.RangeRate / 3e5;
+        string sign = doppler > 0 ? "+" : "";
+        DownlinkDopplerLabel.Text = $"{sign}{doppler:n0}";
+
+        CorrectedDownlinkFrequency = Frequency + doppler + (double)DownlinkManualSpinner.Value * 1000;
 
         var txFreq = Transmitter.invert ? Transmitter.uplink_high : Transmitter.uplink_low;
         if (txFreq.HasValue)
         {
-          freq = (double)txFreq * Observation.RangeRate / 3e5;
-          sign = freq > 0 ? "+" : "";
-          UplinkDopplerLabel.Text = $"{sign}{freq:n0}";
+          doppler = (double)txFreq * Observation.RangeRate / 3e5;
+          sign = doppler > 0 ? "+" : "";
+          UplinkDopplerLabel.Text = $"{sign}{doppler:n0}";
           SetFieldColors(txFreq);
         }
         else
@@ -136,8 +132,11 @@ namespace OrbiNom.UserControls
         DownlinkManualCheckbox.Checked = cust.DownlinkManualCorrectionEnabled;
         DownlinkManualSpinner.Value = (decimal)(cust.DownlinkManualCorrection / 1000f);
         Changing = false;
+
+        SetReceivedFrequency();
       }
       else
+      // todo: call this once
       {
         DownlinkDopplerLabel.Text = "N/A";
 
@@ -145,8 +144,72 @@ namespace OrbiNom.UserControls
         DownlinkManualSpinner.Value = 0;
         Changing = false;
 
+        CorrectedDownlinkFrequency = Frequency;
+
         SetFieldColors(null);
       }
+    }
+
+    private void SetReceivedFrequency()
+    {
+      if (ctx.Sdr?.Enabled != true) return;
+
+      double bandwidth = ctx.Sdr.Info.MaxBandwidth;
+      double low = ctx.Sdr.Frequency - bandwidth / 2;
+      double high = ctx.Sdr.Frequency + bandwidth / 2;
+
+      if (CorrectedDownlinkFrequency < low || CorrectedDownlinkFrequency > high)
+        if (ctx.Sdr.IsFrequencySupported(CorrectedDownlinkFrequency!.Value))
+        {
+          BringToPassband(CorrectedDownlinkFrequency!.Value);
+          ctx.WaterfallPanel?.SetCenterFrequency(ctx.Sdr.Info.Frequency);
+        }
+        else      
+          return;
+
+      if (CorrectedDownlinkFrequency >= low && CorrectedDownlinkFrequency <= high)
+        if (ctx.Slicer?.Enabled == true) 
+          ctx.Slicer.SetOffset(CorrectedDownlinkFrequency!.Value - ctx.Sdr.Frequency);
+    }
+
+
+    private bool BringToPassband(double frequency)
+    {
+      // todo:
+      // is frequency in UHF or VHF segment?
+      // if so, adjust frequency so that sdr segment is fully within vhf/uhf segment
+      // does sdr support frequency?
+      // set sdr center frequency
+
+      double bandWing = SdrConst.MAX_BANDWIDTH / 2;
+      double sdrWing = ctx.Sdr!.Info.MaxBandwidth / 2;
+
+      bool uhf = frequency >= SdrConst.UHF_CENTER_FREQUENCY - bandWing && 
+        frequency <= SdrConst.UHF_CENTER_FREQUENCY + bandWing;
+
+      if (uhf)
+      {
+        double minCenter = SdrConst.UHF_CENTER_FREQUENCY - bandWing + sdrWing;
+        double maxCenter = SdrConst.UHF_CENTER_FREQUENCY + bandWing - sdrWing;
+        frequency = Math.Max(minCenter, Math.Min(maxCenter, frequency));
+      }
+
+      bool vhf = frequency >= SdrConst.VHF_CENTER_FREQUENCY - bandWing &&
+        frequency <= SdrConst.VHF_CENTER_FREQUENCY + bandWing;
+
+      if (vhf)
+      {
+        double minCenter = SdrConst.VHF_CENTER_FREQUENCY - bandWing + sdrWing;
+        double maxCenter = SdrConst.VHF_CENTER_FREQUENCY + bandWing - sdrWing;
+        frequency = Math.Max(minCenter, Math.Min(maxCenter, frequency));
+      }
+
+      if (ctx.Sdr.IsFrequencySupported(frequency))
+      {
+        ctx.Sdr.Frequency = frequency;
+        return true;
+      }
+      else return false;
     }
 
     private void DownlinkManualSpinner_ValueChanged(object sender, EventArgs e)

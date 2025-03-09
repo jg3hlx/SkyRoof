@@ -227,9 +227,14 @@ namespace VE3NEA
       
     }
 
+    public bool IsFrequencySupported(double frequency)
+    {
+      return Info.FrequencyRange.Any(r => frequency >= r.minimum && frequency <= r.maximum);
+    }
+
     private void SetFrequency(double frequency)
     {
-      if (Info.FrequencyRange.Any(r => frequency >= r.minimum && frequency <= r.maximum))
+      if (IsFrequencySupported(frequency))
       {
         Info.Frequency = frequency;
 

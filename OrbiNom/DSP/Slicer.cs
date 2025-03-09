@@ -149,7 +149,7 @@ namespace OrbiNom
       // return the real part
       int outputCount = RationalResamplerOutputBuffer.Count;
       var outputArgs = ArgsPool.Rent(outputCount);
-      for (int i = 0; i < outputCount; i++) outputArgs.Data[i] = RationalResamplerOutputBuffer.Data[i].Real * 1000;
+      for (int i = 0; i < outputCount; i++) outputArgs.Data[i] = RationalResamplerOutputBuffer.Data[i].Real * 10;
       RationalResamplerOutputBuffer.Count = 0;
       DataAvailable?.Invoke(this, outputArgs);
       ArgsPool.Return(outputArgs);

@@ -33,7 +33,7 @@
       VolumeLabel = new Label();
       label2 = new Label();
       VolumeTrackbar = new TrackBar();
-      FrequencyControl = new UserControls.FrequencyControl();
+      FrequencyControl = new FrequencyControl();
       panel1 = new Panel();
       SatelliteSelector = new SatelliteSelector();
       ClockPanel = new Panel();
@@ -624,7 +624,7 @@
     private ToolStripMenuItem DownloadTleMNU;
     public ToolStripMenuItem TransmittersMNU;
     public SatelliteSelector SatelliteSelector;
-    private UserControls.FrequencyControl FrequencyControl;
+    private FrequencyControl FrequencyControl;
     private Panel panel1;
     private Panel panel2;
     private Label label2;

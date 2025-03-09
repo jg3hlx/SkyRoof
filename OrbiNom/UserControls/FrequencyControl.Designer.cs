@@ -1,4 +1,4 @@
-﻿namespace OrbiNom.UserControls
+﻿namespace OrbiNom
 {
   partial class FrequencyControl
   {

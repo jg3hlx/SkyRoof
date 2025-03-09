@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Data;
-using Newtonsoft.Json.Linq;
 using VE3NEA;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OrbiNom
 {

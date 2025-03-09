@@ -22,10 +22,11 @@ namespace OrbiNom
     public Context ctx;
     private List<TransmitterLabel> Labels = new();
     private List<TransmitterLabel> VisibleLabels = new();
-    
+
     private readonly List<float> LastXPositions = new();
     private Brush BlueSpanBrush = new SolidBrush(Color.FromArgb(20, Color.Blue));
     private Brush GraySpanBrush = new SolidBrush(Color.FromArgb(20, Color.Gray));
+    private Brush PassbandBrush = new SolidBrush(Color.FromArgb(200, Color.Lime));
     private Brush BgBrush;
     private readonly Font BoldFont;
 
@@ -83,7 +84,24 @@ namespace OrbiNom
       var g = e.Graphics;
       g.FillRectangle(BgBrush, ClientRectangle);
       DrawTicks(g);
+      DrawPassband(g);
       DrawTransmitters(g);
+    }
+
+    private void DrawPassband(Graphics g)
+    {
+      if (ctx.Slicer?.Enabled != true) return;
+      if (ctx.FrequencyControl.CorrectedDownlinkFrequency == null) return;
+
+      double minWing = 3 * VisibleBandwidth / width;
+      double center = (double)ctx.FrequencyControl.CorrectedDownlinkFrequency!;
+      double wing = Math.Max(minWing, ctx.Slicer.Bandwidth / 2);
+      double left = FreqToPixel(center - wing);
+      double right = FreqToPixel(center + wing);
+
+      var rect = new RectangleF((float)left, height - 45, (float)(right - left), height);
+      g.FillRectangle(PassbandBrush, rect);
+      g.DrawRectangle(Pens.Green, rect);
     }
 
     private void DrawTicks(Graphics g)
@@ -270,6 +288,12 @@ namespace OrbiNom
     internal TransmitterLabel? GetLabelUnderCursor(Point location)
     {
       return VisibleLabels.FirstOrDefault(label => label.Rect.Contains(location));
+    }
+
+    internal bool IsFrequencyVisible(double value)
+    {
+      var x = FreqToPixel(value);
+      return x >= 0 && x < width;
     }
   }
 }
