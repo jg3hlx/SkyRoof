@@ -175,7 +175,7 @@ namespace OrbiNom
       if (ctx.Slicer != null) ctx.Slicer?.Dispose();
 
       ctx.Slicer = new Slicer(ctx.Sdr.Info.SampleRate);
-      ctx.Slicer.DataAvailable += Slicer_DataAvailable;
+      ctx.Slicer.AudioDataAvailable += Slicer_DataAvailable;
     }
  
     private void Slicer_DataAvailable(object? sender, DataEventArgs<float> e)

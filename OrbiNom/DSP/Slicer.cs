@@ -9,18 +9,18 @@ namespace OrbiNom
   public unsafe class Slicer : ThreadedProcessor<Complex32>
   {
     public enum Mode { USB, LSB, USB_D, LSB_D, CW, FM }
-    private static readonly int[] Bandwidths = [1500, 1500, 2000, 2000, 250, 8000];
+    private static readonly int[] Bandwidths = [3000, 3000, 4000, 4000, 500, 16000];
     private static readonly int[] ModeOffsets = [1500, -1500, 2000, -2000, 600, 0];
 
     private const int STOPBAND_REJECTION_DB = 80;
-    private const float USEFUL_BANDWIDTH = 0.95f;
-    private const int FILTER_DELAY = 50; // the default in LiquidDsp is 15
+    private const double USEFUL_BANDWIDTH = 0.9 * SdrConst.AUDIO_SAMPLING_RATE / 2; // 22 kHz useful at 48 KHz sampling rate
     public const int OUTPUT_SAMPLING_RATE = 48000;
 
     private int OctaveDecimationFactor, RationalInterpolationFactor, RationalDecimationFactor;
     private NativeLiquidDsp.nco_crcf* FirstMixer, SecondMixer;
     private NativeLiquidDsp.msresamp2_crcf* msresamp2;
     private NativeLiquidDsp.rresamp_crcf* rresamp;
+    private NativeLiquidDsp.firfilt_crcf * firfilt;
 
     private FifoBuffer<Complex32> InputBuffer = new();
     private FifoBuffer<Complex32> OctaveResamplerInputBuffer = new();
@@ -30,6 +30,7 @@ namespace OrbiNom
     private double RationalResamplerInputRate;
     private double offset;
     private Mode mode;
+    private bool ModeChanged = false;
 
 
     public double InputRate { get; private set; }
@@ -37,7 +38,8 @@ namespace OrbiNom
     public double Bandwidth { get => Bandwidths[(int)CurrentMode]; }
     public double FrequencyOffset { get => offset; set => SetOffset(value); }
 
-    public event EventHandler<DataEventArgs<float>>? DataAvailable;
+    public event EventHandler<DataEventArgs<float>>? AudioDataAvailable;
+    public event EventHandler<DataEventArgs<Complex32>>? IqDataAvailable;
 
 
     public Slicer(double inputRate, double frequencyOffset = 0, Mode mode = Mode.CW)
@@ -50,9 +52,9 @@ namespace OrbiNom
       FrequencyOffset = frequencyOffset;
 
       RationalResamplerInputRate = CreateOctaveResampler();
+      CreateRationalResampler();
       CurrentMode = mode;
     }
-
 
     public void SetOffset(double offset)
     {
@@ -66,23 +68,30 @@ namespace OrbiNom
       ModeChanged = true;
     }
 
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                       create 
+    //----------------------------------------------------------------------------------------------
     private double CreateOctaveResampler()
     {
       int octaveStageCount = (int)Math.Ceiling(Math.Log2(InputRate / OUTPUT_SAMPLING_RATE)) - 1;
       OctaveDecimationFactor = 1 << octaveStageCount;
-
       if (OctaveDecimationFactor == 1) return InputRate;
+
+      double outputRate = InputRate / OctaveDecimationFactor;
+      double fc = USEFUL_BANDWIDTH / outputRate;
 
       msresamp2 = NativeLiquidDsp.msresamp2_crcf_create(
         NativeLiquidDsp.LiquidResampType.LIQUID_RESAMP_DECIM,
-        (uint)octaveStageCount,
-        // todo: we only need (16/2)kHz/48kHz
-        0.5f * USEFUL_BANDWIDTH,
+        (uint)octaveStageCount,        
+        (float)fc,
         0,
         STOPBAND_REJECTION_DB
         );
 
-      return InputRate / OctaveDecimationFactor;
+      return outputRate;
     }
 
     private void CreateRationalResampler()
@@ -93,9 +102,12 @@ namespace OrbiNom
       (RationalInterpolationFactor, RationalDecimationFactor) = Dsp.ApproximateRatio(rationalResamplingFactor, 1e-4);
 
       // design lowpass filter
-      float bandwidth = Bandwidths[(int)CurrentMode] / (float)OUTPUT_SAMPLING_RATE;
-      float fc = bandwidth / RationalInterpolationFactor;
+      double sacrificedBandwidth = SdrConst.AUDIO_SAMPLING_RATE / 2 - USEFUL_BANDWIDTH; // ~2 kHz
+      double cutoff = SdrConst.AUDIO_SAMPLING_RATE / 2 - sacrificedBandwidth / 2;       // ~23 kHz
+      double filterRate = RationalResamplerInputRate * RationalInterpolationFactor;     // rate after interpolation
+      float fc = (float)(cutoff / filterRate);
 
+      int FILTER_DELAY = 25; // the default in LiquidDsp is 15
       int filterLength = 2 * FILTER_DELAY * RationalInterpolationFactor + 1;
       var filter = NativeLiquidDsp.firfilt_crcf_create_kaiser((uint)filterLength, fc, STOPBAND_REJECTION_DB, 0);
       var coeffPointer = NativeLiquidDsp.firfilt_crcf_get_coefficients(filter);
@@ -104,10 +116,11 @@ namespace OrbiNom
       rresamp = NativeLiquidDsp.rresamp_crcf_create(
         (uint)RationalInterpolationFactor,
         (uint)RationalDecimationFactor,
-        FILTER_DELAY,
+        (uint)FILTER_DELAY,
         coeffPointer
         );
 
+      // debug: print the filter coefficients
       //byte[] coeffBytes = new byte[filterLength * sizeof(float)];
       //Marshal.Copy((nint)coeffPointer, coeffBytes, 0, coeffBytes.Length);
       //string base64filt = Convert.ToBase64String(coeffBytes);
@@ -116,6 +129,21 @@ namespace OrbiNom
       NativeLiquidDsp.firfilt_crcf_destroy(filter);
     }
 
+    private void CreateFilter()
+    {
+      float fc = Bandwidths[(int)CurrentMode] / 2f / SdrConst.AUDIO_SAMPLING_RATE;
+
+      int FILTER_DELAY = 500;
+      int filterLength = 2 * FILTER_DELAY + 1;
+      firfilt = NativeLiquidDsp.firfilt_crcf_create_kaiser((uint)filterLength, fc, STOPBAND_REJECTION_DB, 0);
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        process
+    //----------------------------------------------------------------------------------------------
     protected override void Process(DataEventArgs<Complex32> args)
     {
       CheckModeChange();
@@ -123,13 +151,17 @@ namespace OrbiNom
       InputBuffer.Data = args.Data;
       InputBuffer.Count = args.Data.Length;
 
+      //{!]
+      for (int i = 0; i < InputBuffer.Count; i++) InputBuffer.Data[i] += 0.01f;
+
+
       // mix down to baseband
       fixed (Complex32* pData = InputBuffer.Data)
       {
         NativeLiquidDsp.nco_crcf_mix_block_down(FirstMixer, pData, pData, (uint)InputBuffer.Count);
       }
 
-      // downsample and lowpass-filter
+      // downsample 
       if (msresamp2 == null)
         ApplyRationalResampler(InputBuffer);
       else
@@ -137,9 +169,20 @@ namespace OrbiNom
         ApplyOctaveResampler(InputBuffer);
         ApplyRationalResampler(RationalResamplerInputBuffer);
       }
+      // todo: fire event with the IQ data
+
+      // lowpass filter
+      fixed (Complex32* pData = RationalResamplerOutputBuffer.Data)
+      {
+        for (int i = 0; i < RationalResamplerOutputBuffer.Count; i++)
+        {
+          NativeLiquidDsp.firfilt_crcf_push(firfilt, pData[i]);
+          NativeLiquidDsp.firfilt_crcf_execute(firfilt, pData+i);
+        }
+      }
 
       // mix up to mode-dependent pitch
-      if (Bandwidths[(int)CurrentMode] != 0)
+      if (ModeOffsets[(int)CurrentMode] != 0)
         fixed (Complex32* pData = RationalResamplerOutputBuffer.Data)
         {
           NativeLiquidDsp.nco_crcf_mix_block_up(SecondMixer, pData, pData, (uint)RationalResamplerOutputBuffer.Count);
@@ -151,19 +194,16 @@ namespace OrbiNom
       var outputArgs = ArgsPool.Rent(outputCount);
       for (int i = 0; i < outputCount; i++) outputArgs.Data[i] = RationalResamplerOutputBuffer.Data[i].Real * 10;
       RationalResamplerOutputBuffer.Count = 0;
-      DataAvailable?.Invoke(this, outputArgs);
+      AudioDataAvailable?.Invoke(this, outputArgs);
       ArgsPool.Return(outputArgs);
     }
-
-    private bool ModeChanged = false;
 
     private void CheckModeChange()
     {
       if (!ModeChanged) return;
       ModeChanged = false;
 
-      if (rresamp != null) NativeLiquidDsp.rresamp_crcf_destroy(rresamp);
-      CreateRationalResampler();
+      CreateFilter();
 
       float offset = ModeOffsets[(int)CurrentMode];
       NativeLiquidDsp.nco_crcf_set_frequency(SecondMixer, (float)(Geo.TwoPi * offset / OUTPUT_SAMPLING_RATE));      
@@ -224,6 +264,12 @@ namespace OrbiNom
       RationalResamplerOutputBuffer.Count += outputCount;
     }
 
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        IDispose
+    //----------------------------------------------------------------------------------------------
     public override void Dispose()
     {
       base.Dispose();
@@ -232,11 +278,13 @@ namespace OrbiNom
       if (msresamp2 != null) NativeLiquidDsp.msresamp2_crcf_destroy(msresamp2);
       if (rresamp != null) NativeLiquidDsp.rresamp_crcf_destroy(rresamp);
       if (SecondMixer != null) NativeLiquidDsp.nco_crcf_destroy(SecondMixer);
+      if (firfilt != null) NativeLiquidDsp.firfilt_crcf_destroy(firfilt);
 
       FirstMixer = null;
       msresamp2 = null;
       rresamp = null;
       SecondMixer = null;
+      firfilt = null;
     }
   }
 }

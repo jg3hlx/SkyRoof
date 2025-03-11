@@ -156,5 +156,11 @@ namespace VE3NEA
 
     [DllImport(LIBLIQUID, CallingConvention = cdecl)]
     public static extern unsafe int firfilt_crcf_destroy(firfilt_crcf* q);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int firfilt_crcf_execute(firfilt_crcf* q, Complex32* x);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int firfilt_crcf_push(firfilt_crcf* q, Complex32 x);    
   }
 }
