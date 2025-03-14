@@ -1,5 +1,6 @@
 ﻿using SGPdotNET.Observation;
 using VE3NEA;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace OrbiNom
 {
@@ -15,12 +16,20 @@ namespace OrbiNom
     public FrequencyControl()
     {
       InitializeComponent();
+
+      Changing = true;
+      DownlinkModeCombobox.DataSource = Enum.GetValues(typeof(Slicer.Mode));
+      UplinkModeCombobox.DataSource = Enum.GetValues(typeof(Slicer.Mode));
+      DownlinkModeCombobox.SelectedIndex = 0;
+      UplinkModeCombobox.SelectedIndex = 0;
+      Changing = false;
     }
 
     public void SetTransmitter()
     {
       IsTerrestrial = false;
       Frequency = ctx.SatelliteSelector.SelectedTransmitter.downlink_low;
+      SetMode();
       UpdateAllControls();
       UpdateDoppler();
       SetSlicerFrequency();
@@ -151,11 +160,11 @@ namespace OrbiNom
           BringToPassband(CorrectedDownlinkFrequency!.Value);
           ctx.WaterfallPanel?.SetCenterFrequency(ctx.Sdr.Info.Frequency);
         }
-        else      
+        else
           return;
 
       if (CorrectedDownlinkFrequency >= low && CorrectedDownlinkFrequency <= high)
-        if (ctx.Slicer?.Enabled == true) 
+        if (ctx.Slicer?.Enabled == true)
           ctx.Slicer.SetOffset(CorrectedDownlinkFrequency!.Value - ctx.Sdr.Frequency);
     }
 
@@ -171,7 +180,7 @@ namespace OrbiNom
       double bandWing = SdrConst.MAX_BANDWIDTH / 2;
       double sdrWing = ctx.Sdr!.Info.MaxBandwidth / 2;
 
-      bool uhf = frequency >= SdrConst.UHF_CENTER_FREQUENCY - bandWing && 
+      bool uhf = frequency >= SdrConst.UHF_CENTER_FREQUENCY - bandWing &&
         frequency <= SdrConst.UHF_CENTER_FREQUENCY + bandWing;
 
       if (uhf)
@@ -218,6 +227,42 @@ namespace OrbiNom
       if (Changing || IsTerrestrial) return;
       var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(ctx.SatelliteSelector.SelectedSatellite.sat_id);
       cust.DownlinkDopplerCorrectionEnabled = DownlinkDopplerCheckbox.Checked;
+    }
+
+    private void ModeCombobox_SelectedValueChanged(object sender, EventArgs e)
+    {
+      if (Changing) return;
+
+      // mode from comboboxes to settings
+      if (!IsTerrestrial)
+      {
+        var tx = ctx.SatelliteSelector.SelectedTransmitter;
+        var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(tx.uuid);
+        cust.DownlinkMode = (Slicer.Mode)DownlinkModeCombobox.SelectedItem!;
+        cust.UplinkMode = (Slicer.Mode)UplinkModeCombobox.SelectedItem!;
+      }
+
+      SetMode();
+    }
+
+    private void SetMode()
+    {
+      if (!IsTerrestrial)
+      {
+        // read settings
+        var tx = ctx.SatelliteSelector.SelectedTransmitter;
+        var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(tx.uuid);
+        
+        // set in comboboxes
+        Changing = true;
+        DownlinkModeCombobox.SelectedItem = cust.DownlinkMode;
+        UplinkModeCombobox.SelectedItem = cust.UplinkMode;
+        Changing = false;
+      }
+
+      // set in slicer
+      if (ctx.Slicer != null)
+        ctx.Slicer.CurrentMode = (Slicer.Mode)DownlinkModeCombobox.SelectedItem!;
     }
   }
 }

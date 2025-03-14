@@ -203,22 +203,22 @@
       // DownlinkModeCombobox
       // 
       DownlinkModeCombobox.FormattingEnabled = true;
-      DownlinkModeCombobox.Items.AddRange(new object[] { "USB", "LSB", "CW", "FM" });
       DownlinkModeCombobox.Location = new Point(94, 2);
       DownlinkModeCombobox.Name = "DownlinkModeCombobox";
       DownlinkModeCombobox.Size = new Size(79, 23);
       DownlinkModeCombobox.TabIndex = 17;
+      DownlinkModeCombobox.SelectedValueChanged += ModeCombobox_SelectedValueChanged;
       // 
       // UplinkModeCombobox
       // 
       UplinkModeCombobox.AutoCompleteMode = AutoCompleteMode.Suggest;
       UplinkModeCombobox.AutoCompleteSource = AutoCompleteSource.ListItems;
       UplinkModeCombobox.FormattingEnabled = true;
-      UplinkModeCombobox.Items.AddRange(new object[] { "USB", "LSB", "CW", "FM" });
       UplinkModeCombobox.Location = new Point(433, 2);
       UplinkModeCombobox.Name = "UplinkModeCombobox";
       UplinkModeCombobox.Size = new Size(79, 23);
       UplinkModeCombobox.TabIndex = 18;
+      UplinkModeCombobox.SelectedValueChanged += ModeCombobox_SelectedValueChanged;
       // 
       // FrequencyControl
       // 

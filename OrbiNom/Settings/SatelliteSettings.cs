@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,8 @@ namespace OrbiNom
     public DateTime LastTleTime = DateTime.MinValue;
 
     public Dictionary<string, SatelliteCustomization> SatelliteCustomizations = new();
+    public Dictionary<string, TransmitterCustomization> TransmitterCustomizations = new();
+    
     public List<SatelliteGroup> SatelliteGroups = new();
     public string SelectedGroupId;
     public string SelectedSatelliteId;
@@ -80,6 +83,14 @@ namespace OrbiNom
     }
   }
 
+  public class SatelliteGroup
+  {
+    public string Id = Guid.NewGuid().ToString();
+    public string Name { get; set; }
+    public List<string> SatelliteIds = new();
+    public string? SelectedSatId;
+  }
+
   public class SatelliteCustomization
   {
     public string sat_id;
@@ -91,11 +102,11 @@ namespace OrbiNom
     public bool DownlinkManualCorrectionEnabled = true;
   }
 
-  public class SatelliteGroup
+  public class TransmitterCustomization
   {
-    public string Id = Guid.NewGuid().ToString();
-    public string Name { get; set; }
-    public List<string> SatelliteIds = new();
-    public string? SelectedSatId;
+    public string uuid;
+    public Slicer.Mode DownlinkMode;
+    public Slicer.Mode UplinkMode;
+    public double TranspnderOffset;
   }
 }
