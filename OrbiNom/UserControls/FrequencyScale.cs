@@ -221,14 +221,6 @@ namespace OrbiNom
       if (label.Pass.Satellite == ctx.SatelliteSelector.SelectedSatellite)
         g.FillRectangle(Brushes.Aqua, label.Rect);
 
-      // clicked sat border
-      if (label.Pass.Satellite == ctx.SatelliteSelector.ClickedSatellite)
-      {
-        var rect = label.Rect;
-        rect.Inflate(2, 2);
-        g.DrawRectangle(Pens.Red, rect);
-      }
-
       // sat name
       var brush = label.Pass.StartTime <= now && label.Pass.EndTime >= now ? Brushes.Blue : Brushes.Gray;
       g.DrawString(label.Pass.Satellite.name, font, brush, label.Rect.Location);

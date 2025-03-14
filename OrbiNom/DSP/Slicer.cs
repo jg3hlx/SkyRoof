@@ -42,7 +42,7 @@ namespace OrbiNom
     public event EventHandler<DataEventArgs<Complex32>>? IqDataAvailable;
 
 
-    public Slicer(double inputRate, double frequencyOffset = 0, Mode mode = Mode.CW)
+    public Slicer(double inputRate, double frequencyOffset = 0, Mode mode = Mode.USB)
     {
       InputRate = inputRate;
 
@@ -102,10 +102,8 @@ namespace OrbiNom
       (RationalInterpolationFactor, RationalDecimationFactor) = Dsp.ApproximateRatio(rationalResamplingFactor, 1e-4);
 
       // design lowpass filter
-      double sacrificedBandwidth = SdrConst.AUDIO_SAMPLING_RATE / 2 - USEFUL_BANDWIDTH; // ~2 kHz
-      double cutoff = SdrConst.AUDIO_SAMPLING_RATE / 2 - sacrificedBandwidth / 2;       // ~23 kHz
-      double filterRate = RationalResamplerInputRate * RationalInterpolationFactor;     // rate after interpolation
-      float fc = (float)(cutoff / filterRate);
+      double filterRate = RationalResamplerInputRate * RationalInterpolationFactor;  // sampling rate after interpolation
+      float fc = (float)(USEFUL_BANDWIDTH / filterRate);
 
       int FILTER_DELAY = 25; // the default in LiquidDsp is 15
       int filterLength = 2 * FILTER_DELAY * RationalInterpolationFactor + 1;

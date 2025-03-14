@@ -68,11 +68,6 @@ namespace OrbiNom
       ValidateZoom();
     }
 
-    private void label1_DoubleClick(object sender, EventArgs e)
-    {
-      ctx.SatelliteSelector.SetSelectedSatellite(Satellite);
-    }
-
     private void ValidateZoom()
     {
       var diam = Math.Min(openglControl1.ClientSize.Width, openglControl1.ClientSize.Height);

@@ -218,24 +218,16 @@ namespace OrbiNom
     {
       TransmitterLabel? label = ScaleControl.GetLabelUnderCursor(e.Location);
 
-      // tune to frequency
+      // tune to terrestrial frequency
       if (label == null)
         ctx.FrequencyControl.SetFrequency(PixelToFreq(e.X));
 
-      // select transmitter if in current group
-      else if (ctx.SatelliteSelector.GroupSatellites.Contains(label.Pass.Satellite))
+      // select transmitter 
+      else 
       {
         ctx.SatelliteSelector.SetSelectedSatellite(label.Pass.Satellite);
-        ctx.SatelliteSelector.SetSelectedTransmitter(label.Transmitters?.FirstOrDefault());
-      }
-
-      // just tune to transmitter
-      else
-      {
-        ctx.SatelliteSelector.SetClickedSatellite(label.Pass.Satellite);
+        ctx.SatelliteSelector.SetSelectedTransmitter(label.Transmitters.First());
         ctx.SatelliteSelector.SetSelectedPass(label.Pass);
-        ctx.FrequencyControl.SetTransmitter(
-          label.Transmitters?.FirstOrDefault(), label.Pass.Satellite);
       }
     }
 

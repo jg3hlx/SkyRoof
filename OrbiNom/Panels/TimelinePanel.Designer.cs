@@ -51,7 +51,6 @@
       Text = "Timeline";
       FormClosing += TimelinePanel_FormClosing;
       Paint += TimelinePanel_Paint;
-      DoubleClick += TimelinePanel_DoubleClick;
       MouseDown += SatelliteTimelineControl_MouseDown;
       MouseLeave += TimelinePanel_MouseLeave;
       MouseMove += SatelliteTimelineControl_MouseMove;

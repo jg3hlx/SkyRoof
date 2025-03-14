@@ -347,16 +347,10 @@ namespace OrbiNom
       {
         ClickedSat = SatLabelRects[rect].Satellite;
         if (e.Button == MouseButtons.Left)
-          ctx.SatelliteSelector.SetClickedSatellite(ClickedSat);
+          ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
       }
       else
         ClickedSat = null;
-    }
-
-    private void DrawPanel_DoubleClick(object sender, EventArgs e)
-    {
-      if (ClickedSat != null)
-        ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
     }
 
     private void DrawPanel_MouseLeave(object sender, EventArgs e)

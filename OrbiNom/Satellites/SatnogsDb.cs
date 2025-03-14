@@ -41,6 +41,10 @@ namespace OrbiNom
         string json = File.ReadAllText(path);
         var satellites = JsonConvert.DeserializeObject<SatnogsDbSatelliteList>(json);
         SatelliteList = satellites.ToDictionary(s => s.sat_id);
+
+        foreach(var sat in satellites)
+          foreach (var tx in sat.Transmitters)
+            tx.Satellite = sat;
       }
       catch (Exception ex)
       {
@@ -200,7 +204,15 @@ namespace OrbiNom
     {
       string json = File.ReadAllText(Path.Combine(DownloadsFolder, "transmitters.json"));
       SatnogsDbTransmitterList transmitters = JsonConvert.DeserializeObject<SatnogsDbTransmitterList>(json);
-      foreach (SatnogsDbTransmitter t in transmitters) SatelliteList.GetValueOrDefault(t.sat_id)?.Transmitters?.Add(t);
+      foreach (SatnogsDbTransmitter t in transmitters)
+      {
+        var sat = SatelliteList.GetValueOrDefault(t.sat_id);
+        if (sat != null)
+        {
+          sat.Transmitters.Add(t);
+          t.Satellite = sat;
+        }
+      }
     }
 
     private void ImportSatnogsTle()

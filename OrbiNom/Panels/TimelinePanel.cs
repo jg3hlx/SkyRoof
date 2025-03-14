@@ -310,7 +310,7 @@ namespace OrbiNom
           ClickedSat = pass.Satellite;
           if (e.Button == MouseButtons.Left)
           {
-            ctx.SatelliteSelector.SetClickedSatellite(ClickedSat);
+            ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
             ctx.SatelliteSelector.SetSelectedPass(pass);
           }
         }
@@ -377,12 +377,6 @@ namespace OrbiNom
     private RectangleF GetSatRectAt(PointF point)
     {
       return SatLabelRects.Keys.FirstOrDefault(rect => rect.Contains(point));
-    }
-
-    private void TimelinePanel_DoubleClick(object sender, EventArgs e)
-    {
-      if (ClickedSat != null)
-        ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
     }
 
     private void TimelinePanel_MouseLeave(object sender, EventArgs e)

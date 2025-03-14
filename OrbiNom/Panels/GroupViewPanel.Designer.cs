@@ -64,7 +64,6 @@
       listView1.ColumnClick += listView1_ColumnClick;
       listView1.RetrieveVirtualItem += listView1_RetrieveVirtualItem;
       listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
-      listView1.DoubleClick += listView1_DoubleClick;
       listView1.MouseDown += listView1_MouseDown;
       // 
       // columnHeader1

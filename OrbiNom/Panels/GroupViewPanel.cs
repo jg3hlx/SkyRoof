@@ -36,8 +36,6 @@ namespace OrbiNom
       LoadGroup();
     }
 
-
-
     private void GroupViewPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
       ctx.GroupViewPanel = null;
@@ -48,7 +46,7 @@ namespace OrbiNom
     {
       // select group or default
       var sett = ctx.Settings.Satellites;
-      var group = sett.SatelliteGroups.First(g => g.Id == sett.SelectedGroup);
+      var group = sett.SatelliteGroups.First(g => g.Id == sett.SelectedGroupId);
       Items = group.SatelliteIds.Select(id => ItemFromSat(ctx.SatnogsDb.GetSatellite(id))).ToArray();
       listView1.VirtualListSize = Items.Length;
       listView1.Invalidate();
@@ -149,13 +147,6 @@ namespace OrbiNom
       e.Item = Items[e.ItemIndex];
     }
 
-    private void listView1_DoubleClick(object sender, EventArgs e)
-    {
-      var sat = ((ItemData)Items[listView1.SelectedIndices[0]].Tag!).Sat;
-      ctx.SatelliteSelector.SetSelectedSatellite(sat);
-      ShowSelectedSat();
-    }
-
     private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
     {
       SortColumn = e.Column;
@@ -170,7 +161,7 @@ namespace OrbiNom
 
       var data = (ItemData)Items[listView1.SelectedIndices[0]].Tag!;
 
-      ctx.SatelliteSelector.SetClickedSatellite(data.Sat);
+      ctx.SatelliteSelector.SetSelectedSatellite(data.Sat);
       ctx.PassesPanel?.ShowPasses();
       if (data.Pass != null) ctx.SatelliteSelector.SetSelectedPass(data.Pass);
     }

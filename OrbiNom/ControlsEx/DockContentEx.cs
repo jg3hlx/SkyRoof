@@ -44,7 +44,7 @@ namespace OrbiNom
 
     private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
     {
-      ctx.SatelliteSelector.SetClickedSatellite(ClickedSat!);
+      ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat!);
 
       if (ctx.SatelliteDetailsPanel != null)
         ctx.SatelliteDetailsPanel.Activate();
@@ -54,7 +54,7 @@ namespace OrbiNom
 
     private void SatelliteTransmittersMNU_Click(object sender, EventArgs e)
     {
-      ctx.SatelliteSelector.SetClickedSatellite(ClickedSat!);
+      ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat!);
 
       if (ctx.TransmittersPanel != null)
         ctx.TransmittersPanel.Activate();
@@ -64,7 +64,7 @@ namespace OrbiNom
 
     private void EarthViewMNU_Click(object sender, EventArgs e)
     {
-      ctx.SatelliteSelector.SetClickedSatellite(ClickedSat!);
+      ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat!);
 
       if (ctx.EarthViewPanel != null)
         ctx.EarthViewPanel.Activate();

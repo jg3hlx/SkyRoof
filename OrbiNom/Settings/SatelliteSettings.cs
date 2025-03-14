@@ -37,7 +37,8 @@ namespace OrbiNom
 
     public Dictionary<string, SatelliteCustomization> SatelliteCustomizations = new();
     public List<SatelliteGroup> SatelliteGroups = new();
-    public string? SelectedGroup;
+    public string SelectedGroupId;
+    public string SelectedSatelliteId;
 
     public void DeleteInvalidData(SatnogsDb db)
     {
@@ -63,11 +64,11 @@ namespace OrbiNom
       }
 
       // ensure there is a selected group
-      var selectedGroup = SatelliteGroups.FirstOrDefault(g => g.Id == SelectedGroup);
-      if (string.IsNullOrEmpty(SelectedGroup) || selectedGroup == null)
+      var selectedGroup = SatelliteGroups.FirstOrDefault(g => g.Id == SelectedGroupId);
+      if (string.IsNullOrEmpty(SelectedGroupId) || selectedGroup == null)
       {
         selectedGroup = SatelliteGroups[0];
-        SelectedGroup = selectedGroup.Id;
+        SelectedGroupId = selectedGroup.Id;
       }
 
       // ensure there is a selected sat in each group

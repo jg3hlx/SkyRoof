@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
+using SGPdotNET.Observation;
 using VE3NEA;
 
 namespace OrbiNom
@@ -8,15 +10,7 @@ namespace OrbiNom
   {
     public Context ctx;
     private bool changing;
-    private SatelliteGroup group;
-    private SatnogsDbSatellite clickedSatellite;
-
-    public event EventHandler? SelectedGroupChanged;
-    public event EventHandler? SelectedSatelliteChanged;
-    public event EventHandler? ClickedSatelliteChanged;
-    public event EventHandler? SelectedTransmitterChanged;
-    public event EventHandler? SelectedPassChanged;
-
+    private SatelliteGroup SelectedGroup;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public SatnogsDbSatellite[] GroupSatellites { get; private set; } = [];
@@ -25,13 +19,15 @@ namespace OrbiNom
     public SatnogsDbSatellite SelectedSatellite { get; private set; }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public SatnogsDbSatellite ClickedSatellite { get => clickedSatellite; set => SetClickedSatellite(value); }
+    public SatnogsDbTransmitter SelectedTransmitter { get; private set; }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public SatellitePass? SelectedPass { get; private set; }
 
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public SatnogsDbTransmitter SelectedTransmitter { get; private set; }
+    public event EventHandler? SelectedGroupChanged;
+    public event EventHandler? SelectedSatelliteChanged;
+    public event EventHandler? SelectedTransmitterChanged;
+    public event EventHandler? SelectedPassChanged;
 
 
     public SatelliteSelector()
@@ -39,192 +35,187 @@ namespace OrbiNom
       InitializeComponent();
     }
 
-    public void SetSatelliteGroups()
-    {
-      var sett = ctx.Settings.Satellites;
-
-      changing = true;
-      GroupComboBox.Items.Clear();
-      GroupComboBox.Items.AddRange(sett.SatelliteGroups.ToArray());
-      changing = false;
-
-      SetSelectedGroup();
-    }
-
-    public void SetSelectedGroup()
-    {
-      var sett = ctx.Settings.Satellites;
-      group = sett.SatelliteGroups.First(g => g.Id == sett.SelectedGroup);
-      GroupSatellites = group.SatelliteIds.Select(id => ctx.SatnogsDb.GetSatellite(id)!).ToArray();
-
-      changing = true;
-      GroupComboBox.SelectedItem = group;
-      changing = false;
-
-      SetSatellites();
-
-      OnSelectedGroupChanged();
-    }
-
-    private void SetSatellites()
-    {
-      changing = true;
-      SatelliteComboBox.Items.Clear();
-      SatelliteComboBox.Items.AddRange(GroupSatellites);
-      changing = false;
-
-      SetSelectedSatellite();
-    }
-
-    public void SetSelectedSatellite(SatnogsDbSatellite satellite)
-    {
-      //if (SelectedSatellite == satellite) return;
-
-      if (group.SatelliteIds.Contains(satellite.sat_id))
-      {
-        group.SelectedSatId = satellite.sat_id;
-        SetSelectedSatellite();
-        OnSelectedSatelliteChanged();
-      }
-      else
-        Console.Beep();
-    }
-
-    private void SetSelectedSatellite()
-    {
-      var sett = ctx.Settings.Satellites;
-      SelectedSatellite = ctx.SatnogsDb.GetSatellite(group.SelectedSatId);
-      clickedSatellite = SelectedSatellite;
-
-      changing = true;
-      SatelliteComboBox.SelectedItem = SelectedSatellite;
-      toolTip1.SetToolTip(SatelliteComboBox, SelectedSatellite.GetTooltipText());
-      changing = false;
-
-      SetTransmitters();
-      //SetSelectedPass(null);
-    }
-
-    public void SetClickedSatellite(SatnogsDbSatellite value)
-    {
-      clickedSatellite = value;
-      ClickedSatelliteChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-    private void SetTransmitters()
-    {
-      var sett = ctx.Settings.Satellites;
-
-      changing = true;
-      TransmitterComboBox.Items.Clear();
-      TransmitterComboBox.Items.AddRange(SelectedSatellite.Transmitters.ToArray());
-      changing = false;
-
-      SetSelectedTransmitter();
-    }
-
-    private void SetSelectedTransmitter()
-    {
-      SelectedTransmitter = GetSelectedTransmitter(SelectedSatellite);
-
-      changing = true;
-      TransmitterComboBox.SelectedItem = SelectedTransmitter;
-      toolTip1.SetToolTip(TransmitterComboBox, SelectedTransmitter.GetTooltipText());
-      changing = false;
-    }
-
-    public SatnogsDbTransmitter GetSelectedTransmitter(SatnogsDbSatellite sat)
-    {
-      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(sat.sat_id);
-
-      cust.SelectedTransmitterId ??= sat.Transmitters[0].uuid;
-      return sat.Transmitters.First(t => t.uuid == cust.SelectedTransmitterId);
-    }
-
-    public void SetSelectedTransmitter(SatnogsDbTransmitter? tx)
-    {
-      if (tx == null) return;
-
-      if (SelectedSatellite.Transmitters.Contains(tx))
-      {
-        SelectedTransmitter = tx;
-        var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(SelectedSatellite.sat_id);
-        cust.SelectedTransmitterId = tx.uuid;
-
-        SetSelectedTransmitter();
-        OnSelectedTransmitterChanged();
-      }
-      else
-        Console.Beep();
-    }
-
-    public void SetSelectedPass(SatellitePass? pass)
-    {
-      SelectedPass = pass;
-      SelectedPassChanged?.Invoke(this, EventArgs.Empty);
-    }
-
-
 
 
 
     //----------------------------------------------------------------------------------------------
-    //                   events fired when dropdown selection is manually changed
+    //                events fired when dropdown selection is manually changed
     //----------------------------------------------------------------------------------------------
     private void GroupComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (changing) return;
 
       var group = (SatelliteGroup)GroupComboBox.SelectedItem!;
-      ctx.Settings.Satellites.SelectedGroup = group.Id;
-
-      SetSelectedGroup();
+      SetSelectedGroup(group);
     }
 
     private void SatelliteComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (changing) return;
 
-      SelectedSatellite = (SatnogsDbSatellite)SatelliteComboBox.SelectedItem!;
-      group.SelectedSatId = SelectedSatellite.sat_id;
-      toolTip1.SetToolTip(SatelliteComboBox, SelectedSatellite.GetTooltipText());
-
-      SetTransmitters();
-      //SetSelectedPass(null);
-
-      OnSelectedSatelliteChanged();
+      var satellite = (SatnogsDbSatellite)SatelliteComboBox.SelectedItem!;
+      SetSelectedSatellite(satellite);
     }
 
     private void TransmitterComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (changing) return;
 
-      SetSelectedTransmitter((SatnogsDbTransmitter)TransmitterComboBox.SelectedItem!);
+      var transmitter = (SatnogsDbTransmitter)TransmitterComboBox.SelectedItem!;
+      SetSelectedTransmitter(transmitter);
     }
 
 
 
 
     //----------------------------------------------------------------------------------------------
-    //                          notify other objects of changes
+    //                      write new selection to settings, then show in UI
     //----------------------------------------------------------------------------------------------
-    public void OnSelectedGroupChanged()
+    private void SetSelectedGroup(SatelliteGroup group)
     {
+      Debug.Assert(group.SelectedSatId != null);
+
+      ctx.Settings.Satellites.SelectedGroupId = group.Id;
+      group.SelectedSatId ??= group.SatelliteIds[0];
+      ctx.Settings.Satellites.SelectedSatelliteId = group.SelectedSatId;
+
+      ShowSelectedGroup();
+    }
+
+    public void SetSelectedSatellite(SatnogsDbSatellite satellite)
+    {
+      ctx.Settings.Satellites.SelectedSatelliteId = satellite.sat_id;
+
+      if (SelectedGroup.SatelliteIds.Contains(satellite.sat_id))
+        SelectedGroup.SelectedSatId = satellite.sat_id;
+
+      ShowSelectedSatellite();
+    }
+
+    public void SetSelectedTransmitter(SatnogsDbTransmitter tx)
+    {
+      Debug.Assert(SelectedSatellite.Transmitters.Contains(tx));
+
+      ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(SelectedSatellite.sat_id)
+        .SelectedTransmitterId = tx.uuid;
+
+      ShowSelectedTransmitter();
+    }
+
+    public void SetSelectedPass(SatellitePass? pass)
+    {
+      SelectedPass = pass;
+
+      SelectedPassChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                               show current settings
+    //----------------------------------------------------------------------------------------------
+    private void ShowSelectedGroup()
+    {
+      // read settings
+      var sett = ctx.Settings.Satellites;
+      SelectedGroup = sett.SatelliteGroups.First(g => g.Id == sett.SelectedGroupId);
+      GroupSatellites = SelectedGroup.SatelliteIds.Select(id => ctx.SatnogsDb.GetSatellite(id)!).ToArray();
+
+      // select item in combobox
+      changing = true;
+      GroupComboBox.SelectedItem = SelectedGroup;
+      changing = false;
+
       SelectedGroupChanged?.Invoke(this, EventArgs.Empty);
+
+      LoadSatellites();
+    }
+
+    private void ShowSelectedSatellite()
+    {
+      // read settings
+      var sett = ctx.Settings.Satellites;
+      sett.SelectedSatelliteId ??= SelectedGroup.SelectedSatId;
+      SelectedSatellite = ctx.SatnogsDb.GetSatellite(sett.SelectedSatelliteId);
+
+      SetSatelliteInCombobox();
+
       SelectedSatelliteChanged?.Invoke(this, EventArgs.Empty);
+
+      LoadTransmitters();
+
+      SetSelectedPass(ctx.AllPasses.GetNextPass(SelectedSatellite));
+    }
+
+    private void ShowSelectedTransmitter()
+    {
+      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(SelectedSatellite.sat_id);
+      cust.SelectedTransmitterId ??= SelectedSatellite.Transmitters[0].uuid;
+      SelectedTransmitter = SelectedSatellite.Transmitters.First(t => t.uuid == cust.SelectedTransmitterId);
+
+      changing = true;
+      TransmitterComboBox.SelectedItem = SelectedTransmitter;
+      toolTip1.SetToolTip(TransmitterComboBox, SelectedTransmitter.GetTooltipText());
+      changing = false;
+
       SelectedTransmitterChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnSelectedSatelliteChanged()
+    private void SetSatelliteInCombobox()
     {
-      clickedSatellite = SelectedSatellite;
-      SelectedSatelliteChanged?.Invoke(this, EventArgs.Empty);
-      SelectedTransmitterChanged?.Invoke(this, EventArgs.Empty);
+      changing = true;
+
+      // if sat is not in the group, add it to dropdown with "(not in group)"
+      if (!SatelliteComboBox.Items.Contains(SelectedSatellite))
+        SatelliteComboBox.Items.Add(SelectedSatellite);
+
+      // if sat in group and the dropdown contains a sat not in group,
+      // delete the not-in-group one from dropdown
+      else if (GroupSatellites.Contains(SelectedSatellite) && SatelliteComboBox.Items.Count > GroupSatellites.Length )
+        LoadSatellites();
+
+      SatelliteComboBox.SelectedItem = SelectedSatellite;
+      toolTip1.SetToolTip(SatelliteComboBox, SelectedSatellite.GetTooltipText());
+
+      changing = false;
+
     }
 
-    public void OnSelectedTransmitterChanged()
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                    load lists
+    //----------------------------------------------------------------------------------------------
+    public void LoadSatelliteGroups()
     {
-      SelectedTransmitterChanged?.Invoke(this, EventArgs.Empty);
+      changing = true;
+      GroupComboBox.Items.Clear();
+      GroupComboBox.Items.AddRange(ctx.Settings.Satellites.SatelliteGroups.ToArray());
+      changing = false;
+
+      ShowSelectedGroup();
+    }
+
+    private void LoadSatellites()
+    {
+      changing = true;
+      SatelliteComboBox.Items.Clear();
+      SatelliteComboBox.Items.AddRange(GroupSatellites);
+      changing = false;
+
+      ShowSelectedSatellite();
+    }
+
+    private void LoadTransmitters()
+    {
+      changing = true;
+      TransmitterComboBox.Items.Clear();
+      TransmitterComboBox.Items.AddRange(SelectedSatellite.Transmitters.ToArray());
+      changing = false;
+
+      ShowSelectedTransmitter();
     }
 
 
@@ -251,11 +242,11 @@ namespace OrbiNom
       else if (sat.Tle == null) font = new(font, FontStyle.Strikeout);
 
       e.Graphics.FillRectangle(new SolidBrush(backColor), e.Bounds);
-      e.Graphics.DrawString(sat.name, font, Brushes.Black, e.Bounds);
       e.DrawFocusRectangle();
 
-      //  if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
-      //    toolTip1.SetToolTip(SatelliteComboBox, sat.GetTooltipText());
+      string text = sat.name;
+      if (!GroupSatellites.Contains(sat)) text += " (not in group)";
+      e.Graphics.DrawString(text, font, Brushes.Black, e.Bounds);
     }
 
     private void TransmitterComboBox_DrawItem(object sender, DrawItemEventArgs e)
@@ -278,20 +269,6 @@ namespace OrbiNom
       e.Graphics.FillRectangle(bacBrush, e.Bounds);
       e.Graphics.DrawString(tx.description, font, foreBrush, e.Bounds);
       e.DrawFocusRectangle();
-    }
-
-    private void GainSlider_ValueChanged(object sender, EventArgs e)
-    {
-      toolTip1.SetToolTip(GainSlider, $"RF Gain: {GainSlider.Value}");
-    }
-
-    private void TuneToBtn_Click(object sender, EventArgs e)
-    {
-      SetSelectedSatellite(SelectedSatellite);
-
-      var now = DateTime.UtcNow;
-      var pass = ctx.AllPasses.GetNextPass(SelectedSatellite);
-      SetSelectedPass(pass);
     }
   }
 }

@@ -6,12 +6,11 @@ namespace OrbiNom
   public partial class FrequencyControl : UserControl
   {
     public Context ctx;
-    public SatnogsDbTransmitter? Transmitter;
-    public SatnogsDbSatellite? Satellite;
     public double? Frequency;
     private TopocentricObservation Observation;
     private bool Changing;
     public double? CorrectedDownlinkFrequency;
+    private bool IsTerrestrial = true;
 
     public FrequencyControl()
     {
@@ -20,27 +19,19 @@ namespace OrbiNom
 
     public void SetTransmitter()
     {
-      SetTransmitter(
-        ctx.SatelliteSelector.SelectedTransmitter,
-        ctx.SatelliteSelector.SelectedSatellite);
-    }
-
-    public void SetTransmitter(SatnogsDbTransmitter transmitter, SatnogsDbSatellite satellite)
-    {
-      Transmitter = transmitter;
-      Satellite = satellite;
-      Frequency = Transmitter.downlink_low;
+      IsTerrestrial = false;
+      Frequency = ctx.SatelliteSelector.SelectedTransmitter.downlink_low;
       UpdateAllControls();
       UpdateDoppler();
-      SetReceivedFrequency();
+      SetSlicerFrequency();
       ctx.WaterfallPanel?.BringInView(CorrectedDownlinkFrequency!.Value);
     }
 
     internal void SetFrequency(double frequency)
     {
-      Satellite = null;
+      IsTerrestrial = true;
       CorrectedDownlinkFrequency = Frequency = frequency;
-      SetReceivedFrequency();
+      SetSlicerFrequency();
       UpdateAllControls();
     }
 
@@ -48,9 +39,9 @@ namespace OrbiNom
     {
       DownlinkFrequencyLabel.Text = Frequency.HasValue ? $"{Frequency:n0}" : "000,000,000";
 
-      if (Satellite == null)
+      if (IsTerrestrial)
       {
-        SatelliteLabel.Text = "No Satellite";
+        SatelliteLabel.Text = "Terrestrial";
         DownlinkFrequencyLabel.ForeColor = Color.Gray;
 
         UplinkLabel.Text = "No Uplink";
@@ -58,12 +49,12 @@ namespace OrbiNom
       }
       else
       {
-        SatelliteLabel.Text = $"{Satellite.name}  {Transmitter.description}";
+        SatelliteLabel.Text = "Downlink";
 
-        Observation = ctx.AllPasses.ObserveSatellite(Satellite, DateTime.UtcNow);
+        Observation = ctx.AllPasses.ObserveSatellite(ctx.SatelliteSelector.SelectedSatellite, DateTime.UtcNow);
 
-
-        var txFreq = Transmitter.invert ? Transmitter.uplink_high : Transmitter.uplink_low;
+        var tx = ctx.SatelliteSelector.SelectedTransmitter;
+        var txFreq = tx.invert ? tx.uplink_high : tx.uplink_low;
         UplinkLabel.Text = txFreq.HasValue ? "Uplink" : "No Uplink";
         UplinkFrequencyLabel.Text = txFreq.HasValue ? $"{txFreq:n0}" : "000,000,000";
 
@@ -73,38 +64,46 @@ namespace OrbiNom
 
     private void SetFieldColors(long? upFreq)
     {
-      if (Transmitter == null) return;
+      if (IsTerrestrial) return;
 
       bool isAboveHorizon = Observation.Elevation.Degrees > 0;
 
-      if (Transmitter.IsUhf())
+      var tx = ctx.SatelliteSelector.SelectedTransmitter;
+
+      if (tx.IsUhf())
         DownlinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Cyan : Color.Teal;
-      else if (Transmitter.IsVhf())
+      else if (tx.IsVhf())
         DownlinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Yellow : Color.Olive;
       else DownlinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.White : Color.Gray;
 
       if (!upFreq.HasValue)
         UplinkFrequencyLabel.ForeColor = Color.Gray;
-      else if (Transmitter.IsUhf(upFreq))
+      else if (tx.IsUhf(upFreq))
         UplinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Cyan : Color.Teal;
-      else if (Transmitter.IsVhf(upFreq))
+      else if (tx.IsVhf(upFreq))
         UplinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Yellow : Color.Olive;
       else UplinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.White : Color.Gray;
-    }
-
-    private void GetPass()
-    {
-      //var now = DateTime.UtcNow;
-      //if (Pass == null || Pass.EndTime < now)
-      //  Pass = ctx.AllPasses.GetNextPass(Satellite);
     }
 
     // 4-Hz timer tick
     internal void UpdateDoppler()
     {
-      if (Satellite != null)
+      if (IsTerrestrial)
+      // todo: call this once
       {
-        Observation = ctx.AllPasses.ObserveSatellite(Satellite, DateTime.UtcNow);
+        DownlinkDopplerLabel.Text = "N/A";
+
+        Changing = true;
+        DownlinkManualSpinner.Value = 0;
+        Changing = false;
+
+        CorrectedDownlinkFrequency = Frequency;
+
+        SetFieldColors(null);
+      }
+      else
+      {
+        Observation = ctx.AllPasses.ObserveSatellite(ctx.SatelliteSelector.SelectedSatellite, DateTime.UtcNow);
 
         double doppler = (double)Frequency! * -Observation.RangeRate / 3e5;
         string sign = doppler > 0 ? "+" : "";
@@ -112,7 +111,8 @@ namespace OrbiNom
 
         CorrectedDownlinkFrequency = Frequency + doppler + (double)DownlinkManualSpinner.Value * 1000;
 
-        var txFreq = Transmitter.invert ? Transmitter.uplink_high : Transmitter.uplink_low;
+        var tx = ctx.SatelliteSelector.SelectedTransmitter;
+        var txFreq = tx.invert ? tx.uplink_high : tx.uplink_low;
         if (txFreq.HasValue)
         {
           doppler = (double)txFreq * Observation.RangeRate / 3e5;
@@ -126,31 +126,18 @@ namespace OrbiNom
           SetFieldColors(txFreq);
         }
 
-        var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(Satellite.sat_id);
+        var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(ctx.SatelliteSelector.SelectedSatellite.sat_id);
         Changing = true;
         DownlinkDopplerCheckbox.Checked = cust.DownlinkDopplerCorrectionEnabled;
         DownlinkManualCheckbox.Checked = cust.DownlinkManualCorrectionEnabled;
         DownlinkManualSpinner.Value = (decimal)(cust.DownlinkManualCorrection / 1000f);
         Changing = false;
 
-        SetReceivedFrequency();
-      }
-      else
-      // todo: call this once
-      {
-        DownlinkDopplerLabel.Text = "N/A";
-
-        Changing = true;
-        DownlinkManualSpinner.Value = 0;
-        Changing = false;
-
-        CorrectedDownlinkFrequency = Frequency;
-
-        SetFieldColors(null);
+        SetSlicerFrequency();
       }
     }
 
-    private void SetReceivedFrequency()
+    private void SetSlicerFrequency()
     {
       if (ctx.Sdr?.Enabled != true) return;
 
@@ -214,22 +201,22 @@ namespace OrbiNom
 
     private void DownlinkManualSpinner_ValueChanged(object sender, EventArgs e)
     {
-      if (Changing || Satellite == null) return;
-      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(Satellite.sat_id);
+      if (Changing || IsTerrestrial) return;
+      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(ctx.SatelliteSelector.SelectedSatellite.sat_id);
       cust.DownlinkManualCorrection = (int)(DownlinkManualSpinner.Value * 1000);
     }
 
     private void DownlinkManualCheckbox_CheckedChanged(object sender, EventArgs e)
     {
-      if (Changing || Satellite == null) return;
-      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(Satellite.sat_id);
+      if (Changing || IsTerrestrial) return;
+      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(ctx.SatelliteSelector.SelectedSatellite.sat_id);
       cust.DownlinkManualCorrectionEnabled = DownlinkManualCheckbox.Checked;
     }
 
     private void DownlinkDopplerCheckbox_CheckedChanged(object sender, EventArgs e)
     {
-      if (Changing || Satellite == null) return;
-      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(Satellite.sat_id);
+      if (Changing || IsTerrestrial) return;
+      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(ctx.SatelliteSelector.SelectedSatellite.sat_id);
       cust.DownlinkDopplerCorrectionEnabled = DownlinkDopplerCheckbox.Checked;
     }
   }

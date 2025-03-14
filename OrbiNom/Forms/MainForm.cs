@@ -29,7 +29,7 @@ namespace OrbiNom
       ctx.AllPasses = new(ctx, false);
       timer.Interval = 1000 / TICKS_PER_SECOND;
 
-      SatelliteSelector.GainSlider.Scroll += GainSlider_Scroll;
+      GainSlider.Scroll += GainSlider_Scroll;
 
       ctx.SpeakerSoundcard.StateChanged += Soundcard_StateChanged;
       ctx.VacSoundcard.StateChanged += Soundcard_StateChanged;
@@ -88,7 +88,7 @@ namespace OrbiNom
     //                                        sdr
     //----------------------------------------------------------------------------------------------
     internal WidebandSpectrumAnalyzer SpectrumAnalyzer;
-    
+
     private void SetupDsp()
     {
       Fft<float>.LoadWisdom(Path.Combine(Utils.GetUserDataFolder(), "wsjtx_wisdom.dat"));
@@ -114,8 +114,8 @@ namespace OrbiNom
         ctx.Sdr.StateChanged += Sdr_StateChanged;
         ctx.Sdr.DataAvailable += Sdr_DataAvailable;
 
-        SatelliteSelector.GainSlider.Enabled = ctx.Sdr.CanChangeGain;
-        SatelliteSelector.GainSlider.Value = ctx.Sdr.NormalizedGain;
+        GainSlider.Enabled = ctx.Sdr.CanChangeGain;
+        GainSlider.Value = ctx.Sdr.NormalizedGain;
         ConfigureWaterfall();
         ConfigureSlicer();
 
@@ -154,7 +154,13 @@ namespace OrbiNom
     private void GainSlider_Scroll(object? sender, EventArgs e)
     {
       if (ctx.Sdr == null) return;
-      ctx.Sdr.NormalizedGain = SatelliteSelector.GainSlider.Value;
+      ctx.Sdr.NormalizedGain = GainSlider.Value;
+    }
+
+
+    private void GainSlider_ValueChanged(object sender, EventArgs e)
+    {
+      toolTip1.SetToolTip(GainSlider, $"RF Gain: {GainSlider.Value}");
     }
 
 
@@ -177,7 +183,7 @@ namespace OrbiNom
       ctx.Slicer = new Slicer(ctx.Sdr.Info.SampleRate);
       ctx.Slicer.AudioDataAvailable += Slicer_DataAvailable;
     }
- 
+
     private void Slicer_DataAvailable(object? sender, DataEventArgs<float> e)
     {
       ctx.SpeakerSoundcard.AddSamples(e.Data);
@@ -430,7 +436,7 @@ namespace OrbiNom
 
       if (rc != DialogResult.OK) return;
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
-      SatelliteSelector.SetSatelliteGroups();
+      SatelliteSelector.LoadSatelliteGroups();
     }
 
     private void GroupViewMNU_Click(object sender, EventArgs e)
@@ -705,7 +711,7 @@ namespace OrbiNom
       ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
 
-      SatelliteSelector.SetSatelliteGroups();
+      SatelliteSelector.LoadSatelliteGroups();
       ctx.AllPasses.FullRebuild();
       ctx.GroupPasses.FullRebuild();
 
@@ -763,23 +769,9 @@ namespace OrbiNom
       ctx.PassesPanel?.ShowPasses();
     }
 
-    private void SatelliteSelector_ClickedSatelliteChanged(object sender, EventArgs e)
-    {
-      var sat = SatelliteSelector.ClickedSatellite;
-
-      ctx.SatelliteDetailsPanel?.SetSatellite(sat);
-      ctx.TransmittersPanel?.SetSatellite(sat);
-      ctx.EarthViewPanel?.SetSatellite(sat);
-      ctx.PassesPanel?.ShowPasses();
-
-      ctx.FrequencyControl.SetTransmitter(SatelliteSelector.GetSelectedTransmitter(sat), sat);
-    }
-
     private void SatelliteSelector_SelectedTransmitterChanged(object sender, EventArgs e)
     {
-      FrequencyControl.SetTransmitter(
-        SatelliteSelector.SelectedTransmitter,
-        SatelliteSelector.SelectedSatellite);
+      FrequencyControl.SetTransmitter();
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)

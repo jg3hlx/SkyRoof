@@ -80,18 +80,11 @@ namespace OrbiNom
 
         if (e.Button == MouseButtons.Left)
         {
-          ctx.SatelliteSelector.SetClickedSatellite(ClickedSat);
+          ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
           ctx.SatelliteSelector.SetSelectedPass(pass);
         }
       }
     }
-
-    private void listViewEx1_DoubleClick(object sender, EventArgs e)
-    {
-      var sat = ((SatellitePass)Items[listViewEx1.SelectedIndices[0]].Tag!).Satellite;
-      ctx.SatelliteSelector.SetSelectedSatellite(sat);
-    }
-
 
 
 
@@ -107,8 +100,7 @@ namespace OrbiNom
 
       if (CurrentSatBtn.Checked)
       {
-        // selected in the Selector panel or on the frequency scale
-        var sat = ctx.SatelliteSelector.ClickedSatellite;
+        var sat = ctx.SatelliteSelector.SelectedSatellite;
 
         // sat in group, show 3-day prediction
         if (!ctx.SatelliteSelector.GroupSatellites.Contains(sat))

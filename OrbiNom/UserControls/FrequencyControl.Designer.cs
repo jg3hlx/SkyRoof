@@ -42,6 +42,8 @@
       UplinkLabel = new Label();
       DownlinkDopplerLabel = new Label();
       UplinkDopplerLabel = new Label();
+      DownlinkModeCombobox = new ComboBox();
+      UplinkModeCombobox = new ComboBox();
       ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).BeginInit();
       ((System.ComponentModel.ISupportInitialize)UplinkManualSpinner).BeginInit();
       SuspendLayout();
@@ -51,16 +53,16 @@
       SatelliteLabel.AutoEllipsis = true;
       SatelliteLabel.Location = new Point(21, 5);
       SatelliteLabel.Name = "SatelliteLabel";
-      SatelliteLabel.Size = new Size(156, 15);
+      SatelliteLabel.Size = new Size(60, 15);
       SatelliteLabel.TabIndex = 0;
-      SatelliteLabel.Text = "Downlink";
+      SatelliteLabel.Text = "Terrestrial";
       // 
       // DownlinkFrequencyLabel
       // 
       DownlinkFrequencyLabel.BackColor = Color.Black;
       DownlinkFrequencyLabel.Font = new Font("Microsoft Sans Serif", 16F);
       DownlinkFrequencyLabel.ForeColor = Color.Aqua;
-      DownlinkFrequencyLabel.Location = new Point(7, 23);
+      DownlinkFrequencyLabel.Location = new Point(3, 28);
       DownlinkFrequencyLabel.Name = "DownlinkFrequencyLabel";
       DownlinkFrequencyLabel.Size = new Size(170, 34);
       DownlinkFrequencyLabel.TabIndex = 2;
@@ -160,7 +162,7 @@
       UplinkFrequencyLabel.BackColor = Color.Black;
       UplinkFrequencyLabel.Font = new Font("Microsoft Sans Serif", 16F);
       UplinkFrequencyLabel.ForeColor = Color.Aqua;
-      UplinkFrequencyLabel.Location = new Point(342, 23);
+      UplinkFrequencyLabel.Location = new Point(342, 29);
       UplinkFrequencyLabel.Name = "UplinkFrequencyLabel";
       UplinkFrequencyLabel.Size = new Size(170, 34);
       UplinkFrequencyLabel.TabIndex = 9;
@@ -170,11 +172,11 @@
       // UplinkLabel
       // 
       UplinkLabel.AutoEllipsis = true;
-      UplinkLabel.Location = new Point(356, 5);
+      UplinkLabel.Location = new Point(356, 7);
       UplinkLabel.Name = "UplinkLabel";
-      UplinkLabel.Size = new Size(156, 15);
+      UplinkLabel.Size = new Size(62, 15);
       UplinkLabel.TabIndex = 8;
-      UplinkLabel.Text = "Uplink";
+      UplinkLabel.Text = "No Uplink";
       // 
       // DownlinkDopplerLabel
       // 
@@ -198,11 +200,33 @@
       UplinkDopplerLabel.Text = "+20,000";
       UplinkDopplerLabel.TextAlign = ContentAlignment.MiddleRight;
       // 
+      // DownlinkModeCombobox
+      // 
+      DownlinkModeCombobox.FormattingEnabled = true;
+      DownlinkModeCombobox.Items.AddRange(new object[] { "USB", "LSB", "CW", "FM" });
+      DownlinkModeCombobox.Location = new Point(94, 2);
+      DownlinkModeCombobox.Name = "DownlinkModeCombobox";
+      DownlinkModeCombobox.Size = new Size(79, 23);
+      DownlinkModeCombobox.TabIndex = 17;
+      // 
+      // UplinkModeCombobox
+      // 
+      UplinkModeCombobox.AutoCompleteMode = AutoCompleteMode.Suggest;
+      UplinkModeCombobox.AutoCompleteSource = AutoCompleteSource.ListItems;
+      UplinkModeCombobox.FormattingEnabled = true;
+      UplinkModeCombobox.Items.AddRange(new object[] { "USB", "LSB", "CW", "FM" });
+      UplinkModeCombobox.Location = new Point(433, 2);
+      UplinkModeCombobox.Name = "UplinkModeCombobox";
+      UplinkModeCombobox.Size = new Size(79, 23);
+      UplinkModeCombobox.TabIndex = 18;
+      // 
       // FrequencyControl
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       BorderStyle = BorderStyle.FixedSingle;
+      Controls.Add(UplinkModeCombobox);
+      Controls.Add(DownlinkModeCombobox);
       Controls.Add(UplinkDopplerLabel);
       Controls.Add(DownlinkDopplerLabel);
       Controls.Add(label1);
@@ -241,5 +265,7 @@
     private Label UplinkLabel;
     private Label DownlinkDopplerLabel;
     private Label UplinkDopplerLabel;
+    private ComboBox DownlinkModeCombobox;
+    private ComboBox UplinkModeCombobox;
   }
 }

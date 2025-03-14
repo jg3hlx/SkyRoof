@@ -30,6 +30,8 @@
     public bool frequency_violation { get; set; }
     public bool unconfirmed { get; set; }
 
+    internal SatnogsDbSatellite Satellite;
+
     public string GetTooltipText()
     {
       string mode = this.mode;

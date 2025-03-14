@@ -3,7 +3,7 @@
   internal class TransmitterLabel
   {
     public SatellitePass Pass;
-    public List<SatnogsDbTransmitter>? Transmitters;
+    public List<SatnogsDbTransmitter> Transmitters;
     public long Frequency;
 
     public Size Size;

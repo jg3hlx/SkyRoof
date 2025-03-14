@@ -30,6 +30,7 @@
     {
       components = new System.ComponentModel.Container();
       Toolbar = new Panel();
+      GainSlider = new TrackBar();
       VolumeLabel = new Label();
       label2 = new Label();
       VolumeTrackbar = new TrackBar();
@@ -85,6 +86,7 @@
       CpuLoadlabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       Toolbar.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)GainSlider).BeginInit();
       ((System.ComponentModel.ISupportInitialize)VolumeTrackbar).BeginInit();
       ClockPanel.SuspendLayout();
       menuStrip1.SuspendLayout();
@@ -93,6 +95,7 @@
       // 
       // Toolbar
       // 
+      Toolbar.Controls.Add(GainSlider);
       Toolbar.Controls.Add(VolumeLabel);
       Toolbar.Controls.Add(label2);
       Toolbar.Controls.Add(VolumeTrackbar);
@@ -104,13 +107,24 @@
       Toolbar.Dock = DockStyle.Top;
       Toolbar.Location = new Point(0, 24);
       Toolbar.Name = "Toolbar";
-      Toolbar.Size = new Size(1457, 70);
+      Toolbar.Size = new Size(1610, 70);
       Toolbar.TabIndex = 0;
+      // 
+      // GainSlider
+      // 
+      GainSlider.Location = new Point(1209, 22);
+      GainSlider.Maximum = 100;
+      GainSlider.Name = "GainSlider";
+      GainSlider.Size = new Size(121, 45);
+      GainSlider.TabIndex = 19;
+      GainSlider.TickFrequency = 10;
+      toolTip1.SetToolTip(GainSlider, "SDR Gain");
+      GainSlider.Scroll += GainSlider_Scroll;
       // 
       // VolumeLabel
       // 
       VolumeLabel.BackColor = SystemColors.Control;
-      VolumeLabel.Location = new Point(1293, 3);
+      VolumeLabel.Location = new Point(1447, 6);
       VolumeLabel.MinimumSize = new Size(40, 0);
       VolumeLabel.Name = "VolumeLabel";
       VolumeLabel.Size = new Size(55, 32);
@@ -121,7 +135,7 @@
       // label2
       // 
       label2.AutoSize = true;
-      label2.Location = new Point(1198, 10);
+      label2.Location = new Point(1352, 13);
       label2.Name = "label2";
       label2.Size = new Size(47, 15);
       label2.TabIndex = 17;
@@ -131,7 +145,7 @@
       // 
       VolumeTrackbar.AutoSize = false;
       VolumeTrackbar.LargeChange = 1;
-      VolumeTrackbar.Location = new Point(1198, 32);
+      VolumeTrackbar.Location = new Point(1352, 35);
       VolumeTrackbar.Maximum = 0;
       VolumeTrackbar.Minimum = -50;
       VolumeTrackbar.Name = "VolumeTrackbar";
@@ -168,7 +182,6 @@
       SatelliteSelector.TabIndex = 2;
       SatelliteSelector.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
       SatelliteSelector.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
-      SatelliteSelector.ClickedSatelliteChanged += SatelliteSelector_ClickedSatelliteChanged;
       SatelliteSelector.SelectedTransmitterChanged += SatelliteSelector_SelectedTransmitterChanged;
       SatelliteSelector.SelectedPassChanged += SatelliteSelector_SelectedPassChanged;
       // 
@@ -176,7 +189,7 @@
       // 
       ClockPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       ClockPanel.Controls.Add(Clock);
-      ClockPanel.Location = new Point(1355, 0);
+      ClockPanel.Location = new Point(1508, 0);
       ClockPanel.Name = "ClockPanel";
       ClockPanel.Padding = new Padding(3);
       ClockPanel.Size = new Size(102, 54);
@@ -210,7 +223,7 @@
       DockHost.Name = "DockHost";
       DockHost.Padding = new Padding(6);
       DockHost.ShowAutoHideContentOnHover = false;
-      DockHost.Size = new Size(1457, 581);
+      DockHost.Size = new Size(1610, 581);
       DockHost.TabIndex = 4;
       DockHost.Theme = vS2015LightTheme1;
       // 
@@ -219,7 +232,7 @@
       menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, GroupViewPanelMNU, toolsToolStripMenuItem, helpToolStripMenuItem });
       menuStrip1.Location = new Point(0, 0);
       menuStrip1.Name = "menuStrip1";
-      menuStrip1.Size = new Size(1457, 24);
+      menuStrip1.Size = new Size(1610, 24);
       menuStrip1.TabIndex = 5;
       menuStrip1.Text = "menuStrip1";
       // 
@@ -400,7 +413,7 @@
       StatusStrip.Location = new Point(0, 675);
       StatusStrip.Name = "StatusStrip";
       StatusStrip.ShowItemToolTips = true;
-      StatusStrip.Size = new Size(1457, 35);
+      StatusStrip.Size = new Size(1610, 35);
       StatusStrip.TabIndex = 6;
       StatusStrip.Text = "statusStrip1";
       // 
@@ -551,7 +564,7 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(1457, 710);
+      ClientSize = new Size(1610, 710);
       Controls.Add(DockHost);
       Controls.Add(Toolbar);
       Controls.Add(menuStrip1);
@@ -563,6 +576,7 @@
       Load += MainForm_Load;
       Toolbar.ResumeLayout(false);
       Toolbar.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)GainSlider).EndInit();
       ((System.ComponentModel.ISupportInitialize)VolumeTrackbar).EndInit();
       ClockPanel.ResumeLayout(false);
       menuStrip1.ResumeLayout(false);
@@ -630,5 +644,6 @@
     private Label label2;
     public TrackBar VolumeTrackbar;
     private Label VolumeLabel;
+    public TrackBar GainSlider;
   }
 }
