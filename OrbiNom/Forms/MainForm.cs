@@ -668,7 +668,7 @@ namespace OrbiNom
       Clock.ShowTime();
       ctx.SkyViewPanel?.Advance();
       ctx.WaterfallPanel?.ScaleControl?.Invalidate();
-      FrequencyControl?.UpdateDoppler();
+      FrequencyControl?.UpdateFrequency();
     }
 
     private void OneSecondTick()

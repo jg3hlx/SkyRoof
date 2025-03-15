@@ -28,10 +28,17 @@ namespace OrbiNom
     public void SetTransmitter()
     {
       IsTerrestrial = false;
-      Frequency = ctx.SatelliteSelector.SelectedTransmitter.downlink_low;
+      var tx = ctx.SatelliteSelector.SelectedTransmitter;
+
+      Frequency = tx.downlink_low;
+
+      if (tx.downlink_high.HasValue)
+        Frequency += ctx.Settings.Satellites.
+          TransmitterCustomizations.GetOrCreate(tx.uuid).TranspnderOffset;
+
       SetMode();
       UpdateAllControls();
-      UpdateDoppler();
+      UpdateFrequency();
       SetSlicerFrequency();
       ctx.WaterfallPanel?.BringInView(CorrectedDownlinkFrequency!.Value);
     }
@@ -95,7 +102,7 @@ namespace OrbiNom
     }
 
     // 4-Hz timer tick
-    internal void UpdateDoppler()
+    internal void UpdateFrequency()
     {
       if (IsTerrestrial)
       // todo: call this once
@@ -114,12 +121,14 @@ namespace OrbiNom
       {
         Observation = ctx.AllPasses.ObserveSatellite(ctx.SatelliteSelector.SelectedSatellite, DateTime.UtcNow);
 
+        // downlink
         double doppler = (double)Frequency! * -Observation.RangeRate / 3e5;
         string sign = doppler > 0 ? "+" : "";
         DownlinkDopplerLabel.Text = $"{sign}{doppler:n0}";
 
         CorrectedDownlinkFrequency = Frequency + doppler + (double)DownlinkManualSpinner.Value * 1000;
 
+        // uplink
         var tx = ctx.SatelliteSelector.SelectedTransmitter;
         var txFreq = tx.invert ? tx.uplink_high : tx.uplink_low;
         if (txFreq.HasValue)
@@ -263,6 +272,24 @@ namespace OrbiNom
       // set in slicer
       if (ctx.Slicer != null)
         ctx.Slicer.CurrentMode = (Slicer.Mode)DownlinkModeCombobox.SelectedItem!;
+    }
+
+    internal void SetTransponderOffset(SatnogsDbTransmitter transponder, double offset)
+    {
+      IsTerrestrial = false;
+
+      var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
+      cust.TranspnderOffset = offset;
+
+      if (transponder != ctx.SatelliteSelector.SelectedTransmitter)
+      {
+        ctx.SatelliteSelector.SetSelectedSatellite(transponder.Satellite);
+        ctx.SatelliteSelector.SetSelectedTransmitter(transponder);
+      }
+
+      Frequency = transponder.downlink_low + offset;
+
+      UpdateAllControls();
     }
   }
 }

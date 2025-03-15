@@ -95,12 +95,6 @@ namespace OrbiNom
       WaterfallControl.OpenglControl.Refresh();
     }
 
-    public double PixelToFreq(float x)
-    {
-      double dx = x - ScaleControl.width / 2d;
-      return ScaleControl.CenterFrequency + dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
-    }
-
     private void SlidersBtn_Click(object sender, EventArgs e)
     {
       var dlg = new WaterfallSildersDlg(ctx);
@@ -216,19 +210,27 @@ namespace OrbiNom
 
     private void ScaleControl_MouseDown(object? sender, MouseEventArgs e)
     {
-      TransmitterLabel? label = ScaleControl.GetLabelUnderCursor(e.Location);
-
-      // tune to terrestrial frequency
-      if (label == null)
-        ctx.FrequencyControl.SetFrequency(PixelToFreq(e.X));
-
       // select transmitter 
-      else 
+      var label = ScaleControl.GetLabelUnderCursor(e.Location);
+      if (label != null)
       {
         ctx.SatelliteSelector.SetSelectedSatellite(label.Pass.Satellite);
         ctx.SatelliteSelector.SetSelectedTransmitter(label.Transmitters.First());
         ctx.SatelliteSelector.SetSelectedPass(label.Pass);
+        return;
       }
+
+      // tune to offset in transponder passband
+      label = ScaleControl.GetTransponderUnderCursor(e.Location);
+      if (label != null)
+      {
+        double offset = ScaleControl.PixelToNominalFreq(label.Pass, DateTime.UtcNow, e.X) - (double)label.Transponder!.downlink_low!;
+        ctx.FrequencyControl.SetTransponderOffset(label.Transponder, offset);
+        return;
+      }
+
+      // tune to terrestrial frequency
+      ctx.FrequencyControl.SetFrequency(ScaleControl.PixelToFreq(e.X));
     }
 
     internal void BringInView(double value)

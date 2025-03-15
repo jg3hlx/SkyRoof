@@ -4,6 +4,7 @@
   {
     public SatellitePass Pass;
     public List<SatnogsDbTransmitter> Transmitters;
+    internal readonly SatnogsDbTransmitter? Transponder;
     public long Frequency;
 
     public Size Size;
@@ -12,6 +13,7 @@
     public string Tooltip;
 
     public RectangleF Rect;
+    internal float endX;
 
     public TransmitterLabel(SatellitePass pass, long freq)
     {
@@ -23,8 +25,8 @@
         .Join("\n", Transmitters.Select(tx => $"  - {tx.service}   {tx.type}   {tx.description}")
         .Distinct());
 
-      var transponder = Transmitters.FirstOrDefault(t => t.downlink_high != null);
-      Span = transponder?.downlink_high - transponder?.downlink_low;
+      Transponder = Transmitters.FirstOrDefault(t => t.downlink_high != null);
+      Span = Transponder?.downlink_high - Transponder?.downlink_low;
     }
   }
 }

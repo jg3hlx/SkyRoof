@@ -59,7 +59,13 @@ namespace OrbiNom
       return width / 2d + dx;
     }
 
-    private double DopplerFreqToPixel(SatellitePass pass, DateTime time, double freq)
+    internal double PixelToFreq(int x)
+    {
+      double dx = x - width / 2d;
+      return CenterFrequency + dx * VisibleBandwidth / width;
+    }
+
+    private double CorrectedFreqToPixel(SatellitePass pass, DateTime time, double freq)
     {
       var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(pass.Satellite.sat_id);
 
@@ -71,6 +77,20 @@ namespace OrbiNom
       if (cust.DownlinkManualCorrectionEnabled) freq += cust.DownlinkManualCorrection;
 
       return FreqToPixel(freq);
+    }
+
+    public double PixelToNominalFreq(SatellitePass pass, DateTime time, int x)
+    {
+      double freq = PixelToFreq(x);
+
+      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(pass.Satellite.sat_id);
+      if (cust.DownlinkDopplerCorrectionEnabled)
+      {
+        var point = pass.GetTrackPointAt(time);
+        freq /= 1 - point.Observation.RangeRate / 3e5;
+      }
+      if (cust.DownlinkManualCorrectionEnabled) freq -= cust.DownlinkManualCorrection;
+      return freq;
     }
 
 
@@ -90,7 +110,7 @@ namespace OrbiNom
 
     private void DrawPassband(Graphics g)
     {
-      if (ctx.Slicer?.Enabled != true) return;
+      if (ctx?.Slicer?.Enabled != true) return;
       if (ctx.FrequencyControl.CorrectedDownlinkFrequency == null) return;
 
       double minWing = 3 * VisibleBandwidth / width;
@@ -165,7 +185,7 @@ namespace OrbiNom
 
       // recompute labels' X
       var now = DateTime.UtcNow;
-      foreach (var label in Labels) label.x = (float)DopplerFreqToPixel(label.Pass, now, label.Frequency);
+      foreach (var label in Labels) label.x = (float)CorrectedFreqToPixel(label.Pass, now, label.Frequency);
       VisibleLabels = Labels.Where(IsLabelVisible).OrderByDescending(label => label.x).ToList();
 
       // draw spans
@@ -218,7 +238,7 @@ namespace OrbiNom
       g.DrawLine(Pens.Blue, label.x, height, label.x, LastY);
 
       // selected sat BG
-      if (label.Pass.Satellite == ctx.SatelliteSelector.SelectedSatellite)
+      if (label.Transmitters.Contains(ctx.SatelliteSelector.SelectedTransmitter))
         g.FillRectangle(Brushes.Aqua, label.Rect);
 
       // sat name
@@ -226,12 +246,13 @@ namespace OrbiNom
       g.DrawString(label.Pass.Satellite.name, font, brush, label.Rect.Location);
     }
 
+    const int SPAN_HEIGHT = 14;
     private void DrawSpan(TransmitterLabel label, Graphics g)
     {
-      var x2 = (float)DopplerFreqToPixel(label.Pass, DateTime.UtcNow, label.Frequency + (long)label.Span!);
-      if (label.x > width || x2 < 0) return;
+      label.endX = (float)CorrectedFreqToPixel(label.Pass, DateTime.UtcNow, label.Frequency + (long)label.Span!);
+      if (label.x > width || label.endX < 0) return;
 
-      RectangleF r = new(label.x, height - 15, x2 - label.x, 14);
+      RectangleF r = new(label.x, height - SPAN_HEIGHT-1, label.endX - label.x, SPAN_HEIGHT);
 
       bool isNow = label.Pass.StartTime <= DateTime.UtcNow && label.Pass.EndTime >= DateTime.UtcNow;
       g.FillRectangle(isNow ? BlueSpanBrush : GraySpanBrush, r);
@@ -286,6 +307,12 @@ namespace OrbiNom
     {
       var x = FreqToPixel(value);
       return x >= 0 && x < width;
+    }
+
+    internal TransmitterLabel? GetTransponderUnderCursor(Point location)
+    {
+      if (location.Y < height - SPAN_HEIGHT) return null;
+      return Labels.FirstOrDefault(label => label.Transponder != null && location.X >= label.x  && location.X <= label.endX);      
     }
   }
 }
