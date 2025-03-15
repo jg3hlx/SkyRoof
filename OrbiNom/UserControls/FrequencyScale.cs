@@ -309,10 +309,10 @@ namespace OrbiNom
       return x >= 0 && x < width;
     }
 
-    internal TransmitterLabel? GetTransponderUnderCursor(Point location)
+    internal TransmitterLabel? GetTransponderUnderCursor(int x, int y)
     {
-      if (location.Y < height - SPAN_HEIGHT) return null;
-      return Labels.FirstOrDefault(label => label.Transponder != null && location.X >= label.x  && location.X <= label.endX);      
+      if (y < height - SPAN_HEIGHT) return null;
+      return Labels.FirstOrDefault(label => label.Transponder != null && x >= label.x  && x <= label.endX);      
     }
   }
 }

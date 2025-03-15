@@ -85,6 +85,7 @@
       NoiseFloorLabel = new ToolStripStatusLabel();
       CpuLoadlabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
+      label1 = new Label();
       Toolbar.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)GainSlider).BeginInit();
       ((System.ComponentModel.ISupportInitialize)VolumeTrackbar).BeginInit();
@@ -95,6 +96,7 @@
       // 
       // Toolbar
       // 
+      Toolbar.Controls.Add(label1);
       Toolbar.Controls.Add(GainSlider);
       Toolbar.Controls.Add(VolumeLabel);
       Toolbar.Controls.Add(label2);
@@ -112,10 +114,11 @@
       // 
       // GainSlider
       // 
-      GainSlider.Location = new Point(1209, 22);
+      GainSlider.AutoSize = false;
+      GainSlider.Location = new Point(1198, 35);
       GainSlider.Maximum = 100;
       GainSlider.Name = "GainSlider";
-      GainSlider.Size = new Size(121, 45);
+      GainSlider.Size = new Size(150, 32);
       GainSlider.TabIndex = 19;
       GainSlider.TickFrequency = 10;
       toolTip1.SetToolTip(GainSlider, "SDR Gain");
@@ -560,6 +563,15 @@
       CpuLoadlabel.Text = "CPU Load: 00.0%";
       CpuLoadlabel.TextAlign = ContentAlignment.MiddleLeft;
       // 
+      // label1
+      // 
+      label1.AutoSize = true;
+      label1.Location = new Point(1208, 13);
+      label1.Name = "label1";
+      label1.Size = new Size(49, 15);
+      label1.TabIndex = 20;
+      label1.Text = "RG Gain";
+      // 
       // MainForm
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -645,5 +657,6 @@
     public TrackBar VolumeTrackbar;
     private Label VolumeLabel;
     public TrackBar GainSlider;
+    private Label label1;
   }
 }

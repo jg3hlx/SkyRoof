@@ -42,12 +42,13 @@ namespace OrbiNom
 
       ScaleControl.ctx = ctx;
       ScaleControl.BuildLabels();
-      ScaleControl.MouseWheel += WaterfallControl_MouseWheel;
       ScaleControl.MouseMove += ScaleControl_MouseMove;
       ScaleControl.MouseDown += ScaleControl_MouseDown;
+      ScaleControl.MouseLeave += ScaleControl_MouseLeave;
+      ScaleControl.MouseWheel += ScaleControl_MouseWheel;
 
-      WaterfallControl.OpenglControl.MouseDown += WaterfallControl_MouseDown;
       WaterfallControl.OpenglControl.MouseMove += WaterfallControl_MouseMove;
+      WaterfallControl.OpenglControl.MouseDown += WaterfallControl_MouseDown;
       WaterfallControl.OpenglControl.MouseUp += WaterfallControl_MouseUp;
       WaterfallControl.OpenglControl.MouseWheel += WaterfallControl_MouseWheel;
     }
@@ -132,6 +133,7 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     int MouseDownX, MouseMoveX;
     double MouseDownFrequency;
+    bool Dragging;
 
     private void WaterfallControl_MouseDown(object? sender, MouseEventArgs e)
     {
@@ -149,12 +151,21 @@ namespace OrbiNom
 
       var dx = MouseMoveX - MouseDownX;
 
-      double frequency = MouseDownFrequency - dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
-      SetCenterFrequency(frequency);
+      if (Math.Abs(dx) > 3) Dragging = true;
+
+      if (Dragging)
+      {
+        double frequency = MouseDownFrequency - dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
+        SetCenterFrequency(frequency);
+      }
     }
 
     private void WaterfallControl_MouseUp(object? sender, MouseEventArgs e)
     {
+      if (!Dragging)
+        HandleFrequencyClick(e.X, int.MaxValue);
+
+      Dragging = false;
       WaterfallControl.Cursor = Cursors.Cross;
     }
 
@@ -186,13 +197,24 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void ScaleControl_MouseMove(object? sender, MouseEventArgs e)
     {
-      TransmitterLabel? labelUnderCursor = ScaleControl.GetLabelUnderCursor(e.Location);
+      // transponder span
+      TransmitterLabel? labelUnderCursor = ScaleControl.GetTransponderUnderCursor(e.X, e.Y);
+      if (labelUnderCursor != null)
+      {
+        ScaleControl.Cursor = Cursors.UpArrow; // PanSouth;
+        return;
+      }
+
+      // terrestiral frequency
+      labelUnderCursor = ScaleControl.GetLabelUnderCursor(e.Location);
       if (labelUnderCursor == null)
       {
         toolTip1.Hide(ScaleControl);
         toolTip1.ToolTipTitle = null;
         ScaleControl.Cursor = Cursors.Cross;
       }
+
+      // transmitter label
       else if (toolTip1.ToolTipTitle != labelUnderCursor.Pass.Satellite.name)
       {
         var parts = labelUnderCursor.Pass.GetTooltipText(true);
@@ -217,21 +239,41 @@ namespace OrbiNom
         ctx.SatelliteSelector.SetSelectedSatellite(label.Pass.Satellite);
         ctx.SatelliteSelector.SetSelectedTransmitter(label.Transmitters.First());
         ctx.SatelliteSelector.SetSelectedPass(label.Pass);
-        return;
       }
 
+      else
+        HandleFrequencyClick(e.X, e.Y);
+    }
+
+    private void ScaleControl_MouseLeave(object? sender, EventArgs e)
+    {
+      toolTip1.Hide(ScaleControl);
+    }
+
+    private void ScaleControl_MouseWheel(object? sender, MouseEventArgs e)
+    {
+      //var label = ScaleControl.GetTransponderUnderCursor(e.X, int.MaxValue);
+      ctx.FrequencyControl.IncrementFrequency(e.Delta > 0 ? -20 : 20);
+    }
+
+
+
+    private void HandleFrequencyClick(int x, int y)
+    {
+      var label = ScaleControl.GetTransponderUnderCursor(x, y);
+
       // tune to offset in transponder passband
-      label = ScaleControl.GetTransponderUnderCursor(e.Location);
       if (label != null)
       {
-        double offset = ScaleControl.PixelToNominalFreq(label.Pass, DateTime.UtcNow, e.X) - (double)label.Transponder!.downlink_low!;
+        double offset = ScaleControl.PixelToNominalFreq(label.Pass, DateTime.UtcNow, x) - (double)label.Transponder!.downlink_low!;
         ctx.FrequencyControl.SetTransponderOffset(label.Transponder, offset);
-        return;
       }
 
       // tune to terrestrial frequency
-      ctx.FrequencyControl.SetFrequency(ScaleControl.PixelToFreq(e.X));
+      else
+        ctx.FrequencyControl.SetFrequency(ScaleControl.PixelToFreq(x));
     }
+
 
     internal void BringInView(double value)
     {

@@ -58,6 +58,7 @@ namespace OrbiNom
       if (IsTerrestrial)
       {
         SatelliteLabel.Text = "Terrestrial";
+        SatelliteLabel.ForeColor = Color.Red;
         DownlinkFrequencyLabel.ForeColor = Color.Gray;
 
         UplinkLabel.Text = "No Uplink";
@@ -66,6 +67,7 @@ namespace OrbiNom
       else
       {
         SatelliteLabel.Text = "Downlink";
+        SatelliteLabel.ForeColor = Color.Black;
 
         Observation = ctx.AllPasses.ObserveSatellite(ctx.SatelliteSelector.SelectedSatellite, DateTime.UtcNow);
 
@@ -126,7 +128,9 @@ namespace OrbiNom
         string sign = doppler > 0 ? "+" : "";
         DownlinkDopplerLabel.Text = $"{sign}{doppler:n0}";
 
-        CorrectedDownlinkFrequency = Frequency + doppler + (double)DownlinkManualSpinner.Value * 1000;
+        CorrectedDownlinkFrequency = Frequency;
+        if (DownlinkDopplerCheckbox.Checked) CorrectedDownlinkFrequency += doppler;
+        if (DownlinkManualCheckbox.Checked) CorrectedDownlinkFrequency += (double)DownlinkManualSpinner.Value * 1000;
 
         // uplink
         var tx = ctx.SatelliteSelector.SelectedTransmitter;
@@ -290,6 +294,33 @@ namespace OrbiNom
       Frequency = transponder.downlink_low + offset;
 
       UpdateAllControls();
+    }
+
+    internal void IncrementFrequency(int delta)
+    {
+      // terrestrial
+      if (IsTerrestrial)
+        SetFrequency(Frequency!.Value + delta);
+
+      // transponder
+      else if (ctx.SatelliteSelector.SelectedTransmitter?.downlink_high.HasValue ?? false)
+      {
+        var transponder = ctx.SatelliteSelector.SelectedTransmitter;
+        var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
+        cust.TranspnderOffset += delta;
+        Frequency = transponder.downlink_low + cust.TranspnderOffset;
+
+        UpdateAllControls();
+      }
+
+      // transmitter
+      else
+      {
+        var value = DownlinkManualSpinner.Value + (decimal)(delta / 1000d);
+        value = Math.Max(DownlinkManualSpinner.Minimum, Math.Min(DownlinkManualSpinner.Maximum, value));
+        DownlinkManualSpinner.Value = value;
+        UpdateAllControls();
+      }
     }
   }
 }
