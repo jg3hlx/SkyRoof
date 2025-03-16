@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
 using MathNet.Numerics;
 using VE3NEA;
 
@@ -20,7 +19,8 @@ namespace OrbiNom
     private NativeLiquidDsp.nco_crcf* FirstMixer, SecondMixer;
     private NativeLiquidDsp.msresamp2_crcf* msresamp2;
     private NativeLiquidDsp.rresamp_crcf* rresamp;
-    private NativeLiquidDsp.firfilt_crcf * firfilt;
+    private NativeLiquidDsp.firfilt_crcf* firfilt;
+    private NativeLiquidDsp.freqdem* freqdem;
 
     private FifoBuffer<Complex32> InputBuffer = new();
     private FifoBuffer<Complex32> OctaveResamplerInputBuffer = new();
@@ -53,6 +53,9 @@ namespace OrbiNom
 
       RationalResamplerInputRate = CreateOctaveResampler();
       CreateRationalResampler();
+
+      freqdem = NativeLiquidDsp.freqdem_create(1f);
+
       CurrentMode = mode;
     }
 
@@ -149,10 +152,6 @@ namespace OrbiNom
       InputBuffer.Data = args.Data;
       InputBuffer.Count = args.Data.Length;
 
-      //{!]
-      for (int i = 0; i < InputBuffer.Count; i++) InputBuffer.Data[i] += 0.01f;
-
-
       // mix down to baseband
       fixed (Complex32* pData = InputBuffer.Data)
       {
@@ -175,22 +174,34 @@ namespace OrbiNom
         for (int i = 0; i < RationalResamplerOutputBuffer.Count; i++)
         {
           NativeLiquidDsp.firfilt_crcf_push(firfilt, pData[i]);
-          NativeLiquidDsp.firfilt_crcf_execute(firfilt, pData+i);
+          NativeLiquidDsp.firfilt_crcf_execute(firfilt, pData + i);
         }
       }
 
-      // mix up to mode-dependent pitch
-      if (ModeOffsets[(int)CurrentMode] != 0)
-        fixed (Complex32* pData = RationalResamplerOutputBuffer.Data)
-        {
-          NativeLiquidDsp.nco_crcf_mix_block_up(SecondMixer, pData, pData, (uint)RationalResamplerOutputBuffer.Count);
-        }
-
-
-      // return the real part
       int outputCount = RationalResamplerOutputBuffer.Count;
       var outputArgs = ArgsPool.Rent(outputCount);
-      for (int i = 0; i < outputCount; i++) outputArgs.Data[i] = RationalResamplerOutputBuffer.Data[i].Real * 10;
+
+      if (CurrentMode == Mode.FM)
+        // demodulate FM
+        fixed (Complex32* pIqData = RationalResamplerOutputBuffer.Data)
+        fixed (float* pAudioData = outputArgs.Data)
+        {
+          NativeLiquidDsp.freqdem_demodulate_block(freqdem, pIqData, (uint)outputCount, pAudioData);
+        }
+
+      else
+      {
+        // mix up to mode-dependent pitch
+        fixed (Complex32* pData = RationalResamplerOutputBuffer.Data)
+        {
+          NativeLiquidDsp.nco_crcf_mix_block_up(SecondMixer, pData, pData, (uint)outputCount);
+        }
+
+        // return the real part
+        for (int i = 0; i < outputCount; i++) 
+          outputArgs.Data[i] = RationalResamplerOutputBuffer.Data[i].Real * 3;
+      }
+
       RationalResamplerOutputBuffer.Count = 0;
       AudioDataAvailable?.Invoke(this, outputArgs);
       ArgsPool.Return(outputArgs);
@@ -277,6 +288,7 @@ namespace OrbiNom
       if (rresamp != null) NativeLiquidDsp.rresamp_crcf_destroy(rresamp);
       if (SecondMixer != null) NativeLiquidDsp.nco_crcf_destroy(SecondMixer);
       if (firfilt != null) NativeLiquidDsp.firfilt_crcf_destroy(firfilt);
+      if (freqdem != null) NativeLiquidDsp.freqdem_destroy(freqdem);      
 
       FirstMixer = null;
       msresamp2 = null;

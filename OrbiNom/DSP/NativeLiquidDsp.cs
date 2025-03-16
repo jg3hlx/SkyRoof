@@ -36,13 +36,12 @@ namespace VE3NEA
     public unsafe struct nco_crcf { };
     public unsafe struct msresamp_crcf { };
     public unsafe struct ampmodem { };
-    public unsafe struct msresamp2_crcf { };
-    
+    public unsafe struct msresamp2_crcf { };    
     public unsafe struct rresamp_cccf { };
     public unsafe struct rresamp_crcf { };
-
     public unsafe struct firfilt_cccf { };
     public unsafe struct firfilt_crcf { };
+    public unsafe struct freqdem { };
 
 
   // NCO
@@ -78,7 +77,7 @@ namespace VE3NEA
     public static extern unsafe int msresamp_crcf_execute(msresamp_crcf* q, Complex32* x, uint nx, Complex32* y, out uint ny);
 
 
-    // modem
+    // AM demodulator
 
     [DllImport(LIBLIQUID, CallingConvention = cdecl)]
     public static extern unsafe ampmodem* ampmodem_create(float mod_index, LiquidAmpmodemType ampmodem_type, int suppressed_carrier);
@@ -88,6 +87,18 @@ namespace VE3NEA
 
     [DllImport(LIBLIQUID, CallingConvention = cdecl)]
     public static extern unsafe int ampmodem_demodulate_block(ampmodem* q, Complex32* r, uint n, float* m);
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+
+
+    // FM demodulator
+    public static extern unsafe freqdem* freqdem_create(float kf);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int freqdem_destroy(freqdem* q);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int freqdem_demodulate_block(freqdem* q, Complex32* r, uint n, float* m);
+
 
 
     // octave resampler    
@@ -161,6 +172,6 @@ namespace VE3NEA
     public static extern unsafe int firfilt_crcf_execute(firfilt_crcf* q, Complex32* x);
 
     [DllImport(LIBLIQUID, CallingConvention = cdecl)]
-    public static extern unsafe int firfilt_crcf_push(firfilt_crcf* q, Complex32 x);    
+    public static extern unsafe int firfilt_crcf_push(firfilt_crcf* q, Complex32 x);
   }
 }
