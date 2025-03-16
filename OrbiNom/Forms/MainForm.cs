@@ -180,7 +180,9 @@ namespace OrbiNom
     {
       if (ctx.Slicer != null) ctx.Slicer?.Dispose();
 
-      ctx.Slicer = new Slicer(ctx.Sdr.Info.SampleRate);
+      var rate = ctx.Sdr.Info.SampleRate;
+      var mode = ctx.FrequencyControl.DownlinkMode;
+      ctx.Slicer = new Slicer(rate, 0, mode);
       ctx.Slicer.AudioDataAvailable += Slicer_DataAvailable;
     }
 

@@ -79,7 +79,6 @@
       // 
       // DrawPanel
       // 
-      DrawPanel.ContextMenuStrip = contextMenuStrip1;
       DrawPanel.Dock = DockStyle.Fill;
       DrawPanel.Font = new Font("Segoe UI", 11F);
       DrawPanel.Location = new Point(0, 25);

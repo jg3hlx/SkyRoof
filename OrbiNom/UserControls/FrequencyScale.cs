@@ -52,7 +52,7 @@ namespace OrbiNom
       Invalidate();
     }
 
-    private double FreqToPixel(double f)
+    public double FreqToPixel(double f)
     {
       double df = f - CenterFrequency;
       double dx = df * width / VisibleBandwidth;
@@ -65,7 +65,7 @@ namespace OrbiNom
       return CenterFrequency + dx * VisibleBandwidth / width;
     }
 
-    private double CorrectedFreqToPixel(SatellitePass pass, DateTime time, double freq)
+    public double CorrectedFreqToPixel(SatellitePass pass, DateTime time, double freq)
     {
       var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(pass.Satellite.sat_id);
 
@@ -231,7 +231,6 @@ namespace OrbiNom
 
       // rect from x, row and size
       float LastY = height - 27 - row * (size.Height - 3);
-
       label.Rect = new RectangleF(label.x, LastY - size.Height, size.Width + 3, size.Height);
 
       // line
@@ -242,7 +241,11 @@ namespace OrbiNom
         g.FillRectangle(Brushes.Aqua, label.Rect);
 
       // sat name
-      var brush = label.Pass.StartTime <= now && label.Pass.EndTime >= now ? Brushes.Blue : Brushes.Gray;
+      var brush = Brushes.Blue;
+      if (label.Pass.StartTime > now) brush = Brushes.Black;
+      else if (label.Pass.EndTime < now) brush = Brushes.Gray;
+
+      //var brush = label.Pass.StartTime <= now && label.Pass.EndTime >= now ? Brushes.Blue : Brushes.Gray;
       g.DrawString(label.Pass.Satellite.name, font, brush, label.Rect.Location);
     }
 
@@ -288,7 +291,7 @@ namespace OrbiNom
       Labels.Clear();
 
       foreach (var pass in ctx.AllPasses.Passes)
-        if (pass.StartTime < now.AddMinutes(5) && pass.EndTime > now.AddMinutes(-25))
+        if (pass.StartTime < now.AddMinutes(6) && pass.EndTime > now.AddMinutes(-25))
         {
           var transmitters = pass.Satellite.Transmitters.Where(tx => tx.alive && tx.downlink_low != null);
           var freqs = transmitters.Where(tx => tx.downlink_low.HasValue).Select(tx => (long)tx.downlink_low!).Distinct();

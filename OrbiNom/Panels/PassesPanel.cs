@@ -6,24 +6,24 @@ using static OrbiNom.GroupViewPanel;
 
 namespace OrbiNom
 {
-  public partial class PassesPanel : DockContentEx
+  public partial class PassesPanel : DockContent
   {
     private readonly Context ctx;
     private List<ListViewItem> Items = new();
 
     private readonly Font BoldFont;
     private readonly Pen PathPen = new Pen(Brushes.Teal, 2);
-    
+
 
     public PassesPanel()
     {
       InitializeComponent();
     }
 
-    public PassesPanel(Context ctx) : base(ctx)
+    public PassesPanel(Context ctx)
     {
       InitializeComponent();
-      
+
       this.ctx = ctx;
       ctx.PassesPanel = this;
       ctx.MainForm.SatellitePassesMNU.Checked = true;
@@ -71,21 +71,15 @@ namespace OrbiNom
     private void listViewEx1_MouseDown(object sender, MouseEventArgs e)
     {
       var item = listViewEx1.GetItemAt(e.X, e.Y);
-      if (item == null)
-        ClickedSat = null;
-      else
+     
+      if (item != null && e.Button == MouseButtons.Left)
       {
         var pass = (SatellitePass)item.Tag!;
-        ClickedSat = pass.Satellite;
-
-        if (e.Button == MouseButtons.Left)
-        {
-          ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
-          ctx.SatelliteSelector.SetSelectedPass(pass);
-        }
+        var sat = pass.Satellite;
+        ctx.SatelliteSelector.SetSelectedSatellite(sat);
+        ctx.SatelliteSelector.SetSelectedPass(pass);
       }
     }
-
 
 
 
@@ -145,10 +139,10 @@ namespace OrbiNom
     private ListViewItem ItemForPass(SatellitePass pass)
     {
       var item = new ListViewItem();
-      item.Tag = (pass);
+      item.Tag = pass;
 
       pass.MakeMiniPath();
-      item.ToolTipText = pass.Satellite.GetTooltipText();
+      // {!} item.ToolTipText = pass.Satellite.GetTooltipText();
 
       return item;
     }
@@ -254,6 +248,12 @@ namespace OrbiNom
       // item separator
       rect = new RectangleF(e.Bounds.X, e.Bounds.Y + h, e.Bounds.Width, 1);
       e.Graphics.FillRectangle(Brushes.Gray, rect);
+    }
+
+    private void listViewEx1_ItemMouseHover(object sender, ListViewItemMouseHoverEventArgs e)
+    {
+      if (e.Item == null) return;
+      e.Item.ToolTipText = ((SatellitePass)e.Item.Tag!).Satellite.GetTooltipText();      
     }
   }
 }

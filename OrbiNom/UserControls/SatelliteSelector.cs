@@ -94,11 +94,11 @@ namespace OrbiNom
 
     public void SetSelectedTransmitter(SatnogsDbTransmitter tx)
     {
-      Debug.Assert(SelectedSatellite.Transmitters.Contains(tx));
-
-      ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(SelectedSatellite.sat_id)
+      ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(tx.Satellite.sat_id)
         .SelectedTransmitterId = tx.uuid;
 
+      if (tx.Satellite != SelectedSatellite) 
+        SetSelectedSatellite(tx.Satellite);
       ShowSelectedTransmitter();
     }
 

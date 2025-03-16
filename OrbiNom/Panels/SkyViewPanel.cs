@@ -6,7 +6,7 @@ using SGPdotNET.Observation;
 
 namespace OrbiNom
 {
-  public partial class SkyViewPanel : DockContentEx
+  public partial class SkyViewPanel : DockContent
   {
     private readonly Context ctx;
     private SatellitePass? Pass;
@@ -20,7 +20,7 @@ namespace OrbiNom
 
     public SkyViewPanel() { InitializeComponent(); }
 
-    public SkyViewPanel(Context ctx) : base(ctx)
+    public SkyViewPanel(Context ctx)
     {
       InitializeComponent();
       
@@ -343,14 +343,11 @@ namespace OrbiNom
     private void DrawPanel_MouseDown(object sender, MouseEventArgs e)
     {
       var rect = GetSatRectAt(new PointF(e.X, e.Y));
-      if (!rect.IsEmpty)
-      {
-        ClickedSat = SatLabelRects[rect].Satellite;
-        if (e.Button == MouseButtons.Left)
-          ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
+      if (!rect.IsEmpty && e.Button == MouseButtons.Left)
+        {
+          var sat = SatLabelRects[rect].Satellite;
+        ctx.SatelliteSelector.SetSelectedSatellite(sat);
       }
-      else
-        ClickedSat = null;
     }
 
     private void DrawPanel_MouseLeave(object sender, EventArgs e)

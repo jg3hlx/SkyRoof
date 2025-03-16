@@ -95,8 +95,6 @@ namespace OrbiNom
       item.Tag = sat;
       item.ToolTipText = sat.GetTooltipText();
 
-      sat.ComputeOrbitDetails();
-
       // highlighting
 
       if (sat.Flags.HasFlag(SatelliteFlags.Uhf)) item.BackColor = Color.LightCyan;

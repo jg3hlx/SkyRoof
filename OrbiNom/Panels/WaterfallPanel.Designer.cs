@@ -36,6 +36,7 @@
       ScaleControl = new FrequencyScale();
       WaterfallControl = new WaterfallControl();
       toolTip1 = new ToolTip(components);
+      contextMenuStrip1 = new ContextMenuStrip(components);
       ((System.ComponentModel.ISupportInitialize)SplitContainer).BeginInit();
       SplitContainer.Panel1.SuspendLayout();
       SplitContainer.Panel2.SuspendLayout();
@@ -103,6 +104,11 @@
       WaterfallControl.TabIndex = 0;
       WaterfallControl.Resize += WaterfallControl_Resize;
       // 
+      // contextMenuStrip1
+      // 
+      contextMenuStrip1.Name = "contextMenuStrip1";
+      contextMenuStrip1.Size = new Size(181, 26);
+      // 
       // WaterfallPanel
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -129,5 +135,6 @@
     public SplitContainer SplitContainer;
     private Label label1;
     private ToolTip toolTip1;
+    private ContextMenuStrip contextMenuStrip1;
   }
 }

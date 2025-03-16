@@ -201,7 +201,7 @@ namespace OrbiNom
       TransmitterLabel? labelUnderCursor = ScaleControl.GetTransponderUnderCursor(e.X, e.Y);
       if (labelUnderCursor != null)
       {
-        ScaleControl.Cursor = Cursors.UpArrow; // PanSouth;
+        ScaleControl.Cursor = Cursors.PanSouth;
         return;
       }
 
@@ -236,7 +236,7 @@ namespace OrbiNom
       var label = ScaleControl.GetLabelUnderCursor(e.Location);
       if (label != null)
       {
-        ctx.SatelliteSelector.SetSelectedSatellite(label.Pass.Satellite);
+        // todo: select only transmitter
         ctx.SatelliteSelector.SetSelectedTransmitter(label.Transmitters.First());
         ctx.SatelliteSelector.SetSelectedPass(label.Pass);
       }
@@ -252,11 +252,13 @@ namespace OrbiNom
 
     private void ScaleControl_MouseWheel(object? sender, MouseEventArgs e)
     {
-      //var label = ScaleControl.GetTransponderUnderCursor(e.X, int.MaxValue);
-      ctx.FrequencyControl.IncrementFrequency(e.Delta > 0 ? -20 : 20);
+      var freq = ctx.FrequencyControl.CorrectedDownlinkFrequency;
+      if (freq == null) return;
+      var x = ScaleControl.FreqToPixel((double)freq);
+      if (Math.Abs(x - e.X) > 200) return;
+      ctx.FrequencyControl.IncrementFrequency(e.Delta > 0 ? 20 : -20);
+      Refresh();
     }
-
-
 
     private void HandleFrequencyClick(int x, int y)
     {
@@ -271,7 +273,7 @@ namespace OrbiNom
 
       // tune to terrestrial frequency
       else
-        ctx.FrequencyControl.SetFrequency(ScaleControl.PixelToFreq(x));
+        ctx.FrequencyControl.SetTerrestrialFrequency(ScaleControl.PixelToFreq(x));
     }
 
 

@@ -44,6 +44,10 @@
       UplinkDopplerLabel = new Label();
       DownlinkModeCombobox = new ComboBox();
       UplinkModeCombobox = new ComboBox();
+      label3 = new Label();
+      label4 = new Label();
+      label5 = new Label();
+      label6 = new Label();
       ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).BeginInit();
       ((System.ComponentModel.ISupportInitialize)UplinkManualSpinner).BeginInit();
       SuspendLayout();
@@ -72,27 +76,26 @@
       // DownlinkDopplerCheckbox
       // 
       DownlinkDopplerCheckbox.AutoSize = true;
-      DownlinkDopplerCheckbox.Location = new Point(190, 8);
+      DownlinkDopplerCheckbox.Location = new Point(190, 9);
       DownlinkDopplerCheckbox.Name = "DownlinkDopplerCheckbox";
-      DownlinkDopplerCheckbox.Size = new Size(68, 19);
+      DownlinkDopplerCheckbox.Size = new Size(15, 14);
       DownlinkDopplerCheckbox.TabIndex = 3;
-      DownlinkDopplerCheckbox.Text = "Doppler";
       DownlinkDopplerCheckbox.UseVisualStyleBackColor = true;
       DownlinkDopplerCheckbox.CheckedChanged += DownlinkDopplerCheckbox_CheckedChanged;
       // 
       // DownlinkManualCheckbox
       // 
       DownlinkManualCheckbox.AutoSize = true;
-      DownlinkManualCheckbox.Location = new Point(190, 37);
+      DownlinkManualCheckbox.Location = new Point(190, 39);
       DownlinkManualCheckbox.Name = "DownlinkManualCheckbox";
-      DownlinkManualCheckbox.Size = new Size(66, 19);
+      DownlinkManualCheckbox.Size = new Size(15, 14);
       DownlinkManualCheckbox.TabIndex = 4;
-      DownlinkManualCheckbox.Text = "Manual";
       DownlinkManualCheckbox.UseVisualStyleBackColor = true;
       DownlinkManualCheckbox.CheckedChanged += DownlinkManualCheckbox_CheckedChanged;
       // 
       // DownlinkManualSpinner
       // 
+      DownlinkManualSpinner.BorderStyle = BorderStyle.None;
       DownlinkManualSpinner.DecimalPlaces = 3;
       DownlinkManualSpinner.Font = new Font("Segoe UI", 10F);
       DownlinkManualSpinner.Increment = new decimal(new int[] { 2, 0, 0, 131072 });
@@ -100,9 +103,8 @@
       DownlinkManualSpinner.Maximum = new decimal(new int[] { 25, 0, 0, 0 });
       DownlinkManualSpinner.Minimum = new decimal(new int[] { 25, 0, 0, int.MinValue });
       DownlinkManualSpinner.Name = "DownlinkManualSpinner";
-      DownlinkManualSpinner.Size = new Size(70, 25);
+      DownlinkManualSpinner.Size = new Size(72, 21);
       DownlinkManualSpinner.TabIndex = 6;
-      DownlinkManualSpinner.Value = new decimal(new int[] { 20, 0, 0, int.MinValue });
       DownlinkManualSpinner.ValueChanged += DownlinkManualSpinner_ValueChanged;
       // 
       // label2
@@ -127,24 +129,24 @@
       // 
       // UplinkManualSpinner
       // 
+      UplinkManualSpinner.BorderStyle = BorderStyle.None;
       UplinkManualSpinner.DecimalPlaces = 3;
+      UplinkManualSpinner.Font = new Font("Segoe UI", 9.5F);
       UplinkManualSpinner.Increment = new decimal(new int[] { 2, 0, 0, 131072 });
-      UplinkManualSpinner.Location = new Point(599, 37);
+      UplinkManualSpinner.Location = new Point(595, 35);
       UplinkManualSpinner.Maximum = new decimal(new int[] { 25, 0, 0, 0 });
       UplinkManualSpinner.Minimum = new decimal(new int[] { 25, 0, 0, int.MinValue });
       UplinkManualSpinner.Name = "UplinkManualSpinner";
-      UplinkManualSpinner.Size = new Size(68, 23);
+      UplinkManualSpinner.Size = new Size(72, 20);
       UplinkManualSpinner.TabIndex = 13;
-      UplinkManualSpinner.Value = new decimal(new int[] { 20, 0, 0, int.MinValue });
       // 
       // UplinkManualCheckbox
       // 
       UplinkManualCheckbox.AutoSize = true;
       UplinkManualCheckbox.Location = new Point(525, 38);
       UplinkManualCheckbox.Name = "UplinkManualCheckbox";
-      UplinkManualCheckbox.Size = new Size(66, 19);
+      UplinkManualCheckbox.Size = new Size(15, 14);
       UplinkManualCheckbox.TabIndex = 11;
-      UplinkManualCheckbox.Text = "Manual";
       UplinkManualCheckbox.UseVisualStyleBackColor = true;
       // 
       // UplinkDopperCheckbox
@@ -152,9 +154,8 @@
       UplinkDopperCheckbox.AutoSize = true;
       UplinkDopperCheckbox.Location = new Point(525, 9);
       UplinkDopperCheckbox.Name = "UplinkDopperCheckbox";
-      UplinkDopperCheckbox.Size = new Size(68, 19);
+      UplinkDopperCheckbox.Size = new Size(15, 14);
       UplinkDopperCheckbox.TabIndex = 10;
-      UplinkDopperCheckbox.Text = "Doppler";
       UplinkDopperCheckbox.UseVisualStyleBackColor = true;
       // 
       // UplinkFrequencyLabel
@@ -186,22 +187,23 @@
       DownlinkDopplerLabel.Name = "DownlinkDopplerLabel";
       DownlinkDopplerLabel.Size = new Size(55, 20);
       DownlinkDopplerLabel.TabIndex = 15;
-      DownlinkDopplerLabel.Text = "+20,000";
-      DownlinkDopplerLabel.TextAlign = ContentAlignment.MiddleRight;
+      DownlinkDopplerLabel.Text = "0,000";
+      DownlinkDopplerLabel.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // UplinkDopplerLabel
       // 
       UplinkDopplerLabel.BackColor = Color.White;
       UplinkDopplerLabel.Font = new Font("Segoe UI", 9.5F);
-      UplinkDopplerLabel.Location = new Point(599, 6);
+      UplinkDopplerLabel.Location = new Point(595, 6);
       UplinkDopplerLabel.Name = "UplinkDopplerLabel";
       UplinkDopplerLabel.Size = new Size(55, 20);
       UplinkDopplerLabel.TabIndex = 16;
-      UplinkDopplerLabel.Text = "+20,000";
-      UplinkDopplerLabel.TextAlign = ContentAlignment.MiddleRight;
+      UplinkDopplerLabel.Text = "0,000";
+      UplinkDopplerLabel.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // DownlinkModeCombobox
       // 
+      DownlinkModeCombobox.DropDownStyle = ComboBoxStyle.DropDownList;
       DownlinkModeCombobox.FormattingEnabled = true;
       DownlinkModeCombobox.Location = new Point(94, 2);
       DownlinkModeCombobox.Name = "DownlinkModeCombobox";
@@ -213,6 +215,7 @@
       // 
       UplinkModeCombobox.AutoCompleteMode = AutoCompleteMode.Suggest;
       UplinkModeCombobox.AutoCompleteSource = AutoCompleteSource.ListItems;
+      UplinkModeCombobox.DropDownStyle = ComboBoxStyle.DropDownList;
       UplinkModeCombobox.FormattingEnabled = true;
       UplinkModeCombobox.Location = new Point(433, 2);
       UplinkModeCombobox.Name = "UplinkModeCombobox";
@@ -220,11 +223,51 @@
       UplinkModeCombobox.TabIndex = 18;
       UplinkModeCombobox.SelectedValueChanged += ModeCombobox_SelectedValueChanged;
       // 
+      // label3
+      // 
+      label3.AutoSize = true;
+      label3.Location = new Point(206, 9);
+      label3.Name = "label3";
+      label3.Size = new Size(49, 15);
+      label3.TabIndex = 19;
+      label3.Text = "Doppler";
+      // 
+      // label4
+      // 
+      label4.AutoSize = true;
+      label4.Location = new Point(206, 39);
+      label4.Name = "label4";
+      label4.Size = new Size(47, 15);
+      label4.TabIndex = 20;
+      label4.Text = "Manual";
+      // 
+      // label5
+      // 
+      label5.AutoSize = true;
+      label5.Location = new Point(541, 39);
+      label5.Name = "label5";
+      label5.Size = new Size(47, 15);
+      label5.TabIndex = 22;
+      label5.Text = "Manual";
+      // 
+      // label6
+      // 
+      label6.AutoSize = true;
+      label6.Location = new Point(541, 9);
+      label6.Name = "label6";
+      label6.Size = new Size(49, 15);
+      label6.TabIndex = 21;
+      label6.Text = "Doppler";
+      // 
       // FrequencyControl
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       BorderStyle = BorderStyle.FixedSingle;
+      Controls.Add(label5);
+      Controls.Add(label6);
+      Controls.Add(label4);
+      Controls.Add(label3);
       Controls.Add(UplinkModeCombobox);
       Controls.Add(DownlinkModeCombobox);
       Controls.Add(UplinkDopplerLabel);
@@ -242,7 +285,7 @@
       Controls.Add(DownlinkFrequencyLabel);
       Controls.Add(SatelliteLabel);
       Name = "FrequencyControl";
-      Size = new Size(679, 66);
+      Size = new Size(677, 66);
       ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).EndInit();
       ((System.ComponentModel.ISupportInitialize)UplinkManualSpinner).EndInit();
       ResumeLayout(false);
@@ -267,5 +310,9 @@
     private Label UplinkDopplerLabel;
     private ComboBox DownlinkModeCombobox;
     private ComboBox UplinkModeCombobox;
+    private Label label3;
+    private Label label4;
+    private Label label5;
+    private Label label6;
   }
 }

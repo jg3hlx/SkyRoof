@@ -5,7 +5,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace OrbiNom
 {
-  public partial class TimelinePanel : DockContentEx
+  public partial class TimelinePanel : DockContent
   {
     private const double MaxPixelsPerMinute = 60; // at max zoom, 1 pixel = 1 second
     private const int ScaleHeight = 35;
@@ -24,7 +24,7 @@ namespace OrbiNom
 
     public TimelinePanel() { InitializeComponent(); } // for visual designer
 
-    public TimelinePanel(Context ctx) : base(ctx)
+    public TimelinePanel(Context ctx)
     {
       InitializeComponent();
       
@@ -304,18 +304,13 @@ namespace OrbiNom
       if (!Dragging)
       {
         var rect = GetSatRectAt(new PointF(e.X, e.Y));
-        if (!rect.IsEmpty)
-        {
-          var pass = SatLabelRects[rect];
-          ClickedSat = pass.Satellite;
-          if (e.Button == MouseButtons.Left)
+        if (!rect.IsEmpty && e.Button == MouseButtons.Left)
           {
-            ctx.SatelliteSelector.SetSelectedSatellite(ClickedSat);
+            var pass = SatLabelRects[rect];
+            var sat = pass.Satellite;
+            ctx.SatelliteSelector.SetSelectedSatellite(sat);
             ctx.SatelliteSelector.SetSelectedPass(pass);
           }
-        }
-        else
-          ClickedSat = null;
       }
     }
 

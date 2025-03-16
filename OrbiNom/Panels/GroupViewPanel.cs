@@ -7,7 +7,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace OrbiNom
 {
-  public partial class GroupViewPanel : DockContentEx
+  public partial class GroupViewPanel : DockContent
   {
     public class ItemData
     {
@@ -16,6 +16,7 @@ namespace OrbiNom
       public ItemData(SatnogsDbSatellite sat) { Sat = sat; }
     }
 
+    protected readonly Context ctx;
     private int SortColumn = 2;
     public ListViewItem[] Items;
 
@@ -26,11 +27,11 @@ namespace OrbiNom
       InitializeComponent();
     }
 
-    public GroupViewPanel(Context ctx) : base(ctx)
+    public GroupViewPanel(Context ctx)
     {
       InitializeComponent();
 
-
+      this.ctx = ctx;
       this.ctx.GroupViewPanel = this;
       this.ctx.MainForm.GroupViewMNU.Checked = true;
       LoadGroup();
@@ -164,12 +165,6 @@ namespace OrbiNom
       ctx.SatelliteSelector.SetSelectedSatellite(data.Sat);
       ctx.PassesPanel?.ShowPasses();
       if (data.Pass != null) ctx.SatelliteSelector.SetSelectedPass(data.Pass);
-    }
-
-    private void listView1_MouseDown(object sender, MouseEventArgs e)
-    {
-      var item = listView1.GetItemAt(e.X, e.Y);
-      ClickedSat = item == null ? null : ((ItemData)item.Tag!).Sat;
     }
   }
 }

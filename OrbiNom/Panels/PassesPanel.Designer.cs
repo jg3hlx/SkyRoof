@@ -98,7 +98,6 @@
       // listViewEx1
       // 
       listViewEx1.Columns.AddRange(new ColumnHeader[] { columnHeader1 });
-      listViewEx1.ContextMenuStrip = contextMenuStrip1;
       listViewEx1.Dock = DockStyle.Fill;
       listViewEx1.FullRowSelect = true;
       listViewEx1.HeaderStyle = ColumnHeaderStyle.None;
@@ -113,6 +112,7 @@
       listViewEx1.View = View.Details;
       listViewEx1.VirtualMode = true;
       listViewEx1.DrawSubItem += listViewEx1_DrawSubItem;
+      listViewEx1.ItemMouseHover += listViewEx1_ItemMouseHover;
       listViewEx1.RetrieveVirtualItem += listViewEx1_RetrieveVirtualItem;
       listViewEx1.MouseDown += listViewEx1_MouseDown;
       listViewEx1.Resize += listViewEx1_Resize;

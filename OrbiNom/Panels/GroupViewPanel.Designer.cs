@@ -44,7 +44,6 @@
       listView1.Activation = ItemActivation.OneClick;
       listView1.AllowDrop = true;
       listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
-      listView1.ContextMenuStrip = contextMenuStrip1;
       listView1.Dock = DockStyle.Fill;
       listView1.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
       listView1.FullRowSelect = true;
@@ -64,7 +63,6 @@
       listView1.ColumnClick += listView1_ColumnClick;
       listView1.RetrieveVirtualItem += listView1_RetrieveVirtualItem;
       listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
-      listView1.MouseDown += listView1_MouseDown;
       // 
       // columnHeader1
       // 
