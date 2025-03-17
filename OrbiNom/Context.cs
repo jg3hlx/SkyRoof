@@ -1,4 +1,5 @@
-﻿using VE3NEA;
+﻿using MathNet.Numerics;
+using VE3NEA;
 
 namespace OrbiNom
 {
@@ -32,8 +33,9 @@ namespace OrbiNom
     public WaterfallPanel? WaterfallPanel;
 
     // soundcards
-    public readonly Soundcard SpeakerSoundcard = new();
-    public readonly Soundcard VacSoundcard = new();
+    public readonly Soundcard<float> SpeakerSoundcard = new();
+    public readonly Soundcard<float> AudioVacSoundcard = new();
+    public readonly Soundcard<Complex32> IqVacSoundcard = new();
     public Slicer? Slicer;
   }
 }

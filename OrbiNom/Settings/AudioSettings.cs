@@ -3,6 +3,8 @@ using VE3NEA;
 
 namespace OrbiNom
 {
+  public enum VacDataFormat { IQ, Audio }
+
   public class AudioSettings
   {
     // non-browsable
@@ -13,17 +15,20 @@ namespace OrbiNom
     [DisplayName("Speaker Audio Device")]
     [Description("Soundcard for audio output")]
     [TypeConverter(typeof(OutputSoundcardNameConverter))]
-    public string? SpeakerSoundcard { get; set; } = Soundcard.GetDefaultSoundcardId();
+    public string? SpeakerSoundcard { get; set; } = Soundcard<float>.GetDefaultSoundcardId();
 
     [DisplayName("VAC Device")]
     [Description("Virtual Audio Cable to feed audio to other software")]
     [TypeConverter(typeof(OutputSoundcardNameConverter))]
-    public string? Vac { get; set; } = Soundcard.GetFirstVacId();
+    public string? Vac { get; set; } = Soundcard<float>.GetFirstVacId();
+
+    [DisplayName("VAC Data Format")]
+    public VacDataFormat VacDataFormat { get; set; }
 
     [DisplayName("VAC Gain")]
     [Description("Virtual Audio Cable Gain, dB")]
-    [DefaultValue(-40)]
-    public int VacVolume { get; set; } = -40;
+    [DefaultValue(0)]
+    public int VacVolume { get; set; } = 0;
 
 
     public override string ToString() { return string.Empty; }

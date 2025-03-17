@@ -32,7 +32,8 @@ namespace OrbiNom
       GainSlider.Scroll += GainSlider_Scroll;
 
       ctx.SpeakerSoundcard.StateChanged += Soundcard_StateChanged;
-      ctx.VacSoundcard.StateChanged += Soundcard_StateChanged;
+      ctx.AudioVacSoundcard.StateChanged += Soundcard_StateChanged;
+      ctx.IqVacSoundcard.StateChanged += Soundcard_StateChanged;
       ApplyAudioSettings();
     }
 
@@ -63,7 +64,8 @@ namespace OrbiNom
       ctx.Sdr?.Dispose();
       ctx.Slicer?.Dispose();
       ctx.SpeakerSoundcard.Dispose();
-      ctx.VacSoundcard?.Dispose();
+      ctx.AudioVacSoundcard?.Dispose();
+      ctx.IqVacSoundcard?.Dispose();
       Fft<float>.SaveWisdom();
     }
 
@@ -183,13 +185,22 @@ namespace OrbiNom
       var rate = ctx.Sdr.Info.SampleRate;
       var mode = ctx.FrequencyControl.DownlinkMode;
       ctx.Slicer = new Slicer(rate, 0, mode);
-      ctx.Slicer.AudioDataAvailable += Slicer_DataAvailable;
+      ctx.Slicer.AudioDataAvailable += Slicer_AudioDataAvailable;
+      ctx.Slicer.IqDataAvailable += Slicer_IqDataAvailable;
     }
 
-    private void Slicer_DataAvailable(object? sender, DataEventArgs<float> e)
+    private void Slicer_IqDataAvailable(object? sender, DataEventArgs<Complex32> e)
+    {
+      if (ctx.Settings.Audio.VacDataFormat == VacDataFormat.IQ) 
+        ctx.IqVacSoundcard.AddSamples(e.Data);
+    }
+
+    private void Slicer_AudioDataAvailable(object? sender, DataEventArgs<float> e)
     {
       ctx.SpeakerSoundcard.AddSamples(e.Data);
-      ctx.VacSoundcard.AddSamples(e.Data);
+
+      if (ctx.Settings.Audio.VacDataFormat == VacDataFormat.Audio)
+        ctx.AudioVacSoundcard.AddSamples(e.Data);
     }
 
     private void UpdateSdrLabel()
@@ -288,12 +299,24 @@ namespace OrbiNom
       VolumeTrackbar.Value = sett.SoundcardVolume;
       SetSoundcardVolume();
 
-      ctx.VacSoundcard.SetDeviceId(sett.Vac);
-      ctx.VacSoundcard.Volume = Dsp.FromDb2(sett.VacVolume);
+      ctx.AudioVacSoundcard.SetDeviceId(sett.Vac);
+      ctx.AudioVacSoundcard.Volume = Dsp.FromDb2(sett.VacVolume - 30); // -30 dB from speaker level
 
-      ctx.SpeakerSoundcard.Enabled = ctx.Settings.Audio.SpeakerEnabled;
-      ctx.VacSoundcard.Enabled = ctx.Settings.Audio.VacEnabled;
+      ctx.IqVacSoundcard.SetDeviceId(sett.Vac);
+      ctx.IqVacSoundcard.Volume = Dsp.FromDb2(sett.VacVolume);
+
+      ctx.SpeakerSoundcard.Enabled = sett.SpeakerEnabled;
+      EnableDisableVac();
+
       //ctx.Slicer.Enabled = ctx.Settings.Audio.SpeakerEnabled || ctx.Settings.Audio.VacEnabled;
+    }
+
+    private void EnableDisableVac()
+    {
+      var sett = ctx.Settings.Audio;
+      ctx.AudioVacSoundcard.Enabled = false;
+      ctx.IqVacSoundcard.Enabled = sett.VacEnabled && sett.VacDataFormat == VacDataFormat.IQ;
+      ctx.AudioVacSoundcard.Enabled = sett.VacEnabled && sett.VacDataFormat == VacDataFormat.Audio;
     }
 
     private void Soundcard_StateChanged(object? sender, EventArgs e)
@@ -322,15 +345,15 @@ namespace OrbiNom
       else
         SoundcardLedLabel.ForeColor = Color.Lime;
 
-      if (!ctx.VacSoundcard.Enabled)
+      if (!ctx.AudioVacSoundcard.Enabled && !ctx.IqVacSoundcard.Enabled)
         VacLedLabel.ForeColor = Color.Gray;
-      else if (!ctx.VacSoundcard.IsPlaying())
+      else if (!ctx.AudioVacSoundcard.IsPlaying() && !ctx.IqVacSoundcard.IsPlaying())
         VacLedLabel.ForeColor = Color.Red;
       else
         VacLedLabel.ForeColor = Color.Lime;
 
       SoundcardStatusLabel.ToolTipText = ctx.SpeakerSoundcard.GetDisplayName();
-      VacStatusLabel.ToolTipText = ctx.VacSoundcard.GetDisplayName();
+      VacStatusLabel.ToolTipText = ctx.AudioVacSoundcard.GetDisplayName();
     }
 
 
@@ -589,13 +612,16 @@ namespace OrbiNom
 
     private void SoundcardLabel_Click(object sender, EventArgs e)
     {
-      ctx.SpeakerSoundcard.Enabled = !ctx.SpeakerSoundcard.Enabled;
+      var sett = ctx.Settings.Audio;
+      sett.SpeakerEnabled = !sett.SpeakerEnabled;
+      ctx.SpeakerSoundcard.Enabled = sett.SpeakerEnabled;
       ShowSoundcardLabels();
     }
 
     private void VacLabel_Click(object sender, EventArgs e)
     {
-      ctx.VacSoundcard.Enabled = !ctx.VacSoundcard.Enabled;
+      ctx.Settings.Audio.VacEnabled = !ctx.Settings.Audio.VacEnabled;
+      EnableDisableVac();
       ShowSoundcardLabels();
     }
 

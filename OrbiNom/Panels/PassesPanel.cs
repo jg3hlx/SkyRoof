@@ -142,7 +142,6 @@ namespace OrbiNom
       item.Tag = pass;
 
       pass.MakeMiniPath();
-      // {!} item.ToolTipText = pass.Satellite.GetTooltipText();
 
       return item;
     }

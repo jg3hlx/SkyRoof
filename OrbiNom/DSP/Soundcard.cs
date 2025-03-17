@@ -1,10 +1,9 @@
-﻿using System.Xml.Linq;
-using CSCore.CoreAudioAPI;
+﻿using CSCore.CoreAudioAPI;
 using CSCore.SoundOut;
 
 namespace VE3NEA
 {
-  public class Soundcard : IDisposable
+  public class Soundcard<T> : IDisposable
   {
     public class Entry
     {
@@ -12,7 +11,7 @@ namespace VE3NEA
       public Entry(string id, string name) { Id = id; Name = name; }
     }
 
-    private WaveSource waveSource;
+    private WaveSource<T> waveSource;
     private MMDevice? mmDevice;
     private WasapiOut? wasapiOut;
     private bool enabled;
@@ -26,7 +25,7 @@ namespace VE3NEA
 
     public Soundcard(string? audioDeviceId = null, int? samplingRate = null)
     {
-      waveSource = new WaveSource(samplingRate);
+      waveSource = new WaveSource<T>(samplingRate);
       SetDeviceId(audioDeviceId);
     }
 
@@ -106,7 +105,7 @@ namespace VE3NEA
       Enabled = false;
     }
 
-    public void AddSamples(float[] samples)
+    public void AddSamples(T[] samples)
     {
       if (Enabled) waveSource.AddSamples(samples);
     }

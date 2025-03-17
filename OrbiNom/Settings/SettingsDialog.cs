@@ -115,10 +115,10 @@ namespace OrbiNom
         ctx.MainForm.SetGridSquare();
       }
 
-      //if (ChangedFields.Exists(s => s.StartsWith("OrbiNom.AudioSettings.")))
-      //{
-      //  ctx.MainForm.ApplyAudioSettings();
-      //}
+      if (ChangedFields.Exists(s => s.StartsWith("OrbiNom.AudioSettings.")))
+      {
+        ctx.MainForm.ApplyAudioSettings();
+      }
 
 
       ChangedFields.Clear();

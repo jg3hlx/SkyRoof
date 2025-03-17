@@ -56,7 +56,6 @@ namespace VE3NEA
         {
           Array.Copy(data, offset + count1, ringBuffer, 0, count2);
           writePos = count2;
-          //Debug.WriteLine($"{DateTime.Now: ss.fff} Write 2");
         }
 
         Count += count;
@@ -65,8 +64,6 @@ namespace VE3NEA
 
     private void Dump(int dumpCount)
     {
-      //Debug.WriteLine($"{DateTime.Now: ss.fff} DUMP {dumpCount}");
-
       Count -= dumpCount;
       readPos += dumpCount;
       if (readPos >= ringBuffer.Length) readPos -= ringBuffer.Length;
@@ -93,16 +90,15 @@ namespace VE3NEA
 
         if (count1 > 0)
         {
-          Buffer.BlockCopy(ringBuffer, readPos * bytesPerSample, buffer, offset, count1 * bytesPerSample);
+          CopyBytes(ringBuffer, readPos * bytesPerSample, buffer, offset, count1 * bytesPerSample);
           readPos += count1;
           if (readPos == ringBuffer.Length) readPos = 0;
         }
 
         if (count2 > 0)
         {
-          Buffer.BlockCopy(ringBuffer, 0, buffer, offset + count1 * bytesPerSample, count2 * bytesPerSample);
+          CopyBytes(ringBuffer, 0, buffer, offset + count1 * bytesPerSample, count2 * bytesPerSample);
           readPos = count2;
-          //Debug.WriteLine($"{DateTime.Now: ss.fff} Read 2");
         }
 
         Count -= readSampleCount;
@@ -111,11 +107,19 @@ namespace VE3NEA
         if (readByteCount < count)
         {
           Array.Clear(buffer, offset + readByteCount, count - readByteCount);
-          //Debug.WriteLine($"{DateTime.Now: ss.fff} ZEROS {count - readSampleCount}");
         }
       }
-        
-      return count;      
+
+      return count;
+    }
+
+    public unsafe void CopyBytes(T[] src, int srcByteOffset, byte[] dst, int dstByteOffset, int byteCount)
+    {
+      fixed (T* pSrc = src)
+      fixed (byte* pDst = dst)
+      {
+        Buffer.MemoryCopy((byte*)pSrc + srcByteOffset, pDst + dstByteOffset, byteCount, byteCount);
+      }
     }
   }
 }

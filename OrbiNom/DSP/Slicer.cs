@@ -8,8 +8,9 @@ namespace OrbiNom
   public unsafe class Slicer : ThreadedProcessor<Complex32>
   {
     public enum Mode { USB, LSB, USB_D, LSB_D, CW, FM }
-    private static readonly int[] Bandwidths = [3000, 3000, 4000, 4000, 500, 16000];
-    private static readonly int[] ModeOffsets = [1500, -1500, 2000, -2000, 600, 0];
+    //300..3000, 100..4000, 350..850, -8000..8000 Hz
+    private static readonly int[] Bandwidths = [2700, 2700, 3900, 3900, 500, 16000];
+    private static readonly int[] ModeOffsets = [1650, -1650, 2050, -2050, 600, 0];
 
     private const int STOPBAND_REJECTION_DB = 80;
     private const double USEFUL_BANDWIDTH = 0.9 * SdrConst.AUDIO_SAMPLING_RATE / 2; // 22 kHz useful at 48 KHz sampling rate
@@ -26,7 +27,8 @@ namespace OrbiNom
     private FifoBuffer<Complex32> OctaveResamplerInputBuffer = new();
     private FifoBuffer<Complex32> RationalResamplerInputBuffer = new();
     private FifoBuffer<Complex32> RationalResamplerOutputBuffer = new();
-    private DataEventArgsPool<float> ArgsPool = new();
+    private DataEventArgsPool<float> FloatArgsPool = new();
+    private DataEventArgsPool<Complex32> ComplexArgsPool = new();
     private double RationalResamplerInputRate;
     private double offset;
     private Mode mode;
@@ -54,7 +56,7 @@ namespace OrbiNom
       RationalResamplerInputRate = CreateOctaveResampler();
       CreateRationalResampler();
 
-      freqdem = NativeLiquidDsp.freqdem_create(1f);
+      freqdem = NativeLiquidDsp.freqdem_create(3f);
 
       CurrentMode = mode;
     }
@@ -166,25 +168,30 @@ namespace OrbiNom
         ApplyOctaveResampler(InputBuffer);
         ApplyRationalResampler(RationalResamplerInputBuffer);
       }
-      // todo: fire event with the IQ data
+
+
+      // return IQ data
+      int outputCount = RationalResamplerOutputBuffer.Count;
+      var audioArgs = FloatArgsPool.Rent(outputCount);
+      var iqArgs = ComplexArgsPool.Rent(outputCount);
+      for (int i = 0; i < outputCount; i++)
+        iqArgs.Data[i] = RationalResamplerOutputBuffer.Data[i] * 0.3f;
+      IqDataAvailable?.Invoke(this, iqArgs);
 
       // lowpass filter
       fixed (Complex32* pData = RationalResamplerOutputBuffer.Data)
       {
-        for (int i = 0; i < RationalResamplerOutputBuffer.Count; i++)
+        for (int i = 0; i < outputCount; i++)
         {
           NativeLiquidDsp.firfilt_crcf_push(firfilt, pData[i]);
           NativeLiquidDsp.firfilt_crcf_execute(firfilt, pData + i);
         }
       }
 
-      int outputCount = RationalResamplerOutputBuffer.Count;
-      var outputArgs = ArgsPool.Rent(outputCount);
-
       if (CurrentMode == Mode.FM)
         // demodulate FM
         fixed (Complex32* pIqData = RationalResamplerOutputBuffer.Data)
-        fixed (float* pAudioData = outputArgs.Data)
+        fixed (float* pAudioData = audioArgs.Data)
         {
           NativeLiquidDsp.freqdem_demodulate_block(freqdem, pIqData, (uint)outputCount, pAudioData);
         }
@@ -198,13 +205,16 @@ namespace OrbiNom
         }
 
         // return the real part
-        for (int i = 0; i < outputCount; i++) 
-          outputArgs.Data[i] = RationalResamplerOutputBuffer.Data[i].Real * 3;
+        for (int i = 0; i < outputCount; i++)
+          audioArgs.Data[i] = RationalResamplerOutputBuffer.Data[i].Real * 3;
       }
 
+      // return audio data
+      AudioDataAvailable?.Invoke(this, audioArgs);
+
+      ComplexArgsPool.Return(iqArgs);
+      FloatArgsPool.Return(audioArgs);
       RationalResamplerOutputBuffer.Count = 0;
-      AudioDataAvailable?.Invoke(this, outputArgs);
-      ArgsPool.Return(outputArgs);
     }
 
     private void CheckModeChange()

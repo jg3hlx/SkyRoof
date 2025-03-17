@@ -1,21 +1,22 @@
 ﻿using CSCore;
-using VE3NEA;
+using MathNet.Numerics;
 
 namespace VE3NEA
 {
-  public class WaveSource : IWaveSource
+  public class WaveSource<T> : IWaveSource
   {
     public const int AUDIO_SAMPLING_RATE = 48_000;
 
     private readonly WaveFormat format;
-    private RingBuffer<float> ringBuffer = new(AUDIO_SAMPLING_RATE);
+    private RingBuffer<T> ringBuffer = new(AUDIO_SAMPLING_RATE / 5);
 
     public WaveSource(int? samplingRate = null)
     {
-      format = new WaveFormat(samplingRate ?? AUDIO_SAMPLING_RATE, 32, 1, AudioEncoding.IeeeFloat);
+      int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
+      format = new WaveFormat(samplingRate ?? AUDIO_SAMPLING_RATE, 32, channelCount, AudioEncoding.IeeeFloat);
     }
 
-  public void AddSamples(float[] samples, int offset = 0, int? count = null)
+  public void AddSamples(T[] samples, int offset = 0, int? count = null)
     {
       ringBuffer.Write(samples, offset, count ?? samples.Length);
     }
