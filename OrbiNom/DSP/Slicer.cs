@@ -22,6 +22,7 @@ namespace OrbiNom
     private NativeLiquidDsp.rresamp_crcf* rresamp;
     private NativeLiquidDsp.firfilt_crcf* firfilt;
     private NativeLiquidDsp.freqdem* freqdem;
+    private SoftSquelch SoftSquelch = new();
 
     private FifoBuffer<Complex32> InputBuffer = new();
     private FifoBuffer<Complex32> OctaveResamplerInputBuffer = new();
@@ -56,7 +57,8 @@ namespace OrbiNom
       RationalResamplerInputRate = CreateOctaveResampler();
       CreateRationalResampler();
 
-      freqdem = NativeLiquidDsp.freqdem_create(3f);
+      // param selected to make demodulated amplitude the same as ssb amplitude
+      freqdem = NativeLiquidDsp.freqdem_create(5000f); 
 
       CurrentMode = mode;
     }
@@ -123,7 +125,7 @@ namespace OrbiNom
         coeffPointer
         );
 
-      // debug: print the filter coefficients
+      // debug: filter coefficients to string
       //byte[] coeffBytes = new byte[filterLength * sizeof(float)];
       //Marshal.Copy((nint)coeffPointer, coeffBytes, 0, coeffBytes.Length);
       //string base64filt = Convert.ToBase64String(coeffBytes);
@@ -136,9 +138,8 @@ namespace OrbiNom
     {
       float fc = Bandwidths[(int)CurrentMode] / 2f / SdrConst.AUDIO_SAMPLING_RATE;
 
-      int FILTER_DELAY = 500;
-      int filterLength = 2 * FILTER_DELAY + 1;
-      firfilt = NativeLiquidDsp.firfilt_crcf_create_kaiser((uint)filterLength, fc, STOPBAND_REJECTION_DB, 0);
+      uint FILTER_LENGTH = 601;
+      firfilt = NativeLiquidDsp.firfilt_crcf_create_kaiser(FILTER_LENGTH, fc, STOPBAND_REJECTION_DB, 0);
     }
 
 
@@ -189,12 +190,17 @@ namespace OrbiNom
       }
 
       if (CurrentMode == Mode.FM)
+      {
         // demodulate FM
         fixed (Complex32* pIqData = RationalResamplerOutputBuffer.Data)
         fixed (float* pAudioData = audioArgs.Data)
         {
           NativeLiquidDsp.freqdem_demodulate_block(freqdem, pIqData, (uint)outputCount, pAudioData);
         }
+
+        // apply soft squelching
+        SoftSquelch.Process(audioArgs.Data);
+      }
 
       else
       {

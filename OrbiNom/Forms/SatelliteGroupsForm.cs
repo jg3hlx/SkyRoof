@@ -93,7 +93,7 @@ namespace OrbiNom
         ]);
 
       item.Tag = sat;
-      item.ToolTipText = sat.GetTooltipText();
+      //{!}item.ToolTipText = sat.GetTooltipText();
 
       // highlighting
 

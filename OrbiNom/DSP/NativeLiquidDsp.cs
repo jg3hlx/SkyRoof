@@ -42,7 +42,8 @@ namespace VE3NEA
     public unsafe struct firfilt_cccf { };
     public unsafe struct firfilt_crcf { };
     public unsafe struct freqdem { };
-
+    public unsafe struct iirfilt_rrrf { };
+    public unsafe struct firfilt_rrrf { };
 
   // NCO
 
@@ -148,7 +149,7 @@ namespace VE3NEA
     public static extern unsafe rresamp_crcf* rresamp_crcf_create_kaiser(uint interp, uint decim, uint m, float bw, float As);
 
 
-    // filter
+    // fir filter
 
     [DllImport(LIBLIQUID, CallingConvention = cdecl)]
     public static extern unsafe firfilt_cccf* firfilt_cccf_create_kaiser(uint n, float fc, float As, float mu);
@@ -173,5 +174,38 @@ namespace VE3NEA
 
     [DllImport(LIBLIQUID, CallingConvention = cdecl)]
     public static extern unsafe int firfilt_crcf_push(firfilt_crcf* q, Complex32 x);
+
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe firfilt_rrrf* firfilt_rrrf_create(float* h, uint n);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe firfilt_rrrf* firfilt_rrrf_create_kaiser(uint n, float fc, float As, float mu);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe float* firfilt_rrrf_get_coefficients(firfilt_rrrf* q);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int firfilt_rrrf_execute_block(firfilt_rrrf* q, float* x, uint n, float* y);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int firfilt_rrrf_execute_one(firfilt_rrrf* q, float x, float* y);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int firfilt_rrrf_destroy(firfilt_rrrf* q);
+
+    // iir filter
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe iirfilt_rrrf* iirfilt_rrrf_create(float* b, uint nb, float* a, uint na);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int iirfilt_rrrf_destroy(iirfilt_rrrf* q);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int iirfilt_rrrf_execute_block(iirfilt_rrrf* q, float x, uint n, float y);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe float iirfilt_rrrd_groupdelay(iirfilt_rrrf* q, float fc);
   }
 }
