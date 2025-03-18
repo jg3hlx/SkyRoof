@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using MathNet.Numerics;
-using SharpGL;
-using SharpGL.SceneGraph.Lighting;
-using WeifenLuo.WinFormsUI.Docking;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+﻿using WeifenLuo.WinFormsUI.Docking;
 
 namespace OrbiNom
 {
@@ -195,19 +181,22 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                    scale mouse 
     //----------------------------------------------------------------------------------------------
+    TransmitterLabel? LabelUnderCursor;
+
     private void ScaleControl_MouseMove(object? sender, MouseEventArgs e)
     {
       // transponder span
-      TransmitterLabel? labelUnderCursor = ScaleControl.GetTransponderUnderCursor(e.X, e.Y);
-      if (labelUnderCursor != null)
+      LabelUnderCursor = ScaleControl.GetTransponderUnderCursor(e.X, e.Y);
+
+      if (LabelUnderCursor != null)
       {
         ScaleControl.Cursor = Cursors.PanSouth;
         return;
       }
 
       // terrestiral frequency
-      labelUnderCursor = ScaleControl.GetLabelUnderCursor(e.Location);
-      if (labelUnderCursor == null)
+      LabelUnderCursor = ScaleControl.GetLabelUnderCursor(e.Location);
+      if (LabelUnderCursor == null)
       {
         toolTip1.Hide(ScaleControl);
         toolTip1.ToolTipTitle = null;
@@ -215,15 +204,15 @@ namespace OrbiNom
       }
 
       // transmitter label
-      else if (toolTip1.ToolTipTitle != labelUnderCursor.Pass.Satellite.name)
+      else if (toolTip1.ToolTipTitle != LabelUnderCursor.Pass.Satellite.name)
       {
-        var parts = labelUnderCursor.Pass.GetTooltipText(true);
-        string tooltip = $"{parts[0]}  ({parts[2]})\n{parts[4]}\n{parts[5]}\n{labelUnderCursor.Tooltip}";
+        var parts = LabelUnderCursor.Pass.GetTooltipText(true);
+        string tooltip = $"{parts[0]}  ({parts[2]})\n{parts[4]}\n{parts[5]}\n{LabelUnderCursor.Tooltip}";
 
         if (tooltip != toolTip1.GetToolTip(this))
         {
-          Point location = new((int)labelUnderCursor.Rect.Right + 1, (int)labelUnderCursor.Rect.Top);
-          toolTip1.ToolTipTitle = labelUnderCursor.Pass.Satellite.name;
+          Point location = new((int)LabelUnderCursor.Rect.Right + 1, (int)LabelUnderCursor.Rect.Top);
+          toolTip1.ToolTipTitle = LabelUnderCursor.Pass.Satellite.name;
           toolTip1.Show(tooltip, ScaleControl, location);
           ScaleControl.Cursor = Cursors.Hand;
         }
@@ -232,13 +221,13 @@ namespace OrbiNom
 
     private void ScaleControl_MouseDown(object? sender, MouseEventArgs e)
     {
-      // select transmitter 
-      var label = ScaleControl.GetLabelUnderCursor(e.Location);
-      if (label != null)
+      if (e.Button != MouseButtons.Left) return;
+
+      if (LabelUnderCursor != null)
       {
         // todo: select only transmitter
-        ctx.SatelliteSelector.SetSelectedTransmitter(label.Transmitters.First());
-        ctx.SatelliteSelector.SetSelectedPass(label.Pass);
+        ctx.SatelliteSelector.SetSelectedTransmitter(LabelUnderCursor.Transmitters.First());
+        ctx.SatelliteSelector.SetSelectedPass(LabelUnderCursor.Pass);
       }
 
       else
@@ -280,6 +269,45 @@ namespace OrbiNom
     internal void BringInView(double value)
     {
       if (!ScaleControl.IsFrequencyVisible(value)) SetCenterFrequency(value);
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                    popup menu
+    //----------------------------------------------------------------------------------------------
+    private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+      e.Cancel = LabelUnderCursor == null;
+      if (e.Cancel) return;
+
+      SelectTransmitterMNU.Enabled = LabelUnderCursor!.Transmitters.Count > 1;
+      if (SelectTransmitterMNU.Enabled)
+      {
+        SelectTransmitterMNU.DropDownItems.Clear();
+        foreach (var tx in LabelUnderCursor.Transmitters)
+        {
+          var item = new ToolStripMenuItem(tx.description);
+          item.Click += (s, e) => ctx.SatelliteSelector.SetSelectedTransmitter(tx);
+          SelectTransmitterMNU.DropDownItems.Add(item);
+        }
+      }
+
+      AddToGroupMNU.DropDownItems.Clear();
+      foreach (var group in ctx.Settings.Satellites.SatelliteGroups)
+      {
+        var item = new ToolStripMenuItem(group.Name);
+        item.Click += (s, e) => ctx.SatelliteSelector.AddToGroup(LabelUnderCursor.Pass.Satellite, group);
+        item.Enabled = !group.SatelliteIds.Contains(LabelUnderCursor.Pass.Satellite.sat_id);
+        AddToGroupMNU.DropDownItems.Add(item);
+      }
+    }
+
+    private void ReportToAmsatMNU_item_Click(object sender, EventArgs e)
+    {
+      string name = (sender as ToolStripMenuItem)!.Text!;
+
     }
   }
 }

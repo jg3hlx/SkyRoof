@@ -35,6 +35,12 @@ namespace OrbiNom
       InitializeComponent();
     }
 
+    internal void AddToGroup(SatnogsDbSatellite satellite, SatelliteGroup group)
+    {
+      group.SatelliteIds.Add(satellite.sat_id);
+      if (group == SelectedGroup) SetSelectedGroup(group);
+    }
+
 
 
 
