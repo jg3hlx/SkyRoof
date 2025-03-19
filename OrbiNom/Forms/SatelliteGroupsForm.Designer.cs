@@ -50,6 +50,7 @@
       RenameSatMNU = new ToolStripMenuItem();
       AddToGroupMNU = new ToolStripMenuItem();
       DetailsMNU = new ToolStripMenuItem();
+      toolStripMenuItem1 = new ToolStripMenuItem();
       panel5 = new Panel();
       listView1 = new ListView();
       columnHeader1 = new ColumnHeader();
@@ -201,7 +202,7 @@
       // 
       GroupsTreePopupMenu.Items.AddRange(new ToolStripItem[] { RenameMNU2, DeleteMNU2, DetailsMNU2, ClearGroupMNU });
       GroupsTreePopupMenu.Name = "SatelliteListPopupMenu";
-      GroupsTreePopupMenu.Size = new Size(183, 114);
+      GroupsTreePopupMenu.Size = new Size(183, 92);
       GroupsTreePopupMenu.Opening += contextMenuStrip1_Opening;
       // 
       // RenameMNU2
@@ -281,9 +282,9 @@
       // 
       // SatelliteListPopupMenu
       // 
-      SatelliteListPopupMenu.Items.AddRange(new ToolStripItem[] { RenameSatMNU, AddToGroupMNU, DetailsMNU });
+      SatelliteListPopupMenu.Items.AddRange(new ToolStripItem[] { RenameSatMNU, AddToGroupMNU, DetailsMNU, toolStripMenuItem1 });
       SatelliteListPopupMenu.Name = "SatelliteListPopupMenu";
-      SatelliteListPopupMenu.Size = new Size(205, 70);
+      SatelliteListPopupMenu.Size = new Size(205, 114);
       // 
       // RenameSatMNU
       // 
@@ -311,6 +312,14 @@
       DetailsMNU.Size = new Size(204, 22);
       DetailsMNU.Text = "Satellite Details...";
       DetailsMNU.Click += DetailsMNU_Click;
+      // 
+      // toolStripMenuItem1
+      // 
+      toolStripMenuItem1.Name = "toolStripMenuItem1";
+      toolStripMenuItem1.ShortcutKeys = Keys.Control | Keys.C;
+      toolStripMenuItem1.Size = new Size(204, 22);
+      toolStripMenuItem1.Text = "Copy NORAD ID";
+      toolStripMenuItem1.Click += toolStripMenuItem1_Click;
       // 
       // panel5
       // 
@@ -806,5 +815,6 @@
     private ToolStripMenuItem DeleteMNU2;
     private ToolStripMenuItem ClearGroupMNU;
     private ToolStripMenuItem AddToGroupMNU;
+    private ToolStripMenuItem toolStripMenuItem1;
   }
 }

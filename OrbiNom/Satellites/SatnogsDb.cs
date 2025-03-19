@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
+﻿using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Serilog;
 using System.ComponentModel;
@@ -65,7 +62,7 @@ namespace OrbiNom
       ListUpdated?.Invoke(this, EventArgs.Empty);
     }
 
-    public SatnogsDbSatellite GetSatellite(string satId)
+    public SatnogsDbSatellite? GetSatellite(string satId)
     {
       return SatelliteList.GetValueOrDefault(satId);
     }
@@ -177,10 +174,12 @@ namespace OrbiNom
         ImportJE9PEL();
 
         foreach (var sat in Satellites) sat.BuildAllNames();
-
         ParseLotwSatList();
-        //again, with lotw added
         foreach (var sat in Satellites) sat.BuildAllNames();
+
+        var amsat = new AmsatData();
+        foreach (var sat in Satellites) 
+          sat.AmsatEntries = amsat.SatelliteNames.GetValueOrDefault($"{sat.norad_cat_id}") ?? [];
 
         foreach (var sat in Satellites) sat.SetFlags();
 

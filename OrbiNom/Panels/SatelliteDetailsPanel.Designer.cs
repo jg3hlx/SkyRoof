@@ -28,6 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
       SatnogsLabel = new LinkLabel();
       WebsiteLabel = new LinkLabel();
       ImageLabel = new LinkLabel();
@@ -35,6 +36,7 @@
       SatAkaLabel = new Label();
       SatellitePropertyGrid = new PropertyGrid();
       SatNameLabel = new Label();
+      toolTip1 = new ToolTip(components);
       LinksPanel.SuspendLayout();
       SuspendLayout();
       // 
@@ -90,7 +92,7 @@
       SatAkaLabel.Size = new Size(356, 23);
       SatAkaLabel.TabIndex = 7;
       SatAkaLabel.Text = "___";
-      SatAkaLabel.TextAlign = ContentAlignment.MiddleCenter;
+      SatAkaLabel.TextAlign = ContentAlignment.MiddleCenter;      
       // 
       // SatellitePropertyGrid
       // 
@@ -142,5 +144,6 @@
     public Label SatAkaLabel;
     public PropertyGrid SatellitePropertyGrid;
     public Label SatNameLabel;
+    private ToolTip toolTip1;
   }
 }

@@ -31,17 +31,12 @@
       components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WaterfallPanel));
       SplitContainer = new SplitContainer();
-      label1 = new Label();
       SlidersBtn = new Button();
       ScaleControl = new FrequencyScale();
       contextMenuStrip1 = new ContextMenuStrip(components);
       SelectTransmitterMNU = new ToolStripMenuItem();
       AddToGroupMNU = new ToolStripMenuItem();
       ReportToAmsatMNU = new ToolStripMenuItem();
-      uplinkAndDownlinkActiveToolStripMenuItem = new ToolStripMenuItem();
-      downlinkOnlyActiveToolStripMenuItem = new ToolStripMenuItem();
-      notHeardToolStripMenuItem = new ToolStripMenuItem();
-      iSSCrewVoiceActiveToolStripMenuItem = new ToolStripMenuItem();
       WaterfallControl = new WaterfallControl();
       toolTip1 = new ToolTip(components);
       ((System.ComponentModel.ISupportInitialize)SplitContainer).BeginInit();
@@ -61,7 +56,6 @@
       // 
       // SplitContainer.Panel1
       // 
-      SplitContainer.Panel1.Controls.Add(label1);
       SplitContainer.Panel1.Controls.Add(SlidersBtn);
       SplitContainer.Panel1.Controls.Add(ScaleControl);
       // 
@@ -71,16 +65,6 @@
       SplitContainer.Size = new Size(800, 450);
       SplitContainer.SplitterDistance = 79;
       SplitContainer.TabIndex = 0;
-      // 
-      // label1
-      // 
-      label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      label1.AutoSize = true;
-      label1.Location = new Point(750, 10);
-      label1.Name = "label1";
-      label1.Size = new Size(38, 15);
-      label1.TabIndex = 5;
-      label1.Text = "label1";
       // 
       // SlidersBtn
       // 
@@ -108,55 +92,27 @@
       // 
       contextMenuStrip1.Items.AddRange(new ToolStripItem[] { SelectTransmitterMNU, AddToGroupMNU, ReportToAmsatMNU });
       contextMenuStrip1.Name = "contextMenuStrip1";
-      contextMenuStrip1.Size = new Size(181, 92);
+      contextMenuStrip1.Size = new Size(174, 70);
       contextMenuStrip1.Opening += contextMenuStrip1_Opening;
       // 
       // SelectTransmitterMNU
       // 
       SelectTransmitterMNU.Name = "SelectTransmitterMNU";
-      SelectTransmitterMNU.Size = new Size(180, 22);
+      SelectTransmitterMNU.Size = new Size(173, 22);
       SelectTransmitterMNU.Text = "Select Transmitter";
       // 
       // AddToGroupMNU
       // 
       AddToGroupMNU.Name = "AddToGroupMNU";
-      AddToGroupMNU.Size = new Size(180, 22);
+      AddToGroupMNU.Size = new Size(173, 22);
       AddToGroupMNU.Text = "Add to Group";
       // 
       // ReportToAmsatMNU
       // 
-      ReportToAmsatMNU.DropDownItems.AddRange(new ToolStripItem[] { uplinkAndDownlinkActiveToolStripMenuItem, downlinkOnlyActiveToolStripMenuItem, notHeardToolStripMenuItem, iSSCrewVoiceActiveToolStripMenuItem });
       ReportToAmsatMNU.Name = "ReportToAmsatMNU";
-      ReportToAmsatMNU.Size = new Size(180, 22);
-      ReportToAmsatMNU.Text = "Report to AMSAT";
-      // 
-      // uplinkAndDownlinkActiveToolStripMenuItem
-      // 
-      uplinkAndDownlinkActiveToolStripMenuItem.Name = "uplinkAndDownlinkActiveToolStripMenuItem";
-      uplinkAndDownlinkActiveToolStripMenuItem.Size = new Size(220, 22);
-      uplinkAndDownlinkActiveToolStripMenuItem.Text = "Uplink and Downlink Active";
-      uplinkAndDownlinkActiveToolStripMenuItem.Click += ReportToAmsatMNU_item_Click;
-      // 
-      // downlinkOnlyActiveToolStripMenuItem
-      // 
-      downlinkOnlyActiveToolStripMenuItem.Name = "downlinkOnlyActiveToolStripMenuItem";
-      downlinkOnlyActiveToolStripMenuItem.Size = new Size(220, 22);
-      downlinkOnlyActiveToolStripMenuItem.Text = "Downlink Only";
-      downlinkOnlyActiveToolStripMenuItem.Click += ReportToAmsatMNU_item_Click;
-      // 
-      // notHeardToolStripMenuItem
-      // 
-      notHeardToolStripMenuItem.Name = "notHeardToolStripMenuItem";
-      notHeardToolStripMenuItem.Size = new Size(220, 22);
-      notHeardToolStripMenuItem.Text = "Not Heard";
-      notHeardToolStripMenuItem.Click += ReportToAmsatMNU_item_Click;
-      // 
-      // iSSCrewVoiceActiveToolStripMenuItem
-      // 
-      iSSCrewVoiceActiveToolStripMenuItem.Name = "iSSCrewVoiceActiveToolStripMenuItem";
-      iSSCrewVoiceActiveToolStripMenuItem.Size = new Size(220, 22);
-      iSSCrewVoiceActiveToolStripMenuItem.Text = "ISS Crew (Voice) Active";
-      iSSCrewVoiceActiveToolStripMenuItem.Click += ReportToAmsatMNU_item_Click;
+      ReportToAmsatMNU.Size = new Size(173, 22);
+      ReportToAmsatMNU.Text = "Report to AMSAT...";
+      ReportToAmsatMNU.Click += ReportToAmsatMNU_Click;
       // 
       // WaterfallControl
       // 
@@ -177,7 +133,6 @@
       Text = "Waterfall";
       FormClosing += WaterfallPanel_FormClosing;
       SplitContainer.Panel1.ResumeLayout(false);
-      SplitContainer.Panel1.PerformLayout();
       SplitContainer.Panel2.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)SplitContainer).EndInit();
       SplitContainer.ResumeLayout(false);
@@ -192,15 +147,10 @@
     public FrequencyScale ScaleControl;
     private Button SlidersBtn;
     public SplitContainer SplitContainer;
-    private Label label1;
     private ToolTip toolTip1;
     private ContextMenuStrip contextMenuStrip1;
     private ToolStripMenuItem SelectTransmitterMNU;
     private ToolStripMenuItem AddToGroupMNU;
     private ToolStripMenuItem ReportToAmsatMNU;
-    private ToolStripMenuItem uplinkAndDownlinkActiveToolStripMenuItem;
-    private ToolStripMenuItem downlinkOnlyActiveToolStripMenuItem;
-    private ToolStripMenuItem notHeardToolStripMenuItem;
-    private ToolStripMenuItem iSSCrewVoiceActiveToolStripMenuItem;
   }
 }

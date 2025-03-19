@@ -12,8 +12,7 @@ using SGPdotNET.Observation;
 using WeifenLuo.WinFormsUI.Docking;
 
 // todo: sort transmitters
-// todo: split in 2 panels
-// todo: select transmitter and show selection
+// todo: show selected tx
 
 namespace OrbiNom
 {
@@ -49,6 +48,7 @@ namespace OrbiNom
 
       SatAkaLabel.Visible = sat.AllNames.Count > 1;
       SatAkaLabel.Text = $"a.k.a. {string.Join(", ", sat.AllNames.Where(s => s != sat.name))}";
+      toolTip1.SetToolTip(SatAkaLabel, SatAkaLabel.Text);
 
       ImageLabel.Visible = !string.IsNullOrEmpty(sat.image);
       WebsiteLabel.Visible = !string.IsNullOrEmpty(sat.website);

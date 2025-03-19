@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using SGPdotNET.Observation;
-using SGPdotNET.TLE;
 using static OrbiNom.SatnogsDbSatellite;
 
 namespace OrbiNom
@@ -173,13 +172,19 @@ namespace OrbiNom
     [Browsable(false)]
     public Satellite Tracker { get => tracker ??= CreateTracker();  }
 
+    [Browsable(false)]
+    public string[] AmsatEntries;
+
+
+
+
     private Satellite? CreateTracker()
     {
       return Tle == null ? null : new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);
     }
 
     private Satellite? tracker;
-    
+
     private List<string> FormatTransmitters()
     {
       return Transmitters

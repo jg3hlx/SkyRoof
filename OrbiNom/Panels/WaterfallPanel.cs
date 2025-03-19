@@ -168,7 +168,6 @@ namespace OrbiNom
       ValidateWaterfallViewport();
 
       WaterfallControl.Zoom = SamplingRate / ScaleControl.VisibleBandwidth;
-      label1.Text = $"{ScaleControl.VisibleBandwidth / ScaleControl.Size.Width:F3} Hz/pix";
       WaterfallControl.Pan = (SdrCenterFrequency - ScaleControl.CenterFrequency) / ScaleControl.VisibleBandwidth * 2;
 
       ScaleControl.Refresh();
@@ -185,17 +184,18 @@ namespace OrbiNom
 
     private void ScaleControl_MouseMove(object? sender, MouseEventArgs e)
     {
-      // transponder span
       LabelUnderCursor = ScaleControl.GetTransponderUnderCursor(e.X, e.Y);
 
+      // transponder span
       if (LabelUnderCursor != null)
       {
         ScaleControl.Cursor = Cursors.PanSouth;
         return;
       }
 
-      // terrestiral frequency
       LabelUnderCursor = ScaleControl.GetLabelUnderCursor(e.Location);
+
+      // terrestiral frequency
       if (LabelUnderCursor == null)
       {
         toolTip1.Hide(ScaleControl);
@@ -223,15 +223,7 @@ namespace OrbiNom
     {
       if (e.Button != MouseButtons.Left) return;
 
-      if (LabelUnderCursor != null)
-      {
-        // todo: select only transmitter
-        ctx.SatelliteSelector.SetSelectedTransmitter(LabelUnderCursor.Transmitters.First());
-        ctx.SatelliteSelector.SetSelectedPass(LabelUnderCursor.Pass);
-      }
-
-      else
-        HandleFrequencyClick(e.X, e.Y);
+      HandleFrequencyClick(e.X, e.Y);
     }
 
     private void ScaleControl_MouseLeave(object? sender, EventArgs e)
@@ -251,7 +243,17 @@ namespace OrbiNom
 
     private void HandleFrequencyClick(int x, int y)
     {
-      var label = ScaleControl.GetTransponderUnderCursor(x, y);
+      var label = ScaleControl.GetLabelUnderCursor(new(x, y));
+
+      if (label != null)
+      {
+        ctx.SatelliteSelector.SetSelectedTransmitter(label.Transmitters.First());
+        ctx.SatelliteSelector.SetSelectedPass(label.Pass);
+        return;
+      }
+
+
+      label = ScaleControl.GetTransponderUnderCursor(x, y);
 
       // tune to offset in transponder passband
       if (label != null)
@@ -282,6 +284,8 @@ namespace OrbiNom
       e.Cancel = LabelUnderCursor == null;
       if (e.Cancel) return;
 
+      var sat = LabelUnderCursor.Pass.Satellite;
+
       SelectTransmitterMNU.Enabled = LabelUnderCursor!.Transmitters.Count > 1;
       if (SelectTransmitterMNU.Enabled)
       {
@@ -298,16 +302,20 @@ namespace OrbiNom
       foreach (var group in ctx.Settings.Satellites.SatelliteGroups)
       {
         var item = new ToolStripMenuItem(group.Name);
-        item.Click += (s, e) => ctx.SatelliteSelector.AddToGroup(LabelUnderCursor.Pass.Satellite, group);
-        item.Enabled = !group.SatelliteIds.Contains(LabelUnderCursor.Pass.Satellite.sat_id);
+        item.Click += (s, e) => ctx.SatelliteSelector.AddToGroup(sat, group);
+        item.Enabled = !group.SatelliteIds.Contains(sat.sat_id);
         AddToGroupMNU.DropDownItems.Add(item);
       }
+
+      ReportToAmsatMNU.Enabled = sat.AmsatEntries.Any();
+      ReportToAmsatMNU.Tag = sat;
     }
 
-    private void ReportToAmsatMNU_item_Click(object sender, EventArgs e)
+    private void ReportToAmsatMNU_Click(object sender, EventArgs e)
     {
-      string name = (sender as ToolStripMenuItem)!.Text!;
-
+      var item = (ToolStripMenuItem)sender;
+      var sat = (SatnogsDbSatellite)item.Tag!;
+      AmsatReportDialog.SendReport(ctx, sat);
     }
   }
 }

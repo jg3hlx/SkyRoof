@@ -35,6 +35,7 @@
       // OpenglControl
       // 
       OpenglControl.BackColor = SystemColors.HotTrack;
+      OpenglControl.Cursor = Cursors.Cross;
       OpenglControl.Dock = DockStyle.Fill;
       OpenglControl.DrawFPS = false;
       OpenglControl.Location = new Point(0, 0);

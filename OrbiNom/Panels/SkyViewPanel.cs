@@ -96,6 +96,7 @@ namespace OrbiNom
 
     public void Advance() // on timer tick
     {
+      // todo: if selected pass is now visible, switch to real time view
       SetLabels();
       DrawPanel.Invalidate();
     }

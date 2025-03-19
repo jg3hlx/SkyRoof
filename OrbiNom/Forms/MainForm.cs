@@ -13,9 +13,11 @@ namespace OrbiNom
     public MainForm()
     {
       InitializeComponent();
+
       Text = Utils.GetVersionString();
 
       ctx.MainForm = this;
+
       ctx.SatelliteSelector = SatelliteSelector;
       ctx.FrequencyControl = FrequencyControl;
       SatelliteSelector.ctx = ctx;

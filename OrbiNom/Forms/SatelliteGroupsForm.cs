@@ -335,8 +335,8 @@ namespace OrbiNom
         AddSatBtn_Click(null, null);
         return true;
       }
-        
-      return base.ProcessCmdKey(ref msg, keyData);      
+
+      return base.ProcessCmdKey(ref msg, keyData);
     }
 
     private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
@@ -531,6 +531,16 @@ namespace OrbiNom
       var srcSats = data.GetData(typeof(List<SatnogsDbSatellite>)) as List<SatnogsDbSatellite>;
       if (srcSats == null) return false;
       return srcSats.Except(dstSats).Count() > 0;
+    }
+
+
+    //{!} remove this
+    private void toolStripMenuItem1_Click(object sender, EventArgs e)
+    {
+      var item = FilteredItems[listView1.SelectedIndices[0]];
+      var sat = (SatnogsDbSatellite)item.Tag;
+      Clipboard.SetText($"{sat?.norad_cat_id}");
+
     }
   }
 }

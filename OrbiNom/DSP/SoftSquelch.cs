@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Security.Cryptography;
 using CSCore.DSP;
+using CSCore.Streams;
 using MathNet.Filtering.IIR;
 using MathNet.Numerics;
 using OrbiNom;
@@ -66,7 +67,6 @@ namespace OrbiNom
       if (DelayLine.Length < FILTER_DELAY + count) Array.Resize(ref DelayLine, FILTER_DELAY + count);
 
       // push to delay line
-      Array.Copy(DelayLine, count, DelayLine, 0, FILTER_DELAY);
       Array.Copy(data, 0, DelayLine, FILTER_DELAY, count);
 
       for (int i = 0; i < data.Length; i++)
@@ -79,13 +79,21 @@ namespace OrbiNom
         value = Lpf.ProcessSample(value);
         value = Math.Sqrt(Math.Max(1e-6, value));
 
-        // apply squelch
-        data[i] = DelayLine[i] / (float)value;
+        // threshold
+        if (value < 0.08) gain = 3; else if (value > 0.095) gain = 0.3f;
+
+        // apply gain
+        data[i] = DelayLine[i] * gain;
       }
 
       // low-pass filter the result
-      fixed (float* p = data) NativeLiquidDsp.firfilt_rrrf_execute_block(Bpf, p, (uint)count, p);
+      fixed (float* pData = data) 
+        NativeLiquidDsp.firfilt_rrrf_execute_block(Bpf, pData, (uint)count, pData);
+
+      // dump old samples
+      Array.Copy(DelayLine, count, DelayLine, 0, FILTER_DELAY);
     }
+    float gain = 1;
 
     public void Dispose()
     {
