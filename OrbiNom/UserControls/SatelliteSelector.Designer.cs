@@ -44,7 +44,7 @@
       TransmitterComboBox.DrawMode = DrawMode.OwnerDrawFixed;
       TransmitterComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
       TransmitterComboBox.FormattingEnabled = true;
-      TransmitterComboBox.Location = new Point(255, 35);
+      TransmitterComboBox.Location = new Point(255, 41);
       TransmitterComboBox.Name = "TransmitterComboBox";
       TransmitterComboBox.Size = new Size(217, 24);
       TransmitterComboBox.TabIndex = 13;
@@ -54,7 +54,7 @@
       // label3
       // 
       label3.AutoSize = true;
-      label3.Location = new Point(187, 39);
+      label3.Location = new Point(187, 45);
       label3.Name = "label3";
       label3.Size = new Size(66, 15);
       label3.TabIndex = 12;
@@ -66,7 +66,7 @@
       SatelliteComboBox.DrawMode = DrawMode.OwnerDrawFixed;
       SatelliteComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
       SatelliteComboBox.FormattingEnabled = true;
-      SatelliteComboBox.Location = new Point(255, 5);
+      SatelliteComboBox.Location = new Point(255, 11);
       SatelliteComboBox.Name = "SatelliteComboBox";
       SatelliteComboBox.Size = new Size(217, 24);
       SatelliteComboBox.TabIndex = 11;
@@ -78,7 +78,7 @@
       GroupComboBox.DisplayMember = "Name";
       GroupComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
       GroupComboBox.FormattingEnabled = true;
-      GroupComboBox.Location = new Point(12, 35);
+      GroupComboBox.Location = new Point(12, 41);
       GroupComboBox.Name = "GroupComboBox";
       GroupComboBox.Size = new Size(162, 23);
       GroupComboBox.TabIndex = 9;
@@ -87,7 +87,7 @@
       // label1
       // 
       label1.AutoSize = true;
-      label1.Location = new Point(12, 9);
+      label1.Location = new Point(12, 15);
       label1.Name = "label1";
       label1.Size = new Size(40, 15);
       label1.TabIndex = 8;
@@ -96,7 +96,7 @@
       // label2
       // 
       label2.AutoSize = true;
-      label2.Location = new Point(205, 9);
+      label2.Location = new Point(205, 15);
       label2.Name = "label2";
       label2.Size = new Size(48, 15);
       label2.TabIndex = 10;
@@ -114,7 +114,7 @@
       Controls.Add(GroupComboBox);
       Controls.Add(label1);
       Name = "SatelliteSelector";
-      Size = new Size(484, 63);
+      Size = new Size(484, 78);
       ResumeLayout(false);
       PerformLayout();
     }

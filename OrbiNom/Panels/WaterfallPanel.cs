@@ -264,11 +264,16 @@ namespace OrbiNom
 
     private void ScaleControl_MouseUp(object? sender, MouseEventArgs e)
     {
-      if (e.Button == MouseButtons.Left && !Dragging)
-        HandleFrequencyClick(e.X, e.Y);
+      if (e.Button == MouseButtons.Left && !Dragging) HandleFrequencyClick(e.X, e.Y);
+
+      if (e.Button == MouseButtons.Right) ctx.FrequencyControl.RitEnabled = !ctx.FrequencyControl.RitEnabled;
+
+      if (ScaleControl.IsMouseInFilter(MouseDownX))
+        ScaleControl.Cursor = Cursors.PanSouth;
+      else
+        ScaleControl.Cursor = Cursors.Cross;
 
       Dragging = false;
-      ScaleControl.Cursor = Cursors.Cross;
     }
 
 
@@ -284,7 +289,7 @@ namespace OrbiNom
       var x = ScaleControl.FreqToPixel((double)freq);
       if (Math.Abs(x - e.X) > 200) return;
       ctx.FrequencyControl.IncrementFrequency(e.Delta > 0 ? 20 : -20);
-      Refresh();
+      ScaleControl.Refresh();
     }
 
     private void HandleFrequencyClick(int x, int y)
@@ -310,7 +315,9 @@ namespace OrbiNom
 
       // tune to terrestrial frequency
       else
+      {
         ctx.FrequencyControl.SetTerrestrialFrequency(ScaleControl.PixelToFreq(x));
+      }
     }
 
 

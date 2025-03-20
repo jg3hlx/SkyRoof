@@ -108,25 +108,36 @@ namespace OrbiNom
       DrawTransmitters(g);
     }
 
-    private RectangleF GetPassbandRect()
+    private RectangleF GetPassbandRect(bool includeRit = false)
     {
-      double minWing = 3 * VisibleBandwidth / width;
       double center = (double)ctx.FrequencyControl.CorrectedDownlinkFrequency!;
+      if (ctx.FrequencyControl.RitEnabled && !includeRit) center -= ctx.FrequencyControl.RitOffset;
+
+      double minWing = 3 * VisibleBandwidth / width;
       double wing = Math.Max(minWing, ctx.Slicer.Bandwidth / 2);
       double left = FreqToPixel(center - wing);
       double right = FreqToPixel(center + wing);
 
-      return new RectangleF((float)left, height - 45, (float)(right - left), height);
+      float top = includeRit ? height - 42 : height - 45;
+      return new RectangleF((float)left, top, (float)(right - left), height);
     }
 
     private void DrawPassband(Graphics g)
     {
       if (ctx?.Slicer?.Enabled != true) return;
       if (ctx.FrequencyControl.CorrectedDownlinkFrequency == null) return;
-      
+
+      // main passband
       var rect = GetPassbandRect();
       g.FillRectangle(PassbandBrush, rect);
       g.DrawRectangle(Pens.Green, rect);
+
+      // rit
+      if (ctx.FrequencyControl.RitEnabled)
+      {
+        rect = GetPassbandRect(true);
+        g.DrawRectangle(Pens.Green, rect);
+      }
     }
 
     private void DrawTicks(Graphics g)

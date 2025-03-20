@@ -1,6 +1,7 @@
 ﻿using SGPdotNET.Observation;
 using VE3NEA;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.ComponentModel;
 
 namespace OrbiNom
 {
@@ -15,6 +16,11 @@ namespace OrbiNom
 
     public Slicer.Mode DownlinkMode => (Slicer.Mode)DownlinkModeCombobox.SelectedItem!;
     public Slicer.Mode UplinkMode => (Slicer.Mode)UplinkModeCombobox.SelectedItem!;
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    internal bool RitEnabled { get => DownlinkRitCheckbox.Checked; set => DownlinkRitCheckbox.Checked = value; }
+    public double RitOffset { get => (double)DownlinkRitSpinner.Value * 1000; }
+
 
 
     public FrequencyControl()
@@ -40,6 +46,9 @@ namespace OrbiNom
       SetTerrestrial(false);
       var tx = ctx.SatelliteSelector.SelectedTransmitter;
 
+      DownlinkRitCheckbox.Checked = false;
+      DownlinkRitSpinner.Value = 0;
+
       Frequency = tx.downlink_low;
 
       if (IsTransponder())
@@ -56,6 +65,10 @@ namespace OrbiNom
     internal void SetTerrestrialFrequency(double frequency)
     {
       SetTerrestrial(true);
+
+      DownlinkRitCheckbox.Checked = false;
+      DownlinkRitSpinner.Value = 0;
+
       CorrectedDownlinkFrequency = Frequency = frequency;
       SetSlicerFrequency();
       UpdateAllControls();
@@ -64,6 +77,9 @@ namespace OrbiNom
     internal void SetTransponderOffset(SatnogsDbTransmitter transponder, double offset)
     {
       SetTerrestrial(false);
+
+      DownlinkRitCheckbox.Checked = false;
+      DownlinkRitSpinner.Value = 0;
 
       var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
       cust.TranspnderOffset = offset;
@@ -80,9 +96,17 @@ namespace OrbiNom
     {
       var tx = ctx.SatelliteSelector.SelectedTransmitter;
 
+      // RIT
+      DownlinkRitCheckbox.Checked = ModifierKeys.HasFlag(Keys.Control);
+      if (RitEnabled)
+        DownlinkRitSpinner.Value += (decimal)(delta / 1000d);
+
       // terrestrial
-      if (IsTerrestrial)
-        SetTerrestrialFrequency(Frequency!.Value + delta);
+      else if (IsTerrestrial)
+      {
+        CorrectedDownlinkFrequency = Frequency = Frequency!.Value + delta;
+        SetSlicerFrequency();
+      }
 
       // transponder
       else if (IsTransponder())
@@ -91,7 +115,6 @@ namespace OrbiNom
         var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
         cust.TranspnderOffset += delta;
         Frequency = transponder.downlink_low + cust.TranspnderOffset;
-        UpdateAllControls();
       }
 
       // transmitter
@@ -100,8 +123,10 @@ namespace OrbiNom
         var value = DownlinkManualSpinner.Value + (decimal)(delta / 1000d);
         value = Math.Max(DownlinkManualSpinner.Minimum, Math.Min(DownlinkManualSpinner.Maximum, value));
         DownlinkManualSpinner.Value = value;
-        UpdateAllControls();
       }
+
+      UpdateFrequency();
+      UpdateAllControls();
     }
 
     private bool IsTransponder()
@@ -133,7 +158,7 @@ namespace OrbiNom
         cust.TranspnderOffset = freq;
         Frequency = transponder.downlink_low + cust.TranspnderOffset;
       }
-      else 
+      else
         DownlinkManualSpinner.Value = (decimal)(freq / 1000);
 
       UpdateAllControls();
@@ -158,6 +183,7 @@ namespace OrbiNom
         Changing = false;
 
         CorrectedDownlinkFrequency = Frequency;
+        if (DownlinkRitCheckbox.Checked) CorrectedDownlinkFrequency += RitOffset;
 
         SetFieldColors(null);
       }
@@ -173,6 +199,7 @@ namespace OrbiNom
         CorrectedDownlinkFrequency = Frequency;
         if (DownlinkDopplerCheckbox.Checked) CorrectedDownlinkFrequency += doppler;
         if (DownlinkManualCheckbox.Checked) CorrectedDownlinkFrequency += (double)DownlinkManualSpinner.Value * 1000;
+        if (DownlinkRitCheckbox.Checked) CorrectedDownlinkFrequency += RitOffset;
 
         // uplink
         var tx = ctx.SatelliteSelector.SelectedTransmitter;
@@ -244,6 +271,21 @@ namespace OrbiNom
       SetMode();
     }
 
+    private void label3_Click(object sender, EventArgs e)
+    {
+      DownlinkDopplerCheckbox.Checked = !DownlinkDopplerCheckbox.Checked;
+    }
+
+    private void label4_Click(object sender, EventArgs e)
+    {
+      DownlinkManualCheckbox.Checked = !DownlinkManualCheckbox.Checked;
+    }
+
+    private void label7_Click(object sender, EventArgs e)
+    {
+      DownlinkRitCheckbox.Checked = !DownlinkRitCheckbox.Checked;
+    }
+
 
 
 
@@ -257,7 +299,7 @@ namespace OrbiNom
         // read settings
         var tx = ctx.SatelliteSelector.SelectedTransmitter;
         var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(tx.uuid);
-        
+
         // set in comboboxes
         Changing = true;
         DownlinkModeCombobox.SelectedItem = cust.DownlinkMode;
@@ -404,6 +446,12 @@ namespace OrbiNom
         DownlinkManualCheckbox.Visible = true;
         DownlinkManualSpinner.BackColor = SystemColors.Window;
       }
+    }
+
+    private void Spinner_DoubleClick(object sender, EventArgs e)
+    {
+      var spinner = (NumericUpDown)sender;
+      spinner.Value = 0;
     }
   }
 }

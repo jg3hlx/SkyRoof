@@ -30,6 +30,7 @@
     {
       components = new System.ComponentModel.Container();
       Toolbar = new Panel();
+      label1 = new Label();
       GainSlider = new TrackBar();
       VolumeLabel = new Label();
       label2 = new Label();
@@ -85,7 +86,6 @@
       NoiseFloorLabel = new ToolStripStatusLabel();
       CpuLoadlabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
-      label1 = new Label();
       Toolbar.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)GainSlider).BeginInit();
       ((System.ComponentModel.ISupportInitialize)VolumeTrackbar).BeginInit();
@@ -109,8 +109,17 @@
       Toolbar.Dock = DockStyle.Top;
       Toolbar.Location = new Point(0, 24);
       Toolbar.Name = "Toolbar";
-      Toolbar.Size = new Size(1610, 70);
+      Toolbar.Size = new Size(1610, 78);
       Toolbar.TabIndex = 0;
+      // 
+      // label1
+      // 
+      label1.AutoSize = true;
+      label1.Location = new Point(1208, 13);
+      label1.Name = "label1";
+      label1.Size = new Size(49, 15);
+      label1.TabIndex = 20;
+      label1.Text = "RG Gain";
       // 
       // GainSlider
       // 
@@ -164,7 +173,7 @@
       FrequencyControl.Dock = DockStyle.Left;
       FrequencyControl.Location = new Point(510, 0);
       FrequencyControl.Name = "FrequencyControl";
-      FrequencyControl.Size = new Size(682, 70);
+      FrequencyControl.Size = new Size(682, 78);
       FrequencyControl.TabIndex = 3;
       // 
       // panel1
@@ -172,7 +181,7 @@
       panel1.Dock = DockStyle.Left;
       panel1.Location = new Point(506, 0);
       panel1.Name = "panel1";
-      panel1.Size = new Size(4, 70);
+      panel1.Size = new Size(4, 78);
       panel1.TabIndex = 4;
       // 
       // SatelliteSelector
@@ -181,7 +190,7 @@
       SatelliteSelector.Dock = DockStyle.Left;
       SatelliteSelector.Location = new Point(4, 0);
       SatelliteSelector.Name = "SatelliteSelector";
-      SatelliteSelector.Size = new Size(502, 70);
+      SatelliteSelector.Size = new Size(502, 78);
       SatelliteSelector.TabIndex = 2;
       SatelliteSelector.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
       SatelliteSelector.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
@@ -214,7 +223,7 @@
       panel2.Dock = DockStyle.Left;
       panel2.Location = new Point(0, 0);
       panel2.Name = "panel2";
-      panel2.Size = new Size(4, 70);
+      panel2.Size = new Size(4, 78);
       panel2.TabIndex = 5;
       // 
       // DockHost
@@ -222,11 +231,11 @@
       DockHost.DefaultFloatWindowSize = new Size(445, 445);
       DockHost.Dock = DockStyle.Fill;
       DockHost.DockBackColor = Color.FromArgb(238, 238, 242);
-      DockHost.Location = new Point(0, 94);
+      DockHost.Location = new Point(0, 102);
       DockHost.Name = "DockHost";
       DockHost.Padding = new Padding(6);
       DockHost.ShowAutoHideContentOnHover = false;
-      DockHost.Size = new Size(1610, 581);
+      DockHost.Size = new Size(1610, 573);
       DockHost.TabIndex = 4;
       DockHost.Theme = vS2015LightTheme1;
       // 
@@ -562,15 +571,6 @@
       CpuLoadlabel.Size = new Size(96, 30);
       CpuLoadlabel.Text = "CPU Load: 00.0%";
       CpuLoadlabel.TextAlign = ContentAlignment.MiddleLeft;
-      // 
-      // label1
-      // 
-      label1.AutoSize = true;
-      label1.Location = new Point(1208, 13);
-      label1.Name = "label1";
-      label1.Size = new Size(49, 15);
-      label1.TabIndex = 20;
-      label1.Text = "RG Gain";
       // 
       // MainForm
       // 
