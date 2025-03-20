@@ -42,7 +42,7 @@ namespace OrbiNom
 
       Frequency = tx.downlink_low;
 
-      if (tx.downlink_high.HasValue && tx.downlink_high != tx.downlink_low)
+      if (IsTransponder())
         Frequency += ctx.Settings.Satellites.
           TransmitterCustomizations.GetOrCreate(tx.uuid).TranspnderOffset;
 
@@ -85,7 +85,7 @@ namespace OrbiNom
         SetTerrestrialFrequency(Frequency!.Value + delta);
 
       // transponder
-      else if (tx?.downlink_high.HasValue ?? false && tx.downlink_high != tx.downlink_low)
+      else if (IsTransponder())
       {
         var transponder = ctx.SatelliteSelector.SelectedTransmitter;
         var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
@@ -103,6 +103,42 @@ namespace OrbiNom
         UpdateAllControls();
       }
     }
+
+    private bool IsTransponder()
+    {
+      var tx = ctx.SatelliteSelector.SelectedTransmitter;
+      return tx.downlink_high.HasValue && tx.downlink_high != tx.downlink_low;
+    }
+
+    internal double GetDraggableFrequency()
+    {
+      if (IsTerrestrial) return Frequency!.Value;
+
+      else if (IsTransponder())
+      {
+        var transponder = ctx.SatelliteSelector.SelectedTransmitter;
+        var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
+        return cust.TranspnderOffset;
+      }
+      else return (double)DownlinkManualSpinner.Value * 1000d;
+    }
+
+    internal void SetDraggableFrequency(double freq)
+    {
+      if (IsTerrestrial) Frequency = freq;
+      else if (IsTransponder())
+      {
+        var transponder = ctx.SatelliteSelector.SelectedTransmitter;
+        var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
+        cust.TranspnderOffset = freq;
+        Frequency = transponder.downlink_low + cust.TranspnderOffset;
+      }
+      else 
+        DownlinkManualSpinner.Value = (decimal)(freq / 1000);
+
+      UpdateAllControls();
+    }
+
 
 
 

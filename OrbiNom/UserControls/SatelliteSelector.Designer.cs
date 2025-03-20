@@ -54,7 +54,7 @@
       // label3
       // 
       label3.AutoSize = true;
-      label3.Location = new Point(187, 44);
+      label3.Location = new Point(187, 39);
       label3.Name = "label3";
       label3.Size = new Size(66, 15);
       label3.TabIndex = 12;
@@ -78,7 +78,7 @@
       GroupComboBox.DisplayMember = "Name";
       GroupComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
       GroupComboBox.FormattingEnabled = true;
-      GroupComboBox.Location = new Point(12, 36);
+      GroupComboBox.Location = new Point(12, 35);
       GroupComboBox.Name = "GroupComboBox";
       GroupComboBox.Size = new Size(162, 23);
       GroupComboBox.TabIndex = 9;
@@ -87,7 +87,7 @@
       // label1
       // 
       label1.AutoSize = true;
-      label1.Location = new Point(12, 11);
+      label1.Location = new Point(12, 9);
       label1.Name = "label1";
       label1.Size = new Size(40, 15);
       label1.TabIndex = 8;
@@ -96,7 +96,7 @@
       // label2
       // 
       label2.AutoSize = true;
-      label2.Location = new Point(205, 11);
+      label2.Location = new Point(205, 9);
       label2.Name = "label2";
       label2.Size = new Size(48, 15);
       label2.TabIndex = 10;

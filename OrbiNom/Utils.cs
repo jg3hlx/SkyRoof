@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Web;
 using Newtonsoft.Json;
 
 namespace VE3NEA
@@ -132,6 +133,14 @@ namespace VE3NEA
     {
       using (MemoryStream ms = new MemoryStream(imageBytes))
         return new Bitmap(Image.FromStream(ms));
+    }
+
+    public static string HtmlToText(string html)
+    {
+      Regex reg = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
+      string s = reg.Replace(html, " ");
+      s = HttpUtility.HtmlDecode(s);
+      return s;
     }
   }
 }

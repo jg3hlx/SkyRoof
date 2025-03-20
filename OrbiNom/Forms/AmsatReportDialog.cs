@@ -1,4 +1,6 @@
 ﻿using System.Web;
+using Serilog;
+using VE3NEA;
 
 namespace OrbiNom
 {
@@ -41,7 +43,6 @@ namespace OrbiNom
 
       queryParams["SatSubmit"] = "yes";
       queryParams["Confirm"] = "yes";
-
       queryParams["SatName"] = comboBox1.Text;
       queryParams["SatYear"] = $"{now.Year}";
       queryParams["SatMonth"] = $"{now.Month:D2}";
@@ -57,8 +58,16 @@ namespace OrbiNom
       var response = client.GetAsync(urlString).Result;
       var content = response.Content.ReadAsStringAsync().Result;
 
+      content = Utils.HtmlToText(content);
+      Log.Information($"AMSAT requesdt: {urlString}");
+      Log.Information($"AMSAT reply: {content}");
+
       if (!response.IsSuccessStatusCode)
-        MessageBox.Show("Error sending report", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      {
+        string errorMessage = $"Error {response.StatusCode} sending AMSAT report";
+        Log.Error(errorMessage);
+        MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
 
       Close();
     }

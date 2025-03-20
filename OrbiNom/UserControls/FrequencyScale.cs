@@ -108,18 +108,23 @@ namespace OrbiNom
       DrawTransmitters(g);
     }
 
-    private void DrawPassband(Graphics g)
+    private RectangleF GetPassbandRect()
     {
-      if (ctx?.Slicer?.Enabled != true) return;
-      if (ctx.FrequencyControl.CorrectedDownlinkFrequency == null) return;
-
       double minWing = 3 * VisibleBandwidth / width;
       double center = (double)ctx.FrequencyControl.CorrectedDownlinkFrequency!;
       double wing = Math.Max(minWing, ctx.Slicer.Bandwidth / 2);
       double left = FreqToPixel(center - wing);
       double right = FreqToPixel(center + wing);
 
-      var rect = new RectangleF((float)left, height - 45, (float)(right - left), height);
+      return new RectangleF((float)left, height - 45, (float)(right - left), height);
+    }
+
+    private void DrawPassband(Graphics g)
+    {
+      if (ctx?.Slicer?.Enabled != true) return;
+      if (ctx.FrequencyControl.CorrectedDownlinkFrequency == null) return;
+      
+      var rect = GetPassbandRect();
       g.FillRectangle(PassbandBrush, rect);
       g.DrawRectangle(Pens.Green, rect);
     }
@@ -312,10 +317,15 @@ namespace OrbiNom
       return x >= 0 && x < width;
     }
 
-    internal TransmitterLabel? GetTransponderUnderCursor(int x, int y)
+    internal TransmitterLabel? GetTransponderUnderCursor(int x)
     {
-      if (y < height - SPAN_HEIGHT) return null;
       return Labels.FirstOrDefault(label => label.Transponder != null && x >= label.x  && x <= label.endX);      
+    }
+
+    internal bool IsMouseInFilter(int x)
+    {
+      var rect = GetPassbandRect();
+      return x >= rect.Left && x <= rect.Right;
     }
   }
 }

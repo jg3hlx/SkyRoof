@@ -30,6 +30,7 @@ namespace OrbiNom
       ScaleControl.BuildLabels();
       ScaleControl.MouseMove += ScaleControl_MouseMove;
       ScaleControl.MouseDown += ScaleControl_MouseDown;
+      ScaleControl.MouseUp += ScaleControl_MouseUp; ;
       ScaleControl.MouseLeave += ScaleControl_MouseLeave;
       ScaleControl.MouseWheel += ScaleControl_MouseWheel;
 
@@ -117,32 +118,46 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                   waterfall mouse 
     //----------------------------------------------------------------------------------------------
-    int MouseDownX, MouseMoveX;
+    Point MouseMovePos; 
+    int MouseDownX;
     double MouseDownFrequency;
     bool Dragging;
 
     private void WaterfallControl_MouseDown(object? sender, MouseEventArgs e)
     {
-      MouseDownX = MouseMoveX = e.X;
+      MouseDownX = MouseMovePos.X = e.X;
       MouseDownFrequency = ScaleControl.CenterFrequency;
-      WaterfallControl.Cursor = Cursors.NoMoveHoriz;
     }
 
     private void WaterfallControl_MouseMove(object? sender, MouseEventArgs e)
     {
-      if (e.X == MouseMoveX) return;
-      MouseMoveX = e.X;
+      if (e.Location == MouseMovePos) return;
+      MouseMovePos = e.Location;
 
-      if (e.Button != MouseButtons.Left) return;
-
-      var dx = MouseMoveX - MouseDownX;
-
-      if (Math.Abs(dx) > 3) Dragging = true;
-
-      if (Dragging)
+      // dragging
+      if (e.Button == MouseButtons.Left)
       {
-        double frequency = MouseDownFrequency - dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
-        SetCenterFrequency(frequency);
+        var dx = MouseMovePos.X - MouseDownX;
+        if (!Dragging && Math.Abs(dx) > 2)
+        {
+          Dragging = true;
+          WaterfallControl.Cursor = Cursors.NoMoveHoriz;
+        }
+          
+        if (Dragging)
+        {
+          double frequency = MouseDownFrequency - dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
+          SetCenterFrequency(frequency);
+        }
+      }
+      // moving over transponder
+      else
+      {
+        var label = ScaleControl.GetTransponderUnderCursor(e.X);
+        if (label == null)
+          WaterfallControl.Cursor = Cursors.Cross;
+        else
+          WaterfallControl.Cursor = Cursors.PanSouth;
       }
     }
 
@@ -180,51 +195,82 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                    scale mouse 
     //----------------------------------------------------------------------------------------------
-    TransmitterLabel? LabelUnderCursor;
-
-    private void ScaleControl_MouseMove(object? sender, MouseEventArgs e)
+     private void ScaleControl_MouseMove(object? sender, MouseEventArgs e)
     {
-      LabelUnderCursor = ScaleControl.GetTransponderUnderCursor(e.X, e.Y);
+      if (e.Location == MouseMovePos) return;
+      MouseMovePos = e.Location;
 
-      // transponder span
-      if (LabelUnderCursor != null)
+      // dragging
+      if (e.Button == MouseButtons.Left)
       {
-        ScaleControl.Cursor = Cursors.PanSouth;
+        var dx = e.X - MouseDownX;
+        if (!Dragging && Math.Abs(dx) > 2 && ScaleControl.IsMouseInFilter(MouseDownX))
+        {
+          Dragging = true;
+          MouseDownFrequency = ctx.FrequencyControl.GetDraggableFrequency();
+          ScaleControl.Cursor = Cursors.NoMoveHoriz;
+        }
+
+        if (Dragging)
+        {
+          // adjust manual correction, or transponder offset, or RIT
+          double freq = MouseDownFrequency + dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
+          ctx.FrequencyControl.SetDraggableFrequency(freq);
+          ScaleControl.Refresh();
+        }
+
         return;
       }
 
-      LabelUnderCursor = ScaleControl.GetLabelUnderCursor(e.Location);
+      // satellite label hover
+      var label = ScaleControl.GetLabelUnderCursor(e.Location);
+      if (label == null) toolTip1.ToolTipTitle = null;
 
-      // terrestiral frequency
-      if (LabelUnderCursor == null)
+      if (label != null)
       {
-        toolTip1.Hide(ScaleControl);
-        toolTip1.ToolTipTitle = null;
-        ScaleControl.Cursor = Cursors.Cross;
-      }
-
-      // transmitter label
-      else if (toolTip1.ToolTipTitle != LabelUnderCursor.Pass.Satellite.name)
-      {
-        var parts = LabelUnderCursor.Pass.GetTooltipText(true);
-        string tooltip = $"{parts[0]}  ({parts[2]})\n{parts[4]}\n{parts[5]}\n{LabelUnderCursor.Tooltip}";
-
-        if (tooltip != toolTip1.GetToolTip(this))
+        if (toolTip1.ToolTipTitle != label.Pass.Satellite.name)
         {
-          Point location = new((int)LabelUnderCursor.Rect.Right + 1, (int)LabelUnderCursor.Rect.Top);
-          toolTip1.ToolTipTitle = LabelUnderCursor.Pass.Satellite.name;
+          var parts = label.Pass.GetTooltipText(true);
+          string tooltip = $"{parts[0]}  ({parts[2]})\n{parts[4]}\n{parts[5]}\n{label.Tooltip}";
+
+          Point location = new((int)label.Rect.Right + 1, (int)label.Rect.Top);
+          toolTip1.ToolTipTitle = label.Pass.Satellite.name;
           toolTip1.Show(tooltip, ScaleControl, location);
           ScaleControl.Cursor = Cursors.Hand;
         }
+        return;
       }
+
+      // transponder span hover
+      label = ScaleControl.GetTransponderUnderCursor(e.X);
+      if (label != null)
+      {
+        ScaleControl.Cursor = Cursors.PanSouth;
+        toolTip1.Hide(ScaleControl);
+        return;
+      }
+
+      // no hover
+      toolTip1.Hide(ScaleControl);
+      toolTip1.ToolTipTitle = null;
+      ScaleControl.Cursor = Cursors.Cross;
     }
 
     private void ScaleControl_MouseDown(object? sender, MouseEventArgs e)
     {
-      if (e.Button != MouseButtons.Left) return;
-
-      HandleFrequencyClick(e.X, e.Y);
+      MouseDownX = MouseMovePos.X = e.X;
+      MouseDownFrequency = ScaleControl.CenterFrequency;
     }
+
+    private void ScaleControl_MouseUp(object? sender, MouseEventArgs e)
+    {
+      if (e.Button == MouseButtons.Left && !Dragging)
+        HandleFrequencyClick(e.X, e.Y);
+
+      Dragging = false;
+      ScaleControl.Cursor = Cursors.Cross;
+    }
+
 
     private void ScaleControl_MouseLeave(object? sender, EventArgs e)
     {
@@ -253,7 +299,7 @@ namespace OrbiNom
       }
 
 
-      label = ScaleControl.GetTransponderUnderCursor(x, y);
+      label = ScaleControl.GetTransponderUnderCursor(x);
 
       // tune to offset in transponder passband
       if (label != null)
@@ -281,16 +327,17 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
     {
-      e.Cancel = LabelUnderCursor == null;
+      var label = ScaleControl.GetLabelUnderCursor(MouseMovePos);
+      e.Cancel = label == null;
       if (e.Cancel) return;
 
-      var sat = LabelUnderCursor.Pass.Satellite;
+      var sat = label.Pass.Satellite;
 
-      SelectTransmitterMNU.Enabled = LabelUnderCursor!.Transmitters.Count > 1;
+      SelectTransmitterMNU.Enabled = label!.Transmitters.Count > 1;
       if (SelectTransmitterMNU.Enabled)
       {
         SelectTransmitterMNU.DropDownItems.Clear();
-        foreach (var tx in LabelUnderCursor.Transmitters)
+        foreach (var tx in label.Transmitters)
         {
           var item = new ToolStripMenuItem(tx.description);
           item.Click += (s, e) => ctx.SatelliteSelector.SetSelectedTransmitter(tx);
