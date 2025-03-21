@@ -173,15 +173,27 @@ namespace OrbiNom
         ImportSatnogsTle();
         ImportJE9PEL();
 
-        foreach (var sat in Satellites) sat.BuildAllNames();
-        ParseLotwSatList();
-        foreach (var sat in Satellites) sat.BuildAllNames();
+        //foreach (var sat in Satellites) sat.BuildAllNames();
+        //ParseLotwSatList();
+        //foreach (var sat in Satellites) sat.BuildAllNames();
 
-        var amsat = new AmsatData();
-        foreach (var sat in Satellites) 
-          sat.AmsatEntries = amsat.SatelliteNames.GetValueOrDefault($"{sat.norad_cat_id}") ?? [];
+        var satNames = new SatelliteNames();
 
-        foreach (var sat in Satellites) sat.SetFlags();
+        foreach (var sat in Satellites)
+        {
+          if (sat.norad_cat_id != null)
+          {
+            sat.AmsatEntries = satNames.Amsat.GetValueOrDefault(sat.norad_cat_id.Value) ?? [];
+            sat.LotwName = satNames.Lotw.GetValueOrDefault(sat.norad_cat_id.Value);
+            if (sat.LotwName != null) sat.names += ", " + sat.LotwName;
+          }
+
+          sat.BuildAllNames();
+          sat.SetFlags();
+        }
+
+        //foreach (var sat in Satellites) sat.BuildAllNames();
+        //foreach (var sat in Satellites) sat.SetFlags();
 
         SaveToFile();
       }
@@ -254,23 +266,23 @@ namespace OrbiNom
     Regex TableRegex = new Regex(@"(?:<tbody>.*?){2}(.*?)<\/tbody>", RegexOptions);
     Regex RowRegex = new Regex(@"(?:<tr>.*?<td>(.*?)<\/td>.*?<td>(.*?)<\/td>.*?<\/tr>)", RegexOptions);
 
-    private void ParseLotwSatList()
-    {
-      string html = File.ReadAllText(Path.Combine(DownloadsFolder, "LoTW_FAQ.html"));
-      string table = TableRegex.Match(html).Groups[1].Value;
-      var matches = RowRegex.Matches(table);
-      
-      foreach (Match m in matches)
-      {
-        string name = m.Groups[1].Value;
-        
-        var sat = Satellites.FirstOrDefault(s => s.AllNames.Contains(name));
-        if (sat == null) continue;
-
-        sat.LotwName = sat.name = name;
-        sat.names += ", " + m.Groups[2].Value;
-      }
-    }
+    //private void ParseLotwSatList()
+    //{
+    //  string html = File.ReadAllText(Path.Combine(DownloadsFolder, "LoTW_FAQ.html"));
+    //  string table = TableRegex.Match(html).Groups[1].Value;
+    //  var matches = RowRegex.Matches(table);
+    //  
+    //  foreach (Match m in matches)
+    //  {
+    //    string name = m.Groups[1].Value;
+    //    
+    //    var sat = Satellites.FirstOrDefault(s => s.AllNames.Contains(name));
+    //    if (sat == null) continue;
+    //
+    //    sat.LotwName = sat.name = name;
+    //    sat.names += ", " + m.Groups[2].Value;
+    //  }
+    //}
 
     internal void Customize(Dictionary<string, SatelliteCustomization> satelliteCustomizations)
     {

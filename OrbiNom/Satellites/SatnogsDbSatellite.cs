@@ -117,7 +117,7 @@ namespace OrbiNom
     [ReadOnly(true)]
     [Category("LoTW")]
     [DisplayName("Name")]
-    public string LotwName { get; set; }
+    public string? LotwName { get; set; }
 
 
 

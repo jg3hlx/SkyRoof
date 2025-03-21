@@ -376,6 +376,7 @@ namespace OrbiNom
       if (!ctx.SatnogsDb.Loaded) Environment.Exit(1);
 
       CheckDownloadTle();
+      //SatelliteNames.ProcessLotw(ctx);
     }
 
     private void LoadSatelliteData()

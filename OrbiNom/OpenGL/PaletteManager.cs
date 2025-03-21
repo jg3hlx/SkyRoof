@@ -9,7 +9,7 @@ namespace VE3NEA
 
     public PaletteManager()
     {
-      PaletteFolder = Path.Combine(Utils.GetReferenceDataFolder(), "Palettes");
+      PaletteFolder = Path.Combine(Utils.GetUserDataFolder(), "Palettes");
       Directory.CreateDirectory(PaletteFolder);
       LoadPalettes();
     }

@@ -96,7 +96,13 @@ namespace OrbiNom
 
     public void Advance() // on timer tick
     {
-      // todo: if selected pass is now visible, switch to real time view
+      var now = DateTime.UtcNow;  
+      if (OrbitRadioBtn.Checked 
+        && ctx.SatelliteSelector.GroupSatellites.Contains(Pass!.Satellite)
+        && Pass!.StartTime < now 
+        && Pass!.EndTime > now) 
+          RealTimeRadioBtn.Checked = true;
+
       SetLabels();
       DrawPanel.Invalidate();
     }

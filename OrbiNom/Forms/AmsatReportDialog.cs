@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using System.Text.RegularExpressions;
+using System.Web;
 using Serilog;
 using VE3NEA;
 
@@ -52,13 +53,14 @@ namespace OrbiNom
       queryParams["SatCall"] = $"{ctx.Settings.User.Call.ToUpper()}";
       queryParams["SatReport"] = comboBox2.Text;
       queryParams["SatGridSquare"] = $"{ctx.Settings.User.Square.ToUpper()}";
+      queryParams["App"] = "OrbiNom";
 
       string urlString = $"https://www.amsat.org/status/submit.php?{queryParams}";
       HttpClient client = new();
       var response = client.GetAsync(urlString).Result;
       var content = response.Content.ReadAsStringAsync().Result;
-
-      content = Utils.HtmlToText(content);
+      content = Utils.HtmlToText(content).Replace("\n", " ");
+      content = Regex.Replace(content, @"\s+", " ");
       Log.Information($"AMSAT requesdt: {urlString}");
       Log.Information($"AMSAT reply: {content}");
 

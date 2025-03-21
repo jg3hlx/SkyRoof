@@ -123,6 +123,16 @@ namespace OrbiNom.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] lotw_sat_names {
+            get {
+                object obj = ResourceManager.GetObject("lotw_sat_names", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] N {
             get {
                 object obj = ResourceManager.GetObject("N", resourceCulture);
