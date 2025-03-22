@@ -3,6 +3,8 @@ using MathNet.Numerics;
 using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
+using CSCore.CoreAudioAPI;
+
 
 namespace OrbiNom
 {
@@ -193,7 +195,7 @@ namespace OrbiNom
 
     private void Slicer_IqDataAvailable(object? sender, DataEventArgs<Complex32> e)
     {
-      if (ctx.Settings.Audio.VacDataFormat == VacDataFormat.IQ) 
+      if (ctx.Settings.Audio.VacDataFormat == VacDataFormat.IQ)
         ctx.IqVacSoundcard.AddSamples(e.Data);
     }
 
@@ -244,11 +246,16 @@ namespace OrbiNom
 
     internal void SetWaterfallSpeed()
     {
+      bool change = ctx.Settings.Waterfall.Speed != ctx.WaterfallPanel.WaterfallControl.ScrollSpeed;
+
       if (ctx.Sdr != null)
         SpectrumAnalyzer.Spectrum.Step = ctx.Sdr.Info.SampleRate / ctx.Settings.Waterfall.Speed;
 
       if (ctx.WaterfallPanel?.WaterfallControl != null)
+      {
         ctx.WaterfallPanel.WaterfallControl.ScrollSpeed = ctx.Settings.Waterfall.Speed;
+        if (change) ctx.WaterfallPanel.WaterfallControl.IndexedTexture.ClearBitmap();
+      }
     }
 
     internal void SuggestSdrSettings(SoapySdrDeviceInfo info)
@@ -809,6 +816,28 @@ namespace OrbiNom
     {
       SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
       ctx.SkyViewPanel?.SetPass(pass);
+    }
+
+    private void SoundcardDropdownBtn_DropDownOpening(object sender, EventArgs e)
+    {
+      SoundcardDropdownBtn.DropDownItems.Clear();
+      foreach (var dev in Soundcard<float>.ListDevices(DataFlow.Render))
+      {
+        var item = new ToolStripMenuItem(dev.Name);
+        item.Checked = dev.Id == ctx.Settings.Audio.SpeakerSoundcard;
+
+        item.Click += (s, e) =>
+        {
+          ctx.Settings.Audio.SpeakerSoundcard = dev.Id;
+          ApplyAudioSettings();
+        };
+        SoundcardDropdownBtn.DropDownItems.Add(item);
+      }
+    }
+
+    private void VacDropDownBtn_DropDownOpening(object sender, EventArgs e)
+    {
+
     }
   }
 }

@@ -27,7 +27,7 @@ namespace OrbiNom
     
     private VertexBufferArray VertexBufferArray;
     private ShaderProgram ShaderProgram;
-    private IndexedTexture IndexedTexture;
+    public IndexedTexture IndexedTexture;
     private Palette Palette = new();
     internal double VisibleBandwidth = SdrConst.MAX_BANDWIDTH;
 
@@ -235,7 +235,7 @@ namespace OrbiNom
     private float computeBrightness()
     {
       double pixPerHz = OpenglControl.Size.Width / VisibleBandwidth;
-      double a = 0.21821866 * ScrollSpeed + 1.96776626;
+      double a = 4;// 0.21821866 * ScrollSpeed + 1.96776626;
       double b = -1.19227144 * ScrollSpeed + 55.37794533;
       double brightness = a * Math.Log(pixPerHz) + b;    // 0..100
       return Brightness + (float)(brightness / 50 - 1);  //  -1..1

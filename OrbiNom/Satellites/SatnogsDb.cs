@@ -82,23 +82,19 @@ namespace OrbiNom
 
       await Download("satellites");
       Log.Information("satellites downloaded");
-      DownloadProgress?.Invoke(this, new(20, null));
+      DownloadProgress?.Invoke(this, new(33, null));
 
       await Download("transmitters");
       Log.Information("transmitters downloaded");
-      DownloadProgress?.Invoke(this, new(40, null));
+      DownloadProgress?.Invoke(this, new(66, null));
 
       await Download("tle");
       Log.Information("tle downloaded");
-      DownloadProgress?.Invoke(this, new(60, null));
+      DownloadProgress?.Invoke(this, new(99, null));
 
       await DownloadJE9PEL();
       Log.Information("JE9PEL downloaded");
-      DownloadProgress?.Invoke(this, new(80, null));
-
-      await DownloadLotwSatList();
-      Log.Information("Lotw downloaded");
-      DownloadProgress?.Invoke(this, new(100, null));
+      DownloadProgress?.Invoke(this, new(99, null));
     }
 
     public async Task DownloadTle()
@@ -136,15 +132,6 @@ namespace OrbiNom
       File.WriteAllText(Path.Combine(DownloadsFolder, "JE9PEL.csv"), csv);
     }
 
-    private async Task DownloadLotwSatList()
-    {
-      string url = "https://lotw.arrl.org/lotw-help/frequently-asked-questions";
-      string html = await DownloadHttpClient.GetStringAsync(url, cts.Token);
-      cts.Token.ThrowIfCancellationRequested();
-
-      File.WriteAllText(Path.Combine(DownloadsFolder, "LoTW_FAQ.html"), html);
-    }
-
 
 
 
@@ -173,10 +160,6 @@ namespace OrbiNom
         ImportSatnogsTle();
         ImportJE9PEL();
 
-        //foreach (var sat in Satellites) sat.BuildAllNames();
-        //ParseLotwSatList();
-        //foreach (var sat in Satellites) sat.BuildAllNames();
-
         var satNames = new SatelliteNames();
 
         foreach (var sat in Satellites)
@@ -185,15 +168,12 @@ namespace OrbiNom
           {
             sat.AmsatEntries = satNames.Amsat.GetValueOrDefault(sat.norad_cat_id.Value) ?? [];
             sat.LotwName = satNames.Lotw.GetValueOrDefault(sat.norad_cat_id.Value);
-            if (sat.LotwName != null) sat.names += ", " + sat.LotwName;
+            if (sat.LotwName != null) { sat.name = sat.LotwName; sat.names += ", " + sat.LotwName; }
           }
 
           sat.BuildAllNames();
           sat.SetFlags();
         }
-
-        //foreach (var sat in Satellites) sat.BuildAllNames();
-        //foreach (var sat in Satellites) sat.SetFlags();
 
         SaveToFile();
       }
@@ -259,30 +239,6 @@ namespace OrbiNom
             sat.JE9PEL_Names = sat.JE9PELtransmitters.SelectMany(t => t.Name.Split(' ')).Where(c => c != "").Distinct().ToList();
           }
     }
-
-
-
-    static RegexOptions RegexOptions = RegexOptions.Singleline | RegexOptions.Compiled;
-    Regex TableRegex = new Regex(@"(?:<tbody>.*?){2}(.*?)<\/tbody>", RegexOptions);
-    Regex RowRegex = new Regex(@"(?:<tr>.*?<td>(.*?)<\/td>.*?<td>(.*?)<\/td>.*?<\/tr>)", RegexOptions);
-
-    //private void ParseLotwSatList()
-    //{
-    //  string html = File.ReadAllText(Path.Combine(DownloadsFolder, "LoTW_FAQ.html"));
-    //  string table = TableRegex.Match(html).Groups[1].Value;
-    //  var matches = RowRegex.Matches(table);
-    //  
-    //  foreach (Match m in matches)
-    //  {
-    //    string name = m.Groups[1].Value;
-    //    
-    //    var sat = Satellites.FirstOrDefault(s => s.AllNames.Contains(name));
-    //    if (sat == null) continue;
-    //
-    //    sat.LotwName = sat.name = name;
-    //    sat.names += ", " + m.Groups[2].Value;
-    //  }
-    //}
 
     internal void Customize(Dictionary<string, SatelliteCustomization> satelliteCustomizations)
     {

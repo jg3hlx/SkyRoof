@@ -55,9 +55,11 @@ namespace OrbiNom
 
       gl.BindTexture(OpenGL.GL_TEXTURE_2D, textureIds[0]);
       CheckError(gl);
-      gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_R32F, Width, Height, 0, 
-        OpenGL.GL_RED, OpenGL.GL_FLOAT, (byte[]?)null);
 
+      var zeros = new byte[Width * Height];
+      gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_R32F, Width, Height, 0,
+        OpenGL.GL_RED, OpenGL.GL_BYTE, zeros);
+      zeros = null;
       CheckError(gl);
     }
 

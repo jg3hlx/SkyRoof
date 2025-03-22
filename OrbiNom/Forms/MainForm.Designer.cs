@@ -75,6 +75,7 @@
       SdrStatusLabel = new ToolStripStatusLabel();
       SoundcardLedLabel = new ToolStripStatusLabel();
       SoundcardStatusLabel = new ToolStripStatusLabel();
+      SoundcardDropdownBtn = new ToolStripDropDownButton();
       VacLedLabel = new ToolStripStatusLabel();
       VacStatusLabel = new ToolStripStatusLabel();
       OmniRigLedLabel = new ToolStripStatusLabel();
@@ -421,7 +422,7 @@
       // StatusStrip
       // 
       StatusStrip.ImageScalingSize = new Size(24, 24);
-      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, VacLedLabel, VacStatusLabel, OmniRigLedLabel, OmniRigStatusLabel, SatDataLedLabel, SatDataStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, NoiseFloorLabel, CpuLoadlabel });
+      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, SoundcardDropdownBtn, VacLedLabel, VacStatusLabel, OmniRigLedLabel, OmniRigStatusLabel, SatDataLedLabel, SatDataStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, NoiseFloorLabel, CpuLoadlabel });
       StatusStrip.Location = new Point(0, 675);
       StatusStrip.Name = "StatusStrip";
       StatusStrip.ShowItemToolTips = true;
@@ -480,6 +481,17 @@
       SoundcardStatusLabel.Click += SoundcardLabel_Click;
       SoundcardStatusLabel.MouseEnter += StatusLabel_MouseEnter;
       SoundcardStatusLabel.MouseLeave += StatusLabel_MouseLeave;
+      // 
+      // SoundcardDropdownBtn
+      // 
+      SoundcardDropdownBtn.DisplayStyle = ToolStripItemDisplayStyle.Image;
+      SoundcardDropdownBtn.ImageTransparentColor = Color.Magenta;
+      SoundcardDropdownBtn.Name = "SoundcardDropdownBtn";
+      SoundcardDropdownBtn.Size = new Size(13, 33);
+      SoundcardDropdownBtn.Text = "toolStripDropDownButton1";
+      SoundcardDropdownBtn.DropDownOpening += SoundcardDropdownBtn_DropDownOpening;
+      SoundcardDropdownBtn.MouseEnter += StatusLabel_MouseEnter;
+      SoundcardDropdownBtn.MouseLeave += StatusLabel_MouseLeave;
       // 
       // VacLedLabel
       // 
@@ -658,5 +670,6 @@
     private Label VolumeLabel;
     public TrackBar GainSlider;
     private Label label1;
+    private ToolStripDropDownButton SoundcardDropdownBtn;
   }
 }
