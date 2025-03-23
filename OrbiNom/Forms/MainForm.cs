@@ -24,6 +24,7 @@ namespace OrbiNom
       ctx.FrequencyControl = FrequencyControl;
       SatelliteSelector.ctx = ctx;
       FrequencyControl.ctx = ctx;
+      GainControl.ctx = ctx;
 
       ctx.Settings.LoadFromFile();
 
@@ -32,8 +33,6 @@ namespace OrbiNom
       ctx.GroupPasses = new(ctx, true);
       ctx.AllPasses = new(ctx, false);
       timer.Interval = 1000 / TICKS_PER_SECOND;
-
-      GainSlider.Scroll += GainSlider_Scroll;
 
       ctx.SpeakerSoundcard.StateChanged += Soundcard_StateChanged;
       ctx.AudioVacSoundcard.StateChanged += Soundcard_StateChanged;
@@ -120,8 +119,7 @@ namespace OrbiNom
         ctx.Sdr.StateChanged += Sdr_StateChanged;
         ctx.Sdr.DataAvailable += Sdr_DataAvailable;
 
-        GainSlider.Enabled = ctx.Sdr.CanChangeGain;
-        GainSlider.Value = ctx.Sdr.NormalizedGain;
+        GainControl.ApplyRfGain();
         ConfigureWaterfall();
         ConfigureSlicer();
 
@@ -155,20 +153,6 @@ namespace OrbiNom
       SpectrumAnalyzer?.StartProcessing(e);
       ctx.Slicer?.StartProcessing(e);
     }
-
-
-    private void GainSlider_Scroll(object? sender, EventArgs e)
-    {
-      if (ctx.Sdr == null) return;
-      ctx.Sdr.NormalizedGain = GainSlider.Value;
-    }
-
-
-    private void GainSlider_ValueChanged(object sender, EventArgs e)
-    {
-      toolTip1.SetToolTip(GainSlider, $"RF Gain: {GainSlider.Value}");
-    }
-
 
     internal void ConfigureWaterfall()
     {
@@ -305,8 +289,7 @@ namespace OrbiNom
       var sett = ctx.Settings.Audio;
 
       ctx.SpeakerSoundcard.SetDeviceId(sett.SpeakerSoundcard);
-      VolumeTrackbar.Value = sett.SoundcardVolume;
-      SetSoundcardVolume();
+      GainControl.ApplyAfGain();
 
       ctx.AudioVacSoundcard.SetDeviceId(sett.Vac);
       ctx.AudioVacSoundcard.Volume = Dsp.FromDb2(sett.VacVolume - 30); // -30 dB from speaker level
@@ -331,18 +314,6 @@ namespace OrbiNom
     private void Soundcard_StateChanged(object? sender, EventArgs e)
     {
       ShowSoundcardLabels();
-    }
-
-    private void VolumeTrackbar_ValueChanged(object sender, EventArgs e)
-    {
-      SetSoundcardVolume();
-    }
-
-    private void SetSoundcardVolume()
-    {
-      VolumeLabel.Text = $"{VolumeTrackbar.Value} dB";
-      ctx.Settings.Audio.SoundcardVolume = VolumeTrackbar.Value;
-      ctx.SpeakerSoundcard.Volume = Dsp.FromDb2(ctx.Settings.Audio.SoundcardVolume);
     }
 
     public void ShowSoundcardLabels()
@@ -635,7 +606,22 @@ namespace OrbiNom
       ShowSoundcardLabels();
     }
 
+    private void SoundcardDropdownBtn_DropDownOpening(object sender, EventArgs e)
+    {
+      SoundcardDropdownBtn.DropDownItems.Clear();
+      foreach (var dev in Soundcard<float>.ListDevices(DataFlow.Render))
+      {
+        var item = new ToolStripMenuItem(dev.Name);
+        item.Checked = dev.Id == ctx.Settings.Audio.SpeakerSoundcard;
 
+        item.Click += (s, e) =>
+        {
+          ctx.Settings.Audio.SpeakerSoundcard = dev.Id;
+          ApplyAudioSettings();
+        };
+        SoundcardDropdownBtn.DropDownItems.Add(item);
+      }
+    }
 
 
 
@@ -816,28 +802,6 @@ namespace OrbiNom
     {
       SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
       ctx.SkyViewPanel?.SetPass(pass);
-    }
-
-    private void SoundcardDropdownBtn_DropDownOpening(object sender, EventArgs e)
-    {
-      SoundcardDropdownBtn.DropDownItems.Clear();
-      foreach (var dev in Soundcard<float>.ListDevices(DataFlow.Render))
-      {
-        var item = new ToolStripMenuItem(dev.Name);
-        item.Checked = dev.Id == ctx.Settings.Audio.SpeakerSoundcard;
-
-        item.Click += (s, e) =>
-        {
-          ctx.Settings.Audio.SpeakerSoundcard = dev.Id;
-          ApplyAudioSettings();
-        };
-        SoundcardDropdownBtn.DropDownItems.Add(item);
-      }
-    }
-
-    private void VacDropDownBtn_DropDownOpening(object sender, EventArgs e)
-    {
-
     }
   }
 }

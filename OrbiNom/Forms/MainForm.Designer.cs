@@ -30,11 +30,8 @@
     {
       components = new System.ComponentModel.Container();
       Toolbar = new Panel();
-      label1 = new Label();
-      GainSlider = new TrackBar();
-      VolumeLabel = new Label();
-      label2 = new Label();
-      VolumeTrackbar = new TrackBar();
+      GainControl = new GainControl();
+      panel3 = new Panel();
       FrequencyControl = new FrequencyControl();
       panel1 = new Panel();
       SatelliteSelector = new SatelliteSelector();
@@ -88,8 +85,6 @@
       CpuLoadlabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       Toolbar.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)GainSlider).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)VolumeTrackbar).BeginInit();
       ClockPanel.SuspendLayout();
       menuStrip1.SuspendLayout();
       StatusStrip.SuspendLayout();
@@ -97,11 +92,8 @@
       // 
       // Toolbar
       // 
-      Toolbar.Controls.Add(label1);
-      Toolbar.Controls.Add(GainSlider);
-      Toolbar.Controls.Add(VolumeLabel);
-      Toolbar.Controls.Add(label2);
-      Toolbar.Controls.Add(VolumeTrackbar);
+      Toolbar.Controls.Add(GainControl);
+      Toolbar.Controls.Add(panel3);
       Toolbar.Controls.Add(FrequencyControl);
       Toolbar.Controls.Add(panel1);
       Toolbar.Controls.Add(SatelliteSelector);
@@ -113,60 +105,22 @@
       Toolbar.Size = new Size(1610, 78);
       Toolbar.TabIndex = 0;
       // 
-      // label1
+      // GainControl
       // 
-      label1.AutoSize = true;
-      label1.Location = new Point(1208, 13);
-      label1.Name = "label1";
-      label1.Size = new Size(49, 15);
-      label1.TabIndex = 20;
-      label1.Text = "RG Gain";
+      GainControl.BorderStyle = BorderStyle.FixedSingle;
+      GainControl.Dock = DockStyle.Left;
+      GainControl.Location = new Point(1196, 0);
+      GainControl.Name = "GainControl";
+      GainControl.Size = new Size(261, 78);
+      GainControl.TabIndex = 7;
       // 
-      // GainSlider
+      // panel3
       // 
-      GainSlider.AutoSize = false;
-      GainSlider.Location = new Point(1198, 35);
-      GainSlider.Maximum = 100;
-      GainSlider.Name = "GainSlider";
-      GainSlider.Size = new Size(150, 32);
-      GainSlider.TabIndex = 19;
-      GainSlider.TickFrequency = 10;
-      toolTip1.SetToolTip(GainSlider, "SDR Gain");
-      GainSlider.Scroll += GainSlider_Scroll;
-      // 
-      // VolumeLabel
-      // 
-      VolumeLabel.BackColor = SystemColors.Control;
-      VolumeLabel.Location = new Point(1447, 6);
-      VolumeLabel.MinimumSize = new Size(40, 0);
-      VolumeLabel.Name = "VolumeLabel";
-      VolumeLabel.Size = new Size(55, 32);
-      VolumeLabel.TabIndex = 18;
-      VolumeLabel.Text = "0";
-      VolumeLabel.TextAlign = ContentAlignment.MiddleCenter;
-      // 
-      // label2
-      // 
-      label2.AutoSize = true;
-      label2.Location = new Point(1352, 13);
-      label2.Name = "label2";
-      label2.Size = new Size(47, 15);
-      label2.TabIndex = 17;
-      label2.Text = "Volume";
-      // 
-      // VolumeTrackbar
-      // 
-      VolumeTrackbar.AutoSize = false;
-      VolumeTrackbar.LargeChange = 1;
-      VolumeTrackbar.Location = new Point(1352, 35);
-      VolumeTrackbar.Maximum = 0;
-      VolumeTrackbar.Minimum = -50;
-      VolumeTrackbar.Name = "VolumeTrackbar";
-      VolumeTrackbar.Size = new Size(150, 32);
-      VolumeTrackbar.TabIndex = 16;
-      VolumeTrackbar.TickFrequency = 10;
-      VolumeTrackbar.Value = -25;
-      VolumeTrackbar.Scroll += VolumeTrackbar_ValueChanged;
+      panel3.Dock = DockStyle.Left;
+      panel3.Location = new Point(1192, 0);
+      panel3.Name = "panel3";
+      panel3.Size = new Size(4, 78);
+      panel3.TabIndex = 6;
       // 
       // FrequencyControl
       // 
@@ -599,9 +553,6 @@
       FormClosing += MainForm_FormClosing;
       Load += MainForm_Load;
       Toolbar.ResumeLayout(false);
-      Toolbar.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)GainSlider).EndInit();
-      ((System.ComponentModel.ISupportInitialize)VolumeTrackbar).EndInit();
       ClockPanel.ResumeLayout(false);
       menuStrip1.ResumeLayout(false);
       menuStrip1.PerformLayout();
@@ -665,11 +616,8 @@
     private FrequencyControl FrequencyControl;
     private Panel panel1;
     private Panel panel2;
-    private Label label2;
-    public TrackBar VolumeTrackbar;
-    private Label VolumeLabel;
-    public TrackBar GainSlider;
-    private Label label1;
     private ToolStripDropDownButton SoundcardDropdownBtn;
+    private Panel panel3;
+    private GainControl GainControl;
   }
 }
