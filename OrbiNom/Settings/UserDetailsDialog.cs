@@ -35,12 +35,14 @@ namespace OrbiNom
     {
       textBox1.Text = ctx.Settings.User.Call;
       if (ctx.Settings.User.Square != "JJ00jj") textBox2.Text = ctx.Settings.User.Square;
+      numericUpDown1.Value = ctx.Settings.User.Altitude;
     }
 
     private void SaveSettings()
     {
       ctx.Settings.User.Call = textBox1.Text.Trim();
       ctx.Settings.User.Square = textBox2.Text.Trim();
+      ctx.Settings.User.Altitude = (int)numericUpDown1.Value;
     }
 
     private void textBoxes_TextChanged(object sender, EventArgs e)

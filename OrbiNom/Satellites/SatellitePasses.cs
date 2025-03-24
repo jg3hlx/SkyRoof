@@ -34,7 +34,7 @@ namespace OrbiNom
       OnlyGroup = onlyGroup;
       PredictionTimeSpan = onlyGroup ? TimeSpan.FromDays(2) : TimeSpan.FromHours(2);
 
-      CreateGroundStation(ctx.Settings.User.Square);
+      CreateGroundStation(ctx.Settings.User.Square, ctx.Settings.User.Altitude);
     }
 
     // call when satellite list or group changes
@@ -146,10 +146,10 @@ namespace OrbiNom
       Satellites = sats.Where(sat => sat.Tle != null && sat.status == "alive").ToList();
     }
 
-    private void CreateGroundStation(string gridSquare)
+    private void CreateGroundStation(string gridSquare, double altitude)
     {
       var pos = GridSquare.ToGeoPoint(ctx.Settings.User.Square);
-      var myLocation = new GeodeticCoordinate(Angle.FromRadians(pos.LatitudeRad), Angle.FromRadians(pos.LongitudeRad), 0);
+      var myLocation = new GeodeticCoordinate(Angle.FromRadians(pos.LatitudeRad), Angle.FromRadians(pos.LongitudeRad), altitude / 1000d);
       GroundStation = new GroundStation(myLocation);
     }
 

@@ -37,8 +37,11 @@
       textBox1 = new TextBox();
       label3 = new Label();
       textBox2 = new TextBox();
+      numericUpDown1 = new NumericUpDown();
+      label4 = new Label();
       panel1.SuspendLayout();
       flowLayoutPanel1.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
       SuspendLayout();
       // 
       // panel1
@@ -46,7 +49,7 @@
       panel1.Controls.Add(cancelBtn);
       panel1.Controls.Add(okBtn);
       panel1.Dock = DockStyle.Bottom;
-      panel1.Location = new Point(0, 143);
+      panel1.Location = new Point(0, 188);
       panel1.Margin = new Padding(4, 3, 4, 3);
       panel1.Name = "panel1";
       panel1.Size = new Size(231, 35);
@@ -84,13 +87,15 @@
       flowLayoutPanel1.Controls.Add(textBox1);
       flowLayoutPanel1.Controls.Add(label3);
       flowLayoutPanel1.Controls.Add(textBox2);
+      flowLayoutPanel1.Controls.Add(label4);
+      flowLayoutPanel1.Controls.Add(numericUpDown1);
       flowLayoutPanel1.Dock = DockStyle.Fill;
       flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
       flowLayoutPanel1.Location = new Point(0, 0);
       flowLayoutPanel1.Margin = new Padding(4, 3, 4, 3);
       flowLayoutPanel1.Name = "flowLayoutPanel1";
       flowLayoutPanel1.Padding = new Padding(12);
-      flowLayoutPanel1.Size = new Size(231, 143);
+      flowLayoutPanel1.Size = new Size(231, 188);
       flowLayoutPanel1.TabIndex = 1;
       // 
       // label1
@@ -146,13 +151,31 @@
       textBox2.TabIndex = 1;
       textBox2.TextChanged += textBoxes_TextChanged;
       // 
+      // numericUpDown1
+      // 
+      numericUpDown1.Location = new Point(15, 145);
+      numericUpDown1.Maximum = new decimal(new int[] { 8849, 0, 0, 0 });
+      numericUpDown1.Name = "numericUpDown1";
+      numericUpDown1.Size = new Size(200, 23);
+      numericUpDown1.TabIndex = 100;
+      // 
+      // label4
+      // 
+      label4.AutoSize = true;
+      label4.Location = new Point(16, 127);
+      label4.Margin = new Padding(4, 0, 4, 0);
+      label4.Name = "label4";
+      label4.Size = new Size(91, 15);
+      label4.TabIndex = 101;
+      label4.Text = "Altitude, meters";
+      // 
       // UserDetailsDialog
       // 
       AcceptButton = okBtn;
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       CancelButton = cancelBtn;
-      ClientSize = new Size(231, 178);
+      ClientSize = new Size(231, 223);
       Controls.Add(flowLayoutPanel1);
       Controls.Add(panel1);
       FormBorderStyle = FormBorderStyle.FixedToolWindow;
@@ -163,6 +186,7 @@
       panel1.ResumeLayout(false);
       flowLayoutPanel1.ResumeLayout(false);
       flowLayoutPanel1.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
       ResumeLayout(false);
     }
 
@@ -177,5 +201,7 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox2;
-    }
+    private Label label4;
+    private NumericUpDown numericUpDown1;
+  }
 }

@@ -72,15 +72,19 @@ namespace OrbiNom
           canChange = ValidateField(e, Utils.GridSquare6Regex, "grid square", CharacterCasing.Upper);
           break;
 
-        case "OrbiNom.Something.Enabled":
-          var sett = (Settings)grid.SelectedObject;
-//          changed = !sett.Something.Enabled || (!string.IsNullOrEmpty(sett.User.Call) && !string.IsNullOrEmpty(sett.User.Square));
-          if (!canChange)
-          {
-            e.ChangedItem.PropertyDescriptor.SetValue(e.ChangedItem.Parent.Value, e.OldValue);
-            MessageBox.Show($"Please enter your callsign and grid square before you enable DX Cluster", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-          }
+        case "OrbiNom.UserSettings.Altitude":
+          ValidateAltitude(e);
           break;
+
+          //        case "OrbiNom.Something.Enabled":
+          //          var sett = (Settings)grid.SelectedObject;
+          //          changed = !sett.Something.Enabled || (!string.IsNullOrEmpty(sett.User.Call) && !string.IsNullOrEmpty(sett.User.Square));
+          //          if (!canChange)
+          //          {
+          //            e.ChangedItem.PropertyDescriptor.SetValue(e.ChangedItem.Parent.Value, e.OldValue);
+          //            MessageBox.Show($"Please enter your callsign and grid square before you enable DX Cluster", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+          //          }
+          //          break;
       }
 
       if (canChange) ChangedFields.Add(label);
@@ -102,6 +106,12 @@ namespace OrbiNom
       return true;
     }
 
+    private void ValidateAltitude(PropertyValueChangedEventArgs e)
+    {
+      int cleanValue = Math.Max(0, Math.Min(8849, (int)e.ChangedItem.Value));
+      e.ChangedItem.PropertyDescriptor.SetValue(e.ChangedItem.Parent.Value, cleanValue);
+    }
+
 
 
 
@@ -110,9 +120,9 @@ namespace OrbiNom
     //--------------------------------------------------------------------------------------------------------------
     private void ApplyChangedSettings()
     {
-      if (ChangedFields.Contains("OrbiNom.UserSettings.Square"))
+      if (ChangedFields.Contains("OrbiNom.UserSettings.Square") || ChangedFields.Contains("OrbiNom.UserSettings.Altitude"))
       {
-        ctx.MainForm.SetGridSquare();
+        ctx.MainForm.SetLocation();
       }
 
       if (ChangedFields.Exists(s => s.StartsWith("OrbiNom.AudioSettings.")))
