@@ -10,7 +10,7 @@ namespace OrbiNom
       "xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
       "xml:lang=\"{0}\">{1}</speak>";
 
-    private const string NameFormat = "<say-as interpret-as=\"characters\">{0}</say-as>{1}";
+    private const string NameFormat = "<say-as interpret-as=\"characters\">{0}</say-as> {1}";
 
     public Context? ctx;
 
@@ -26,6 +26,12 @@ namespace OrbiNom
       Voices = Synth.GetInstalledVoices().ToArray();
     }
 
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                       queue
+    //----------------------------------------------------------------------------------------------
     public void RebuildQueue()
     {
       Queue1.Clear();
@@ -41,7 +47,6 @@ namespace OrbiNom
       if (sett.Announcement2.Enabled)
         Queue2 = ctx.GroupPasses.Passes.Where(p => p.StartTime > minStartTime).ToList();
     }
-
 
     public void AddToQueue(IEnumerable<SatellitePass> passes)
     {
@@ -71,6 +76,12 @@ namespace OrbiNom
         }
     }
 
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                       announce
+    //----------------------------------------------------------------------------------------------
     public void Announce(string name, Announcement announcement)
     {
       name = FormatSatName(name);
@@ -101,24 +112,6 @@ namespace OrbiNom
       Synth.SpeakSsmlAsync(ssml);
     }
 
-    public static string GetVoiceName(InstalledVoice? voice)
-    {
-      if (voice == null) return "";
-      return $"{voice.VoiceInfo.Name} : {voice.VoiceInfo.Culture.NativeName}";
-    }
-
-    public static string FormatSatName(string name)
-    {
-      name = name.Replace("-", " ");
-      string letters = Regex.Replace(name, "[^a-zA-Z]", ".");
-      int pos = letters.IndexOf(".");
-      if (pos <= 0) return name;
-
-      if (pos < 4)
-        name = string.Format(NameFormat, name.Substring(0, pos), name.Substring(pos).Trim());
-
-      return name + "<break time=\"0.1s\"/>";
-    }
 
     // debugging: format sat name for speech
     public static void SaySatName(string name)
@@ -127,6 +120,38 @@ namespace OrbiNom
       synth.SetOutputToDefaultAudioDevice();
       string ssml = string.Format(SsmlMessage, "en-US", FormatSatName(name));
       synth.SpeakSsmlAsync(ssml);
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                         ssml
+    //----------------------------------------------------------------------------------------------
+    public static string GetVoiceName(InstalledVoice? voice)
+    {
+      if (voice == null) return "";
+      return $"{voice.VoiceInfo.Name} : {voice.VoiceInfo.Culture.NativeName}";
+    }
+
+
+    // mark acronyms as "characters" for better pronunciation
+    public static string FormatSatName(string name)
+    {
+      name = name.Replace("-", " ");
+      
+      // in AA-00A, "AA" is an acronym
+      string letters = Regex.Replace(name, "[^a-zA-Z]", ".");
+      int pos = letters.IndexOf(".");
+      if (pos <= 0) pos = name.Length;
+
+      // in AASAT-00A, "AA" is an acronym
+      if (pos > 3 && name.Substring(pos-3, 3).ToUpper() == "SAT") pos -= 3;
+
+      if (pos < 4)
+        name = string.Format(NameFormat, name.Substring(0, pos), name.Substring(pos).Trim().ToLower());
+
+      return name + "<break time=\"0.1s\"/>";
     }
   }
 }

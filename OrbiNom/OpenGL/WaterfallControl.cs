@@ -160,8 +160,8 @@ namespace OrbiNom
           if (IsLoggableError(stackTrace))
           {
             string errorName = gl.ErrorString(err);
-            if (string.IsNullOrEmpty(errorName)) errorName = $"Error {err}";
-            string message = $"{errorName}\n{stackTrace}";
+            if (string.IsNullOrEmpty(errorName)) errorName = $"error {err}";
+            string message = $"OpenGL: {errorName}\n{stackTrace}";
             Log.Error(message);
             Debug.WriteLine(message);
           }
