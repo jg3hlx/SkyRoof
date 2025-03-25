@@ -1,19 +1,23 @@
 ﻿using System.Diagnostics;
 using System.Drawing.Imaging;
 using SharpGL;
+using SharpGL.SceneGraph.Assets;
+using SharpGL.SceneGraph;
+using System.Runtime.InteropServices;
+using Serilog;
 
 namespace OrbiNom
 {
   public class IndexedTexture
   {
     public const int PALETTE_SIZE = 256;
-
+    
     private uint[] textureIds = new uint[2];
     private readonly OpenGL gl;
     private readonly int Width;
     private readonly int Height;
     private int[] IntBuffer;
-
+    private uint[] fraameBufferIds = new uint[1];
 
     public IndexedTexture(OpenGL gl, int width, int height)
     {
@@ -23,10 +27,40 @@ namespace OrbiNom
       Width = width;
       Height = height;
 
+
+      // texture
+
       gl.GenTextures(2, textureIds);
       CheckError(gl);
 
-      ClearBitmap();
+      gl.BindTexture(OpenGL.GL_TEXTURE_2D, textureIds[0]);
+      CheckError(gl);
+
+      gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_R32F, Width, Height, 0,
+        OpenGL.GL_RED, OpenGL.GL_BYTE, IntPtr.Zero);
+      CheckError(gl);
+
+
+      // framebuffer to clear the texture
+
+      gl.GenBuffers(1, fraameBufferIds);
+      CheckError(gl);
+
+      gl.BindFramebufferEXT(OpenGL.GL_FRAMEBUFFER_EXT, fraameBufferIds[0]);
+      CheckError(gl);
+
+      gl.FramebufferTexture(OpenGL.GL_FRAMEBUFFER_EXT, OpenGL.GL_COLOR_ATTACHMENT0_EXT, textureIds[0], 0);
+      CheckError(gl);
+
+      gl.DrawBuffer(OpenGL.GL_COLOR_ATTACHMENT0_EXT);
+      CheckError(gl);
+
+      uint rc = gl.CheckFramebufferStatusEXT(OpenGL.GL_FRAMEBUFFER_EXT);
+      CheckError(gl);
+      if (rc != OpenGL.GL_FRAMEBUFFER_COMPLETE_EXT) Log.Warning($"Framebuffer not complete: {rc}");
+
+      gl.BindFramebufferEXT(OpenGL.GL_FRAMEBUFFER_EXT, 0);
+      CheckError(gl);
     }
 
     public void SetPalette(int[]? palette = null)
@@ -53,13 +87,13 @@ namespace OrbiNom
     {
       CheckError(gl, false);
 
-      gl.BindTexture(OpenGL.GL_TEXTURE_2D, textureIds[0]);
+      gl.BindFramebufferEXT(OpenGL.GL_FRAMEBUFFER_EXT, fraameBufferIds[0]);
       CheckError(gl);
 
-      var zeros = new byte[Width * Height];
-      gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_R32F, Width, Height, 0,
-        OpenGL.GL_RED, OpenGL.GL_BYTE, zeros);
-      zeros = null;
+      gl.ClearBuffer(OpenGL.GL_COLOR, 0, [0,0,0,0]);
+      CheckError(gl);
+
+      gl.BindFramebufferEXT(OpenGL.GL_FRAMEBUFFER_EXT, 0);
       CheckError(gl);
     }
 

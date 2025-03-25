@@ -159,7 +159,9 @@ namespace OrbiNom
           string stackTrace = new System.Diagnostics.StackTrace(true).ToString();
           if (IsLoggableError(stackTrace))
           {
-            string message = $"{gl.ErrorString(err)}\n{stackTrace}";
+            string errorName = gl.ErrorString(err);
+            if (string.IsNullOrEmpty(errorName)) errorName = $"Error {err}";
+            string message = $"{errorName}\n{stackTrace}";
             Log.Error(message);
             Debug.WriteLine(message);
           }
