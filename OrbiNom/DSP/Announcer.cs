@@ -1,0 +1,132 @@
+﻿using System.Speech.Synthesis;
+using System.Text.RegularExpressions;
+
+namespace OrbiNom
+{
+  public class Announcer
+  {
+    private const string SsmlMessage = 
+      "<?xml version=\"1.0\"?><speak version=\"1.0\" " +
+      "xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
+      "xml:lang=\"{0}\">{1}</speak>";
+
+    private const string NameFormat = "<say-as interpret-as=\"characters\">{0}</say-as>{1}";
+
+    public Context? ctx;
+
+    private readonly SpeechSynthesizer Synth = new();
+    public readonly InstalledVoice[] Voices;
+    private List<SatellitePass> Queue1 = new();
+    private List<SatellitePass> Queue2 = new();
+
+    public Announcer() {
+      Synth = new SpeechSynthesizer();
+      Synth.SetOutputToDefaultAudioDevice();
+      SpeechApiReflectionHelper.InjectOneCoreVoices(Synth);
+      Voices = Synth.GetInstalledVoices().ToArray();
+    }
+
+    public void RebuildQueue()
+    {
+      Queue1.Clear();
+      Queue2.Clear();
+
+      var sett = ctx!.Settings.Announcements;
+
+      var minStartTime = DateTime.UtcNow.AddMinutes(sett.Announcement1.Minutes);
+      if (sett.Announcement1.Enabled)
+        Queue1 = ctx.GroupPasses.Passes.Where(p => p.StartTime > minStartTime).ToList();
+
+      minStartTime = DateTime.UtcNow.AddMinutes(sett.Announcement2.Minutes);
+      if (sett.Announcement2.Enabled)
+        Queue2 = ctx.GroupPasses.Passes.Where(p => p.StartTime > minStartTime).ToList();
+    }
+
+
+    public void AddToQueue(IEnumerable<SatellitePass> passes)
+    {
+      var sett = ctx!.Settings.Announcements;
+      if (sett.Announcement1.Enabled) Queue1.AddRange(passes);
+      if (sett.Announcement2.Enabled) Queue2.AddRange(passes);
+    }
+
+    public void AnnouncePasses()
+    {
+      var sett = ctx!.Settings.Announcements;
+
+      var announceTime = DateTime.UtcNow.AddMinutes(sett.Announcement1.Minutes);
+      for (int i = Queue1.Count - 1; i >= 0; i--)
+        if (Queue1[i].StartTime < announceTime)
+        {
+          Announce(Queue1[i].Satellite.name, sett.Announcement1);
+          Queue1.RemoveAt(i);
+        }
+
+      announceTime = DateTime.UtcNow.AddMinutes(sett.Announcement2.Minutes);
+      for (int i = Queue2.Count - 1; i >= 0; i--)
+        if (Queue2[i].StartTime < announceTime)
+        {
+          Announce(Queue2[i].Satellite.name, sett.Announcement2);
+          Queue2.RemoveAt(i);
+        }
+    }
+
+    public void Announce(string name, Announcement announcement)
+    {
+      name = FormatSatName(name);
+      string minutes = announcement.Minutes.ToString();
+      string culture = "en-US";
+
+      string message = announcement.Message.Replace("{name}", name).Replace("{minutes}", minutes);
+
+      var voice = Voices.FirstOrDefault(v => GetVoiceName(v) == ctx!.Settings.Announcements.Voice)?.VoiceInfo;
+      if (voice != null)
+      {
+        Synth.SelectVoice(voice.Name);
+        culture = voice.Culture.Name;
+      }
+
+      Synth.SpeakSsmlAsync(string.Format(SsmlMessage, culture, message));
+    }
+
+    // for the Settings dialog
+    public void SayVoiceName(string? name)
+    {
+      if (name == null) return;
+      var voice = Voices.FirstOrDefault(v => GetVoiceName(v) == name)?.VoiceInfo;
+      if (voice == null) return;
+
+      Synth.SelectVoice(voice.Name);
+      string ssml = string.Format(SsmlMessage, voice.Culture.Name, voice.Name);
+      Synth.SpeakSsmlAsync(ssml);
+    }
+
+    public static string GetVoiceName(InstalledVoice? voice)
+    {
+      if (voice == null) return "";
+      return $"{voice.VoiceInfo.Name} : {voice.VoiceInfo.Culture.NativeName}";
+    }
+
+    public static string FormatSatName(string name)
+    {
+      name = name.Replace("-", " ");
+      string letters = Regex.Replace(name, "[^a-zA-Z]", ".");
+      int pos = letters.IndexOf(".");
+      if (pos <= 0) return name;
+
+      if (pos < 4)
+        name = string.Format(NameFormat, name.Substring(0, pos), name.Substring(pos).Trim());
+
+      return name + "<break time=\"0.1s\"/>";
+    }
+
+    // debugging: format sat name for speech
+    public static void SaySatName(string name)
+    {
+      var synth = new SpeechSynthesizer();
+      synth.SetOutputToDefaultAudioDevice();
+      string ssml = string.Format(SsmlMessage, "en-US", FormatSatName(name));
+      synth.SpeakSsmlAsync(ssml);
+    }
+  }
+}

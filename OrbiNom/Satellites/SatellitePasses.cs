@@ -45,6 +45,8 @@ namespace OrbiNom
 
       var now = DateTime.UtcNow;
       Passes = ComputePasses(now, now + PredictionTimeSpan).ToList();
+
+      if (OnlyGroup) ctx.Announcer.RebuildQueue();
     }
 
     // call when TLE changes
@@ -58,10 +60,11 @@ namespace OrbiNom
 
       // recompute all current and future passes
       Passes.AddRange(ComputePasses(now, now + PredictionTimeSpan));
+
+      if (OnlyGroup) ctx.Announcer.RebuildQueue();
     }
 
-    // call every N minutes
-    // computes passes for the 5 more minutes
+    // call every minute
     public void PredictMorePasses()
     {
       DeleteOld();
@@ -73,6 +76,8 @@ namespace OrbiNom
       var endTime = DateTime.UtcNow + PredictionTimeSpan;      
       var newPasses = ComputePasses(startTime, endTime).Where(p => p.StartTime > startTime);
       Passes.AddRange(newPasses);
+
+      if (OnlyGroup) ctx.Announcer.AddToQueue(newPasses);
     }
 
     // delete old passes but keep history

@@ -36,6 +36,9 @@ namespace OrbiNom
     public readonly Soundcard<float> SpeakerSoundcard = new();
     public readonly Soundcard<float> AudioVacSoundcard = new();
     public readonly Soundcard<Complex32> IqVacSoundcard = new();
+    public readonly Announcer Announcer = new();
+
+    // dsp
     public Slicer? Slicer;
   }
 }

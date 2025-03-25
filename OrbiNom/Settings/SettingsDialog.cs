@@ -73,21 +73,25 @@ namespace OrbiNom
           break;
 
         case "OrbiNom.UserSettings.Altitude":
-          ValidateAltitude(e);
+          ValidateInt(e, 8849);
           break;
 
-          //        case "OrbiNom.Something.Enabled":
-          //          var sett = (Settings)grid.SelectedObject;
-          //          changed = !sett.Something.Enabled || (!string.IsNullOrEmpty(sett.User.Call) && !string.IsNullOrEmpty(sett.User.Square));
-          //          if (!canChange)
-          //          {
-          //            e.ChangedItem.PropertyDescriptor.SetValue(e.ChangedItem.Parent.Value, e.OldValue);
-          //            MessageBox.Show($"Please enter your callsign and grid square before you enable DX Cluster", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-          //          }
-          //          break;
+        case "OrbiNom.AnnouncerSettings.VoiceName":
+          PlayVoiceName(e);
+          break;
+
+        case "OrbiNom.Announcement.Minutes":
+          ValidateInt(e, 5);
+          break;
       }
 
       if (canChange) ChangedFields.Add(label);
+    }
+
+    private void PlayVoiceName(PropertyValueChangedEventArgs e)
+    {
+      var ann = new Announcer();
+      ann.SayVoiceName(e.ChangedItem.Value.ToString());
     }
 
     private bool ValidateField(PropertyValueChangedEventArgs e, Regex regEx, string fieldName, CharacterCasing casing)
@@ -106,9 +110,9 @@ namespace OrbiNom
       return true;
     }
 
-    private void ValidateAltitude(PropertyValueChangedEventArgs e)
+    private void ValidateInt(PropertyValueChangedEventArgs e, int max)
     {
-      int cleanValue = Math.Max(0, Math.Min(8849, (int)e.ChangedItem.Value));
+      int cleanValue = Math.Max(0, Math.Min(max, (int)e.ChangedItem.Value));
       e.ChangedItem.PropertyDescriptor.SetValue(e.ChangedItem.Parent.Value, cleanValue);
     }
 
@@ -120,17 +124,17 @@ namespace OrbiNom
     //--------------------------------------------------------------------------------------------------------------
     private void ApplyChangedSettings()
     {
-      if (ChangedFields.Contains("OrbiNom.UserSettings.Square") || ChangedFields.Contains("OrbiNom.UserSettings.Altitude"))
-      {
+      if (ChangedFields.Contains("OrbiNom.UserSettings.Square") || 
+          ChangedFields.Contains("OrbiNom.UserSettings.Altitude"))
         ctx.MainForm.SetLocation();
-      }
 
       if (ChangedFields.Exists(s => s.StartsWith("OrbiNom.AudioSettings.")))
-      {
         ctx.MainForm.ApplyAudioSettings();
-      }
 
-
+      if (ChangedFields.Exists(s => s.StartsWith("OrbiNom.Announcement.Minutes")) || 
+          ChangedFields.Exists(s => s.StartsWith("OrbiNom.Announcement.Enabled")))
+        ctx.Announcer.RebuildQueue();
+              
       ChangedFields.Clear();
     }
   }

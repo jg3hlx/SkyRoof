@@ -241,6 +241,9 @@ namespace OrbiNom
     private void treeView1_MouseDown(object sender, MouseEventArgs e)
     {
       treeView1.SelectedNode = treeView1.HitTest(e.X, e.Y).Node;
+      
+      //{!}
+      if (treeView1.SelectedNode != null) Announcer.SaySatName(((SatnogsDbSatellite)treeView1.SelectedNode.Tag).name);
     }
 
     // sat or group rename finished

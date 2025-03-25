@@ -21,6 +21,11 @@ namespace OrbiNom
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public AudioSettings Audio { get; set; } = new();
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public AnnouncerSettings Announcements { get; set; } = new();
+
+
+
     private static string GetFileName()
     {
       return Path.Combine(Utils.GetUserDataFolder(), "Settings.json");

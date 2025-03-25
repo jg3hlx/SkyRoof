@@ -22,6 +22,8 @@ namespace VE3NEA
     public double HardwareBandwidth;
     public double Frequency;
     public double Gain;
+
+    // PPM calibration: https://www.youtube.com/watch?v=mJIU04PHKTo
     public double Ppm => GetPpm();
 
     public SdrProperties Properties = new();
