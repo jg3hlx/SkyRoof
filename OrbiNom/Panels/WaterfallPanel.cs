@@ -83,6 +83,12 @@ namespace OrbiNom
       WaterfallControl.OpenglControl.Refresh();
     }
 
+    internal void ClearWaterfall()
+    {
+      WaterfallControl.IndexedTexture.ClearBitmap();
+      WaterfallControl.OpenglControl.Refresh();
+    }
+
     private void SlidersBtn_Click(object sender, EventArgs e)
     {
       var dlg = new WaterfallSildersDlg(ctx);
@@ -118,7 +124,7 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                   waterfall mouse 
     //----------------------------------------------------------------------------------------------
-    Point MouseMovePos; 
+    Point MouseMovePos;
     int MouseDownX;
     double MouseDownFrequency;
     bool Dragging;
@@ -143,7 +149,7 @@ namespace OrbiNom
           Dragging = true;
           WaterfallControl.Cursor = Cursors.NoMoveHoriz;
         }
-          
+
         if (Dragging)
         {
           double frequency = MouseDownFrequency - dx * ScaleControl.VisibleBandwidth / ScaleControl.width;
@@ -187,6 +193,8 @@ namespace OrbiNom
 
       ScaleControl.Refresh();
       WaterfallControl.OpenglControl.Refresh();
+
+      label1.Text = $"{ScaleControl.VisibleBandwidth / ScaleControl.Size.Width:F0} Hz/pix";
     }
 
 
@@ -195,7 +203,7 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                    scale mouse 
     //----------------------------------------------------------------------------------------------
-     private void ScaleControl_MouseMove(object? sender, MouseEventArgs e)
+    private void ScaleControl_MouseMove(object? sender, MouseEventArgs e)
     {
       if (e.Location == MouseMovePos) return;
       MouseMovePos = e.Location;
@@ -370,6 +378,13 @@ namespace OrbiNom
       var item = (ToolStripMenuItem)sender;
       var sat = (SatnogsDbSatellite)item.Tag!;
       AmsatReportDialog.SendReport(ctx, sat);
+    }
+
+    private void satelliteDetailsToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      var label = ScaleControl.GetLabelUnderCursor(MouseMovePos);
+      var sat = label.Pass.Satellite;
+      SatelliteDetailsForm.ShowSatellite(sat, ctx.MainForm);
     }
   }
 }

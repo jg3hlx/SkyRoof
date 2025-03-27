@@ -39,7 +39,7 @@
       string uplink = FormatFrequencyRange(uplink_low, uplink_high);
       string downlink = FormatFrequencyRange(downlink_low, downlink_high, invert);
 
-      string result = $"Type: {type}\n";
+      string result = $"{description}\nType: {type}\n";
       if (uplink_low != null) result += $"Uplink: {uplink}\n";
       result += $"Downlink: {downlink}\nMode: {mode}\n";
       if (uplink_low != null) result += $"Inverted: {invert}\n";
@@ -51,9 +51,9 @@
     public static string FormatFrequencyRange(long? low, long? high, bool inverted = false)
     {
       if (low == null) return "";
-      if (high == null) return $"{low / 1000:N0}";
-      if (inverted) return $"{high / 1000:N0} - {low / 1000:N0}";
-      return $"{low / 1000:N0} - {high / 1000:N0}";
+      if (high == null) return $"{low / 1000d:N1}";
+      if (inverted) return $"{high / 1000d:N1} - {low / 1000d:N1}";
+      return $"{low / 1000d:N1} - {high / 1000d:N1}";
     }
 
     public bool IsVhf(long? freq = null)

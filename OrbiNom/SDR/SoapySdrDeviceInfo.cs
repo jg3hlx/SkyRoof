@@ -129,7 +129,8 @@ namespace VE3NEA
           SoapySDRArgInfoType.Bool,
           "AGC",
           "Automatic gain control on the chain",
-           SoapySDRDevice_getGainMode(Device, Direction.Rx, 0) ? "true" : "false");
+           "false" //SoapySDRDevice_getGainMode(Device, Direction.Rx, 0) ? "true" : "false"                   
+           );
 
       // PPM
       AddCommonProperty(

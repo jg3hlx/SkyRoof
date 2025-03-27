@@ -2,9 +2,6 @@
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 
-// todo: open properties dlg on Space
-// todo: add Description field to tx tooltip
-
 namespace OrbiNom
 {
   public partial class GroupViewPanel : DockContent
@@ -165,6 +162,17 @@ namespace OrbiNom
       ctx.SatelliteSelector.SetSelectedSatellite(data.Sat);
       ctx.PassesPanel?.ShowPasses();
       if (data.Pass != null) ctx.SatelliteSelector.SetSelectedPass(data.Pass);
+    }
+
+    private void SatelliteDetailsMNU_Click(object sender, EventArgs e)
+    {
+      var data = (ItemData)Items[listView1.SelectedIndices[0]].Tag!;
+      SatelliteDetailsForm.ShowSatellite(data.Sat, ctx.MainForm);
+    }
+
+    private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+      if (listView1.SelectedIndices.Count == 0) e.Cancel = true;
     }
   }
 }

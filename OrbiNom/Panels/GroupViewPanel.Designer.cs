@@ -35,8 +35,11 @@
       columnHeader2 = new ColumnHeader();
       columnHeader3 = new ColumnHeader();
       columnHeader4 = new ColumnHeader();
+      contextMenuStrip1 = new ContextMenuStrip(components);
+      SatelliteDetailsMNU = new ToolStripMenuItem();
       imageList1 = new ImageList(components);
       GroupNameLabel = new Label();
+      contextMenuStrip1.SuspendLayout();
       SuspendLayout();
       // 
       // listView1
@@ -44,6 +47,7 @@
       listView1.Activation = ItemActivation.OneClick;
       listView1.AllowDrop = true;
       listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
+      listView1.ContextMenuStrip = contextMenuStrip1;
       listView1.Dock = DockStyle.Fill;
       listView1.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
       listView1.FullRowSelect = true;
@@ -86,6 +90,20 @@
       columnHeader4.TextAlign = HorizontalAlignment.Right;
       columnHeader4.Width = 40;
       // 
+      // contextMenuStrip1
+      // 
+      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { SatelliteDetailsMNU });
+      contextMenuStrip1.Name = "contextMenuStrip1";
+      contextMenuStrip1.Size = new Size(160, 26);
+      contextMenuStrip1.Opening += contextMenuStrip1_Opening;
+      // 
+      // SatelliteDetailsMNU
+      // 
+      SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
+      SatelliteDetailsMNU.Size = new Size(159, 22);
+      SatelliteDetailsMNU.Text = "SatelltieDetails...";
+      SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
+      // 
       // imageList1
       // 
       imageList1.ColorDepth = ColorDepth.Depth32Bit;
@@ -114,6 +132,7 @@
       Name = "GroupViewPanel";
       Text = "Current Satellite Group";
       FormClosing += GroupViewPanel_FormClosing;
+      contextMenuStrip1.ResumeLayout(false);
       ResumeLayout(false);
     }
 
@@ -126,5 +145,7 @@
     public Label GroupNameLabel;
     private ImageList imageList1;
     private ColumnHeader columnHeader4;
+    private ContextMenuStrip contextMenuStrip1;
+    private ToolStripMenuItem SatelliteDetailsMNU;
   }
 }

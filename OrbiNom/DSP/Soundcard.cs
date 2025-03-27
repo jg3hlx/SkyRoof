@@ -31,7 +31,7 @@ namespace VE3NEA
 
     public void SetDeviceId(string? deviceId)
     {
-      if (deviceId == mmDevice?.DeviceID) return;
+      //if (deviceId == mmDevice?.DeviceID) return;
 
       bool wasEnabled = enabled;
       Enabled = false;

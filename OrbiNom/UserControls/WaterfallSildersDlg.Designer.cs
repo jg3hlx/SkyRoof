@@ -196,12 +196,14 @@
       Controls.Add(BrightnessTrackbar);
       Controls.Add(panel1);
       FormBorderStyle = FormBorderStyle.None;
+      KeyPreview = true;
       Name = "WaterfallSildersDlg";
       ShowIcon = false;
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.Manual;
       Text = "WaterfallSildersDlg";
       Deactivate += WaterfallSildersDlg_Deactivate;
+      KeyPress += WaterfallSildersDlg_KeyPress;
       ((System.ComponentModel.ISupportInitialize)BrightnessTrackbar).EndInit();
       ((System.ComponentModel.ISupportInitialize)ContrastTrackbar).EndInit();
       ((System.ComponentModel.ISupportInitialize)SpeedTrackbar).EndInit();

@@ -20,8 +20,9 @@ namespace VE3NEA
 
     public DataEventArgs<T> RentCopyOf(DataEventArgs<T> args)
     {
-      var result = Rent(args.Data.Length);  
-      Array.Copy(args.Data, result.Data, result.Data.Length);
+      var result = Rent(args.Data.Length);
+      result.Count = args.Count;
+      Array.Copy(args.Data, result.Data, result.Count);
       return result;
     }
 

@@ -23,10 +23,12 @@ namespace OrbiNom
 
     internal void ShowSatellite(SatnogsDbSatellite? satellite)
     {
+      if (satellite == null) return;
+
       Satellite = satellite;
 
+      satellite.ComputeOrbitDetails();
       SatNameLabel.Text = satellite.name;
-
       SatAkaLabel.Visible = satellite.AllNames.Count > 1;
       SatAkaLabel.Text = $"a.k.a. {string.Join(", ", satellite.AllNames.Where(s => s != satellite.name))}";
 
@@ -105,11 +107,6 @@ namespace OrbiNom
     {
       SatnogsLabel.LinkVisited = true;
       Process.Start(new ProcessStartInfo($"https://db.satnogs.org/satellite/{Satellite.sat_id}") { UseShellExecute = true });
-    }
-
-    private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
-    {
-      listView1.Sort();
     }
   }
 }

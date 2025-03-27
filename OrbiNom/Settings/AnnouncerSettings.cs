@@ -15,6 +15,8 @@ namespace OrbiNom
     [TypeConverter(typeof(VoiceNameConverter))]
     public string? Voice { get; set; }
 
+    public int Volume { get; set; } = 0;
+
     [DisplayName("Announcement #1")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public Announcement Announcement1 { get; set; } = new(2, "Satellite {name} is rising in {minutes} minutes");

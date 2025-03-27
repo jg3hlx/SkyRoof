@@ -57,24 +57,27 @@ namespace OrbiNom
     {
       return Math.Abs(tracker.Tle.MeanMotionRevPerDay - 1) < 0.1f;
     }
-    
+
     public TrackPoint GetTrackPointAt(DateTime utc)
     {
-      if (utc < Track.First().Utc) return Track.First();
+      if (utc >= Track.First().Utc && utc <= Track.Last().Utc)
+        for (int i = 1; i < Track.Count; i++)
+          if (Track[i - 1].Utc <= utc && Track[i].Utc > utc)
+          {
+            var r = (utc - Track[i - 1].Utc).TotalSeconds / (Track[i].Utc - Track[i - 1].Utc).TotalSeconds;
+            var rangeRate = Track[i - 1].Observation.RangeRate * (1 - r) + Track[i].Observation.RangeRate * r;
+            var elevation = Track[i - 1].Observation.Elevation.Radians * (1 - r) + Track[i].Observation.Elevation.Radians * r;
 
-      for (int i = 1; i < Track.Count; i++)
-        if (Track[i - 1].Utc <= utc && Track[i].Utc > utc)
-        {
-          var r = (utc - Track[i - 1].Utc).TotalSeconds / (Track[i].Utc - Track[i - 1].Utc).TotalSeconds;
-          var rangeRate = Track[i - 1].Observation.RangeRate * (1 - r) + Track[i].Observation.RangeRate * r;
-          var elevation = Track[i - 1].Observation.Elevation.Radians * (1 - r) + Track[i].Observation.Elevation.Radians * r;
+            var point = new TrackPoint();
+            point.Utc = utc;
+            point.Observation = new(0, Angle.FromRadians(elevation), 0, rangeRate);
+            return point;
+          }
 
-          var point = new TrackPoint();
-          point.Utc = utc;
-          point.Observation = new(0, Angle.FromRadians(elevation), 0, rangeRate);
-          return point;
-        }
-      return Track.Last();
+      var trackPoint = new TrackPoint();
+      trackPoint.Utc = utc;
+      trackPoint.Observation = GroundStation.Observe(Satellite.Tracker, trackPoint.Utc);
+      return trackPoint;
     }
 
     internal TopocentricObservation GetObservationAt(DateTime utc)

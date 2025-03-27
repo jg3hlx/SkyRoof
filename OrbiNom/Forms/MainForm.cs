@@ -226,8 +226,13 @@ namespace OrbiNom
     private void EditSdrDevices()
     {
       StopSdr();
+
       var dlg = new SdrDevicesDialog(ctx);
       var rc = dlg.ShowDialog();
+
+      if (rc == DialogResult.OK)
+        ctx.WaterfallPanel?.ClearWaterfall();
+
       StartSdrIfEnabled();
     }
 
@@ -259,8 +264,8 @@ namespace OrbiNom
       }
       else if (info.Name.ToLower().Contains("rtl"))
       {
-        info.SampleRate = 3_200_000;
-        info.MaxBandwidth = 2_100_000;
+        info.SampleRate = 2_500_000;
+        info.MaxBandwidth = 1_900_000;
       }
       else if (info.Name.ToLower().Contains("sdrplay"))
       {
@@ -801,6 +806,7 @@ namespace OrbiNom
     private void SatelliteSelector_SelectedTransmitterChanged(object sender, EventArgs e)
     {
       FrequencyControl.SetTransmitter();
+      ctx.TransmittersPanel?.ShowSelectedTransmitter();
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)

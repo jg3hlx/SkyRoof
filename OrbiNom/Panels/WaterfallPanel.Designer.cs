@@ -31,19 +31,21 @@
       components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WaterfallPanel));
       SplitContainer = new SplitContainer();
+      label1 = new Label();
       SlidersBtn = new Button();
       ScaleControl = new FrequencyScale();
-      contextMenuStrip1 = new ContextMenuStrip(components);
+      SatDetailsMNU = new ContextMenuStrip(components);
       SelectTransmitterMNU = new ToolStripMenuItem();
       AddToGroupMNU = new ToolStripMenuItem();
       ReportToAmsatMNU = new ToolStripMenuItem();
+      satelliteDetailsToolStripMenuItem = new ToolStripMenuItem();
       WaterfallControl = new WaterfallControl();
       toolTip1 = new ToolTip(components);
       ((System.ComponentModel.ISupportInitialize)SplitContainer).BeginInit();
       SplitContainer.Panel1.SuspendLayout();
       SplitContainer.Panel2.SuspendLayout();
       SplitContainer.SuspendLayout();
-      contextMenuStrip1.SuspendLayout();
+      SatDetailsMNU.SuspendLayout();
       SuspendLayout();
       // 
       // SplitContainer
@@ -56,6 +58,7 @@
       // 
       // SplitContainer.Panel1
       // 
+      SplitContainer.Panel1.Controls.Add(label1);
       SplitContainer.Panel1.Controls.Add(SlidersBtn);
       SplitContainer.Panel1.Controls.Add(ScaleControl);
       // 
@@ -65,6 +68,16 @@
       SplitContainer.Size = new Size(800, 450);
       SplitContainer.SplitterDistance = 79;
       SplitContainer.TabIndex = 0;
+      // 
+      // label1
+      // 
+      label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      label1.AutoSize = true;
+      label1.Location = new Point(717, 9);
+      label1.Name = "label1";
+      label1.Size = new Size(38, 15);
+      label1.TabIndex = 5;
+      label1.Text = "label1";
       // 
       // SlidersBtn
       // 
@@ -81,19 +94,19 @@
       // 
       // ScaleControl
       // 
-      ScaleControl.ContextMenuStrip = contextMenuStrip1;
+      ScaleControl.ContextMenuStrip = SatDetailsMNU;
       ScaleControl.Dock = DockStyle.Fill;
       ScaleControl.Location = new Point(0, 0);
       ScaleControl.Name = "ScaleControl";
       ScaleControl.Size = new Size(800, 79);
       ScaleControl.TabIndex = 0;
       // 
-      // contextMenuStrip1
+      // SatDetailsMNU
       // 
-      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { SelectTransmitterMNU, AddToGroupMNU, ReportToAmsatMNU });
-      contextMenuStrip1.Name = "contextMenuStrip1";
-      contextMenuStrip1.Size = new Size(174, 70);
-      contextMenuStrip1.Opening += contextMenuStrip1_Opening;
+      SatDetailsMNU.Items.AddRange(new ToolStripItem[] { SelectTransmitterMNU, AddToGroupMNU, ReportToAmsatMNU, satelliteDetailsToolStripMenuItem });
+      SatDetailsMNU.Name = "contextMenuStrip1";
+      SatDetailsMNU.Size = new Size(174, 92);
+      SatDetailsMNU.Opening += contextMenuStrip1_Opening;
       // 
       // SelectTransmitterMNU
       // 
@@ -114,6 +127,13 @@
       ReportToAmsatMNU.Text = "Report to AMSAT...";
       ReportToAmsatMNU.Click += ReportToAmsatMNU_Click;
       // 
+      // satelliteDetailsToolStripMenuItem
+      // 
+      satelliteDetailsToolStripMenuItem.Name = "satelliteDetailsToolStripMenuItem";
+      satelliteDetailsToolStripMenuItem.Size = new Size(173, 22);
+      satelliteDetailsToolStripMenuItem.Text = "Satellite Details...";
+      satelliteDetailsToolStripMenuItem.Click += satelliteDetailsToolStripMenuItem_Click;
+      // 
       // WaterfallControl
       // 
       WaterfallControl.Dock = DockStyle.Fill;
@@ -133,10 +153,11 @@
       Text = "Waterfall";
       FormClosing += WaterfallPanel_FormClosing;
       SplitContainer.Panel1.ResumeLayout(false);
+      SplitContainer.Panel1.PerformLayout();
       SplitContainer.Panel2.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)SplitContainer).EndInit();
       SplitContainer.ResumeLayout(false);
-      contextMenuStrip1.ResumeLayout(false);
+      SatDetailsMNU.ResumeLayout(false);
       ResumeLayout(false);
     }
 
@@ -148,9 +169,11 @@
     private Button SlidersBtn;
     public SplitContainer SplitContainer;
     private ToolTip toolTip1;
-    private ContextMenuStrip contextMenuStrip1;
+    private ContextMenuStrip SatDetailsMNU;
     private ToolStripMenuItem SelectTransmitterMNU;
     private ToolStripMenuItem AddToGroupMNU;
     private ToolStripMenuItem ReportToAmsatMNU;
+    private ToolStripMenuItem satelliteDetailsToolStripMenuItem;
+    private Label label1;
   }
 }

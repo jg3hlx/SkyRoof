@@ -97,6 +97,7 @@ namespace OrbiNom
         culture = voice.Culture.Name;
       }
 
+      Synth.Volume = ctx.Settings.Announcements.Volume;
       Synth.SpeakSsmlAsync(string.Format(SsmlMessage, culture, message));
     }
 
@@ -108,6 +109,7 @@ namespace OrbiNom
       if (voice == null) return;
 
       Synth.SelectVoice(voice.Name);
+      Synth.Volume = ctx.Settings.Announcements.Volume;
       string ssml = string.Format(SsmlMessage, voice.Culture.Name, voice.Name);
       Synth.SpeakSsmlAsync(ssml);
     }
@@ -134,21 +136,18 @@ namespace OrbiNom
       return $"{voice.VoiceInfo.Name} : {voice.VoiceInfo.Culture.NativeName}";
     }
 
-
-    // mark acronyms as "characters" for better pronunciation
     public static string FormatSatName(string name)
     {
-      name = name.Replace("-", " ");
-      
-      // in AA-00A, "AA" is an acronym
-      string letters = Regex.Replace(name, "[^a-zA-Z]", ".");
+      // pronounce "SAT" and "CUBE" as words
+      name = name.ToLower().Replace("-", " ").Replace("sat", "-sat-").Replace("cube", "-cube-");
+
+      // in AO-07, "AO" is an acronym
+      string letters = Regex.Replace(name, "[^a-z]", ".");
       int pos = letters.IndexOf(".");
       if (pos <= 0) pos = name.Length;
 
-      // in AASAT-00A, "AA" is an acronym
-      if (pos > 3 && name.Substring(pos-3, 3).ToUpper() == "SAT") pos -= 3;
-
-      if (pos < 4)
+      // pronounce acronyms as characters
+      if (pos < 4) 
         name = string.Format(NameFormat, name.Substring(0, pos), name.Substring(pos).Trim().ToLower());
 
       return name + "<break time=\"0.1s\"/>";

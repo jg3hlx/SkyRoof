@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SGPdotNET.Observation;
 using WeifenLuo.WinFormsUI.Docking;
+using static OrbiNom.GroupViewPanel;
 
 namespace OrbiNom
 {
@@ -41,6 +42,12 @@ namespace OrbiNom
       CreateTransmitterItems();
 
       SatNameLabel.Text = sat.name;
+    }
+
+    public void ShowSelectedTransmitter()
+    {
+      foreach (ListViewItem item in listView1.Items)
+        item.ImageIndex = (SatnogsDbTransmitter)item.Tag == ctx.SatelliteSelector.SelectedTransmitter ? 0 : -1;
     }
 
     private void TransmittersPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -99,11 +106,8 @@ namespace OrbiNom
       }
 
       listView1.EndUpdate();
-    }
 
-    private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
-    {
-      listView1.Sort();
+      ShowSelectedTransmitter();
     }
 
     private void listView1_DoubleClick(object sender, EventArgs e)

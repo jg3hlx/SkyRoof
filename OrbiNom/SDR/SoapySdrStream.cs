@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using MathNet.Numerics;
 using Serilog;
 using static VE3NEA.NativeSoapySdr;
@@ -73,6 +75,9 @@ namespace VE3NEA
     {
       int sampleCount = SoapySDRDevice_readStream(Device, Stream, BuffsPtr, SamplesPerBlock, out SoapySdrFlags flags, out long timeNs, timeout);
       SoapySdr.CheckError();
+
+      Debug.Assert(sampleCount <= SamplesPerBlock);
+
       if (sampleCount < 0)
       {
         var errorCode = (SoapySdrError)sampleCount;
@@ -84,8 +89,15 @@ namespace VE3NEA
 
       Args.Count = sampleCount;
       for (int i = 0; i < Args.Count; i++)
-        Args.Data[i] = new Complex32(Floats[i * 2], Floats[i * 2 + 1]);
+      {
+        Args.Data[i] = new Complex32(Floats[i * 2], Floats[i * 2 + 1]);// + 1 + new Complex32((float)phase.Real, (float)phase.Imaginary); //{!}
+        phase *= phasor;
+      }
     }
+
+    Complex phasor = Complex.FromPolarCoordinates(1, 2 * Math.PI / 1024);
+    Complex phase = 1;
+
 
     public void Dispose()
     {

@@ -152,7 +152,7 @@ namespace OrbiNom
       CheckModeChange();
 
       InputBuffer.Data = args.Data;
-      InputBuffer.Count = args.Data.Length;
+      InputBuffer.Count = args.Count;
 
       // mix down to baseband
       fixed (Complex32* pData = InputBuffer.Data)

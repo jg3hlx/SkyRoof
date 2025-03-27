@@ -28,11 +28,14 @@
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TransmittersPanel));
       listView1 = new ListView();
       columnHeader1 = new ColumnHeader();
       columnHeader3 = new ColumnHeader();
       columnHeader2 = new ColumnHeader();
       SatNameLabel = new Label();
+      imageList1 = new ImageList(components);
       SuspendLayout();
       // 
       // listView1
@@ -46,11 +49,11 @@
       listView1.Name = "listView1";
       listView1.ShowItemToolTips = true;
       listView1.Size = new Size(471, 325);
+      listView1.SmallImageList = imageList1;
       listView1.Sorting = SortOrder.Ascending;
       listView1.TabIndex = 4;
       listView1.UseCompatibleStateImageBehavior = false;
       listView1.View = View.Details;
-      listView1.ColumnClick += listView1_ColumnClick;
       listView1.DoubleClick += listView1_DoubleClick;
       // 
       // columnHeader1
@@ -79,6 +82,13 @@
       SatNameLabel.Text = "___";
       SatNameLabel.TextAlign = ContentAlignment.MiddleCenter;
       // 
+      // imageList1
+      // 
+      imageList1.ColorDepth = ColorDepth.Depth32Bit;
+      imageList1.ImageStream = (ImageListStreamer)resources.GetObject("imageList1.ImageStream");
+      imageList1.TransparentColor = Color.Transparent;
+      imageList1.Images.SetKeyName(0, "checkmark.bmp");
+      // 
       // TransmittersPanel
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -99,5 +109,6 @@
     private ColumnHeader columnHeader2;
     private ColumnHeader columnHeader3;
     public Label SatNameLabel;
+    private ImageList imageList1;
   }
 }

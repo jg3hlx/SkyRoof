@@ -80,6 +80,10 @@ namespace OrbiNom
           PlayVoiceName(e);
           break;
 
+        case "OrbiNom.AnnouncerSettings.Volume":
+          ValidateInt(e, 100);
+          break;
+
         case "OrbiNom.Announcement.Minutes":
           ValidateInt(e, 5);
           break;

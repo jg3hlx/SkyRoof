@@ -159,8 +159,10 @@ namespace OrbiNom
         Frequency = transponder.downlink_low + cust.TranspnderOffset;
       }
       else
-        DownlinkManualSpinner.Value = (decimal)(freq / 1000);
-
+        DownlinkManualSpinner.Value = 
+          Math.Max(DownlinkManualSpinner.Minimum,
+          Math.Min(DownlinkManualSpinner.Maximum,
+          (decimal)(freq / 1000)));
       UpdateAllControls();
     }
 
@@ -320,21 +322,22 @@ namespace OrbiNom
       double low = ctx.Sdr.Frequency - bandwidth / 2;
       double high = ctx.Sdr.Frequency + bandwidth / 2;
 
-      if (CorrectedDownlinkFrequency < low || CorrectedDownlinkFrequency > high)
-        if (ctx.Sdr.IsFrequencySupported(CorrectedDownlinkFrequency!.Value))
+      double targetFrequency = (double)CorrectedDownlinkFrequency!;
+
+      if (targetFrequency < low || targetFrequency > high)
+        if (ctx.Sdr.IsFrequencySupported(targetFrequency))
         {
-          BringToPassband(CorrectedDownlinkFrequency!.Value);
+          BringToPassband(targetFrequency);
           ctx.WaterfallPanel?.SetCenterFrequency(ctx.Sdr.Info.Frequency);
         }
         else
           return;
 
-      if (CorrectedDownlinkFrequency >= low && CorrectedDownlinkFrequency <= high)
+      if (targetFrequency >= low && targetFrequency <= high)
         if (ctx.Slicer?.Enabled == true)
-          ctx.Slicer.SetOffset(CorrectedDownlinkFrequency!.Value - ctx.Sdr.Frequency);
+          ctx.Slicer.SetOffset(targetFrequency - ctx.Sdr.Frequency);
     }
 
-    // todo: include transponder offset
     private bool BringToPassband(double frequency)
     {
       double bandWing = SdrConst.MAX_BANDWIDTH / 2;

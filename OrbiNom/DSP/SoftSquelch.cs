@@ -80,7 +80,7 @@ namespace OrbiNom
         value = Math.Sqrt(Math.Max(1e-6, value));
 
         // threshold
-        if (value < 0.075) gain = 3; else if (value > 0.095) gain = 0.3f;
+        if (value < 0.08) gain = 3; else if (value > 0.095) gain = 0.3f;
 
         // apply gain
         data[i] = DelayLine[i] * gain;

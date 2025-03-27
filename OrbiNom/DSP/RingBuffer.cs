@@ -40,7 +40,8 @@ namespace VE3NEA
         if (count > ringBuffer.Length) Resize(count);
 
         int spaceAvailable = ringBuffer.Length - Count;
-        if (count > spaceAvailable) Dump(count - spaceAvailable);
+        if (count > spaceAvailable) 
+          Dump(count - spaceAvailable);
 
         int count1 = Math.Min(count, ringBuffer.Length - writePos);
         int count2 = count - count1;

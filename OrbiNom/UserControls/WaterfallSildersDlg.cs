@@ -35,6 +35,12 @@ namespace OrbiNom
       Close();
     }
 
+
+    private void WaterfallSildersDlg_KeyPress(object sender, KeyPressEventArgs e)
+    {
+      if (e.KeyChar == (char)Keys.Escape) Close();
+    }
+    
     private void comboBox1_DrawItem(object sender, DrawItemEventArgs e)
     {
       var rect = e.Bounds;
@@ -55,7 +61,7 @@ namespace OrbiNom
     }
 
 
-    private readonly int[] Speeds = [1, 2, 4, 8, 12, 16];
+    private readonly int[] Speeds = [1, 2, 4, 8, 16];
 
     private void Trackbar_ValueChanged(object sender, EventArgs e)
     {

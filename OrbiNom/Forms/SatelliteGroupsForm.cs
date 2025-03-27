@@ -93,7 +93,6 @@ namespace OrbiNom
         ]);
 
       item.Tag = sat;
-      //{!}item.ToolTipText = sat.GetTooltipText();
 
       // highlighting
 
@@ -242,8 +241,9 @@ namespace OrbiNom
     {
       treeView1.SelectedNode = treeView1.HitTest(e.X, e.Y).Node;
       
-      //{!}
-      if (treeView1.SelectedNode != null) Announcer.SaySatName(((SatnogsDbSatellite)treeView1.SelectedNode.Tag).name);
+      //{!} for debugging
+      if (treeView1.SelectedNode != null && treeView1.SelectedNode.Level > 0) 
+        Announcer.SaySatName(((SatnogsDbSatellite)treeView1.SelectedNode.Tag).name);
     }
 
     // sat or group rename finished
@@ -400,7 +400,6 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void ShowSatelliteDetails(SatnogsDbSatellite sat)
     {
-      sat.ComputeOrbitDetails();
       SatelliteDetailsForm.ShowSatellite(sat, ParentForm);
     }
 
@@ -537,7 +536,7 @@ namespace OrbiNom
     }
 
 
-    //{!} remove this
+    //{!} for debugging
     private void toolStripMenuItem1_Click(object sender, EventArgs e)
     {
       var item = FilteredItems[listView1.SelectedIndices[0]];
