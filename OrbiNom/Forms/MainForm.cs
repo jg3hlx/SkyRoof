@@ -713,10 +713,10 @@ namespace OrbiNom
 
       ShowCpuUsage();
     }
-    private void OneMinuteTick()
+    private async void OneMinuteTick()
     {
-      ctx.GroupPasses.PredictMorePasses();
-      ctx.AllPasses.PredictMorePasses();
+      await ctx.GroupPasses.PredictMorePassesAsync();
+      await ctx.AllPasses.PredictMorePassesAsync();
       ctx.PassesPanel?.ShowPasses();
       ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
     }

@@ -65,7 +65,7 @@ namespace OrbiNom
     }
 
     // call every minute
-    public void PredictMorePasses()
+    internal async Task PredictMorePassesAsync()
     {
       DeleteOld();
 
@@ -73,10 +73,11 @@ namespace OrbiNom
 
       // add new
       var startTime = LastPredictionTime + PredictionTimeSpan;
-      var endTime = DateTime.UtcNow + PredictionTimeSpan;      
-      var newPasses = ComputePasses(startTime, endTime).Where(p => p.StartTime > startTime);
-      Passes.AddRange(newPasses);
+      var endTime = DateTime.UtcNow + PredictionTimeSpan;
 
+      var newPasses = await Task.Run(() => ComputePasses(startTime, endTime).Where(p => p.StartTime > startTime));
+
+      Passes.AddRange(newPasses);
       if (OnlyGroup) ctx.Announcer.AddToQueue(newPasses);
     }
 
