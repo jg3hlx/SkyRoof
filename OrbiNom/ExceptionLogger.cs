@@ -1,4 +1,6 @@
-﻿using Serilog;
+﻿using System.Diagnostics;
+using Serilog;
+using SharpGL;
 
 namespace VE3NEA
 {
@@ -34,6 +36,21 @@ namespace VE3NEA
       string errorMessage = $"Exception: {e.Message}\nModule: {e.Source} \nFunction: {e.TargetSite}"; // + "\n\nStack Trace:\n" + e.StackTrace;
       return MessageBox.Show(errorMessage, AppDomain.CurrentDomain.FriendlyName, MessageBoxButtons.AbortRetryIgnore,
           MessageBoxIcon.Stop);
+    }
+
+    internal static void CheckOpenglError(OpenGL gl, bool log = true)
+    {
+      uint err;
+
+      while ((err = gl.GetError()) != OpenGL.GL_NO_ERROR)
+        if (log)
+        {
+          string errorName = gl.ErrorString(err);
+          if (string.IsNullOrEmpty(errorName)) errorName = $"error {err}";
+          string message = $"OpenGL: {errorName}\n{new StackTrace(true)}";
+          Log.Error(message);
+          Debug.WriteLine(message);
+        }
     }
   }
 }

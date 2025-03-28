@@ -151,34 +151,9 @@ namespace OrbiNom
 
     internal static void CheckError(OpenGL gl, bool log = true)
     {
-      uint err;
-
-      while ((err = gl.GetError()) != OpenGL.GL_NO_ERROR)
-        if (log)
-        {
-          string stackTrace = new System.Diagnostics.StackTrace(true).ToString();
-          if (IsLoggableError(stackTrace))
-          {
-            string errorName = gl.ErrorString(err);
-            if (string.IsNullOrEmpty(errorName)) errorName = $"error {err}";
-            string message = $"OpenGL: {errorName}\n{stackTrace}";
-            Log.Error(message);
-            Debug.WriteLine(message);
-          }
-        }
+      ExceptionLogger.CheckOpenglError(gl, log);
     }
 
-    // AppendSpectrum may be called many times per second.
-    // If an error occurs inside that method, do not log it every time
-    private static DateTime NextLogErrortime = DateTime.MinValue;
-    private static bool IsLoggableError(string stackTrace)
-    {
-      if (!stackTrace.Contains("AppendSpectrum")) return true;
-
-      if (DateTime.UtcNow < NextLogErrortime) return false;
-      NextLogErrortime = DateTime.UtcNow + TimeSpan.FromSeconds(30);
-      return true;
-    }
 
 
 
@@ -278,11 +253,6 @@ namespace OrbiNom
         ScrollPos = Row / (float)SPECTRA_HEIGHT;
         OpenglControl.Invalidate();
       });
-    }
-
-    internal void Clear()
-    {
-      IndexedTexture.ClearBitmap();
     }
   }
 }

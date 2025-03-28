@@ -5,6 +5,7 @@ using SharpGL.SceneGraph.Assets;
 using SharpGL.SceneGraph;
 using System.Runtime.InteropServices;
 using Serilog;
+using VE3NEA;
 
 namespace OrbiNom
 {
@@ -148,7 +149,7 @@ namespace OrbiNom
 
     private void CheckError(OpenGL gl, bool log = true)
     {
-      WaterfallControl.CheckError(gl, log);
+      ExceptionLogger.CheckOpenglError(gl, log);
     }
   }
 }

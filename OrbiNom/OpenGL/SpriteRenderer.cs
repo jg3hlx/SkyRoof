@@ -10,6 +10,7 @@ using Serilog;
 using SharpGL;
 using SharpGL.Shaders;
 using SharpGL.VertexBuffers;
+using VE3NEA;
 
 namespace OrbiNom
 {
@@ -108,15 +109,7 @@ namespace OrbiNom
 
     internal void CheckError(bool log = true)
     {
-      uint err;
-
-      while ((err = gl.GetError()) != OpenGL.GL_NO_ERROR)
-        if (log)
-        {
-          string message = $"{gl.ErrorString(err)}\n{new StackTrace(true)}";
-          Log.Error(message);
-          Debug.WriteLine(message);
-        }
+      ExceptionLogger.CheckOpenglError(gl, log);
     }
   }
 }

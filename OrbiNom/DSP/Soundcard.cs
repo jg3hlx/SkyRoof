@@ -133,7 +133,17 @@ namespace VE3NEA
 
     internal string GetDisplayName()
     {
-      return mmDevice?.FriendlyName ?? "None Selected";
+      try
+      {
+        return mmDevice?.FriendlyName ?? "None Selected";
+      }
+      catch
+      {
+        // when the device is disconnected, we are not notified about this,
+        // but, but some internal variable in MMDevice becomes null
+        // then a call to FriendlyName throws an exception
+        return "Device Failed";
+      }
     }
   }
 }

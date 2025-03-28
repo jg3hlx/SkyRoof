@@ -5,6 +5,8 @@ using System.ComponentModel;
 
 namespace OrbiNom
 {
+  // todo: click on the frequency display opens direct input box
+
   public partial class FrequencyControl : UserControl
   {
     public Context ctx;

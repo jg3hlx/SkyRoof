@@ -231,7 +231,7 @@ namespace OrbiNom
       var rc = dlg.ShowDialog();
 
       if (rc == DialogResult.OK)
-        ctx.WaterfallPanel?.ClearWaterfall();
+        ctx.WaterfallPanel?.WaterfallControl?.Invalidate();
 
       StartSdrIfEnabled();
     }
@@ -247,7 +247,7 @@ namespace OrbiNom
       if (ctx.WaterfallPanel?.WaterfallControl != null)
       {
         ctx.WaterfallPanel.WaterfallControl.ScrollSpeed = ctx.Settings.Waterfall.Speed;
-        if (change) ctx.WaterfallPanel.WaterfallControl.IndexedTexture.ClearBitmap();
+        if (change) ctx.WaterfallPanel.ClearWaterfall();
       }
     }
 
@@ -363,7 +363,6 @@ namespace OrbiNom
       if (!ctx.SatnogsDb.Loaded) Environment.Exit(1);
 
       CheckDownloadTle();
-      //SatelliteNames.ProcessLotw(ctx);
     }
 
     private void LoadSatelliteData()
@@ -371,8 +370,8 @@ namespace OrbiNom
       ctx.SatnogsDb = new();
       ctx.SatnogsDb.ListUpdated += SatnogsDb_ListUpdated;
       ctx.SatnogsDb.TleUpdated += SatnogsDb_TleUpdated;
+      
       ctx.SatnogsDb.LoadFromFile();
-
       SatnogsDb_ListUpdated(null, null);
     }
 

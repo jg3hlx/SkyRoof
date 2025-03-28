@@ -34,7 +34,7 @@ namespace OrbiNom
     public EarthViewPanel(Context ctx)
     {
       InitializeComponent();
-      
+
       this.ctx = ctx;
       ctx.EarthViewPanel = this;
       ctx.MainForm.EarthViewMNU.Checked = true;
@@ -320,30 +320,7 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void CheckError(bool log = true)
     {
-      uint err;
-
-      while ((err = gl.GetError()) != OpenGL.GL_NO_ERROR)
-        if (log)
-        {
-          string stackTrace = new StackTrace(true).ToString();
-          if (IsLoggableError(stackTrace))
-            Log.Error($"{gl.ErrorString(err)}\n{stackTrace}");
-        }
-    }
-
-    // GL scene may be updated many times per second.
-    // If an error occurs, do not log it every time
-    private DateTime NextLogErrortime = DateTime.MinValue;
-
-    private bool IsLoggableError(string stackTrace)
-    {
-      return true;
-
-      // if (!stackTrace.Contains("AppendSpectrum")) return true;
-      // 
-      // if (DateTime.UtcNow < NextLogErrortime) return false;
-      // NextLogErrortime = DateTime.UtcNow + TimeSpan.FromSeconds(30);
-      // return true;
+      ExceptionLogger.CheckOpenglError(gl, log);
     }
   }
 }

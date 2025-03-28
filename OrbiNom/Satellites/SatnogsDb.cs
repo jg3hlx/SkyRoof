@@ -14,7 +14,8 @@ namespace OrbiNom
     private CancellationTokenSource cts;
 
     public IEnumerable<SatnogsDbSatellite> Satellites { get => SatelliteList.Values; }
-    public bool Loaded { get => SatelliteList.Count > 0; }
+    public bool Loaded { get => loaded; }
+    private bool loaded;
 
     public event EventHandler<ProgressChangedEventArgs>? DownloadProgress;
     public event EventHandler? TleUpdated;
@@ -42,6 +43,8 @@ namespace OrbiNom
         foreach(var sat in satellites)
           foreach (var tx in sat.Transmitters)
             tx.Satellite = sat;
+
+        loaded = SatelliteList.Count > 0;
       }
       catch (Exception ex)
       {
@@ -105,6 +108,7 @@ namespace OrbiNom
       try
       {
         ImportSatnogsTle();
+        SaveToFile();
         TleUpdated?.Invoke(this, EventArgs.Empty);
       }
       catch (Exception ex)
@@ -176,6 +180,8 @@ namespace OrbiNom
         }
 
         SaveToFile();
+
+        loaded = SatelliteList.Count > 0;
       }
       catch (Exception ex)
       {
