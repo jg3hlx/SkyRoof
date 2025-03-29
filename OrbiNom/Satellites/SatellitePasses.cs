@@ -95,7 +95,8 @@ namespace OrbiNom
 
       return Satellites
         .SelectMany(sat => ComputePassesFor(sat, startTime, endTime))
-        .OrderBy(p => p.StartTime);
+        .OrderBy(p => p.StartTime)
+        .ToArray(); // ToArray => computes passes now
     }
 
     public IEnumerable<SatellitePass> ComputePassesFor(SatnogsDbSatellite satellite, DateTime startTime, DateTime endTime)

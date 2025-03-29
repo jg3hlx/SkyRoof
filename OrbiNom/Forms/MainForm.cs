@@ -392,10 +392,10 @@ namespace OrbiNom
     public void CheckDownloadTle()
     {
       if (DateTime.UtcNow < ctx.Settings.Satellites.LastTleTime.AddDays(TLE_DOWNLOAD_DAYS)) return;
-      DownloadTle();
+      DownloadTle().DoNotAwait();
     }
 
-    private async void DownloadTle()
+    private async Task DownloadTle()
     {
       try
       {
@@ -434,7 +434,7 @@ namespace OrbiNom
 
     private void DownloadTleMNU_Click(object sender, EventArgs e)
     {
-      DownloadTle();
+      DownloadTle().DoNotAwait();
     }
 
     private void DataFolderMNU_Click(object sender, EventArgs e)
@@ -686,7 +686,7 @@ namespace OrbiNom
       EightHzTick();
       if (TickCount % (TICKS_PER_SECOND / 4) == 0) FourHertzTick();
       if (TickCount % TICKS_PER_SECOND == 0) OneSecondTick();
-      if (TickCount % (TICKS_PER_SECOND * 60) == 0) OneMinuteTick();
+      if (TickCount % (TICKS_PER_SECOND * 60) == 0) OneMinuteTick().DoNotAwait();
       if (TickCount % (TICKS_PER_SECOND * 3600) == 0) OneHourTick();
     }
 
@@ -713,7 +713,7 @@ namespace OrbiNom
 
       ShowCpuUsage();
     }
-    private async void OneMinuteTick()
+    private async Task OneMinuteTick()
     {
       await ctx.GroupPasses.PredictMorePassesAsync();
       await ctx.AllPasses.PredictMorePassesAsync();
