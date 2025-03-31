@@ -40,5 +40,7 @@ namespace OrbiNom
 
     // dsp
     public Slicer? Slicer;
+
+    public CatControl CatControl = new();
   }
 }

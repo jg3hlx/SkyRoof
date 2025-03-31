@@ -75,8 +75,10 @@
       SoundcardDropdownBtn = new ToolStripDropDownButton();
       VacLedLabel = new ToolStripStatusLabel();
       VacStatusLabel = new ToolStripStatusLabel();
-      OmniRigLedLabel = new ToolStripStatusLabel();
-      OmniRigStatusLabel = new ToolStripStatusLabel();
+      RxCatLedLabel = new ToolStripStatusLabel();
+      RxCatStatusLabel = new ToolStripStatusLabel();
+      TxCatLedLabel = new ToolStripStatusLabel();
+      TxCatStatusLabel = new ToolStripStatusLabel();
       SatDataLedLabel = new ToolStripStatusLabel();
       SatDataStatusLabel = new ToolStripStatusLabel();
       IqOutputLedLabel = new ToolStripStatusLabel();
@@ -376,7 +378,7 @@
       // StatusStrip
       // 
       StatusStrip.ImageScalingSize = new Size(24, 24);
-      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, SoundcardDropdownBtn, VacLedLabel, VacStatusLabel, OmniRigLedLabel, OmniRigStatusLabel, SatDataLedLabel, SatDataStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, NoiseFloorLabel, CpuLoadlabel });
+      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, SoundcardDropdownBtn, VacLedLabel, VacStatusLabel, RxCatLedLabel, RxCatStatusLabel, TxCatLedLabel, TxCatStatusLabel, SatDataLedLabel, SatDataStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, NoiseFloorLabel, CpuLoadlabel });
       StatusStrip.Location = new Point(0, 675);
       StatusStrip.Name = "StatusStrip";
       StatusStrip.ShowItemToolTips = true;
@@ -462,30 +464,56 @@
       // 
       VacStatusLabel.Font = new Font("Segoe UI", 10F);
       VacStatusLabel.Name = "VacStatusLabel";
-      VacStatusLabel.Size = new Size(43, 30);
-      VacStatusLabel.Text = "VAC  ";
+      VacStatusLabel.Size = new Size(101, 30);
+      VacStatusLabel.Text = "Output Stream";
       VacStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
       VacStatusLabel.Click += VacLabel_Click;
       VacStatusLabel.MouseEnter += StatusLabel_MouseEnter;
       VacStatusLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
-      // OmniRigLedLabel
+      // RxCatLedLabel
       // 
-      OmniRigLedLabel.Font = new Font("Webdings", 9F);
-      OmniRigLedLabel.ForeColor = Color.Gray;
-      OmniRigLedLabel.Name = "OmniRigLedLabel";
-      OmniRigLedLabel.Size = new Size(21, 30);
-      OmniRigLedLabel.Text = "n";
-      OmniRigLedLabel.Visible = false;
+      RxCatLedLabel.Font = new Font("Webdings", 9F);
+      RxCatLedLabel.ForeColor = Color.Gray;
+      RxCatLedLabel.Name = "RxCatLedLabel";
+      RxCatLedLabel.Size = new Size(21, 30);
+      RxCatLedLabel.Text = "n";
+      RxCatLedLabel.Click += RxCatLabel_Click;
+      RxCatLedLabel.MouseEnter += StatusLabel_MouseEnter;
+      RxCatLedLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
-      // OmniRigStatusLabel
+      // RxCatStatusLabel
       // 
-      OmniRigStatusLabel.Font = new Font("Segoe UI", 10F);
-      OmniRigStatusLabel.Name = "OmniRigStatusLabel";
-      OmniRigStatusLabel.Size = new Size(70, 30);
-      OmniRigStatusLabel.Text = "OmniRig  ";
-      OmniRigStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
-      OmniRigStatusLabel.Visible = false;
+      RxCatStatusLabel.Font = new Font("Segoe UI", 10F);
+      RxCatStatusLabel.Name = "RxCatStatusLabel";
+      RxCatStatusLabel.Size = new Size(53, 30);
+      RxCatStatusLabel.Text = "RX CAT";
+      RxCatStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+      RxCatStatusLabel.Click += RxCatLabel_Click;
+      RxCatStatusLabel.MouseEnter += StatusLabel_MouseEnter;
+      RxCatStatusLabel.MouseLeave += StatusLabel_MouseLeave;
+      // 
+      // TxCatLedLabel
+      // 
+      TxCatLedLabel.Font = new Font("Webdings", 9F);
+      TxCatLedLabel.ForeColor = Color.Gray;
+      TxCatLedLabel.Name = "TxCatLedLabel";
+      TxCatLedLabel.Size = new Size(21, 30);
+      TxCatLedLabel.Text = "n";
+      TxCatLedLabel.Click += TxCatLabel_Click;
+      TxCatLedLabel.MouseEnter += StatusLabel_MouseEnter;
+      TxCatLedLabel.MouseLeave += StatusLabel_MouseLeave;
+      // 
+      // TxCatStatusLabel
+      // 
+      TxCatStatusLabel.Font = new Font("Segoe UI", 10F);
+      TxCatStatusLabel.Name = "TxCatStatusLabel";
+      TxCatStatusLabel.Size = new Size(52, 30);
+      TxCatStatusLabel.Text = "TX CAT";
+      TxCatStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+      TxCatStatusLabel.Click += TxCatLabel_Click;
+      TxCatStatusLabel.MouseEnter += StatusLabel_MouseEnter;
+      TxCatStatusLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
       // SatDataLedLabel
       // 
@@ -601,8 +629,8 @@
     private ToolStripStatusLabel SoundcardStatusLabel;
     private ToolStripStatusLabel VacLedLabel;
     private ToolStripStatusLabel VacStatusLabel;
-    private ToolStripStatusLabel OmniRigLedLabel;
-    private ToolStripStatusLabel OmniRigStatusLabel;
+    private ToolStripStatusLabel TxCatLedLabel;
+    private ToolStripStatusLabel TxCatStatusLabel;
     private ToolStripStatusLabel SatDataLedLabel;
     private ToolStripStatusLabel SatDataStatusLabel;
     private ToolStripStatusLabel IqOutputLedLabel;
@@ -619,5 +647,7 @@
     private ToolStripDropDownButton SoundcardDropdownBtn;
     private Panel panel3;
     private GainControl GainControl;
+    private ToolStripStatusLabel RxCatLedLabel;
+    private ToolStripStatusLabel RxCatStatusLabel;
   }
 }

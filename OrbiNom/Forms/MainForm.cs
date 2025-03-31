@@ -29,6 +29,7 @@ namespace OrbiNom
       FrequencyControl.ctx = ctx;
       GainControl.ctx = ctx;
       ctx.Announcer.ctx = ctx;
+      ctx.CatControl.ctx = ctx;
 
       ctx.Settings.LoadFromFile();
 
@@ -41,7 +42,9 @@ namespace OrbiNom
       ctx.SpeakerSoundcard.StateChanged += Soundcard_StateChanged;
       ctx.AudioVacSoundcard.StateChanged += Soundcard_StateChanged;
       ctx.IqVacSoundcard.StateChanged += Soundcard_StateChanged;
+
       ApplyAudioSettings();
+      ctx.CatControl.ApplySettings();
     }
 
     private void MainForm_Load(object sender, EventArgs e)
@@ -370,7 +373,7 @@ namespace OrbiNom
       ctx.SatnogsDb = new();
       ctx.SatnogsDb.ListUpdated += SatnogsDb_ListUpdated;
       ctx.SatnogsDb.TleUpdated += SatnogsDb_TleUpdated;
-      
+
       ctx.SatnogsDb.LoadFromFile();
       SatnogsDb_ListUpdated(null, null);
     }
@@ -630,6 +633,35 @@ namespace OrbiNom
         SoundcardDropdownBtn.DropDownItems.Add(item);
       }
     }
+
+    private void RxCatLabel_Click(object sender, EventArgs e)
+    {
+      ctx.Settings.RxCat.Enabled = !ctx.Settings.RxCat.Enabled;
+      ctx.CatControl.ApplySettings();
+      ShowCatStatus();
+    }
+
+    private void TxCatLabel_Click(object sender, EventArgs e)
+    {
+      ctx.Settings.TxCat.Enabled = !ctx.Settings.TxCat.Enabled;
+      ctx.CatControl.ApplySettings();
+      ShowCatStatus();
+    }
+
+    public void ShowCatStatus()
+    {
+      if (ctx.CatControl.Rx == null) RxCatLedLabel.ForeColor = Color.Gray;
+      else if (!ctx.CatControl.Rx!.IsRunning()) RxCatLedLabel.ForeColor = Color.Red;
+      else RxCatLedLabel.ForeColor = Color.Lime;
+
+      if (ctx.CatControl.Tx == null) TxCatLedLabel.ForeColor = Color.Gray;
+      else if (!ctx.CatControl.Tx!.IsRunning()) TxCatLedLabel.ForeColor = Color.Red;
+      else TxCatLedLabel.ForeColor = Color.Lime;
+
+      RxCatStatusLabel.ToolTipText = ctx.CatControl.Rx?.GetStatusString() ?? "Disabled";
+      TxCatStatusLabel.ToolTipText = ctx.CatControl.Tx?.GetStatusString() ?? "Disabled";
+    }
+
 
 
 
