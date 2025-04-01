@@ -309,8 +309,8 @@ namespace OrbiNom
       foreach (var pass in ctx.AllPasses.Passes)
         if (pass.StartTime < now.AddMinutes(6) && pass.EndTime > now.AddMinutes(-25))
         {
-          var transmitters = pass.Satellite.Transmitters.Where(tx => tx.alive && tx.downlink_low != null);
-          var freqs = transmitters.Where(tx => tx.downlink_low.HasValue).Select(tx => (long)tx.downlink_low!).Distinct();
+          var transmitters = pass.Satellite.Transmitters.Where(tx => tx.alive);
+          var freqs = transmitters.Select(tx => tx.DownlinkLow).Distinct();
 
           foreach (var freq in freqs)
             Labels.Add(new TransmitterLabel(pass, freq));

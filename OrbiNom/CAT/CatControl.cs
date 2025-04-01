@@ -38,13 +38,13 @@ namespace OrbiNom
       // set up
       if (Rx != null)
       {
-        Rx.RxTuned += (s, e) => ctx.FrequencyControl.RxTuned();
+//{!}        Rx.RxTuned += (s, e) => ctx.FrequencyControl.RxTuned();
         Rx.StatusChanged += (s, e) => ctx.MainForm.ShowCatStatus();
         Rx.SetupRadio(true, Tx == Rx);
       }
       if (Tx != null)
       {
-        Tx.TxTuned += (s, e) => ctx.FrequencyControl.TxTuned();
+        //{!}        Tx.TxTuned += (s, e) => ctx.FrequencyControl.TxTuned();
         if (Tx != Rx)
         {
           Tx.StatusChanged += (s, e) => ctx.MainForm.ShowCatStatus();

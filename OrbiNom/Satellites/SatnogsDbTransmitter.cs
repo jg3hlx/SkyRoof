@@ -32,6 +32,8 @@
 
     internal SatnogsDbSatellite Satellite;
 
+    public long DownlinkLow => (long)downlink_low!;
+
     public string GetTooltipText()
     {
       string mode = this.mode;
@@ -58,16 +60,14 @@
 
     public bool IsVhf(long? freq = null)
     {
-      freq ??= downlink_low;
-      if (!freq.HasValue) return false;
+      freq ??= DownlinkLow;
 
       return freq >= 144000000 && freq <= 148000000;
     }
 
     public bool IsUhf(long? freq = null)
     {
-      freq ??= downlink_low;
-      if (!freq.HasValue) return false;
+      freq ??= DownlinkLow;
 
       return freq >= 430000000 && freq <= 440000000;
     }

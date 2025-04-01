@@ -10,11 +10,11 @@ namespace OrbiNom
   public partial class FrequencyControl : UserControl
   {
     public Context ctx;
-    public double? Frequency;
     private TopocentricObservation Observation;
     private bool Changing;
-    public double? CorrectedDownlinkFrequency;
     private bool IsTerrestrial = true;
+    public double DownlinkFrequency, CorrectedDownlinkFrequency;
+    public double? UplinkFrequency, CorrectedUplinkFrequency;
 
     public Slicer.Mode DownlinkMode => (Slicer.Mode)DownlinkModeCombobox.SelectedItem!;
     public Slicer.Mode UplinkMode => (Slicer.Mode)UplinkModeCombobox.SelectedItem!;
@@ -51,17 +51,17 @@ namespace OrbiNom
       DownlinkRitCheckbox.Checked = false;
       DownlinkRitSpinner.Value = 0;
 
-      Frequency = tx.downlink_low;
+      DownlinkFrequency = tx.DownlinkLow;
 
       if (IsTransponder())
-        Frequency += ctx.Settings.Satellites.
+        DownlinkFrequency += ctx.Settings.Satellites.
           TransmitterCustomizations.GetOrCreate(tx.uuid).TranspnderOffset;
 
       SetMode();
       UpdateAllControls();
       UpdateFrequency();
       SetSlicerFrequency();
-      ctx.WaterfallPanel?.BringInView(CorrectedDownlinkFrequency!.Value);
+      ctx.WaterfallPanel?.BringInView(CorrectedDownlinkFrequency);
     }
 
     internal void SetTerrestrialFrequency(double frequency)
@@ -71,7 +71,7 @@ namespace OrbiNom
       DownlinkRitCheckbox.Checked = false;
       DownlinkRitSpinner.Value = 0;
 
-      CorrectedDownlinkFrequency = Frequency = frequency;
+      CorrectedDownlinkFrequency = DownlinkFrequency = frequency;
       SetSlicerFrequency();
       UpdateAllControls();
     }
@@ -89,7 +89,7 @@ namespace OrbiNom
       if (transponder != ctx.SatelliteSelector.SelectedTransmitter)
         ctx.SatelliteSelector.SetSelectedTransmitter(transponder);
 
-      Frequency = transponder.downlink_low + offset;
+      DownlinkFrequency = transponder.DownlinkLow + offset;
 
       UpdateAllControls();
     }
@@ -106,7 +106,7 @@ namespace OrbiNom
       // terrestrial
       else if (IsTerrestrial)
       {
-        CorrectedDownlinkFrequency = Frequency = Frequency!.Value + delta;
+        CorrectedDownlinkFrequency = DownlinkFrequency = DownlinkFrequency + delta;
         SetSlicerFrequency();
       }
 
@@ -116,7 +116,7 @@ namespace OrbiNom
         var transponder = ctx.SatelliteSelector.SelectedTransmitter;
         var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
         cust.TranspnderOffset += delta;
-        Frequency = transponder.downlink_low + cust.TranspnderOffset;
+        DownlinkFrequency = transponder.DownlinkLow + cust.TranspnderOffset;
       }
 
       // transmitter
@@ -139,7 +139,7 @@ namespace OrbiNom
 
     internal double GetDraggableFrequency()
     {
-      if (IsTerrestrial) return Frequency!.Value;
+      if (IsTerrestrial) return DownlinkFrequency;
 
       else if (IsTransponder())
       {
@@ -152,13 +152,13 @@ namespace OrbiNom
 
     internal void SetDraggableFrequency(double freq)
     {
-      if (IsTerrestrial) Frequency = freq;
+      if (IsTerrestrial) DownlinkFrequency = freq;
       else if (IsTransponder())
       {
         var transponder = ctx.SatelliteSelector.SelectedTransmitter;
         var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
         cust.TranspnderOffset = freq;
-        Frequency = transponder.downlink_low + cust.TranspnderOffset;
+        DownlinkFrequency = transponder.DownlinkLow + cust.TranspnderOffset;
       }
       else
         DownlinkManualSpinner.Value = 
@@ -186,7 +186,7 @@ namespace OrbiNom
         DownlinkManualSpinner.Value = 0;
         Changing = false;
 
-        CorrectedDownlinkFrequency = Frequency;
+        CorrectedDownlinkFrequency = DownlinkFrequency;
         if (DownlinkRitCheckbox.Checked) CorrectedDownlinkFrequency += RitOffset;
 
         SetFieldColors(null);
@@ -196,11 +196,11 @@ namespace OrbiNom
         Observation = ctx.AllPasses.ObserveSatellite(ctx.SatelliteSelector.SelectedSatellite, DateTime.UtcNow);
 
         // downlink
-        double doppler = (double)Frequency! * -Observation.RangeRate / 3e5;
+        double doppler = (double)DownlinkFrequency! * -Observation.RangeRate / 3e5;
         string sign = doppler > 0 ? "+" : "";
         DownlinkDopplerLabel.Text = $"{sign}{doppler:n0}";
 
-        CorrectedDownlinkFrequency = Frequency;
+        CorrectedDownlinkFrequency = DownlinkFrequency;
         if (DownlinkDopplerCheckbox.Checked) CorrectedDownlinkFrequency += doppler;
         if (DownlinkManualCheckbox.Checked) CorrectedDownlinkFrequency += (double)DownlinkManualSpinner.Value * 1000;
         if (DownlinkRitCheckbox.Checked) CorrectedDownlinkFrequency += RitOffset;
@@ -381,7 +381,7 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void UpdateAllControls()
     {
-      DownlinkFrequencyLabel.Text = Frequency.HasValue ? $"{Frequency:n0}" : "000,000,000";
+      DownlinkFrequencyLabel.Text = $"{DownlinkFrequency:n0}";
 
       if (IsTerrestrial)
       {

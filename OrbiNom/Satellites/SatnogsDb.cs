@@ -200,8 +200,11 @@ namespace OrbiNom
     private void ImportSatnogsTransmitters()
     {
       string json = File.ReadAllText(Path.Combine(DownloadsFolder, "transmitters.json"));
-      SatnogsDbTransmitterList transmitters = JsonConvert.DeserializeObject<SatnogsDbTransmitterList>(json);
-      foreach (SatnogsDbTransmitter t in transmitters)
+      SatnogsDbTransmitterList transmitters = JsonConvert.DeserializeObject<SatnogsDbTransmitterList>(json)!;
+
+      // only transmitters with downlink frequency are imported.
+      // currently 3 transmitters out of 2K+ have downlink_low=null: KOSEN-2, CHUBUSAT-2 and CHUBUSAT-3
+      foreach (SatnogsDbTransmitter t in transmitters.Where(t => t.downlink_low.HasValue))
       {
         var sat = SatelliteList.GetValueOrDefault(t.sat_id);
         if (sat != null)

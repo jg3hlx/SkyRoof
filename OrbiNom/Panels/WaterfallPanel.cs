@@ -317,7 +317,7 @@ namespace OrbiNom
       // tune to offset in transponder passband
       if (label != null)
       {
-        double offset = ScaleControl.PixelToNominalFreq(label.Pass, DateTime.UtcNow, x) - (double)label.Transponder!.downlink_low!;
+        double offset = ScaleControl.PixelToNominalFreq(label.Pass, DateTime.UtcNow, x) - label.Transponder!.DownlinkLow;
         ctx.FrequencyControl.SetTransponderOffset(label.Transponder, offset);
       }
 
