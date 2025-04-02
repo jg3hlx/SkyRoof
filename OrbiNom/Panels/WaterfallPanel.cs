@@ -30,7 +30,7 @@ namespace OrbiNom
       ScaleControl.BuildLabels();
       ScaleControl.MouseMove += ScaleControl_MouseMove;
       ScaleControl.MouseDown += ScaleControl_MouseDown;
-      ScaleControl.MouseUp += ScaleControl_MouseUp; ;
+      ScaleControl.MouseUp += ScaleControl_MouseUp; 
       ScaleControl.MouseLeave += ScaleControl_MouseLeave;
       ScaleControl.MouseWheel += ScaleControl_MouseWheel;
 
@@ -276,7 +276,7 @@ namespace OrbiNom
 
       if (e.Button == MouseButtons.Right) ctx.FrequencyControl.RitEnabled = !ctx.FrequencyControl.RitEnabled;
 
-      if (ScaleControl.IsMouseInFilter(MouseDownX))
+      if (ScaleControl.GetTransponderUnderCursor(MouseDownX) != null)
         ScaleControl.Cursor = Cursors.PanSouth;
       else
         ScaleControl.Cursor = Cursors.Cross;

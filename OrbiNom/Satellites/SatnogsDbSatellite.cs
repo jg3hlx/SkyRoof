@@ -251,7 +251,7 @@ namespace OrbiNom
 
       string tooltipText = $"{names}\nNORAD: {norad_cat_id}\nstatus: {status}\ncountries: {countries}";
       if (Tle != null) tooltipText +=
-          $"\nTLE: {Tle.updated:yyyy-MM-dd hh:mm}\nperiod: {Period} min.\ninclination: {Inclination}°\n" +
+          $"\nTLE: {Tle.updated:yyyy-MM-dd hh:mm} ({Tle.tle_source})\nperiod: {Period} min.\ninclination: {Inclination}°\n" +
           $"footprint: {Footprint} km\naltitude: {Altitude}";
       tooltipText += $"\nradio: {radio}";
       if (!string.IsNullOrEmpty(LotwName)) tooltipText += "\nAccepted by LoTW";

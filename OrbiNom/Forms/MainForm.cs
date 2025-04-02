@@ -732,7 +732,7 @@ namespace OrbiNom
       Clock.ShowTime();
       ctx.SkyViewPanel?.Advance();
       ctx.WaterfallPanel?.ScaleControl?.Invalidate();
-      FrequencyControl?.UpdateFrequency();
+      FrequencyControl?.ClockTick();
     }
 
     private void OneSecondTick()
@@ -838,6 +838,7 @@ namespace OrbiNom
     {
       FrequencyControl.SetTransmitter();
       ctx.TransmittersPanel?.ShowSelectedTransmitter();
+      ctx.WaterfallPanel?.BringInView(ctx.FrequencyControl.CorrectedDownlinkFrequency);
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)

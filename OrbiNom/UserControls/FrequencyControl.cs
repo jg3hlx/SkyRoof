@@ -1,20 +1,22 @@
 ﻿using SGPdotNET.Observation;
 using VE3NEA;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.ComponentModel;
+using System.Diagnostics;
+using Newtonsoft.Json.Linq;
+using System.Runtime.CompilerServices;
 
 namespace OrbiNom
 {
   // todo: click on the frequency display opens direct input box
+  // todo: toggle freq/corrected-freq display
 
   public partial class FrequencyControl : UserControl
   {
     public Context ctx;
-    private TopocentricObservation Observation;
+    private TopocentricObservation? Observation;
     private bool Changing;
-    private bool IsTerrestrial = true;
     public double DownlinkFrequency, CorrectedDownlinkFrequency;
-    public double? UplinkFrequency, CorrectedUplinkFrequency;
+    public double UplinkFrequency, CorrectedUplinkFrequency;
 
     public Slicer.Mode DownlinkMode => (Slicer.Mode)DownlinkModeCombobox.SelectedItem!;
     public Slicer.Mode UplinkMode => (Slicer.Mode)UplinkModeCombobox.SelectedItem!;
@@ -24,6 +26,15 @@ namespace OrbiNom
     public double RitOffset { get => (double)DownlinkRitSpinner.Value * 1000; }
 
 
+    // shortcuts
+    private SatnogsDbSatellite Sat => ctx.SatelliteSelector.SelectedSatellite;
+    private SatnogsDbTransmitter Tx => ctx.SatelliteSelector.SelectedTransmitter;
+    private SatelliteCustomization SatCust => ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(Sat.sat_id);
+    private TransmitterCustomization TxCust => ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(Tx.uuid);
+    private bool IsTransponder => Tx.downlink_high.HasValue && Tx.downlink_high != Tx.downlink_low;
+    private bool HasUplink => UplinkFrequency > 0;
+
+    private bool IsTerrestrial = true;
 
     public FrequencyControl()
     {
@@ -41,253 +52,80 @@ namespace OrbiNom
 
 
     //----------------------------------------------------------------------------------------------
-    //                                        set
+    //                                 set from outside
     //----------------------------------------------------------------------------------------------
     public void SetTransmitter()
     {
-      SetTerrestrial(false);
-      var tx = ctx.SatelliteSelector.SelectedTransmitter;
-
-      DownlinkRitCheckbox.Checked = false;
-      DownlinkRitSpinner.Value = 0;
-
-      DownlinkFrequency = tx.DownlinkLow;
-
-      if (IsTransponder())
-        DownlinkFrequency += ctx.Settings.Satellites.
-          TransmitterCustomizations.GetOrCreate(tx.uuid).TranspnderOffset;
-
-      SetMode();
-      UpdateAllControls();
-      UpdateFrequency();
-      SetSlicerFrequency();
-      ctx.WaterfallPanel?.BringInView(CorrectedDownlinkFrequency);
+      IsTerrestrial = false;
+      SetModes();
+      SetFrequencies();
+      SettingsToUi();
     }
 
     internal void SetTerrestrialFrequency(double frequency)
     {
-      SetTerrestrial(true);
-
-      DownlinkRitCheckbox.Checked = false;
-      DownlinkRitSpinner.Value = 0;
-
-      CorrectedDownlinkFrequency = DownlinkFrequency = frequency;
-      SetSlicerFrequency();
-      UpdateAllControls();
+      IsTerrestrial = true;
+      DownlinkFrequency = frequency;
+      SetFrequencies();
+      SettingsToUi();
     }
 
     internal void SetTransponderOffset(SatnogsDbTransmitter transponder, double offset)
     {
-      SetTerrestrial(false);
+      // set the offset first
+      var transponderCust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
+      transponderCust.TranspnderOffset = offset;
 
-      DownlinkRitCheckbox.Checked = false;
-      DownlinkRitSpinner.Value = 0;
+      // if same TX, just force its settings in case we were in terrestrial mode and changed them
+      if (transponder == Tx) SetTransmitter();
 
-      var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
-      cust.TranspnderOffset = offset;
-
-      if (transponder != ctx.SatelliteSelector.SelectedTransmitter)
-        ctx.SatelliteSelector.SetSelectedTransmitter(transponder);
-
-      DownlinkFrequency = transponder.DownlinkLow + offset;
-
-      UpdateAllControls();
+      // different TX, select it for all panels in the app
+      else ctx.SatelliteSelector.SetSelectedTransmitter(transponder);
     }
 
     internal void IncrementFrequency(int delta)
     {
-      var tx = ctx.SatelliteSelector.SelectedTransmitter;
+      //Ctrl-mousewheel-spin enables RIT
+      DownlinkRitCheckbox.Checked = ModifierKeys.HasFlag(Keys.Control);
 
       // RIT
-      DownlinkRitCheckbox.Checked = ModifierKeys.HasFlag(Keys.Control);
       if (RitEnabled)
         DownlinkRitSpinner.Value += (decimal)(delta / 1000d);
 
       // terrestrial
       else if (IsTerrestrial)
-      {
-        CorrectedDownlinkFrequency = DownlinkFrequency = DownlinkFrequency + delta;
-        SetSlicerFrequency();
-      }
+        DownlinkFrequency += delta;
 
       // transponder
-      else if (IsTransponder())
-      {
-        var transponder = ctx.SatelliteSelector.SelectedTransmitter;
-        var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
-        cust.TranspnderOffset += delta;
-        DownlinkFrequency = transponder.DownlinkLow + cust.TranspnderOffset;
-      }
+      else if (IsTransponder)
+        TxCust.TranspnderOffset += delta;
 
       // transmitter
       else
-      {
-        var value = DownlinkManualSpinner.Value + (decimal)(delta / 1000d);
-        value = Math.Max(DownlinkManualSpinner.Minimum, Math.Min(DownlinkManualSpinner.Maximum, value));
-        DownlinkManualSpinner.Value = value;
-      }
+        IncrementSpinnerValue(DownlinkManualSpinner, delta);
 
-      UpdateFrequency();
-      UpdateAllControls();
-    }
-
-    private bool IsTransponder()
-    {
-      var tx = ctx.SatelliteSelector.SelectedTransmitter;
-      return tx.downlink_high.HasValue && tx.downlink_high != tx.downlink_low;
+      SetFrequencies();
     }
 
     internal double GetDraggableFrequency()
     {
       if (IsTerrestrial) return DownlinkFrequency;
-
-      else if (IsTransponder())
-      {
-        var transponder = ctx.SatelliteSelector.SelectedTransmitter;
-        var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
-        return cust.TranspnderOffset;
-      }
-      else return (double)DownlinkManualSpinner.Value * 1000d;
+      else if (IsTransponder) return TxCust.TranspnderOffset;
+      else return SatCust.DownlinkManualCorrection;
     }
 
     internal void SetDraggableFrequency(double freq)
     {
       if (IsTerrestrial) DownlinkFrequency = freq;
-      else if (IsTransponder())
-      {
-        var transponder = ctx.SatelliteSelector.SelectedTransmitter;
-        var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
-        cust.TranspnderOffset = freq;
-        DownlinkFrequency = transponder.DownlinkLow + cust.TranspnderOffset;
-      }
-      else
-        DownlinkManualSpinner.Value = 
-          Math.Max(DownlinkManualSpinner.Minimum,
-          Math.Min(DownlinkManualSpinner.Maximum,
-          (decimal)(freq / 1000)));
-      UpdateAllControls();
+      else if (IsTransponder) TxCust.TranspnderOffset = freq;
+      else SetSpinnerValue(DownlinkManualSpinner, (decimal)(freq / 1000));
+
+      SetFrequencies();
     }
 
-
-
-
-
-    //----------------------------------------------------------------------------------------------
-    //                                   4-Hz timer tick
-    //----------------------------------------------------------------------------------------------
-    internal void UpdateFrequency()
+    internal void ClockTick()
     {
-      if (IsTerrestrial)
-      // todo: call this once
-      {
-        DownlinkDopplerLabel.Text = "0.000";
-
-        Changing = true;
-        DownlinkManualSpinner.Value = 0;
-        Changing = false;
-
-        CorrectedDownlinkFrequency = DownlinkFrequency;
-        if (DownlinkRitCheckbox.Checked) CorrectedDownlinkFrequency += RitOffset;
-
-        SetFieldColors(null);
-      }
-      else
-      {
-        Observation = ctx.AllPasses.ObserveSatellite(ctx.SatelliteSelector.SelectedSatellite, DateTime.UtcNow);
-
-        // downlink
-        double doppler = (double)DownlinkFrequency! * -Observation.RangeRate / 3e5;
-        string sign = doppler > 0 ? "+" : "";
-        DownlinkDopplerLabel.Text = $"{sign}{doppler:n0}";
-
-        CorrectedDownlinkFrequency = DownlinkFrequency;
-        if (DownlinkDopplerCheckbox.Checked) CorrectedDownlinkFrequency += doppler;
-        if (DownlinkManualCheckbox.Checked) CorrectedDownlinkFrequency += (double)DownlinkManualSpinner.Value * 1000;
-        if (DownlinkRitCheckbox.Checked) CorrectedDownlinkFrequency += RitOffset;
-
-        // uplink
-        var tx = ctx.SatelliteSelector.SelectedTransmitter;
-        var txFreq = tx.invert ? tx.uplink_high : tx.uplink_low;
-        if (txFreq.HasValue)
-        {
-          doppler = (double)txFreq * Observation.RangeRate / 3e5;
-          sign = doppler > 0 ? "+" : "";
-          UplinkDopplerLabel.Text = $"{sign}{doppler:n0}";
-          SetFieldColors(txFreq);
-        }
-        else
-        {
-          UplinkDopplerLabel.Text = "0.000";
-          SetFieldColors(txFreq);
-        }
-
-        var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(ctx.SatelliteSelector.SelectedSatellite.sat_id);
-        Changing = true;
-        DownlinkDopplerCheckbox.Checked = cust.DownlinkDopplerCorrectionEnabled;
-        DownlinkManualCheckbox.Checked = cust.DownlinkManualCorrectionEnabled;
-        DownlinkManualSpinner.Value = (decimal)(cust.DownlinkManualCorrection / 1000f);
-        Changing = false;
-
-        SetSlicerFrequency();
-      }
-    }
-
-
-
-
-    //----------------------------------------------------------------------------------------------
-    //                                      UI events
-    //----------------------------------------------------------------------------------------------
-    private void DownlinkManualSpinner_ValueChanged(object sender, EventArgs e)
-    {
-      if (Changing || IsTerrestrial) return;
-      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(ctx.SatelliteSelector.SelectedSatellite.sat_id);
-      cust.DownlinkManualCorrection = (int)(DownlinkManualSpinner.Value * 1000);
-    }
-
-    private void DownlinkManualCheckbox_CheckedChanged(object sender, EventArgs e)
-    {
-      if (Changing || IsTerrestrial) return;
-      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(ctx.SatelliteSelector.SelectedSatellite.sat_id);
-      cust.DownlinkManualCorrectionEnabled = DownlinkManualCheckbox.Checked;
-    }
-
-    private void DownlinkDopplerCheckbox_CheckedChanged(object sender, EventArgs e)
-    {
-      if (Changing || IsTerrestrial) return;
-      var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(ctx.SatelliteSelector.SelectedSatellite.sat_id);
-      cust.DownlinkDopplerCorrectionEnabled = DownlinkDopplerCheckbox.Checked;
-    }
-
-    private void ModeCombobox_SelectedValueChanged(object sender, EventArgs e)
-    {
-      if (Changing) return;
-
-      // mode from comboboxes to settings
-      if (!IsTerrestrial)
-      {
-        var tx = ctx.SatelliteSelector.SelectedTransmitter;
-        var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(tx.uuid);
-        cust.DownlinkMode = (Slicer.Mode)DownlinkModeCombobox.SelectedItem!;
-        cust.UplinkMode = (Slicer.Mode)UplinkModeCombobox.SelectedItem!;
-      }
-
-      SetMode();
-    }
-
-    private void label3_Click(object sender, EventArgs e)
-    {
-      DownlinkDopplerCheckbox.Checked = !DownlinkDopplerCheckbox.Checked;
-    }
-
-    private void label4_Click(object sender, EventArgs e)
-    {
-      DownlinkManualCheckbox.Checked = !DownlinkManualCheckbox.Checked;
-    }
-
-    private void label7_Click(object sender, EventArgs e)
-    {
-      DownlinkRitCheckbox.Checked = !DownlinkRitCheckbox.Checked;
+      if (!IsTerrestrial) SetFrequencies();
     }
 
 
@@ -296,24 +134,21 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                      internal set
     //----------------------------------------------------------------------------------------------
-    private void SetMode()
+    private void SetModes()
     {
       if (!IsTerrestrial)
       {
-        // read settings
-        var tx = ctx.SatelliteSelector.SelectedTransmitter;
-        var cust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(tx.uuid);
-
         // set in comboboxes
-        Changing = true;
-        DownlinkModeCombobox.SelectedItem = cust.DownlinkMode;
-        UplinkModeCombobox.SelectedItem = cust.UplinkMode;
-        Changing = false;
+        DownlinkModeCombobox.SelectedItem = TxCust.DownlinkMode;
+        UplinkModeCombobox.SelectedItem = TxCust.UplinkMode;
       }
 
       // set in slicer
-      if (ctx.Slicer != null)
-        ctx.Slicer.CurrentMode = (Slicer.Mode)DownlinkModeCombobox.SelectedItem!;
+      if (ctx.Slicer != null) ctx.Slicer.CurrentMode = DownlinkMode;
+
+      // set in external radio
+      ctx.CatControl.Rx?.SetRxMode(TxCust.DownlinkMode);
+      ctx.CatControl.Tx?.SetTxMode(TxCust.UplinkMode);
     }
 
     private void SetSlicerFrequency()
@@ -377,86 +212,266 @@ namespace OrbiNom
 
 
     //----------------------------------------------------------------------------------------------
-    //                                      settings to UI
+    //                                      UI events
     //----------------------------------------------------------------------------------------------
-    private void UpdateAllControls()
+    private void DownlinkManualSpinner_ValueChanged(object sender, EventArgs e)
     {
-      DownlinkFrequencyLabel.Text = $"{DownlinkFrequency:n0}";
-
-      if (IsTerrestrial)
-      {
-        SatelliteLabel.Text = "Terrestrial";
-        SatelliteLabel.ForeColor = Color.Red;
-        DownlinkFrequencyLabel.ForeColor = Color.Gray;
-
-        UplinkLabel.Text = "No Uplink";
-        UplinkFrequencyLabel.ForeColor = SystemColors.ControlText;
-      }
-      else
-      {
-        SatelliteLabel.Text = "Downlink";
-        SatelliteLabel.ForeColor = Color.Black;
-
-        Observation = ctx.AllPasses.ObserveSatellite(ctx.SatelliteSelector.SelectedSatellite, DateTime.UtcNow);
-
-        var tx = ctx.SatelliteSelector.SelectedTransmitter;
-        var txFreq = tx.invert ? tx.uplink_high : tx.uplink_low;
-        UplinkLabel.Text = txFreq.HasValue ? "Uplink" : "No Uplink";
-        UplinkFrequencyLabel.Text = txFreq.HasValue ? $"{txFreq:n0}" : "000,000,000";
-
-        SetFieldColors(txFreq);
-      }
+      //if (!Changing && !IsTerrestrial)
+      SatCust.DownlinkManualCorrection = (int)(DownlinkManualSpinner.Value * 1000);
     }
 
-    private void SetFieldColors(long? upFreq)
+    private void DownlinkManualCheckbox_CheckedChanged(object sender, EventArgs e)
     {
-      if (IsTerrestrial) return;
-
-      bool isAboveHorizon = Observation.Elevation.Degrees > 0;
-
-      var tx = ctx.SatelliteSelector.SelectedTransmitter;
-
-      if (tx.IsUhf())
-        DownlinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Cyan : Color.Teal;
-      else if (tx.IsVhf())
-        DownlinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Yellow : Color.Olive;
-      else DownlinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.White : Color.Gray;
-
-      if (!upFreq.HasValue)
-        UplinkFrequencyLabel.ForeColor = Color.Gray;
-      else if (tx.IsUhf(upFreq))
-        UplinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Cyan : Color.Teal;
-      else if (tx.IsVhf(upFreq))
-        UplinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.Yellow : Color.Olive;
-      else UplinkFrequencyLabel.ForeColor = isAboveHorizon ? Color.White : Color.Gray;
+      //if (!Changing && !IsTerrestrial)
+      SatCust.DownlinkManualCorrectionEnabled = DownlinkManualCheckbox.Checked;
     }
 
-    private void SetTerrestrial(bool value)
+    private void DownlinkDopplerCheckbox_CheckedChanged(object sender, EventArgs e)
     {
-      IsTerrestrial = value;
+      //if (!Changing && !IsTerrestrial)
+      SatCust.DownlinkDopplerCorrectionEnabled = DownlinkDopplerCheckbox.Checked;
+    }
 
-      if (IsTerrestrial)
+    private void UplinkManualSpinner_ValueChanged(object sender, EventArgs e)
+    {
+      //if (!Changing && !IsTerrestrial && HasUplink)
+      SatCust.UplinkManualCorrection = (int)(UplinkManualSpinner.Value * 1000);
+    }
+
+    private void UplinkManualCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+      //if (!Changing && !IsTerrestrial)
+      SatCust.UplinkManualCorrectionEnabled = UplinkManualCheckbox.Checked;
+    }
+
+    private void UplinkDopplerCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+      //if (!Changing && !IsTerrestrial)
+      SatCust.UplinkDopplerCorrectionEnabled = UplinkDopplerCheckbox.Checked;
+    }
+
+    private void ModeCombobox_SelectedValueChanged(object sender, EventArgs e)
+    {
+      if (Changing) return;
+
+      // mode from comboboxes to settings
+      if (!IsTerrestrial)
       {
-        DownlinkDopplerCheckbox.Visible = false;
-        DownlinkDopplerLabel.BackColor = SystemColors.Control;
-
-        DownlinkManualCheckbox.Visible = false;
-        DownlinkManualSpinner.BackColor = SystemColors.Control;
+        TxCust.DownlinkMode = DownlinkMode;
+        TxCust.UplinkMode = UplinkMode;
       }
-      else
-      {
-        DownlinkDopplerCheckbox.Visible = true;
-        DownlinkDopplerLabel.BackColor = SystemColors.Window;
 
-        DownlinkManualCheckbox.Visible = true;
-        DownlinkManualSpinner.BackColor = SystemColors.Window;
-      }
+      SetModes();
+    }
+
+    private void label3_Click(object sender, EventArgs e)
+    {
+      DownlinkDopplerCheckbox.Checked = !DownlinkDopplerCheckbox.Checked;
+    }
+
+    private void label4_Click(object sender, EventArgs e)
+    {
+      DownlinkManualCheckbox.Checked = !DownlinkManualCheckbox.Checked;
+    }
+
+    private void label7_Click(object sender, EventArgs e)
+    {
+      DownlinkRitCheckbox.Checked = !DownlinkRitCheckbox.Checked;
     }
 
     private void Spinner_DoubleClick(object sender, EventArgs e)
     {
       var spinner = (NumericUpDown)sender;
       spinner.Value = 0;
+    }
+
+
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                    frequencies
+    //----------------------------------------------------------------------------------------------
+    private void SetFrequencies()
+    {
+      bool bright = true;
+      double dopplerFactor = 0;
+
+      if (IsTerrestrial)
+      {
+        CorrectedDownlinkFrequency = DownlinkFrequency;
+        if (DownlinkRitCheckbox.Checked) CorrectedDownlinkFrequency += RitOffset;
+        CorrectedUplinkFrequency = UplinkFrequency = 0;
+      }
+
+      else
+      {
+        // doppler
+        var observation = ctx.AllPasses.ObserveSatellite(Sat, DateTime.UtcNow);
+        dopplerFactor = observation.RangeRate / 3e5;
+        bright = observation.Elevation > 0;
+
+        // downlink
+        DownlinkFrequency = Tx.DownlinkLow;
+        if (IsTransponder) DownlinkFrequency += TxCust.TranspnderOffset;
+
+        CorrectedDownlinkFrequency = DownlinkFrequency;
+        if (DownlinkRitCheckbox.Checked) CorrectedDownlinkFrequency += RitOffset;
+        if (DownlinkManualCheckbox.Checked) CorrectedDownlinkFrequency += SatCust.DownlinkManualCorrection;
+        if (DownlinkDopplerCheckbox.Checked) CorrectedDownlinkFrequency *= 1 - dopplerFactor;
+
+        // uplink
+        if (IsTransponder)
+          if (Tx.invert) UplinkFrequency = (double)Tx.uplink_high! - TxCust.TranspnderOffset;
+          else UplinkFrequency = (double)Tx.uplink_low! + TxCust.TranspnderOffset;
+        else if (Tx.uplink_low.HasValue) UplinkFrequency = (double)Tx.uplink_low;
+        else UplinkFrequency = 0;
+
+        CorrectedUplinkFrequency = UplinkFrequency;
+        if (UplinkManualCheckbox.Checked) CorrectedUplinkFrequency += SatCust.UplinkManualCorrection;
+        if (UplinkDopplerCheckbox.Checked) CorrectedUplinkFrequency *= 1 + dopplerFactor;
+      }
+
+      // send to slicer and CAT
+      SetSlicerFrequency();
+      ctx.CatControl.Rx?.SetRxFrequency(CorrectedDownlinkFrequency);
+      if (CorrectedUplinkFrequency != 0) ctx.CatControl.Tx?.SetTxFrequency(CorrectedUplinkFrequency);
+
+      // show
+      FrequenciesToUi(dopplerFactor);
+      SetFrequencyColors(bright);
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                      settings to UI
+    //----------------------------------------------------------------------------------------------
+    private void FrequenciesToUi(double dopplerFactor)
+    {
+      DownlinkFrequencyLabel.Text = $"{DownlinkFrequency:n0}";
+      UplinkFrequencyLabel.Text = UplinkFrequency == 0 ? "000,000,000" : $"{UplinkFrequency:n0}";
+
+      string sign = dopplerFactor >= 0 ? "" : "+";
+      double offset = -DownlinkFrequency * dopplerFactor;
+      DownlinkDopplerLabel.Text = offset == 0 ? "0,000" : $"{sign}{offset:n0}";
+
+      sign = dopplerFactor > 0 ? "+" : "";
+      offset = UplinkFrequency * dopplerFactor;
+      UplinkDopplerLabel.Text = offset == 0 ? "0,000" : $"{sign}{offset:n0}";
+    }
+
+    private void SetFrequencyColors(bool bright)
+    {
+      // downlink
+      if (Tx.IsUhf())
+        DownlinkFrequencyLabel.ForeColor = bright ? Color.Cyan : Color.Teal;
+      else if (Tx.IsVhf())
+        DownlinkFrequencyLabel.ForeColor = bright ? Color.Yellow : Color.Olive;
+      else
+        DownlinkFrequencyLabel.ForeColor = bright ? Color.White : Color.Gray;
+
+      // uplink
+      if (!HasUplink)
+        UplinkFrequencyLabel.ForeColor = Color.Gray;
+      else if (Tx.IsUhf((long)UplinkFrequency))
+        UplinkFrequencyLabel.ForeColor = bright ? Color.Cyan : Color.Teal;
+      else if (Tx.IsVhf((long)UplinkFrequency))
+        UplinkFrequencyLabel.ForeColor = bright ? Color.Yellow : Color.Olive;
+      else
+        UplinkFrequencyLabel.ForeColor = bright ? Color.White : Color.Gray;
+    }
+
+    private void SettingsToUi()
+    {
+      DownlinkRitCheckbox.Checked = false;
+      DownlinkRitSpinner.Value = 0;
+
+      // downlink
+      if (IsTerrestrial)
+      {
+        DownlinkManualSpinner.Value = 0;
+
+        DownlinkLabel.Text = "Terrestrial";
+        DownlinkLabel.ForeColor = Color.Red;
+        DownlinkLabel.Font = new(DownlinkLabel.Font, FontStyle.Bold);
+
+        DownlinkDopplerCheckbox.Visible = false;
+        DownlinkDopplerLabel.BackColor = SystemColors.Control;
+
+        DownlinkManualCheckbox.Visible = false;
+        DownlinkManualSpinner.BackColor = SystemColors.Control;
+
+        DownlinkManualCheckbox.Enabled = DownlinkManualSpinner.Enabled = DownlinkModeCombobox.Enabled = false;
+        label3.Enabled = label4.Enabled = false;
+      }
+      else
+      {
+        DownlinkDopplerCheckbox.Checked = SatCust.DownlinkDopplerCorrectionEnabled;
+        DownlinkManualCheckbox.Checked = SatCust.DownlinkManualCorrectionEnabled;
+        DownlinkManualSpinner.Value = (decimal)(SatCust.DownlinkManualCorrection / 1000d);
+
+        DownlinkLabel.Text = "Downlink";
+        DownlinkLabel.ForeColor = SystemColors.ControlText;
+        DownlinkLabel.Font = new(DownlinkLabel.Font, FontStyle.Regular);
+
+        DownlinkDopplerCheckbox.Visible = true;
+        DownlinkDopplerLabel.BackColor = SystemColors.Window;
+
+        DownlinkManualCheckbox.Visible = true;
+        DownlinkManualSpinner.BackColor = SystemColors.Window;
+
+
+        DownlinkManualCheckbox.Enabled = DownlinkManualSpinner.Enabled = DownlinkModeCombobox.Enabled = true;
+        label3.Enabled = label4.Enabled = true;
+      }
+
+      // uplink
+      if (IsTerrestrial || !HasUplink)
+      {
+        UplinkManualSpinner.Value = 0;
+
+        UplinkLabel.Text = "No Uplink";
+
+        UplinkDopplerCheckbox.Visible = false;
+        UplinkDopplerLabel.BackColor = SystemColors.Control;
+
+        UplinkManualCheckbox.Visible = false;
+        UplinkManualSpinner.BackColor = SystemColors.Control;
+
+        UplinkManualCheckbox.Enabled = UplinkManualSpinner.Enabled = UplinkModeCombobox.Enabled = false;
+        label5.Enabled = label6.Enabled = false;
+      }
+      else 
+      {
+        UplinkDopplerCheckbox.Checked = SatCust.UplinkDopplerCorrectionEnabled;
+        UplinkManualCheckbox.Checked = SatCust.UplinkManualCorrectionEnabled;
+        UplinkManualSpinner.Value = (decimal)(SatCust.UplinkManualCorrection / 1000d);
+
+        UplinkLabel.Text = "Uplink";
+
+        UplinkDopplerCheckbox.Visible = true;
+        UplinkDopplerLabel.BackColor = SystemColors.Window;
+
+        UplinkManualCheckbox.Visible = true;
+        UplinkManualSpinner.BackColor = SystemColors.Window;
+
+        UplinkManualCheckbox.Enabled = UplinkManualSpinner.Enabled = UplinkModeCombobox.Enabled = true;
+        label5.Enabled = label6.Enabled = true;
+      }
+    }
+
+    private void IncrementSpinnerValue(NumericUpDown spinner, int deltaHz)
+    {
+      var value = spinner.Value + (decimal)(deltaHz / 1000d);
+      SetSpinnerValue(spinner, value);
+    }
+
+    private void SetSpinnerValue(NumericUpDown spinner, decimal valueKHz)
+    {
+      spinner.Value = Math.Max(spinner.Minimum, Math.Min(spinner.Maximum, valueKHz));
     }
   }
 }

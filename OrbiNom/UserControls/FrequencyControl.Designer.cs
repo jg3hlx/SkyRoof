@@ -28,7 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
-      SatelliteLabel = new Label();
+      DownlinkLabel = new Label();
       DownlinkFrequencyLabel = new Label();
       DownlinkDopplerCheckbox = new CheckBox();
       DownlinkManualCheckbox = new CheckBox();
@@ -37,7 +37,7 @@
       label1 = new Label();
       UplinkManualSpinner = new NumericUpDown();
       UplinkManualCheckbox = new CheckBox();
-      UplinkDopperCheckbox = new CheckBox();
+      UplinkDopplerCheckbox = new CheckBox();
       UplinkFrequencyLabel = new Label();
       UplinkLabel = new Label();
       DownlinkDopplerLabel = new Label();
@@ -56,14 +56,13 @@
       ((System.ComponentModel.ISupportInitialize)DownlinkRitSpinner).BeginInit();
       SuspendLayout();
       // 
-      // SatelliteLabel
+      // DownlinkLabel
       // 
-      SatelliteLabel.AutoEllipsis = true;
-      SatelliteLabel.Location = new Point(26, 9);
-      SatelliteLabel.Name = "SatelliteLabel";
-      SatelliteLabel.Size = new Size(60, 15);
-      SatelliteLabel.TabIndex = 0;
-      SatelliteLabel.Text = "Terrestrial";
+      DownlinkLabel.Location = new Point(26, 9);
+      DownlinkLabel.Name = "DownlinkLabel";
+      DownlinkLabel.Size = new Size(73, 15);
+      DownlinkLabel.TabIndex = 0;
+      DownlinkLabel.Text = "Terrestrial";
       // 
       // DownlinkFrequencyLabel
       // 
@@ -144,7 +143,8 @@
       UplinkManualSpinner.Name = "UplinkManualSpinner";
       UplinkManualSpinner.Size = new Size(72, 20);
       UplinkManualSpinner.TabIndex = 13;
-      UplinkManualSpinner.DoubleClick += Spinner_DoubleClick;
+      UplinkManualSpinner.ValueChanged += UplinkManualSpinner_ValueChanged;
+      UplinkManualSpinner.MouseDoubleClick += Spinner_DoubleClick;
       // 
       // UplinkManualCheckbox
       // 
@@ -154,15 +154,17 @@
       UplinkManualCheckbox.Size = new Size(15, 14);
       UplinkManualCheckbox.TabIndex = 11;
       UplinkManualCheckbox.UseVisualStyleBackColor = true;
+      UplinkManualCheckbox.CheckedChanged += UplinkManualCheckbox_CheckedChanged;
       // 
-      // UplinkDopperCheckbox
+      // UplinkDopplerCheckbox
       // 
-      UplinkDopperCheckbox.AutoSize = true;
-      UplinkDopperCheckbox.Location = new Point(530, 6);
-      UplinkDopperCheckbox.Name = "UplinkDopperCheckbox";
-      UplinkDopperCheckbox.Size = new Size(15, 14);
-      UplinkDopperCheckbox.TabIndex = 10;
-      UplinkDopperCheckbox.UseVisualStyleBackColor = true;
+      UplinkDopplerCheckbox.AutoSize = true;
+      UplinkDopplerCheckbox.Location = new Point(530, 6);
+      UplinkDopplerCheckbox.Name = "UplinkDopplerCheckbox";
+      UplinkDopplerCheckbox.Size = new Size(15, 14);
+      UplinkDopplerCheckbox.TabIndex = 10;
+      UplinkDopplerCheckbox.UseVisualStyleBackColor = true;
+      UplinkDopplerCheckbox.CheckedChanged += UplinkDopplerCheckbox_CheckedChanged;
       // 
       // UplinkFrequencyLabel
       // 
@@ -211,9 +213,9 @@
       // 
       DownlinkModeCombobox.DropDownStyle = ComboBoxStyle.DropDownList;
       DownlinkModeCombobox.FormattingEnabled = true;
-      DownlinkModeCombobox.Location = new Point(99, 6);
+      DownlinkModeCombobox.Location = new Point(105, 6);
       DownlinkModeCombobox.Name = "DownlinkModeCombobox";
-      DownlinkModeCombobox.Size = new Size(79, 23);
+      DownlinkModeCombobox.Size = new Size(72, 23);
       DownlinkModeCombobox.TabIndex = 17;
       DownlinkModeCombobox.SelectedValueChanged += ModeCombobox_SelectedValueChanged;
       // 
@@ -223,9 +225,9 @@
       UplinkModeCombobox.AutoCompleteSource = AutoCompleteSource.ListItems;
       UplinkModeCombobox.DropDownStyle = ComboBoxStyle.DropDownList;
       UplinkModeCombobox.FormattingEnabled = true;
-      UplinkModeCombobox.Location = new Point(438, 6);
+      UplinkModeCombobox.Location = new Point(445, 6);
       UplinkModeCombobox.Name = "UplinkModeCombobox";
-      UplinkModeCombobox.Size = new Size(79, 23);
+      UplinkModeCombobox.Size = new Size(72, 23);
       UplinkModeCombobox.TabIndex = 18;
       UplinkModeCombobox.SelectedValueChanged += ModeCombobox_SelectedValueChanged;
       // 
@@ -319,7 +321,7 @@
       Controls.Add(label1);
       Controls.Add(UplinkManualSpinner);
       Controls.Add(UplinkManualCheckbox);
-      Controls.Add(UplinkDopperCheckbox);
+      Controls.Add(UplinkDopplerCheckbox);
       Controls.Add(UplinkFrequencyLabel);
       Controls.Add(UplinkLabel);
       Controls.Add(label2);
@@ -327,7 +329,7 @@
       Controls.Add(DownlinkManualCheckbox);
       Controls.Add(DownlinkDopplerCheckbox);
       Controls.Add(DownlinkFrequencyLabel);
-      Controls.Add(SatelliteLabel);
+      Controls.Add(DownlinkLabel);
       Name = "FrequencyControl";
       Size = new Size(679, 77);
       ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).EndInit();
@@ -339,7 +341,7 @@
 
     #endregion
 
-    private Label SatelliteLabel;
+    private Label DownlinkLabel;
     private Label DownlinkFrequencyLabel;
     private CheckBox DownlinkDopplerCheckbox;
     private CheckBox DownlinkManualCheckbox;
@@ -348,7 +350,7 @@
     private Label label1;
     private NumericUpDown UplinkManualSpinner;
     private CheckBox UplinkManualCheckbox;
-    private CheckBox UplinkDopperCheckbox;
+    private CheckBox UplinkDopplerCheckbox;
     private Label UplinkFrequencyLabel;
     private Label UplinkLabel;
     private Label DownlinkDopplerLabel;

@@ -82,6 +82,10 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                       announce
     //----------------------------------------------------------------------------------------------
+
+    // this does not work for all voices
+    //private const string MinutesFormat = @"<say-as interpret-as=""duration"" format=""m"">{0}</say-as>";
+
     public void Announce(string name, Announcement announcement)
     {
       name = FormatSatName(name);

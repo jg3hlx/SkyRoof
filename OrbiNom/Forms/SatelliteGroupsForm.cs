@@ -138,6 +138,8 @@ namespace OrbiNom
       ctx.Settings.Satellites.Sanitize();
 
       Changed = false;
+
+      DialogResult = DialogResult.OK;
     }
 
 
@@ -319,8 +321,6 @@ namespace OrbiNom
     private void OkBtn_Click(object sender, EventArgs e)
     {
       SaveGroups();
-      DialogResult = DialogResult.OK;
-      //Close();
     }
 
 

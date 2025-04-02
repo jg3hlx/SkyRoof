@@ -30,9 +30,10 @@
     public bool frequency_violation { get; set; }
     public bool unconfirmed { get; set; }
 
-    internal SatnogsDbSatellite Satellite;
 
-    public long DownlinkLow => (long)downlink_low!;
+    internal SatnogsDbSatellite Satellite;
+    internal long DownlinkLow => (long)downlink_low!;
+
 
     public string GetTooltipText()
     {

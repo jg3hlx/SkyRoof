@@ -218,7 +218,7 @@ namespace OrbiNom
 
       // future triangles
       foreach (var label in VisibleLabels)
-        if (label.Pass.StartTime > now && label.Pass.StartTime < now.AddMinutes(5))
+        if (label.Pass.StartTime > now && label.Pass.StartTime < now.AddMinutes(6))
           DrawTriangle(label, g, Brushes.White);
 
       // current triangles
