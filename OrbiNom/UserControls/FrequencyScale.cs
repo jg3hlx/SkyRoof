@@ -110,22 +110,22 @@ namespace OrbiNom
 
     private RectangleF GetPassbandRect(bool includeRit = false)
     {
-      double center = (double)ctx.FrequencyControl.CorrectedDownlinkFrequency!;
-      if (ctx.FrequencyControl.RitEnabled && !includeRit) center -= ctx.FrequencyControl.RitOffset;
+      double centerFrequency = (double)ctx.FrequencyControl.CorrectedDownlinkFrequency!;
+      if (ctx.FrequencyControl.RitEnabled && !includeRit) centerFrequency -= ctx.FrequencyControl.RitOffset;
 
       double minWing = 3 * VisibleBandwidth / width;
       double wing = Math.Max(minWing, ctx.Slicer.Bandwidth / 2);
-      double left = FreqToPixel(center - wing);
-      double right = FreqToPixel(center + wing);
+
+      float centerPix = (float)Math.Round(FreqToPixel(centerFrequency));
+      float wingPix = (float)Math.Round(wing * width / VisibleBandwidth);
 
       float top = includeRit ? height - 42 : height - 45;
-      return new RectangleF((float)left, top, (float)(right - left), height);
+      return new RectangleF(centerPix - wingPix, top, 2 * wingPix, height);
     }
 
     private void DrawPassband(Graphics g)
     {
       if (ctx?.Slicer?.Enabled != true) return;
-      if (ctx.FrequencyControl.CorrectedDownlinkFrequency == null) return;
 
       // main passband
       var rect = GetPassbandRect();
