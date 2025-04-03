@@ -74,6 +74,7 @@ namespace OrbiNom
     {
       // set the offset first
       var transponderCust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
+      Debug.Assert(offset >= 0 && offset <= transponder.uplink_high - transponder.uplink_low);
       transponderCust.TranspnderOffset = offset;
 
       // if same TX, just force its settings in case we were in terrestrial mode and changed them
@@ -117,7 +118,11 @@ namespace OrbiNom
     internal void SetDraggableFrequency(double freq)
     {
       if (IsTerrestrial) DownlinkFrequency = freq;
-      else if (IsTransponder) TxCust.TranspnderOffset = freq;
+      else if (IsTransponder)
+      {
+        Debug.Assert(freq >= 0 && freq <= Tx.uplink_high - Tx.uplink_low);
+        TxCust.TranspnderOffset = freq;
+      }
       else SetSpinnerValue(DownlinkManualSpinner, (decimal)(freq / 1000));
 
       SetFrequencies();
@@ -216,37 +221,37 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void DownlinkManualSpinner_ValueChanged(object sender, EventArgs e)
     {
-      //if (!Changing && !IsTerrestrial)
+      if (!Changing && !IsTerrestrial)
       SatCust.DownlinkManualCorrection = (int)(DownlinkManualSpinner.Value * 1000);
     }
 
     private void DownlinkManualCheckbox_CheckedChanged(object sender, EventArgs e)
     {
-      //if (!Changing && !IsTerrestrial)
+      if (!Changing && !IsTerrestrial)
       SatCust.DownlinkManualCorrectionEnabled = DownlinkManualCheckbox.Checked;
     }
 
     private void DownlinkDopplerCheckbox_CheckedChanged(object sender, EventArgs e)
     {
-      //if (!Changing && !IsTerrestrial)
+      if (!Changing && !IsTerrestrial)
       SatCust.DownlinkDopplerCorrectionEnabled = DownlinkDopplerCheckbox.Checked;
     }
 
     private void UplinkManualSpinner_ValueChanged(object sender, EventArgs e)
     {
-      //if (!Changing && !IsTerrestrial && HasUplink)
+      if (!Changing && !IsTerrestrial && HasUplink)
       SatCust.UplinkManualCorrection = (int)(UplinkManualSpinner.Value * 1000);
     }
 
     private void UplinkManualCheckbox_CheckedChanged(object sender, EventArgs e)
     {
-      //if (!Changing && !IsTerrestrial)
+      if (!Changing && !IsTerrestrial)
       SatCust.UplinkManualCorrectionEnabled = UplinkManualCheckbox.Checked;
     }
 
     private void UplinkDopplerCheckbox_CheckedChanged(object sender, EventArgs e)
     {
-      //if (!Changing && !IsTerrestrial)
+      if (!Changing && !IsTerrestrial)
       SatCust.UplinkDopplerCorrectionEnabled = UplinkDopplerCheckbox.Checked;
     }
 
@@ -308,7 +313,7 @@ namespace OrbiNom
       else
       {
         // doppler
-        var observation = ctx.AllPasses.ObserveSatellite(Sat, DateTime.UtcNow);
+        var observation = ctx.HamPasses.ObserveSatellite(Sat, DateTime.UtcNow);
         dopplerFactor = observation.RangeRate / 3e5;
         bright = observation.Elevation > 0;
 
@@ -318,8 +323,8 @@ namespace OrbiNom
 
         CorrectedDownlinkFrequency = DownlinkFrequency;
         if (DownlinkRitCheckbox.Checked) CorrectedDownlinkFrequency += RitOffset;
-        if (DownlinkManualCheckbox.Checked) CorrectedDownlinkFrequency += SatCust.DownlinkManualCorrection;
         if (DownlinkDopplerCheckbox.Checked) CorrectedDownlinkFrequency *= 1 - dopplerFactor;
+        if (DownlinkManualCheckbox.Checked) CorrectedDownlinkFrequency += SatCust.DownlinkManualCorrection;
 
         // uplink
         if (IsTransponder)
@@ -329,8 +334,8 @@ namespace OrbiNom
         else UplinkFrequency = 0;
 
         CorrectedUplinkFrequency = UplinkFrequency;
-        if (UplinkManualCheckbox.Checked) CorrectedUplinkFrequency += SatCust.UplinkManualCorrection;
         if (UplinkDopplerCheckbox.Checked) CorrectedUplinkFrequency *= 1 + dopplerFactor;
+        if (UplinkManualCheckbox.Checked) CorrectedUplinkFrequency += SatCust.UplinkManualCorrection;
       }
 
       // send to slicer and CAT
@@ -386,6 +391,8 @@ namespace OrbiNom
 
     private void SettingsToUi()
     {
+      Changing = true;
+
       DownlinkRitCheckbox.Checked = false;
       DownlinkRitSpinner.Value = 0;
 
@@ -461,6 +468,8 @@ namespace OrbiNom
         UplinkManualCheckbox.Enabled = UplinkManualSpinner.Enabled = UplinkModeCombobox.Enabled = true;
         label5.Enabled = label6.Enabled = true;
       }
+
+      Changing = false;
     }
 
     private void IncrementSpinnerValue(NumericUpDown spinner, int deltaHz)

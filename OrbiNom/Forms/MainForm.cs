@@ -36,7 +36,8 @@ namespace OrbiNom
       EnsureUserDetails();
 
       ctx.GroupPasses = new(ctx, true);
-      ctx.AllPasses = new(ctx, false);
+      ctx.HamPasses = new(ctx, false);
+      ctx.SdrPasses
       timer.Interval = 1000 / TICKS_PER_SECOND;
 
       ctx.SpeakerSoundcard.StateChanged += Soundcard_StateChanged;
@@ -748,7 +749,7 @@ namespace OrbiNom
     private async Task OneMinuteTick()
     {
       await ctx.GroupPasses.PredictMorePassesAsync();
-      await ctx.AllPasses.PredictMorePassesAsync();
+      await ctx.HamPasses.PredictMorePassesAsync();
       ctx.PassesPanel?.ShowPasses();
       ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
     }
@@ -777,7 +778,7 @@ namespace OrbiNom
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
 
       SatelliteSelector.LoadSatelliteGroups();
-      ctx.AllPasses.FullRebuild();
+      ctx.HamPasses.FullRebuild();
       ctx.GroupPasses.FullRebuild();
 
       ctx.PassesPanel?.ShowPasses();
@@ -792,8 +793,8 @@ namespace OrbiNom
       // update data
       ctx.GroupPasses = new(ctx, true);
       ctx.GroupPasses.FullRebuild();
-      ctx.AllPasses = new(ctx, false);
-      ctx.AllPasses.FullRebuild();
+      ctx.HamPasses = new(ctx, false);
+      ctx.HamPasses.FullRebuild();
 
       ctx.SatelliteSelector.SetSelectedPass(null);
       ctx.GroupViewPanel?.LoadGroup();
@@ -807,7 +808,7 @@ namespace OrbiNom
       ctx.Settings.Satellites.LastTleTime = DateTime.UtcNow;
       ShowSatDataStatus();
 
-      ctx.AllPasses.Rebuild();
+      ctx.HamPasses.Rebuild();
       ctx.GroupPasses.Rebuild();
 
       ctx.SatelliteSelector.SetSelectedPass(null);
@@ -839,6 +840,7 @@ namespace OrbiNom
       FrequencyControl.SetTransmitter();
       ctx.TransmittersPanel?.ShowSelectedTransmitter();
       ctx.WaterfallPanel?.BringInView(ctx.FrequencyControl.CorrectedDownlinkFrequency);
+      //ctx.SdrPasses.
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)

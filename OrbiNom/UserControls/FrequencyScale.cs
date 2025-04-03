@@ -306,7 +306,7 @@ namespace OrbiNom
       var now = DateTime.UtcNow;
       Labels.Clear();
 
-      foreach (var pass in ctx.AllPasses.Passes)
+      foreach (var pass in ctx.HamPasses.Passes)
         if (pass.StartTime < now.AddMinutes(6) && pass.EndTime > now.AddMinutes(-25))
         {
           var transmitters = pass.Satellite.Transmitters.Where(tx => tx.alive);

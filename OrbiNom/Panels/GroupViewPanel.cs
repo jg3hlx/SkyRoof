@@ -96,7 +96,7 @@ namespace OrbiNom
         var data = item.Tag as ItemData;
         if (data.Pass == null || data.Pass.EndTime < now)
         {
-          data.Pass = ctx.AllPasses.GetNextPass(data.Sat);
+          data.Pass = ctx.HamPasses.GetNextPass(data.Sat);
           changed = true;
         }
 

@@ -14,7 +14,7 @@ namespace OrbiNom
     public Settings Settings = new();
     public SatnogsDb SatnogsDb;
     public SatellitePasses GroupPasses;
-    public SatellitePasses AllPasses;
+    public SatellitePasses HamPasses;
 
     // main form
     public MainForm MainForm;

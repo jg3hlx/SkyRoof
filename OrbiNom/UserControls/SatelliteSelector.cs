@@ -151,7 +151,7 @@ namespace OrbiNom
 
       LoadTransmitters();
 
-      SetSelectedPass(ctx.AllPasses.GetNextPass(SelectedSatellite));
+      SetSelectedPass(ctx.HamPasses.GetNextPass(SelectedSatellite));
     }
 
     private void ShowSelectedTransmitter()

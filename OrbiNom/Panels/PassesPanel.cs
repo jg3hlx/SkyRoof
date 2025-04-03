@@ -98,7 +98,7 @@ namespace OrbiNom
 
         // sat in group, show 3-day prediction
         if (!ctx.SatelliteSelector.GroupSatellites.Contains(sat))
-          passes = ctx.AllPasses.Passes;
+          passes = ctx.HamPasses.Passes;
         // else show 2-hour prediction
         passes = passes.Where(p => p.Satellite == sat);
       }
@@ -109,7 +109,7 @@ namespace OrbiNom
 
       else
       {
-        passes = ctx.AllPasses.Passes;
+        passes = ctx.HamPasses.Passes;
         endTime = startTime + TimeSpan.FromHours(2);
       }
 
