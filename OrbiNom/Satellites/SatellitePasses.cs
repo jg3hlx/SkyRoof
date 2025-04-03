@@ -5,53 +5,152 @@ using System.Linq;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using CSCore.Win32;
 using Serilog;
 using SGPdotNET.CoordinateSystem;
 using SGPdotNET.Observation;
 using SGPdotNET.Util;
 using VE3NEA;
+using static OrbiNom.GroupSatellitePasses;
 
 namespace OrbiNom
 {
-  public class SatellitePasses
+  public class GroupSatellitePasses : SatellitePasses
   {
-    private const double TwoPi = 2 * Math.PI;
-    
-    private List<SatnogsDbSatellite> Satellites = new();
+    //----------------------------------------------------------------------------------------------
+    //                                 GroupSatellitePasses
+    //----------------------------------------------------------------------------------------------
+    public GroupSatellitePasses(Context ctx) : base(ctx) 
+    {
+      PredictionTimeSpan = TimeSpan.FromDays(2);
+    }
+
+    public override void FullRebuild()
+    {
+      base.FullRebuild();
+      ctx.Announcer.RebuildQueue();
+    }
+
+    public override void Rebuild()
+    {
+      base.Rebuild();
+      ctx.Announcer.RebuildQueue();
+    }
+
+    public override SatellitePass[] PredictMorePasses()
+    {
+      var newPasses = base.PredictMorePasses();
+      ctx.Announcer.AddToQueue(newPasses);
+      return newPasses;
+    }
+
+    protected override IEnumerable<SatnogsDbSatellite> ListSatellites()
+    {
+        return ctx.SatelliteSelector.GroupSatellites;
+    }
+  }
+
+
+
+
+  //----------------------------------------------------------------------------------------------
+  //                                 HamSatellitePasses
+  //----------------------------------------------------------------------------------------------
+  public class HamSatellitePasses : SatellitePasses
+  {
+    public HamSatellitePasses(Context ctx) : base(ctx)
+    {
+      PredictionTimeSpan = TimeSpan.FromHours(2);
+    }
+
+    protected override IEnumerable<SatnogsDbSatellite> ListSatellites()
+    {
+      return ctx.SatnogsDb.Satellites.Where(
+        sat => sat.Flags.HasFlag(SatelliteFlags.Vhf) || sat.Flags.HasFlag(SatelliteFlags.Uhf));
+    }
+  }
+
+
+
+
+  //----------------------------------------------------------------------------------------------
+  //                                 SdrSatellitePasses
+  //----------------------------------------------------------------------------------------------
+  public class SdrSatellitePasses : SatellitePasses
+  {
+    private double StartFrequency, EndFrequency;
+
+    public SdrSatellitePasses(Context ctx) : base(ctx)
+    {
+      PredictionTimeSpan = TimeSpan.FromDays(2);
+      UpdateFrequencyRange();
+    }
+
+    public void UpdateFrequencyRange()
+    {
+      if (ctx.WaterfallPanel == null || !SatnogsDbTransmitter.IsHamFrequency(ctx.WaterfallPanel.ScaleControl.CenterFrequency))
+      {
+        StartFrequency = 0;
+        EndFrequency = 0;
+      }
+      else
+      {
+        // double center = ctx.WaterfallPanel.ScaleControl.CenterFrequency);
+        // StartFrequency = startFrequency;
+        // EndFrequency = endFrequency;
+      }
+
+      Rebuild();
+    }
+
+    protected override IEnumerable<SatnogsDbSatellite> ListSatellites()
+    {
+      if (StartFrequency == 0 || EndFrequency == 0) return Array.Empty<SatnogsDbSatellite>();
+
+      return ctx.SatnogsDb.Satellites.Where(sat =>
+        sat.Transmitters.Any(tx => tx.DownlinkLow >= StartFrequency) &&
+        sat.Transmitters.Any(tx => tx.DownlinkLow <= EndFrequency));
+    }
+  }
+
+
+
+
+  //----------------------------------------------------------------------------------------------
+  //                                     base class
+  //----------------------------------------------------------------------------------------------
+  public abstract class SatellitePasses
+  {
+    protected List<SatnogsDbSatellite> Satellites = new();
     private GroundStation GroundStation;
-    private readonly Context ctx;
-    private readonly bool OnlyGroup;
-    private readonly TimeSpan PredictionTimeSpan;
+    protected readonly Context ctx;
+    protected TimeSpan PredictionTimeSpan;
     private readonly TimeSpan HistoryTimeSpan = TimeSpan.FromMinutes(30);
 
     private DateTime LastPredictionTime = DateTime.MinValue;
 
     public List<SatellitePass> Passes = new();
 
-    public SatellitePasses(Context ctx, bool onlyGroup)
+    public SatellitePasses(Context ctx)
     {
       this.ctx = ctx;
-      OnlyGroup = onlyGroup;
-      PredictionTimeSpan = onlyGroup ? TimeSpan.FromDays(2) : TimeSpan.FromHours(2);
 
       CreateGroundStation(ctx.Settings.User.Square, ctx.Settings.User.Altitude);
     }
 
     // call when satellite list or group changes
     // rebuilds list of valid satellites, recomputes all passes
-    public void FullRebuild()
-    {
-      ListSatellites();
+    public virtual void FullRebuild()
+    {            
+      Satellites = ListSatellites().Where(sat => sat.Tle != null && sat.status == "alive").ToList();
 
       var now = DateTime.UtcNow;
       Passes = ComputePasses(now, now + PredictionTimeSpan).ToList();
-
-      if (OnlyGroup) ctx.Announcer.RebuildQueue();
     }
 
     // call when TLE changes
     // recomputes all active and future passes      
-    public void Rebuild()
+    public virtual void Rebuild()
     {
       // keep historical passes
       var now = DateTime.UtcNow;
@@ -60,25 +159,23 @@ namespace OrbiNom
 
       // recompute all current and future passes
       Passes.AddRange(ComputePasses(now, now + PredictionTimeSpan));
-
-      if (OnlyGroup) ctx.Announcer.RebuildQueue();
     }
 
     // call every minute
-    internal async Task PredictMorePassesAsync()
+    public virtual SatellitePass[] PredictMorePasses()
     {
       DeleteOld();
 
-      if (LastPredictionTime == DateTime.MinValue) return;
+      if (LastPredictionTime == DateTime.MinValue) return Array.Empty<SatellitePass>();
 
       // add new
       var startTime = LastPredictionTime + PredictionTimeSpan;
       var endTime = DateTime.UtcNow + PredictionTimeSpan;
 
-      var newPasses = await Task.Run(() => ComputePasses(startTime, endTime).Where(p => p.StartTime > startTime));
+      var newPasses = ComputePasses(startTime, endTime).Where(p => p.StartTime > startTime).ToArray();
 
       Passes.AddRange(newPasses);
-      if (OnlyGroup) ctx.Announcer.AddToQueue(newPasses);
+      return newPasses;
     }
 
     // delete old passes but keep history
@@ -139,19 +236,7 @@ namespace OrbiNom
       };
     }
 
-
-    private void ListSatellites()
-    {
-      IEnumerable<SatnogsDbSatellite> sats;
-
-      if (OnlyGroup)
-        sats = ctx.SatelliteSelector.GroupSatellites;
-      else
-        sats = ctx.SatnogsDb.Satellites.Where(
-            s => s.Flags.HasFlag(SatelliteFlags.Vhf) || s.Flags.HasFlag(SatelliteFlags.Uhf));
-
-      Satellites = sats.Where(sat => sat.Tle != null && sat.status == "alive").ToList();
-    }
+    protected abstract IEnumerable<SatnogsDbSatellite> ListSatellites();
 
     private void CreateGroundStation(string gridSquare, double altitude)
     {

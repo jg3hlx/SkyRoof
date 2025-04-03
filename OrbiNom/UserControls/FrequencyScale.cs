@@ -306,6 +306,7 @@ namespace OrbiNom
       var now = DateTime.UtcNow;
       Labels.Clear();
 
+      // todo: use SdrPasses if not a ham band
       foreach (var pass in ctx.HamPasses.Passes)
         if (pass.StartTime < now.AddMinutes(6) && pass.EndTime > now.AddMinutes(-25))
         {

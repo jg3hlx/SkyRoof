@@ -75,6 +75,10 @@
 
     public bool IsHamBand() { return IsVhf() || IsUhf(); }
 
+    public static bool IsHamFrequency(double freq)
+    {
+      return (freq >= 144000000 && freq <= 148000000) || (freq >= 430000000 && freq <= 440000000);
+    }
   }
 
 

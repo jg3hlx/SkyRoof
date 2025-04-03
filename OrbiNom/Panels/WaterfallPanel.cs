@@ -46,6 +46,8 @@ namespace OrbiNom
       ctx.MainForm.WaterfallMNU.Checked = false;
 
       ctx.Settings.Waterfall.SplitterDistance = SplitContainer.SplitterDistance;
+
+      ctx.SdrPasses.UpdateFrequencyRange();
     }
 
     public void ApplySettings()
@@ -68,8 +70,7 @@ namespace OrbiNom
       WaterfallControl.Zoom = ctx.Sdr.Info.SampleRate / ctx.Sdr.Info.MaxBandwidth;
       WaterfallControl.Pan = 0;
 
-      //bool maxBandwidthChanged = MaxBandwidth != maxBandwidth;
-      //if (maxBandwidthChanged) WaterfallControl.Clear();
+      ctx.SdrPasses.UpdateFrequencyRange();
     }
 
     public void SetCenterFrequency(double frequency)

@@ -35,9 +35,10 @@ namespace OrbiNom
 
       EnsureUserDetails();
 
-      ctx.GroupPasses = new(ctx, true);
-      ctx.HamPasses = new(ctx, false);
-      ctx.SdrPasses
+      ctx.GroupPasses = new(ctx);
+      ctx.HamPasses = new(ctx);
+      ctx.SdrPasses = new(ctx);
+
       timer.Interval = 1000 / TICKS_PER_SECOND;
 
       ctx.SpeakerSoundcard.StateChanged += Soundcard_StateChanged;
@@ -164,13 +165,10 @@ namespace OrbiNom
 
     internal void ConfigureWaterfall()
     {
-      if (ctx.WaterfallPanel == null ||
-        ctx.Sdr?.Info == null ||
-        SpectrumAnalyzer == null
-        ) return;
+      if (ctx.WaterfallPanel == null || ctx.Sdr?.Info == null || SpectrumAnalyzer == null) 
+        return;
 
       SetWaterfallSpeed();
-
       ctx.WaterfallPanel?.SetPassband();
     }
 
@@ -748,8 +746,9 @@ namespace OrbiNom
     }
     private async Task OneMinuteTick()
     {
-      await ctx.GroupPasses.PredictMorePassesAsync();
-      await ctx.HamPasses.PredictMorePassesAsync();
+      ctx.GroupPasses.PredictMorePasses();
+      ctx.HamPasses.PredictMorePasses();
+      ctx.SdrPasses.PredictMorePasses();
       ctx.PassesPanel?.ShowPasses();
       ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
     }
@@ -780,6 +779,7 @@ namespace OrbiNom
       SatelliteSelector.LoadSatelliteGroups();
       ctx.HamPasses.FullRebuild();
       ctx.GroupPasses.FullRebuild();
+      ctx.SdrPasses.FullRebuild();
 
       ctx.PassesPanel?.ShowPasses();
       ctx.SkyViewPanel?.ClearPass();
@@ -791,10 +791,14 @@ namespace OrbiNom
     internal void SetLocation()
     {
       // update data
-      ctx.GroupPasses = new(ctx, true);
+      ctx.GroupPasses = new(ctx);
       ctx.GroupPasses.FullRebuild();
-      ctx.HamPasses = new(ctx, false);
+
+      ctx.HamPasses = new(ctx);
       ctx.HamPasses.FullRebuild();
+
+      ctx.SdrPasses = new(ctx);
+      ctx.SdrPasses.FullRebuild();
 
       ctx.SatelliteSelector.SetSelectedPass(null);
       ctx.GroupViewPanel?.LoadGroup();
@@ -810,6 +814,7 @@ namespace OrbiNom
 
       ctx.HamPasses.Rebuild();
       ctx.GroupPasses.Rebuild();
+      ctx.SdrPasses.Rebuild();
 
       ctx.SatelliteSelector.SetSelectedPass(null);
       ctx.GroupViewPanel?.LoadGroup(); // replace passes attached to sats
@@ -840,7 +845,6 @@ namespace OrbiNom
       FrequencyControl.SetTransmitter();
       ctx.TransmittersPanel?.ShowSelectedTransmitter();
       ctx.WaterfallPanel?.BringInView(ctx.FrequencyControl.CorrectedDownlinkFrequency);
-      //ctx.SdrPasses.
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)
