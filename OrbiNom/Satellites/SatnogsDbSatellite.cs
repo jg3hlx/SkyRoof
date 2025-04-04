@@ -34,12 +34,15 @@ namespace OrbiNom
     public int? norad_follow_id { get; set; }
 
     [ReadOnly(true)]
-    [Category("SatNOGS Database")]
+    [Category("Names")]
+    [DisplayName("SatNOGS")]
+    [Description("Name in the SatNOGS DB")]
     public string name { get; set; }
 
-    [Browsable(false)]
     [ReadOnly(true)]
-    [Category("SatNOGS Database")]
+    [Category("Names")]
+    [DisplayName("SatNOGS Alt")]
+    [Description("Alternative names in the SatNOGS DB")]
     public string names { get; set; }
 
     [Browsable(false)]
@@ -100,28 +103,45 @@ namespace OrbiNom
 
 
 
-    // other sources
+    // names
 
     [ReadOnly(true)]
-    [Category("JE9PEL")]
-    [DisplayName("Names")]
+    [Category("Names")]
+    [DisplayName("JE9PEL")]
+    [Description("Name in the JE9PEL List")]
     [TypeConverter(typeof(CsvTypeConverter))]
     public List<string> JE9PEL_Names { get; set; } = new();
 
     [ReadOnly(true)]
-    [Category("JE9PEL")]
+    [Category("Names")]
     [DisplayName("Callsigns")]
+    [Description("Callsigns in the JE9PEL List")]
     [TypeConverter(typeof(CsvTypeConverter))]
     public List<string> JE9PEL_Callsigns { get; set; } = new();
 
     [ReadOnly(true)]
-    [Category("LoTW")]
-    [DisplayName("Name")]
+    [Category("Names")]
+    [DisplayName("LoTW")]
+    [Description("Name recognized by LoTW")]
     public string? LotwName { get; set; }
+
+    [ReadOnly(true)]
+    [Category("Names")]
+    [DisplayName("AMSAT")]
+    [Description("Names on the AMSAT Satellite Status Page")]
+    [TypeConverter(typeof(CsvTypeConverter))]
+    public List<string> AmsatEntries { get; set; } = new();
+
 
 
 
     // orbit
+
+
+    [ReadOnly(true)]
+    [Category("Orbit")]
+    [DisplayName("TLE")]
+    public string? TleInfo {get; set; }
 
     [ReadOnly(true)]
     [Category("Orbit")]
@@ -171,9 +191,6 @@ namespace OrbiNom
 
     [Browsable(false)]
     public Satellite Tracker { get => tracker ??= CreateTracker();  }
-
-    [Browsable(false)]
-    public string[] AmsatEntries;
 
 
 
@@ -251,7 +268,7 @@ namespace OrbiNom
 
       string tooltipText = $"{names}\nNORAD: {norad_cat_id}\nstatus: {status}\ncountries: {countries}";
       if (Tle != null) tooltipText +=
-          $"\nTLE: {Tle.updated:yyyy-MM-dd hh:mm} ({Tle.tle_source})\nperiod: {Period} min.\ninclination: {Inclination}°\n" +
+          $"\nTLE: {TleInfo}\nperiod: {Period} min.\ninclination: {Inclination}°\n" +
           $"footprint: {Footprint} km\naltitude: {Altitude}";
       tooltipText += $"\nradio: {radio}";
       if (!string.IsNullOrEmpty(LotwName)) tooltipText += "\nAccepted by LoTW";
@@ -264,11 +281,11 @@ namespace OrbiNom
     {
       if (Tle == null) return;
 
-      float v;
-      
+      TleInfo = $"{Tle.updated:yyyy-MM-dd hh:mm} ({ Tle.tle_source})";
+
       // inclination
       string s = Tle.tle2.Substring(8, 8);
-      if (float.TryParse(s, out v)) Inclination = (int)v;
+      if (float.TryParse(s, out float v)) Inclination = (int)v;
 
       // period
       s = Tle.tle2.Substring(52, 10);

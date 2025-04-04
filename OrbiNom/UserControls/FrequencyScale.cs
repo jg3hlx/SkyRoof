@@ -306,8 +306,10 @@ namespace OrbiNom
       var now = DateTime.UtcNow;
       Labels.Clear();
 
-      // todo: use SdrPasses if not a ham band
-      foreach (var pass in ctx.HamPasses.Passes)
+      bool hamBand = ctx.Sdr == null || SatnogsDbTransmitter.IsHamFrequency(ctx.Sdr.Info.Frequency);
+      SatellitePasses passes = hamBand ? ctx.HamPasses : ctx.SdrPasses;
+      
+      foreach (var pass in passes.Passes)
         if (pass.StartTime < now.AddMinutes(6) && pass.EndTime > now.AddMinutes(-25))
         {
           var transmitters = pass.Satellite.Transmitters.Where(tx => tx.alive);

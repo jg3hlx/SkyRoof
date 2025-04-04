@@ -90,7 +90,7 @@ namespace VE3NEA
       Args.Count = sampleCount;
       for (int i = 0; i < Args.Count; i++)
       {
-        Args.Data[i] = new Complex32(Floats[i * 2], Floats[i * 2 + 1]);// + 1 + new Complex32((float)phase.Real, (float)phase.Imaginary); //{!}
+        Args.Data[i] = new Complex32(Floats[i * 2], Floats[i * 2 + 1]);
         phase *= phasor;
       }
     }

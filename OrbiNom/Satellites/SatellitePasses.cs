@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Serilog;
 using SGPdotNET.CoordinateSystem;
 using SGPdotNET.Observation;
 using SGPdotNET.Util;
+using SharpGL;
 using VE3NEA;
 using static OrbiNom.GroupSatellitePasses;
 
@@ -82,25 +84,30 @@ namespace OrbiNom
 
     public SdrSatellitePasses(Context ctx) : base(ctx)
     {
-      PredictionTimeSpan = TimeSpan.FromDays(2);
+      PredictionTimeSpan = TimeSpan.FromMinutes(6);
       UpdateFrequencyRange();
     }
 
     public void UpdateFrequencyRange()
     {
-      if (ctx.WaterfallPanel == null || !SatnogsDbTransmitter.IsHamFrequency(ctx.WaterfallPanel.ScaleControl.CenterFrequency))
+      double startFrequency = 0;
+      double endFrequency = 0;
+
+      if (ctx.WaterfallPanel != null && ctx.Sdr != null &&
+        !SatnogsDbTransmitter.IsHamFrequency(ctx.Sdr.Info.Frequency))
       {
-        StartFrequency = 0;
-        EndFrequency = 0;
-      }
-      else
-      {
-        // double center = ctx.WaterfallPanel.ScaleControl.CenterFrequency);
-        // StartFrequency = startFrequency;
-        // EndFrequency = endFrequency;
+        double centerFrequency = ctx.Sdr.Info.Frequency;
+        double wing = ctx.Sdr.Info.MaxBandwidth / 2;
+        startFrequency = centerFrequency - wing;
+        endFrequency = centerFrequency + wing;
       }
 
-      Rebuild();
+      if (startFrequency == StartFrequency && endFrequency == EndFrequency) return;
+
+      StartFrequency = startFrequency;
+      EndFrequency = endFrequency;
+
+      FullRebuild();
     }
 
     protected override IEnumerable<SatnogsDbSatellite> ListSatellites()

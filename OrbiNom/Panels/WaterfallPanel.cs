@@ -48,6 +48,7 @@ namespace OrbiNom
       ctx.Settings.Waterfall.SplitterDistance = SplitContainer.SplitterDistance;
 
       ctx.SdrPasses.UpdateFrequencyRange();
+      ScaleControl.BuildLabels();
     }
 
     public void ApplySettings()
@@ -71,6 +72,7 @@ namespace OrbiNom
       WaterfallControl.Pan = 0;
 
       ctx.SdrPasses.UpdateFrequencyRange();
+      ScaleControl.BuildLabels();
     }
 
     public void SetCenterFrequency(double frequency)

@@ -801,6 +801,7 @@ namespace OrbiNom
       ctx.SdrPasses.FullRebuild();
 
       ctx.SatelliteSelector.SetSelectedPass(null);
+      ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
       ctx.GroupViewPanel?.LoadGroup();
       ctx.PassesPanel?.ShowPasses();
       ctx.EarthViewPanel?.SetGridSquare();
@@ -845,6 +846,8 @@ namespace OrbiNom
       FrequencyControl.SetTransmitter();
       ctx.TransmittersPanel?.ShowSelectedTransmitter();
       ctx.WaterfallPanel?.BringInView(ctx.FrequencyControl.CorrectedDownlinkFrequency);
+      ctx.SdrPasses.UpdateFrequencyRange();
+      ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)
