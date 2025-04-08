@@ -76,8 +76,8 @@ namespace OrbiNom
           ValidateInt(e, 8849);
           break;
 
-        case "OrbiNom.AnnouncerSettings.VoiceName":
-          PlayVoiceName(e);
+        case "OrbiNom.AnnouncerSettings.Voice":
+          ctx.Announcer.SayVoiceName(e.ChangedItem.Value!.ToString());
           break;
 
         case "OrbiNom.AnnouncerSettings.Volume":
@@ -90,12 +90,6 @@ namespace OrbiNom
       }
 
       if (canChange) ChangedFields.Add(label);
-    }
-
-    private void PlayVoiceName(PropertyValueChangedEventArgs e)
-    {
-      var ann = new Announcer();
-      ann.SayVoiceName(e.ChangedItem.Value.ToString());
     }
 
     private bool ValidateField(PropertyValueChangedEventArgs e, Regex regEx, string fieldName, CharacterCasing casing)

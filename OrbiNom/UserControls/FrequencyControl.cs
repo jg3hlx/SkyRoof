@@ -411,7 +411,7 @@ namespace OrbiNom
         DownlinkManualCheckbox.Visible = false;
         DownlinkManualSpinner.BackColor = SystemColors.Control;
 
-        DownlinkManualCheckbox.Enabled = DownlinkManualSpinner.Enabled = DownlinkModeCombobox.Enabled = false;
+        DownlinkManualCheckbox.Enabled = DownlinkManualSpinner.Enabled = DownlinkModeCombobox.Enabled = true;
         label3.Enabled = label4.Enabled = false;
       }
       else

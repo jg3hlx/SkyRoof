@@ -34,8 +34,8 @@
       columnHeader1 = new ColumnHeader();
       columnHeader3 = new ColumnHeader();
       columnHeader2 = new ColumnHeader();
-      SatNameLabel = new Label();
       imageList1 = new ImageList(components);
+      SatNameLabel = new Label();
       SuspendLayout();
       // 
       // listView1
@@ -54,7 +54,7 @@
       listView1.TabIndex = 4;
       listView1.UseCompatibleStateImageBehavior = false;
       listView1.View = View.Details;
-      listView1.DoubleClick += listView1_DoubleClick;
+      listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
       // 
       // columnHeader1
       // 
@@ -71,6 +71,13 @@
       columnHeader2.Text = "Uplink";
       columnHeader2.Width = 120;
       // 
+      // imageList1
+      // 
+      imageList1.ColorDepth = ColorDepth.Depth32Bit;
+      imageList1.ImageStream = (ImageListStreamer)resources.GetObject("imageList1.ImageStream");
+      imageList1.TransparentColor = Color.Transparent;
+      imageList1.Images.SetKeyName(0, "checkmark.bmp");
+      // 
       // SatNameLabel
       // 
       SatNameLabel.Dock = DockStyle.Top;
@@ -81,13 +88,6 @@
       SatNameLabel.TabIndex = 10;
       SatNameLabel.Text = "___";
       SatNameLabel.TextAlign = ContentAlignment.MiddleCenter;
-      // 
-      // imageList1
-      // 
-      imageList1.ColorDepth = ColorDepth.Depth32Bit;
-      imageList1.ImageStream = (ImageListStreamer)resources.GetObject("imageList1.ImageStream");
-      imageList1.TransparentColor = Color.Transparent;
-      imageList1.Images.SetKeyName(0, "checkmark.bmp");
       // 
       // TransmittersPanel
       // 

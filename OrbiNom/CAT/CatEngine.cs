@@ -8,6 +8,9 @@ namespace OrbiNom
 {
   public abstract class CatEngine : IDisposable
   {
+    protected bool rx;
+    protected bool tx;
+
     public double RxFrequency { get; protected set; }
     public double TxFrequency { get; protected set; }
 
@@ -19,7 +22,7 @@ namespace OrbiNom
 
     public static CatEngine CreateEngine(OmniRigSettings settings) 
     {
-      return new OmniRigCatEngine();
+      return new OmniRigCatEngine(settings);
     }
 
     public static CatEngine CreateEngine(RigctldSettings settings)
@@ -43,7 +46,11 @@ namespace OrbiNom
     }
 
 
-    public abstract void SetupRadio(bool rx, bool tx);
+    public virtual void SetupRadio(bool rx, bool tx)
+    {
+      this.rx = rx;
+      this.tx = tx;
+    }
     public abstract void SetRxFrequency(double frequency);
     public abstract void SetTxFrequency(double frequency);
 

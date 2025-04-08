@@ -36,7 +36,7 @@ namespace OrbiNom
 
     internal void SetSatellite(SatnogsDbSatellite? sat = null)
     {
-      sat ??= ctx.SatelliteSelector.SelectedSatellite; 
+      sat ??= ctx.SatelliteSelector.SelectedSatellite;
       sat.ComputeOrbitDetails();
       Satellite = sat;
       CreateTransmitterItems();
@@ -110,7 +110,7 @@ namespace OrbiNom
       ShowSelectedTransmitter();
     }
 
-    private void listView1_DoubleClick(object sender, EventArgs e)
+    private void listView1_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (listView1.SelectedItems.Count == 0) return;
 

@@ -4,22 +4,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VE3NEA;
 
 namespace OrbiNom
 {
   public enum EngineType { 
     OmniRig, 
     rigctld 
-  }
-
-  public enum OmniRigRig
-  {
-    [Description("None")]
-    None,
-    [Description("Rig 1")]
-    Rig1,
-    [Description("Rig 2")]
-    Rig2
   }
 
   public class CatSettings
