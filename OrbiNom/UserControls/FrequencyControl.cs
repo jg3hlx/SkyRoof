@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using System.Runtime.CompilerServices;
+using System.Data.Common;
+using VE3NEA.HamCockpit.SharedControls;
 
 namespace OrbiNom
 {
@@ -12,8 +14,8 @@ namespace OrbiNom
 
   public partial class FrequencyControl : UserControl
   {
+    private readonly FrequencyEntryForm FrequencyDialog = new ();
     public Context ctx;
-    private TopocentricObservation? Observation;
     private bool Changing;
     public double DownlinkFrequency, CorrectedDownlinkFrequency;
     public double UplinkFrequency, CorrectedUplinkFrequency;
@@ -28,11 +30,11 @@ namespace OrbiNom
 
     // shortcuts
     private SatnogsDbSatellite Sat => ctx.SatelliteSelector.SelectedSatellite;
-    private SatnogsDbTransmitter Tx => ctx.SatelliteSelector.SelectedTransmitter;
+    private SatnogsDbTransmitter? Tx => ctx.SatelliteSelector.SelectedTransmitter;
     private SatelliteCustomization SatCust => ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(Sat.sat_id);
-    private TransmitterCustomization TxCust => ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(Tx.uuid);
-    private bool IsTransponder => Tx.downlink_high.HasValue && Tx.downlink_high != Tx.downlink_low;
-    private bool HasUplink => UplinkFrequency > 0;
+    private TransmitterCustomization TxCust => ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(Tx!.uuid);
+    public bool IsTransponder => Tx != null && Tx.downlink_high.HasValue && Tx.downlink_high != Tx.downlink_low;
+    public bool HasUplink => !IsTerrestrial && UplinkFrequency > 0;
 
     private bool IsTerrestrial = true;
 
@@ -57,9 +59,10 @@ namespace OrbiNom
     public void SetTransmitter()
     {
       IsTerrestrial = false;
-      SetModes();
       SetFrequencies();
       SettingsToUi();
+      ctx.CatControl.Setup();
+      SetModes();
     }
 
     internal void SetTerrestrialFrequency(double frequency)
@@ -68,6 +71,8 @@ namespace OrbiNom
       DownlinkFrequency = frequency;
       SetFrequencies();
       SettingsToUi();
+      ctx.CatControl.Setup();
+      SetFrequencies();
     }
 
     internal void SetTransponderOffset(SatnogsDbTransmitter transponder, double offset)
@@ -144,8 +149,10 @@ namespace OrbiNom
       if (!IsTerrestrial)
       {
         // set in comboboxes
+        Changing = true;
         DownlinkModeCombobox.SelectedItem = TxCust.DownlinkMode;
         UplinkModeCombobox.SelectedItem = TxCust.UplinkMode;
+        Changing = false;
       }
 
       // set in slicer
@@ -222,37 +229,37 @@ namespace OrbiNom
     private void DownlinkManualSpinner_ValueChanged(object sender, EventArgs e)
     {
       if (!Changing && !IsTerrestrial)
-      SatCust.DownlinkManualCorrection = (int)(DownlinkManualSpinner.Value * 1000);
+        SatCust.DownlinkManualCorrection = (int)(DownlinkManualSpinner.Value * 1000);
     }
 
     private void DownlinkManualCheckbox_CheckedChanged(object sender, EventArgs e)
     {
       if (!Changing && !IsTerrestrial)
-      SatCust.DownlinkManualCorrectionEnabled = DownlinkManualCheckbox.Checked;
+        SatCust.DownlinkManualCorrectionEnabled = DownlinkManualCheckbox.Checked;
     }
 
     private void DownlinkDopplerCheckbox_CheckedChanged(object sender, EventArgs e)
     {
       if (!Changing && !IsTerrestrial)
-      SatCust.DownlinkDopplerCorrectionEnabled = DownlinkDopplerCheckbox.Checked;
+        SatCust.DownlinkDopplerCorrectionEnabled = DownlinkDopplerCheckbox.Checked;
     }
 
     private void UplinkManualSpinner_ValueChanged(object sender, EventArgs e)
     {
-      if (!Changing && !IsTerrestrial && HasUplink)
-      SatCust.UplinkManualCorrection = (int)(UplinkManualSpinner.Value * 1000);
+      if (!Changing && HasUplink)
+        SatCust.UplinkManualCorrection = (int)(UplinkManualSpinner.Value * 1000);
     }
 
     private void UplinkManualCheckbox_CheckedChanged(object sender, EventArgs e)
     {
       if (!Changing && !IsTerrestrial)
-      SatCust.UplinkManualCorrectionEnabled = UplinkManualCheckbox.Checked;
+        SatCust.UplinkManualCorrectionEnabled = UplinkManualCheckbox.Checked;
     }
 
     private void UplinkDopplerCheckbox_CheckedChanged(object sender, EventArgs e)
     {
       if (!Changing && !IsTerrestrial)
-      SatCust.UplinkDopplerCorrectionEnabled = UplinkDopplerCheckbox.Checked;
+        SatCust.UplinkDopplerCorrectionEnabled = UplinkDopplerCheckbox.Checked;
     }
 
     private void ModeCombobox_SelectedValueChanged(object sender, EventArgs e)
@@ -356,8 +363,17 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void FrequenciesToUi(double dopplerFactor)
     {
-      DownlinkFrequencyLabel.Text = $"{DownlinkFrequency:n0}";
-      UplinkFrequencyLabel.Text = UplinkFrequency == 0 ? "000,000,000" : $"{UplinkFrequency:n0}";
+      if (ctx.Settings.RxCat.ShowCorrectedFrequency)
+        DownlinkFrequencyLabel.Text = $"{CorrectedDownlinkFrequency:n0}*";
+      else
+        DownlinkFrequencyLabel.Text = $"{DownlinkFrequency:n0}";
+
+      if (UplinkFrequency == 0)
+        UplinkFrequencyLabel.Text = "000,000,000";
+      else if (ctx.Settings.TxCat.ShowCorrectedFrequency)
+        UplinkFrequencyLabel.Text = $"{CorrectedUplinkFrequency:n0}*";
+      else
+        UplinkFrequencyLabel.Text = $"{UplinkFrequency:n0}";
 
       string sign = dopplerFactor >= 0 ? "" : "+";
       double offset = -DownlinkFrequency * dopplerFactor;
@@ -436,7 +452,7 @@ namespace OrbiNom
       }
 
       // uplink
-      if (IsTerrestrial || !HasUplink)
+      if (!HasUplink)
       {
         UplinkManualSpinner.Value = 0;
 
@@ -451,7 +467,7 @@ namespace OrbiNom
         UplinkManualCheckbox.Enabled = UplinkManualSpinner.Enabled = UplinkModeCombobox.Enabled = false;
         label5.Enabled = label6.Enabled = false;
       }
-      else 
+      else
       {
         UplinkDopplerCheckbox.Checked = SatCust.UplinkDopplerCorrectionEnabled;
         UplinkManualCheckbox.Checked = SatCust.UplinkManualCorrectionEnabled;
@@ -481,6 +497,54 @@ namespace OrbiNom
     private void SetSpinnerValue(NumericUpDown spinner, decimal valueKHz)
     {
       spinner.Value = Math.Max(spinner.Minimum, Math.Min(spinner.Maximum, valueKHz));
+    }
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                      menu
+    //----------------------------------------------------------------------------------------------
+    private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+    {
+      bool showCorrected = GetClickedControl(sender) == DownlinkFrequencyLabel ?
+        ctx.Settings.RxCat.ShowCorrectedFrequency : ctx.Settings.TxCat.ShowCorrectedFrequency;
+
+      ShowCorrectedFrequencyMNU.Checked = showCorrected;
+      ShowNominalFrequencyMNU.Checked = !showCorrected;
+    }
+
+    private void ShowNominalFrequencyMNU_Click(object sender, EventArgs e)
+    {
+      if (GetClickedControl(sender) == DownlinkFrequencyLabel)
+        ctx.Settings.RxCat.ShowCorrectedFrequency = false;
+      else
+        ctx.Settings.TxCat.ShowCorrectedFrequency = false;
+
+      FrequenciesToUi(0);
+    }
+
+    private void ShowCorrectedFrequencyMNU_Click(object sender, EventArgs e)
+    {
+      if (GetClickedControl(sender) == DownlinkFrequencyLabel)
+        ctx.Settings.RxCat.ShowCorrectedFrequency = true;
+      else
+        ctx.Settings.TxCat.ShowCorrectedFrequency = true;
+      FrequenciesToUi(0);
+    }
+
+    private Label GetClickedControl(object sender)
+    {
+      if (sender is ToolStripDropDownItem menuItem)
+        sender = ((ToolStripDropDownItem)sender).Owner!;
+      return (Label)((ContextMenuStrip)sender).SourceControl!;
+    }
+
+    private void DownlinkFrequencyLabel_Click(object sender, EventArgs e)
+    {
+      FrequencyDialog.Location = Cursor.Position;
+      FrequencyDialog.ShowDialog();
+      if (FrequencyDialog.EnteredFrequency > 0)
+        SetTerrestrialFrequency(FrequencyDialog.EnteredFrequency);
     }
   }
 }

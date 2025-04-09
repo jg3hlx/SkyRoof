@@ -45,22 +45,20 @@ namespace OrbiNom
       }
     }
 
-    public override void SetupRadio(bool rx, bool tx)
+    public override void Start(bool rx, bool tx)
     {
-      base.SetupRadio(rx, tx);
-
       if (rx && tx)
-      {
         Rig!.Split = RigParamX.PM_SPLITON;
-      }
       else
-      {
         Rig!.Split = RigParamX.PM_SPLITOFF;
-      }
+
+      base.Start(rx, tx);
     }
 
-    private void Stop()
+    protected override void Stop()
     {
+      base.Stop();
+
       if (events != null)
       {
         events!.StatusChange -= Events_StatusChange;
@@ -75,13 +73,8 @@ namespace OrbiNom
 
       if (OmniRig != null) Marshal.ReleaseComObject(OmniRig);
       OmniRig = null;
-
     }
 
-    public override void Dispose()
-    {
-      Stop();
-    }
 
 
 
@@ -121,25 +114,25 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                    set param
     //----------------------------------------------------------------------------------------------
-    public override void SetRxFrequency(double frequency)
+    protected override void InternalSetRxFrequency(double frequency)
     {
       if (rx && tx) Rig.Vfo = RigParamX.PM_VFOA;
       Rig!.Freq = (int)frequency;
     }
 
-    public override void SetTxFrequency(double frequency)
+    protected override void InternalSetTxFrequency(double frequency)
     {
       if (rx && tx) Rig!.Vfo = RigParamX.PM_VFOB;
       Rig!.Freq = (int)frequency;
     }
 
-    public override void SetRxMode(Slicer.Mode mode)
+    protected override void InternalSetRxMode(Slicer.Mode mode)
     {
       if (rx && tx) Rig!.Vfo = RigParamX.PM_VFOA;
       Rig!.Mode = SlicerModeToOmniRigMode(mode);
     }
 
-    public override void SetTxMode(Slicer.Mode mode)
+    protected override void InternalSetTxMode(Slicer.Mode mode)
     {
       if (rx && tx) Rig!.Vfo = RigParamX.PM_VFOB;
       Rig!.Mode = SlicerModeToOmniRigMode(mode);
@@ -166,7 +159,7 @@ namespace OrbiNom
 
     private void Events_CustomReply(int RigNumber, object Command, object Reply)
     {
-
+      wakeupEvent?.Set();
     }
   }
 }

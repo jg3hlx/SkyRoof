@@ -18,6 +18,9 @@ namespace OrbiNom
     [Browsable(false)]
     public bool Enabled { get; set; }
 
+    [Browsable(false)]
+    public bool ShowCorrectedFrequency { get; set; }
+
     [DefaultValue(EngineType.OmniRig)]
     public EngineType EngineType { get; set; }
 
@@ -28,6 +31,8 @@ namespace OrbiNom
     [DisplayName("rigctld settings")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public RigctldSettings Rigctld { get; set; } = new();
+
+
 
     public override string ToString() { return string.Empty; }
   }

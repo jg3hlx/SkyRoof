@@ -18,27 +18,27 @@ namespace OrbiNom
       return true;
     }
 
-    public override void SetRxFrequency(double frequency)
+    protected override void InternalSetRxFrequency(double frequency)
     {
       throw new NotImplementedException();
     }
 
-    public override void SetRxMode(Slicer.Mode mode)
+    protected override void InternalSetRxMode(Slicer.Mode mode)
     {
       throw new NotImplementedException();
     }
 
-    public override void SetTxFrequency(double frequency)
+    protected override void InternalSetTxFrequency(double frequency)
     {
       throw new NotImplementedException();
     }
 
-    public override void SetTxMode(Slicer.Mode mode)
+    protected override void InternalSetTxMode(Slicer.Mode mode)
     {
       throw new NotImplementedException();
     }
 
-    public override void SetupRadio(bool rx, bool tx)
+    public override void Start(bool rx, bool tx)
     {
       
     }

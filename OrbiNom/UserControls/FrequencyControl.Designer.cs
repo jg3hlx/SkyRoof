@@ -28,8 +28,12 @@
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
       DownlinkLabel = new Label();
       DownlinkFrequencyLabel = new Label();
+      contextMenuStrip1 = new ContextMenuStrip(components);
+      ShowNominalFrequencyMNU = new ToolStripMenuItem();
+      ShowCorrectedFrequencyMNU = new ToolStripMenuItem();
       DownlinkDopplerCheckbox = new CheckBox();
       DownlinkManualCheckbox = new CheckBox();
       DownlinkManualSpinner = new NumericUpDown();
@@ -51,6 +55,7 @@
       DownlinkRitSpinner = new NumericUpDown();
       DownlinkRitCheckbox = new CheckBox();
       label7 = new Label();
+      contextMenuStrip1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).BeginInit();
       ((System.ComponentModel.ISupportInitialize)UplinkManualSpinner).BeginInit();
       ((System.ComponentModel.ISupportInitialize)DownlinkRitSpinner).BeginInit();
@@ -67,6 +72,8 @@
       // DownlinkFrequencyLabel
       // 
       DownlinkFrequencyLabel.BackColor = Color.Black;
+      DownlinkFrequencyLabel.ContextMenuStrip = contextMenuStrip1;
+      DownlinkFrequencyLabel.Cursor = Cursors.Hand;
       DownlinkFrequencyLabel.Font = new Font("Microsoft Sans Serif", 16F);
       DownlinkFrequencyLabel.ForeColor = Color.Aqua;
       DownlinkFrequencyLabel.Location = new Point(8, 36);
@@ -75,6 +82,28 @@
       DownlinkFrequencyLabel.TabIndex = 2;
       DownlinkFrequencyLabel.Text = "000,000,000";
       DownlinkFrequencyLabel.TextAlign = ContentAlignment.MiddleCenter;
+      DownlinkFrequencyLabel.Click += DownlinkFrequencyLabel_Click;
+      // 
+      // contextMenuStrip1
+      // 
+      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { ShowNominalFrequencyMNU, ShowCorrectedFrequencyMNU });
+      contextMenuStrip1.Name = "contextMenuStrip1";
+      contextMenuStrip1.Size = new Size(217, 48);
+      contextMenuStrip1.Opening += contextMenuStrip1_Opening;
+      // 
+      // ShowNominalFrequencyMNU
+      // 
+      ShowNominalFrequencyMNU.Name = "ShowNominalFrequencyMNU";
+      ShowNominalFrequencyMNU.Size = new Size(216, 22);
+      ShowNominalFrequencyMNU.Text = "Show Nominal Frequency";
+      ShowNominalFrequencyMNU.Click += ShowNominalFrequencyMNU_Click;
+      // 
+      // ShowCorrectedFrequencyMNU
+      // 
+      ShowCorrectedFrequencyMNU.Name = "ShowCorrectedFrequencyMNU";
+      ShowCorrectedFrequencyMNU.Size = new Size(216, 22);
+      ShowCorrectedFrequencyMNU.Text = "Show Corrected Frequency";
+      ShowCorrectedFrequencyMNU.Click += ShowCorrectedFrequencyMNU_Click;
       // 
       // DownlinkDopplerCheckbox
       // 
@@ -169,6 +198,7 @@
       // UplinkFrequencyLabel
       // 
       UplinkFrequencyLabel.BackColor = Color.Black;
+      UplinkFrequencyLabel.ContextMenuStrip = contextMenuStrip1;
       UplinkFrequencyLabel.Font = new Font("Microsoft Sans Serif", 16F);
       UplinkFrequencyLabel.ForeColor = Color.Aqua;
       UplinkFrequencyLabel.Location = new Point(347, 36);
@@ -332,6 +362,7 @@
       Controls.Add(DownlinkLabel);
       Name = "FrequencyControl";
       Size = new Size(679, 77);
+      contextMenuStrip1.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).EndInit();
       ((System.ComponentModel.ISupportInitialize)UplinkManualSpinner).EndInit();
       ((System.ComponentModel.ISupportInitialize)DownlinkRitSpinner).EndInit();
@@ -364,5 +395,8 @@
     private NumericUpDown DownlinkRitSpinner;
     private CheckBox DownlinkRitCheckbox;
     private Label label7;
+    private ContextMenuStrip contextMenuStrip1;
+    private ToolStripMenuItem ShowNominalFrequencyMNU;
+    private ToolStripMenuItem ShowCorrectedFrequencyMNU;
   }
 }

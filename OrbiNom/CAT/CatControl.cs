@@ -12,7 +12,7 @@ namespace OrbiNom
     public CatEngine? Rx, Tx;
 
 
-    internal void ApplySettings()
+    internal void Setup()
     {
       Rx?.Dispose();
       Tx?.Dispose();
@@ -26,7 +26,7 @@ namespace OrbiNom
         Rx = CatEngine.CreateEngine(ctx.Settings.RxCat.Rigctld);
 
       // create tx cat engine
-      if (!ctx.Settings.TxCat.Enabled)
+      if (!ctx.Settings.TxCat.Enabled || !ctx.FrequencyControl.HasUplink)
         Tx = null;
       else if (IsSameEngine(ctx.Settings.TxCat, ctx.Settings.RxCat))
         Tx = Rx;
@@ -35,20 +35,20 @@ namespace OrbiNom
       else
         Tx = CatEngine.CreateEngine(ctx.Settings.TxCat.Rigctld);
 
-      // set up
+      // start engines
       if (Rx != null)
       {
-//{!}        Rx.RxTuned += (s, e) => ctx.FrequencyControl.RxTuned();
+        //Rx.RxTuned += (s, e) => ctx.FrequencyControl.RxTuned();
         Rx.StatusChanged += (s, e) => ctx.MainForm.ShowCatStatus();
-        Rx.SetupRadio(true, Tx == Rx);
+        Rx.Start(true, Tx == Rx);
       }
       if (Tx != null)
       {
-        //{!}        Tx.TxTuned += (s, e) => ctx.FrequencyControl.TxTuned();
+        //Tx.TxTuned += (s, e) => ctx.FrequencyControl.TxTuned();
         if (Tx != Rx)
         {
           Tx.StatusChanged += (s, e) => ctx.MainForm.ShowCatStatus();
-          Tx.SetupRadio(false, true);
+          Tx.Start(false, true);
         }
       }
 

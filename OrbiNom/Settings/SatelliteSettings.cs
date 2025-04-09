@@ -78,8 +78,6 @@ namespace OrbiNom
       foreach (var group in SatelliteGroups)
         if (string.IsNullOrEmpty(group.SelectedSatId) || !group.SatelliteIds.Contains(group.SelectedSatId))
           group.SelectedSatId = group.SatelliteIds[0];
-
-      // selected transmitter may be null
     }
   }
 

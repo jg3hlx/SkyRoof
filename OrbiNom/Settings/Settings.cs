@@ -32,11 +32,11 @@ namespace OrbiNom
     public CatSettings RxCat { get; set; } = new();
 
 
-
     [DisplayName("TX CAT")]
     [Description("TX CAT Control via rigctld.exe")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public CatSettings TxCat { get; set; } = new();
+
 
 
     private static string GetFileName()

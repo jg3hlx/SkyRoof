@@ -46,7 +46,7 @@ namespace OrbiNom
       ctx.IqVacSoundcard.StateChanged += Soundcard_StateChanged;
 
       ApplyAudioSettings();
-      ctx.CatControl.ApplySettings();
+      ctx.CatControl.Setup();
     }
 
     private void MainForm_Load(object sender, EventArgs e)
@@ -636,14 +636,14 @@ namespace OrbiNom
     private void RxCatLabel_Click(object sender, EventArgs e)
     {
       ctx.Settings.RxCat.Enabled = !ctx.Settings.RxCat.Enabled;
-      ctx.CatControl.ApplySettings();
+      ctx.CatControl.Setup();
       ShowCatStatus();
     }
 
     private void TxCatLabel_Click(object sender, EventArgs e)
     {
       ctx.Settings.TxCat.Enabled = !ctx.Settings.TxCat.Enabled;
-      ctx.CatControl.ApplySettings();
+      ctx.CatControl.Setup();
       ShowCatStatus();
     }
 
@@ -653,12 +653,19 @@ namespace OrbiNom
       else if (!ctx.CatControl.Rx!.IsRunning()) RxCatLedLabel.ForeColor = Color.Red;
       else RxCatLedLabel.ForeColor = Color.Lime;
 
-      if (ctx.CatControl.Tx == null) TxCatLedLabel.ForeColor = Color.Gray;
+      if (!ctx.Settings.TxCat.Enabled) TxCatLedLabel.ForeColor = Color.Gray;
+      else if (!ctx.FrequencyControl.HasUplink) TxCatLedLabel.ForeColor = Color.Black;
       else if (!ctx.CatControl.Tx!.IsRunning()) TxCatLedLabel.ForeColor = Color.Red;
       else TxCatLedLabel.ForeColor = Color.Lime;
 
       RxCatStatusLabel.ToolTipText = ctx.CatControl.Rx?.GetStatusString() ?? "Disabled";
-      TxCatStatusLabel.ToolTipText = ctx.CatControl.Tx?.GetStatusString() ?? "Disabled";
+
+      if (!ctx.Settings.TxCat.Enabled)
+        TxCatStatusLabel.ToolTipText = "Disabled";
+      else if (!ctx.FrequencyControl.HasUplink)
+        TxCatStatusLabel.ToolTipText = "No Uplink";
+      else
+        TxCatStatusLabel.ToolTipText = ctx.CatControl.Tx?.GetStatusString();
     }
 
 
