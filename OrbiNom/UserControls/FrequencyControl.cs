@@ -1,11 +1,6 @@
-﻿using SGPdotNET.Observation;
-using VE3NEA;
+﻿using VE3NEA;
 using System.ComponentModel;
 using System.Diagnostics;
-using Newtonsoft.Json.Linq;
-using System.Runtime.CompilerServices;
-using System.Data.Common;
-using VE3NEA.HamCockpit.SharedControls;
 
 namespace OrbiNom
 {
@@ -14,7 +9,7 @@ namespace OrbiNom
 
   public partial class FrequencyControl : UserControl
   {
-    private readonly FrequencyEntryForm FrequencyDialog = new ();
+    private readonly FrequencyEntryForm FrequencyDialog = new();
     public Context ctx;
     private bool Changing;
     public double DownlinkFrequency, CorrectedDownlinkFrequency;
@@ -89,7 +84,7 @@ namespace OrbiNom
       else ctx.SatelliteSelector.SetSelectedTransmitter(transponder);
     }
 
-    internal void IncrementFrequency(int delta)
+    internal void IncrementDownlinkFrequency(int delta)
     {
       //Ctrl-mousewheel-spin enables RIT
       DownlinkRitCheckbox.Checked = ModifierKeys.HasFlag(Keys.Control);
@@ -104,11 +99,29 @@ namespace OrbiNom
 
       // transponder
       else if (IsTransponder)
-        TxCust.TranspnderOffset += delta;
+      {
+        long newOffset = (long)TxCust.TranspnderOffset + delta;
+        newOffset = Math.Max(0, Math.Min((long)Tx!.uplink_high! - (long)Tx!.uplink_low!, newOffset));
+        TxCust.TranspnderOffset = newOffset;
+      }
 
       // transmitter
       else
         IncrementSpinnerValue(DownlinkManualSpinner, delta);
+
+      SetFrequencies();
+    }
+
+
+    private void IncrementUplinkFrequency(int delta)
+    {
+      // terrestrial
+      if (IsTerrestrial)
+        UplinkFrequency += delta;
+
+      // uplink
+      else
+        IncrementSpinnerValue(UplinkManualSpinner, delta);
 
       SetFrequencies();
     }
@@ -137,6 +150,41 @@ namespace OrbiNom
     {
       if (!IsTerrestrial) SetFrequencies();
     }
+
+    internal void RxTuned()
+    {
+      BeginInvoke(() =>
+      {
+        if (ctx.CatControl.Rx == null) return;
+        int delta = (int)(ctx.CatControl.Rx!.ReadRxFrequency - CorrectedDownlinkFrequency);
+        IncrementDownlinkFrequency(delta);
+
+        Debug.WriteLine($"RX Tuned: WrittenRxFrequency {ctx.CatControl.Rx?.WrittenRxFrequency}, ReadRxFrequency {ctx.CatControl.Rx?.ReadRxFrequency}");
+        //Debug.WriteLine($"RX tuned: {delta}");
+        //Console.Beep();
+      });
+    }
+
+    internal void TxTuned()
+    {
+      BeginInvoke(() =>
+      {
+        if (ctx.CatControl.Tx == null) return;
+        int delta = (int)(ctx.CatControl.Tx.ReadTxFrequency - CorrectedUplinkFrequency);
+        IncrementUplinkFrequency(delta);
+
+        Debug.WriteLine($"TX Tuned: WrittenTxFrequency {ctx.CatControl.Tx?.WrittenTxFrequency}, ReadTxFrequency {ctx.CatControl.Tx?.ReadTxFrequency}");
+        //Debug.WriteLine($"TX tuned: {ctx.CatControl.Tx?.ReadTxFrequency - CorrectedUplinkFrequency}");
+        //Console.Beep();
+      });
+    }
+
+
+    private void DownlinkRitCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+      SetFrequencies();
+    }
+
 
 
 
@@ -347,8 +395,8 @@ namespace OrbiNom
 
       // send to slicer and CAT
       SetSlicerFrequency();
-      ctx.CatControl.Rx?.SetRxFrequency(CorrectedDownlinkFrequency);
-      if (CorrectedUplinkFrequency != 0) ctx.CatControl.Tx?.SetTxFrequency(CorrectedUplinkFrequency);
+      ctx.CatControl.Rx?.SetRxFrequency((long)Math.Truncate(CorrectedDownlinkFrequency));
+      if (CorrectedUplinkFrequency != 0) ctx.CatControl.Tx?.SetTxFrequency((long)Math.Truncate(CorrectedUplinkFrequency));
 
       // show
       FrequenciesToUi(dopplerFactor);

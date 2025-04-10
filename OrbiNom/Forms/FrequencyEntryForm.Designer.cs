@@ -1,16 +1,9 @@
-﻿namespace VE3NEA.HamCockpit.SharedControls
+﻿namespace OrbiNom
 {
   partial class FrequencyEntryForm
   {
-    /// <summary>
-    /// Required designer variable.
-    /// </summary>
     private System.ComponentModel.IContainer components = null;
 
-    /// <summary>
-    /// Clean up any resources being used.
-    /// </summary>
-    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
     {
       if (disposing && (components != null))
@@ -39,21 +32,22 @@
       label1.Location = new Point(13, 13);
       label1.Margin = new Padding(4, 0, 4, 0);
       label1.Name = "label1";
-      label1.Size = new Size(88, 15);
+      label1.Size = new Size(82, 15);
       label1.TabIndex = 0;
-      label1.Text = "Frequency, kHz";
+      label1.Text = "Frequency, Hz";
       // 
       // FrequencyComboBox
       // 
+      FrequencyComboBox.Font = new Font("Segoe UI", 11F);
       FrequencyComboBox.FormatString = "N2";
       FrequencyComboBox.FormattingEnabled = true;
       FrequencyComboBox.Location = new Point(13, 31);
       FrequencyComboBox.Margin = new Padding(4, 3, 4, 3);
       FrequencyComboBox.Name = "FrequencyComboBox";
-      FrequencyComboBox.Size = new Size(145, 23);
+      FrequencyComboBox.Size = new Size(145, 28);
       FrequencyComboBox.TabIndex = 1;
-      FrequencyComboBox.KeyDown += FrequencyEdit_KeyDown;
-      FrequencyComboBox.KeyPress += comboBox1_KeyPress;
+      FrequencyComboBox.KeyDown += ComboBox_KeyDown;
+      FrequencyComboBox.KeyPress += ComboBox_KeyPress;
       // 
       // TuneBtn
       // 

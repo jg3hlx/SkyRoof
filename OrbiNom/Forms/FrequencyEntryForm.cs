@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace VE3NEA.HamCockpit.SharedControls
+namespace OrbiNom
 {
   /// <summary>A dialog for manual entry of the frequency.</summary>
   /// <remarks>This dialog is used in the <see cref="FrequencyDisplayPanel"/> control
@@ -24,17 +24,17 @@ namespace VE3NEA.HamCockpit.SharedControls
       InitializeComponent();
     }
 
-    private void comboBox1_KeyPress(object sender, KeyPressEventArgs e)
+    private void ComboBox_KeyPress(object sender, KeyPressEventArgs e)
     {
-      //allow only digits, decimal point and control keys
+      //allow only digits, control keys and a  single decimal point
       if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.')) e.Handled = true;
       if ((e.KeyChar == '.') && ((sender as ComboBox).Text.IndexOf('.') > -1)) e.Handled = true;
     }
 
-    private void FrequencyEdit_KeyDown(object sender, KeyEventArgs e)
+    private void ComboBox_KeyDown(object sender, KeyEventArgs e)
     {
       //close dialog using the Esc key
-      if (e.KeyCode == Keys.Escape) this.Close();
+      if (e.KeyCode == Keys.Escape) Close();
     }
 
     private void FrequencyEntryForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -48,10 +48,10 @@ namespace VE3NEA.HamCockpit.SharedControls
         if (double.TryParse(FrequencyComboBox.Text, out result))
         {
           //save entered value
-          EnteredFrequency = (Int64)Math.Round(result * 1000);
+          EnteredFrequency = (Int64)Math.Round(result);
 
           //format and add to MRU
-          string formattedResult = String.Format("{0:0,0.##}", result);
+          string formattedResult = $"{result:N0}";
           int index = FrequencyComboBox.FindStringExact(formattedResult);
           if (index >= 0) FrequencyComboBox.Items.RemoveAt(index);
           FrequencyComboBox.Items.Insert(0, formattedResult);

@@ -18,7 +18,7 @@ namespace OrbiNom
       return true;
     }
 
-    protected override void InternalSetRxFrequency(double frequency)
+    protected override void InternalSetRxFrequency(long frequency)
     {
       throw new NotImplementedException();
     }
@@ -28,7 +28,7 @@ namespace OrbiNom
       throw new NotImplementedException();
     }
 
-    protected override void InternalSetTxFrequency(double frequency)
+    protected override void InternalSetTxFrequency(long frequency)
     {
       throw new NotImplementedException();
     }
@@ -46,6 +46,16 @@ namespace OrbiNom
     public override void Dispose()
     {
 
+    }
+
+    protected override bool InternalGetTxFrequency()
+    {
+      throw new NotImplementedException();
+    }
+
+    protected override bool InternalGetRxFrequency()
+    {
+      throw new NotImplementedException();
     }
   }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -16,6 +17,13 @@ namespace OrbiNom
     Rig2
   }
 
+
+  // Controlling the radio in the Sat mode requires a special OmniRig ini file, IC-9700-MIN.ini
+  // In this file the vfoa and vfob commands switch between the Main and Sub receivers, while
+  // the split command  toggles the Sat mode.
+  // This is needed only if rx and tx CAT options are enabled and the same radio is used for both.
+  // When only rx or tx is controlled, or rx and tx are two different radios, the standard
+  // ini files should be used.
   internal class OmniRigCatEngine : CatEngine
   {
     private IOmniRigX? OmniRig = null;
@@ -114,16 +122,18 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     //                                    set param
     //----------------------------------------------------------------------------------------------
-    protected override void InternalSetRxFrequency(double frequency)
+    protected override void InternalSetRxFrequency(long frequency)
     {
       if (rx && tx) Rig.Vfo = RigParamX.PM_VFOA;
       Rig!.Freq = (int)frequency;
+      //Debug.WriteLine($"Set Rx frequency: {(int)frequency} Hz");
     }
 
-    protected override void InternalSetTxFrequency(double frequency)
+    protected override void InternalSetTxFrequency(long frequency)
     {
       if (rx && tx) Rig!.Vfo = RigParamX.PM_VFOB;
       Rig!.Freq = (int)frequency;
+      Debug.WriteLine($"Set Tx frequency: {(int)frequency} Hz");
     }
 
     protected override void InternalSetRxMode(Slicer.Mode mode)
@@ -136,6 +146,18 @@ namespace OrbiNom
     {
       if (rx && tx) Rig!.Vfo = RigParamX.PM_VFOB;
       Rig!.Mode = SlicerModeToOmniRigMode(mode);
+    }
+
+    protected override bool InternalGetRxFrequency()
+    {
+      if (rx && tx) Rig.Vfo = RigParamX.PM_VFOA;
+      return SendReadFrequencyCommand();
+    }
+
+    protected override bool InternalGetTxFrequency()
+    {
+      if (rx && tx) Rig.Vfo = RigParamX.PM_VFOB;
+      return SendReadFrequencyCommand();
     }
 
     private RigParamX SlicerModeToOmniRigMode(Slicer.Mode mode)
@@ -155,10 +177,38 @@ namespace OrbiNom
 
 
 
+    private readonly byte[] Command = { 0xfe, 0xfe, 0xa2, 0xe0, 0x03, 0xfd };
+    private readonly byte[] ReplyMask = {
+        0xfe, 0xfe, 0xa2, 0xe0, 0x03, 0xfd,
+        0xfe, 0xfe, 0xe0, 0xa2, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xfd
+      };
 
+    private bool SendReadFrequencyCommand()
+    {
+      // send custom command
+      Rig!.SendCustomCommand(Command, ReplyMask.Length, null);
+
+      // wait for custom reply
+      return wakeupEvent!.WaitOne(3000);
+    }
 
     private void Events_CustomReply(int RigNumber, object Command, object Reply)
     {
+      // verify reply
+      if (Rig == null || RigNumber != RigNo) return;
+      if (!(Reply is byte[] bytes) || bytes.Length < ReplyMask.Length) return;
+      for (int i = 0; i < ReplyMask.Length; i++)
+        if (ReplyMask[i] != 0 && bytes[i] != ReplyMask[i]) return;
+
+      // parse reply
+      long freq = 0;
+      bytes = bytes.Skip(11).Take(5).Reverse().ToArray();
+      foreach (byte b in bytes)
+        freq = freq * 100 + ((b >> 4) & 0x0F) * 10 + (b & 0x0F);
+      NewReadFrequency = freq;
+      Debug.WriteLine($"Read frequency: {freq} Hz");
+
+      // notify
       wakeupEvent?.Set();
     }
   }

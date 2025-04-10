@@ -299,7 +299,7 @@ namespace OrbiNom
       if (freq == null) return;
       var x = ScaleControl.FreqToPixel((double)freq);
       if (Math.Abs(x - e.X) > 200) return;
-      ctx.FrequencyControl.IncrementFrequency(e.Delta > 0 ? 20 : -20);
+      ctx.FrequencyControl.IncrementDownlinkFrequency(e.Delta > 0 ? 20 : -20);
       ScaleControl.Refresh();
     }
 

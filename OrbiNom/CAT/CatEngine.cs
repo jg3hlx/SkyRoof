@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,8 +16,9 @@ namespace OrbiNom
     protected EventWaitHandle? wakeupEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
     protected Thread? processingThread;
     protected bool stopping = false;
-    public long RequestedRxFrequency, WrittenRxFrequency, ReadRxFrequency;
-    public long RequestedTxFrequency, WrittenTxFrequency, ReadTxFrequency;
+    public long RequestedRxFrequency, WrittenRxFrequency;
+    public long RequestedTxFrequency, WrittenTxFrequency;
+    public long ReadRxFrequency, ReadTxFrequency, NewReadFrequency;
     public Slicer.Mode? RequestedRxMode, WrittenRxMode = null;
     public Slicer.Mode? RequestedTxMode, WrittenTxMode = null;
 
@@ -61,8 +63,17 @@ namespace OrbiNom
       wakeupEvent = null;
     }
 
-    public void SetRxFrequency(double frequency) => RequestedRxFrequency = (long)frequency;
-    public void SetTxFrequency(double frequency) => RequestedTxFrequency = (long)frequency;    
+    public void SetRxFrequency(double frequency)
+    {
+      RequestedRxFrequency = (long)Math.Truncate(frequency);
+      //Debug.WriteLine($"RequestedRxFrequency <- {frequency}");
+    }
+    public void SetTxFrequency(double frequency)
+    {
+      RequestedTxFrequency = (long)Math.Truncate(frequency);
+      Debug.WriteLine($"RequestedTxFrequency <- {frequency}");
+    }
+
     public void SetRxMode(Slicer.Mode mode) => RequestedRxMode = mode;    
     public void SetTxMode(Slicer.Mode mode) => RequestedTxMode = mode;
 
@@ -82,6 +93,10 @@ namespace OrbiNom
       TxTuned?.Invoke(this, EventArgs.Empty);
     }
 
+    private bool IsDiff(long freq1, long freq2)
+    {
+      return freq1 != 0 && Math.Abs(freq1 - freq2) > 0;
+    }
 
     protected virtual void ProcessingThreadProcedure()
     {
@@ -91,27 +106,31 @@ namespace OrbiNom
         try
         {
           // set rx frequency
-          if (rx && RequestedRxFrequency != 0 && RequestedRxFrequency != WrittenRxFrequency)
+          long newRxFrequency = RequestedRxFrequency;
+          if (rx && IsDiff(newRxFrequency, WrittenRxFrequency))
           {
-            InternalSetRxFrequency(RequestedRxFrequency);
-            WrittenRxFrequency = RequestedRxFrequency;
+            InternalSetRxFrequency(newRxFrequency);
+            WrittenRxFrequency = newRxFrequency;
+            //Debug.WriteLine($"WrittenRxFrequency <- {WrittenRxFrequency}");
           }
 
           // set tx frequency
-          if (tx && RequestedTxFrequency != 0 && RequestedTxFrequency != WrittenTxFrequency)
+          long newTxFrequency = RequestedTxFrequency;
+          if (tx && IsDiff(newTxFrequency, WrittenTxFrequency))
           {
-            InternalSetTxFrequency(RequestedTxFrequency);
-            WrittenTxFrequency = RequestedTxFrequency;
+            InternalSetTxFrequency(newTxFrequency);
+            WrittenTxFrequency = newTxFrequency;
+            Debug.WriteLine($"WrittenTxFrequency <- {WrittenTxFrequency}");
           }
 
           // read rx frequency
           if (rx)
           {
-            long frequency = InternalGetRxFrequency();
-            if (frequency != ReadRxFrequency)
+           bool ok = InternalGetRxFrequency();
+            if (ok && IsDiff(NewReadFrequency, ReadRxFrequency))
             {
-              ReadRxFrequency = frequency;
-              if (frequency != WrittenRxFrequency)
+              ReadRxFrequency = NewReadFrequency;
+              if (ReadRxFrequency != WrittenRxFrequency)
                 syncContext.Post(_ => OnRxFrequencyChanged(), null);
             }
           }
@@ -119,11 +138,11 @@ namespace OrbiNom
           // read tx frequency
           if (tx)
           {
-            long frequency = InternalGetTxFrequency();
-            if (frequency != ReadTxFrequency)
+            bool ok = InternalGetTxFrequency();
+            if (ok && IsDiff(NewReadFrequency, ReadTxFrequency))
             {
-              ReadTxFrequency = frequency;
-              if (frequency != WrittenTxFrequency)
+              ReadTxFrequency = NewReadFrequency;
+              if (ReadTxFrequency != WrittenTxFrequency)
                 syncContext.Post(_ => OnTxFrequencyChanged(), null);
             }
           }
@@ -149,21 +168,10 @@ namespace OrbiNom
       }
     }
 
-    private long InternalGetTxFrequency()
-    {
-      Thread.Sleep(100);
-
-      return 0;
-    }
-
-    private long InternalGetRxFrequency()
-    {
-      Thread.Sleep(100);
-      return 0;
-    }
-
-    protected abstract void InternalSetRxFrequency(double frequency);
-    protected abstract void InternalSetTxFrequency(double frequency);
+    protected abstract bool InternalGetTxFrequency();
+    protected abstract bool InternalGetRxFrequency();
+    protected abstract void InternalSetRxFrequency(long frequency);
+    protected abstract void InternalSetTxFrequency(long frequency);
     protected abstract void InternalSetRxMode(Slicer.Mode mode);
     protected abstract void InternalSetTxMode(Slicer.Mode mode);
     public abstract bool IsRunning();

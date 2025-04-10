@@ -321,6 +321,7 @@
       DownlinkRitCheckbox.Size = new Size(15, 14);
       DownlinkRitCheckbox.TabIndex = 24;
       DownlinkRitCheckbox.UseVisualStyleBackColor = true;
+      DownlinkRitCheckbox.CheckedChanged += DownlinkRitCheckbox_CheckedChanged;
       // 
       // label7
       // 
