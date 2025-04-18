@@ -25,7 +25,7 @@ namespace OrbiNom
 
     private void AmsatReportDialog_Load(object sender, EventArgs e)
     {
-      comboBox1.Items.AddRange(Satellite.AmsatEntries);
+      comboBox1.Items.AddRange(Satellite.AmsatEntries.ToArray());
       comboBox1.SelectedIndex = 0;
 
       if (Satellite.norad_cat_id == 25544)

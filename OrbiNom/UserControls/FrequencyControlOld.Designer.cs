@@ -1,6 +1,6 @@
 ﻿namespace OrbiNom
 {
-  partial class FrequencyControl
+  partial class FrequencyControlOld
   {
     /// <summary> 
     /// Required designer variable.

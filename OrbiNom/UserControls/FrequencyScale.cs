@@ -110,8 +110,9 @@ namespace OrbiNom
 
     private RectangleF GetPassbandRect(bool includeRit = false)
     {
-      double centerFrequency = (double)ctx.FrequencyControl.CorrectedDownlinkFrequency!;
-      if (ctx.FrequencyControl.RitEnabled && !includeRit) centerFrequency -= ctx.FrequencyControl.RitOffset;
+      double centerFrequency = (double)ctx.FrequencyControl.RadioLink.CorrectedDownlinkFrequency!;
+      if (ctx.FrequencyControl.RadioLink.RitEnabled && !includeRit) 
+        centerFrequency -= ctx.FrequencyControl.RadioLink.RitOffset;
 
       double minWing = 3 * VisibleBandwidth / width;
       double wing = Math.Max(minWing, ctx.Slicer.Bandwidth / 2);
@@ -133,7 +134,7 @@ namespace OrbiNom
       g.DrawRectangle(Pens.Green, rect);
 
       // rit
-      if (ctx.FrequencyControl.RitEnabled)
+      if (ctx.FrequencyControl.RadioLink.RitEnabled)
       {
         rect = GetPassbandRect(true);
         g.DrawRectangle(Pens.Green, rect);

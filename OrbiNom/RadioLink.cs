@@ -1,0 +1,142 @@
+﻿using System.Diagnostics;
+
+namespace OrbiNom
+{
+  public class RadioLink
+  {
+    public SatnogsDbSatellite? Sat;
+    public SatnogsDbTransmitter? Tx;
+    public SatelliteCustomization? SatCust;
+    public TransmitterCustomization? TxCust;
+
+    // non-persistent
+    public bool IsTerrestrial;
+    public bool RitEnabled;
+    public double RitOffset;
+
+    // persistent
+    public Slicer.Mode DownlinkMode 
+    { 
+      get => TxCust!.DownlinkMode; 
+      set => TxCust!.DownlinkMode = value; 
+    }
+    public Slicer.Mode UplinkMode 
+    { 
+      get => TxCust!.UplinkMode; 
+      set => TxCust!.UplinkMode = value; 
+    }
+    public double TransponderOffset
+    {
+      get => TxCust!.TransponderOffset;
+      set => TxCust!.TransponderOffset = value;
+    }
+    public double DownlinkManualCorrection
+    {
+      get => SatCust!.DownlinkManualCorrection;
+      set => SatCust!.DownlinkManualCorrection = (int)value;
+    }
+    public double UplinkManualCorrection
+    {
+      get => SatCust!.UplinkManualCorrection;
+      set => SatCust!.UplinkManualCorrection = (int)value;
+    }
+
+    public bool DownlinkDopplerCorrectionEnabled 
+    { 
+      get => SatCust!.DownlinkDopplerCorrectionEnabled; 
+      set => SatCust!.DownlinkDopplerCorrectionEnabled = value; 
+    }
+    public bool UplinkDopplerCorrectionEnabled
+    {
+      get => SatCust!.UplinkDopplerCorrectionEnabled;
+      set => SatCust!.UplinkDopplerCorrectionEnabled = value;
+    }
+    public bool DownlinkManualCorrectionEnabled
+    {
+      get => SatCust!.DownlinkManualCorrectionEnabled;
+      set => SatCust!.DownlinkManualCorrectionEnabled = value;
+    }
+    public bool UplinkManualCorrectionEnabled
+    {
+      get => SatCust!.UplinkManualCorrectionEnabled;
+      set => SatCust!.UplinkManualCorrectionEnabled = value;
+    }
+
+
+    // computed
+    public double DownlinkFrequency, CorrectedDownlinkFrequency;
+    public double UplinkFrequency, CorrectedUplinkFrequency;
+    public double DopplerFactor = 0;
+    public bool IsAboveHorizon;
+    public bool HasUplink => !IsTerrestrial && UplinkFrequency > 0;
+    public bool IsTransponder => Tx != null && Tx.downlink_high.HasValue && Tx.downlink_high != Tx.downlink_low;
+
+
+
+    public void ObserveSatellite(SatellitePasses engine)
+    {
+      var observation = engine.ObserveSatellite(Sat!, DateTime.UtcNow);
+      DopplerFactor = observation.RangeRate / 3e5;
+      IsAboveHorizon = observation.Elevation > 0;
+    }
+
+    internal void ComputeFrequencies()
+    {
+      if (IsTerrestrial)
+      {
+        CorrectedDownlinkFrequency = DownlinkFrequency;
+        if (RitEnabled) CorrectedDownlinkFrequency += RitOffset;
+        CorrectedUplinkFrequency = UplinkFrequency = 0;
+        DopplerFactor = 0;
+
+      }
+
+      else
+      {
+        // downlink nominal
+        DownlinkFrequency = Tx!.DownlinkLow;
+        if (IsTransponder) DownlinkFrequency += TransponderOffset;
+
+        // downlink corrected
+        CorrectedDownlinkFrequency = DownlinkFrequency;
+        if (RitEnabled) CorrectedDownlinkFrequency += RitOffset;
+        if (DownlinkDopplerCorrectionEnabled) CorrectedDownlinkFrequency *= 1 - DopplerFactor;
+        if (DownlinkManualCorrectionEnabled) CorrectedDownlinkFrequency += DownlinkManualCorrection;
+
+        // uplink nominal
+        if (IsTransponder)
+          if (Tx.invert) UplinkFrequency = (double)Tx.uplink_high! - TransponderOffset;
+          else UplinkFrequency = (double)Tx.uplink_low! + TransponderOffset;
+        else if (Tx.uplink_low.HasValue) UplinkFrequency = (double)Tx.uplink_low;
+        else UplinkFrequency = 0;
+
+        // uplink corrected
+        CorrectedUplinkFrequency = UplinkFrequency;
+        if (UplinkDopplerCorrectionEnabled) CorrectedUplinkFrequency *= 1 + DopplerFactor;
+        if (UplinkManualCorrectionEnabled) CorrectedUplinkFrequency += UplinkManualCorrection;
+      }
+    }
+
+    internal double GetDraggableFrequency()
+    {
+      if (IsTerrestrial) return DownlinkFrequency;
+      else if (IsTransponder) return TransponderOffset;
+      else return DownlinkManualCorrection;
+    }
+
+    internal void SetDraggableFrequency(double freq)
+    {
+      if (IsTerrestrial)
+        DownlinkFrequency = freq;
+
+      else if (IsTransponder)
+      {
+        Debug.Assert(freq >= 0 && freq <= Tx!.uplink_high - Tx!.uplink_low);
+        TransponderOffset = freq;
+      }
+      else DownlinkManualCorrection = freq;
+
+      ComputeFrequencies();
+    }
+  }
+}

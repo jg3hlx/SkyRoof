@@ -62,22 +62,28 @@
     public bool IsVhf(long? freq = null)
     {
       freq ??= DownlinkLow;
-
-      return freq >= 144000000 && freq <= 148000000;
+      return IsVhfFrequency((double)freq);
     }
 
     public bool IsUhf(long? freq = null)
     {
       freq ??= DownlinkLow;
+      return IsUhfFrequency((double)freq);
+    }
 
+    public static bool IsVhfFrequency(double freq)
+    {
+      return freq >= 144000000 && freq <= 148000000;
+    }
+
+    public static bool IsUhfFrequency(double freq)
+    {
       return freq >= 430000000 && freq <= 440000000;
     }
 
-    public bool IsHamBand() { return IsVhf() || IsUhf(); }
-
     public static bool IsHamFrequency(double freq)
     {
-      return (freq >= 144000000 && freq <= 148000000) || (freq >= 430000000 && freq <= 440000000);
+      return IsVhfFrequency(freq) || IsUhfFrequency(freq);
     }
   }
 

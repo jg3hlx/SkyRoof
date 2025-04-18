@@ -4,10 +4,8 @@ using System.Diagnostics;
 
 namespace OrbiNom
 {
-  // todo: click on the frequency display opens direct input box
-  // todo: toggle freq/corrected-freq display
 
-  public partial class FrequencyControl : UserControl
+  public partial class FrequencyControlOld : UserControl
   {
     private readonly FrequencyEntryForm FrequencyDialog = new();
     public Context ctx;
@@ -33,7 +31,7 @@ namespace OrbiNom
 
     private bool IsTerrestrial = true;
 
-    public FrequencyControl()
+    public FrequencyControlOld()
     {
       InitializeComponent();
 
@@ -75,7 +73,7 @@ namespace OrbiNom
       // set the offset first
       var transponderCust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
       Debug.Assert(offset >= 0 && offset <= transponder.uplink_high - transponder.uplink_low);
-      transponderCust.TranspnderOffset = offset;
+      transponderCust.TransponderOffset = offset;
 
       // if same TX, just force its settings in case we were in terrestrial mode and changed them
       if (transponder == Tx) SetTransmitter();
@@ -100,9 +98,9 @@ namespace OrbiNom
       // transponder
       else if (IsTransponder)
       {
-        long newOffset = (long)TxCust.TranspnderOffset + delta;
+        long newOffset = (long)TxCust.TransponderOffset + delta;
         newOffset = Math.Max(0, Math.Min((long)Tx!.uplink_high! - (long)Tx!.uplink_low!, newOffset));
-        TxCust.TranspnderOffset = newOffset;
+        TxCust.TransponderOffset = newOffset;
       }
 
       // transmitter
@@ -129,7 +127,7 @@ namespace OrbiNom
     internal double GetDraggableFrequency()
     {
       if (IsTerrestrial) return DownlinkFrequency;
-      else if (IsTransponder) return TxCust.TranspnderOffset;
+      else if (IsTransponder) return TxCust.TransponderOffset;
       else return SatCust.DownlinkManualCorrection;
     }
 
@@ -139,7 +137,7 @@ namespace OrbiNom
       else if (IsTransponder)
       {
         Debug.Assert(freq >= 0 && freq <= Tx.uplink_high - Tx.uplink_low);
-        TxCust.TranspnderOffset = freq;
+        TxCust.TransponderOffset = freq;
       }
       else SetSpinnerValue(DownlinkManualSpinner, (decimal)(freq / 1000));
 
@@ -374,7 +372,7 @@ namespace OrbiNom
 
         // downlink
         DownlinkFrequency = Tx.DownlinkLow;
-        if (IsTransponder) DownlinkFrequency += TxCust.TranspnderOffset;
+        if (IsTransponder) DownlinkFrequency += TxCust.TransponderOffset;
 
         CorrectedDownlinkFrequency = DownlinkFrequency;
         if (DownlinkRitCheckbox.Checked) CorrectedDownlinkFrequency += RitOffset;
@@ -383,8 +381,8 @@ namespace OrbiNom
 
         // uplink
         if (IsTransponder)
-          if (Tx.invert) UplinkFrequency = (double)Tx.uplink_high! - TxCust.TranspnderOffset;
-          else UplinkFrequency = (double)Tx.uplink_low! + TxCust.TranspnderOffset;
+          if (Tx.invert) UplinkFrequency = (double)Tx.uplink_high! - TxCust.TransponderOffset;
+          else UplinkFrequency = (double)Tx.uplink_low! + TxCust.TransponderOffset;
         else if (Tx.uplink_low.HasValue) UplinkFrequency = (double)Tx.uplink_low;
         else UplinkFrequency = 0;
 

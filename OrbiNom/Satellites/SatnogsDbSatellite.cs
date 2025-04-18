@@ -205,7 +205,7 @@ namespace OrbiNom
     private List<string> FormatTransmitters()
     {
       return Transmitters
-        .Where(t => t.IsHamBand() && t.alive)
+        .Where(t => (t.IsVhf() || t.IsUhf()) && t.alive)
         .GroupBy(t => t.downlink_low)
         .Select(d => $"{d.Key / 1e6:F3}   {string.Join(", ", d.Select(r => r.mode).Distinct())}")
         .Order().ToList();

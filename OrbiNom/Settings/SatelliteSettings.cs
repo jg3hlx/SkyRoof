@@ -109,6 +109,6 @@ namespace OrbiNom
     public string uuid;
     public Slicer.Mode DownlinkMode;
     public Slicer.Mode UplinkMode;
-    public double TranspnderOffset;
+    public double TransponderOffset;
   }
 }

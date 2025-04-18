@@ -14,7 +14,7 @@ namespace OrbiNom
 
     internal WidebandSpectrumAnalyzer(int size, int step)
     {
-      Spectrum = new(size, step, 4);
+      Spectrum = new(size, step, 2);
       Spectrum.SpectrumAvailable += Spectrum_SpectrumAvailable;
     }
 

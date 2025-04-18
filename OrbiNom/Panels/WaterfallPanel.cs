@@ -277,7 +277,7 @@ namespace OrbiNom
     {
       if (e.Button == MouseButtons.Left && !Dragging) HandleFrequencyClick(e.X, e.Y);
 
-      if (e.Button == MouseButtons.Right) ctx.FrequencyControl.RitEnabled = !ctx.FrequencyControl.RitEnabled;
+      if (e.Button == MouseButtons.Right) ctx.FrequencyControl.ToggleRit();
 
       if (ScaleControl.GetTransponderUnderCursor(MouseDownX) != null)
         ScaleControl.Cursor = Cursors.PanSouth;
@@ -295,7 +295,7 @@ namespace OrbiNom
 
     private void ScaleControl_MouseWheel(object? sender, MouseEventArgs e)
     {
-      var freq = ctx.FrequencyControl.CorrectedDownlinkFrequency;
+      var freq = ctx.FrequencyControl.RadioLink.CorrectedDownlinkFrequency;
       if (freq == null) return;
       var x = ScaleControl.FreqToPixel((double)freq);
       if (Math.Abs(x - e.X) > 200) return;

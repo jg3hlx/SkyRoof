@@ -177,7 +177,7 @@ namespace OrbiNom
       if (ctx.Slicer != null) ctx.Slicer?.Dispose();
 
       var rate = ctx.Sdr.Info.SampleRate;
-      var mode = ctx.FrequencyControl.DownlinkMode;
+      var mode = ctx.FrequencyControl.RadioLink.DownlinkMode;
       ctx.Slicer = new Slicer(rate, 0, mode);
       ctx.Slicer.AudioDataAvailable += Slicer_AudioDataAvailable;
       ctx.Slicer.IqDataAvailable += Slicer_IqDataAvailable;
@@ -654,7 +654,7 @@ namespace OrbiNom
       else RxCatLedLabel.ForeColor = Color.Lime;
 
       if (!ctx.Settings.TxCat.Enabled) TxCatLedLabel.ForeColor = Color.Gray;
-      else if (!ctx.FrequencyControl.HasUplink) TxCatLedLabel.ForeColor = Color.Black;
+      else if (!ctx.FrequencyControl.RadioLink.HasUplink) TxCatLedLabel.ForeColor = Color.Black;
       else if (!ctx.CatControl.Tx!.IsRunning()) TxCatLedLabel.ForeColor = Color.Red;
       else TxCatLedLabel.ForeColor = Color.Lime;
 
@@ -662,7 +662,7 @@ namespace OrbiNom
 
       if (!ctx.Settings.TxCat.Enabled)
         TxCatStatusLabel.ToolTipText = "Disabled";
-      else if (!ctx.FrequencyControl.HasUplink)
+      else if (!ctx.FrequencyControl.RadioLink.HasUplink)
         TxCatStatusLabel.ToolTipText = "No Uplink";
       else
         TxCatStatusLabel.ToolTipText = ctx.CatControl.Tx?.GetStatusString();
@@ -852,7 +852,7 @@ namespace OrbiNom
     {
       FrequencyControl.SetTransmitter();
       ctx.TransmittersPanel?.ShowSelectedTransmitter();
-      ctx.WaterfallPanel?.BringInView(ctx.FrequencyControl.CorrectedDownlinkFrequency);
+      ctx.WaterfallPanel?.BringInView(ctx.FrequencyControl.RadioLink.CorrectedDownlinkFrequency);
       ctx.SdrPasses.UpdateFrequencyRange();
       ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
     }

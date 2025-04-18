@@ -26,7 +26,7 @@ namespace OrbiNom
         Rx = CatEngine.CreateEngine(ctx.Settings.RxCat.Rigctld);
 
       // create tx cat engine
-      if (!ctx.Settings.TxCat.Enabled || !ctx.FrequencyControl.HasUplink)
+      if (!ctx.Settings.TxCat.Enabled || !ctx.FrequencyControl.RadioLink.HasUplink)
         Tx = null;
       else if (IsSameEngine(ctx.Settings.TxCat, ctx.Settings.RxCat))
         Tx = Rx;
