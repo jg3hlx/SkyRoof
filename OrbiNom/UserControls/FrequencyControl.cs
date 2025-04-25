@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.DirectoryServices;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -70,31 +71,7 @@ namespace OrbiNom
     {
       //Ctrl-mousewheel-spin enables RIT
       RadioLink.RitEnabled = ModifierKeys.HasFlag(Keys.Control);
-
-      // RIT
-      if (RadioLink.RitEnabled) RadioLink.RitOffset += delta;
-
-      // terrestrial
-      else if (RadioLink.IsTerrestrial) RadioLink.DownlinkFrequency += delta;
-
-      // transponder
-      else if (RadioLink.IsTransponder)
-      {
-        long newOffset = (long)RadioLink.TransponderOffset + delta;
-        long maxOffset = (long)RadioLink.Tx!.uplink_high! - (long)RadioLink.Tx!.uplink_low!;
-        newOffset = Math.Max(0, Math.Min(maxOffset, newOffset));
-        RadioLink.TransponderOffset = newOffset;
-      }
-
-      // transmitter
-      else
-      {
-        double newOffset = RadioLink.DownlinkManualCorrection + delta;
-        newOffset = Math.Max(-25_0000, Math.Min(25_0000, newOffset));
-        RadioLink.DownlinkManualCorrection = newOffset;
-      }
-
-      RadioLink.ComputeFrequencies();
+      RadioLink.IncrementDownlinkFrequency(delta);
       RadioLinkToRadio();
       RadioLinkToUi();
     }
@@ -123,10 +100,18 @@ namespace OrbiNom
 
     internal void RxTuned()
     {
+      int delta = (int)(ctx.CatControl.Rx!.LastReadRxFrequency - RadioLink.CorrectedDownlinkFrequency);
+      RadioLink.IncrementDownlinkFrequency(delta);
+      RadioLinkToRadio();
+      Invoke(RadioLinkToUi);
     }
 
     internal void TxTuned()
     {
+      int delta = (int)(ctx.CatControl.Tx!.LastReadTxFrequency - RadioLink.CorrectedUplinkFrequency);
+      RadioLink.IncrementUplinkFrequency(delta);
+      RadioLinkToRadio();
+      Invoke(RadioLinkToUi);
     }
 
     internal void ToggleRit()
@@ -334,6 +319,8 @@ namespace OrbiNom
       Changing = false;
 
       FrequenciesToUi();
+      ctx.WaterfallPanel?.ScaleControl.Refresh();
+      ctx.WaterfallPanel?.WaterfallControl.OpenglControl.Refresh();
     }
 
     private void FrequenciesToUi()
@@ -361,9 +348,9 @@ namespace OrbiNom
 
       // downlink
       bool bright = !RadioLink.IsTerrestrial && RadioLink.IsAboveHorizon;
-      if (SatnogsDbTransmitter.IsVhfFrequency(RadioLink.DownlinkFrequency))
+      if (SatnogsDbTransmitter.IsUhfFrequency(RadioLink.DownlinkFrequency))
         DownlinkFrequencyLabel.ForeColor = bright ? Color.Cyan : Color.Teal;
-      else if (SatnogsDbTransmitter.IsUhfFrequency(RadioLink.DownlinkFrequency))
+      else if (SatnogsDbTransmitter.IsVhfFrequency(RadioLink.DownlinkFrequency))
         DownlinkFrequencyLabel.ForeColor = bright ? Color.Yellow : Color.Olive;
       else
         DownlinkFrequencyLabel.ForeColor = bright ? Color.White : Color.Gray;

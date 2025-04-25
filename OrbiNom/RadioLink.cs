@@ -62,7 +62,6 @@ namespace OrbiNom
       set => SatCust!.UplinkManualCorrectionEnabled = value;
     }
 
-
     // computed
     public double DownlinkFrequency, CorrectedDownlinkFrequency;
     public double UplinkFrequency, CorrectedUplinkFrequency;
@@ -70,6 +69,10 @@ namespace OrbiNom
     public bool IsAboveHorizon;
     public bool HasUplink => !IsTerrestrial && UplinkFrequency > 0;
     public bool IsTransponder => Tx != null && Tx.downlink_high.HasValue && Tx.downlink_high != Tx.downlink_low;
+    public bool IsCrossBand => HasUplink && 
+      ((SatnogsDbTransmitter.IsUhfFrequency(UplinkFrequency) != SatnogsDbTransmitter.IsUhfFrequency(DownlinkFrequency)) 
+      ||
+      (SatnogsDbTransmitter.IsVhfFrequency(UplinkFrequency) != SatnogsDbTransmitter.IsVhfFrequency(DownlinkFrequency)));
 
 
 
@@ -131,10 +134,55 @@ namespace OrbiNom
 
       else if (IsTransponder)
       {
+        //todo: bring to range
         Debug.Assert(freq >= 0 && freq <= Tx!.uplink_high - Tx!.uplink_low);
         TransponderOffset = freq;
       }
       else DownlinkManualCorrection = freq;
+
+      ComputeFrequencies();
+    }
+
+    internal void IncrementDownlinkFrequency(int delta)
+    {
+      // RIT
+      if (RitEnabled)
+      {
+        long newOffset = (long)RitOffset + delta;
+        RitOffset = Math.Max(-25000, Math.Min(25000, newOffset));
+      }
+
+      // terrestrial
+      else if (IsTerrestrial) DownlinkFrequency += delta;
+
+      // transponder
+      else if (IsTransponder)
+      {
+        long newOffset = (long)TransponderOffset + delta;
+        long maxOffset = (long)Tx!.uplink_high! - (long)Tx!.uplink_low!;
+        TransponderOffset = Math.Max(0, Math.Min(maxOffset, newOffset));
+      }
+
+      // transmitter
+      else
+      {
+        double newOffset = DownlinkManualCorrection + delta;
+        DownlinkManualCorrection = Math.Max(-25000, Math.Min(25000, newOffset));
+      }
+
+      ComputeFrequencies();
+    }
+
+    public void IncrementUplinkFrequency(int delta)
+    {
+      if (IsTerrestrial)
+        UplinkFrequency += delta;
+      else
+      {
+        double newOffset = UplinkManualCorrection + delta;
+        if (newOffset >= -25000 && newOffset <= 25000)
+          UplinkManualCorrection = newOffset;
+      }
 
       ComputeFrequencies();
     }

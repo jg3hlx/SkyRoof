@@ -14,33 +14,31 @@ namespace OrbiNom
 
     internal void Setup()
     {
+      bool crossband = ctx.FrequencyControl.RadioLink.IsCrossBand;
+
       Rx?.Dispose();
       Tx?.Dispose();
 
       // create rx cat engine
       if (!ctx.Settings.RxCat.Enabled)
         Rx = null;
-      else if (ctx.Settings.RxCat.EngineType == EngineType.OmniRig)
-        Rx = CatEngine.CreateEngine(ctx.Settings.RxCat.OmniRig);
-      else
-        Rx = CatEngine.CreateEngine(ctx.Settings.RxCat.Rigctld);
+      else 
+        Rx = new CatEngine(ctx.Settings.RxCat);
 
       // create tx cat engine
       if (!ctx.Settings.TxCat.Enabled || !ctx.FrequencyControl.RadioLink.HasUplink)
         Tx = null;
       else if (IsSameEngine(ctx.Settings.TxCat, ctx.Settings.RxCat))
-        Tx = Rx;
-      else if (ctx.Settings.TxCat.EngineType == EngineType.OmniRig)
-        Tx = CatEngine.CreateEngine(ctx.Settings.TxCat.OmniRig);
+        Tx = Rx;      
       else
-        Tx = CatEngine.CreateEngine(ctx.Settings.TxCat.Rigctld);
+        Tx = new CatEngine(ctx.Settings.TxCat);
 
       // start engines
       if (Rx != null)
       {
         Rx.RxTuned += (s, e) => ctx.FrequencyControl.RxTuned();
         Rx.StatusChanged += (s, e) => ctx.MainForm.ShowCatStatus();
-        Rx.Start(true, Tx == Rx);
+        Rx.Start(true, Tx == Rx, crossband);
       }
       if (Tx != null)
       {
@@ -48,7 +46,7 @@ namespace OrbiNom
         if (Tx != Rx)
         {
           Tx.StatusChanged += (s, e) => ctx.MainForm.ShowCatStatus();
-          Tx.Start(false, true);
+          Tx.Start(false, true, crossband);
         }
       }
 
@@ -57,17 +55,10 @@ namespace OrbiNom
 
     private bool IsSameEngine(CatSettings txCat, CatSettings rxCat)
     {
-      if (!ctx.Settings.RxCat.Enabled || !ctx.Settings.TxCat.Enabled)
-        return false;
-
-      if (ctx.Settings.RxCat.EngineType != ctx.Settings.TxCat.EngineType)
-        return false;
-
-      if (ctx.Settings.RxCat.EngineType == EngineType.OmniRig)
-        return ctx.Settings.RxCat.OmniRig.RigNo == ctx.Settings.TxCat.OmniRig.RigNo;
-      else
-        return IsSameHost(ctx.Settings.RxCat.Rigctld.Host, ctx.Settings.TxCat.Rigctld.Host) &&
-          ctx.Settings.RxCat.Rigctld.Port == ctx.Settings.TxCat.Rigctld.Port;
+      return ctx.Settings.RxCat.Enabled && ctx.Settings.TxCat.Enabled &&      
+        IsSameHost(ctx.Settings.RxCat.Host, ctx.Settings.TxCat.Host) &&          
+        ctx.Settings.RxCat.Port == ctx.Settings.TxCat.Port &&          
+        ctx.Settings.RxCat.RadioModel == ctx.Settings.TxCat.RadioModel;
     }
 
     private bool IsSameHost(string host1, string host2)

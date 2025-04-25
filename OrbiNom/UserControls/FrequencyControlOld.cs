@@ -54,7 +54,7 @@ namespace OrbiNom
       IsTerrestrial = false;
       SetFrequencies();
       SettingsToUi();
-      ctx.CatControl.Setup();
+      ctx.CatControl.Setup(); 
       SetModes();
     }
 
@@ -64,7 +64,7 @@ namespace OrbiNom
       DownlinkFrequency = frequency;
       SetFrequencies();
       SettingsToUi();
-      ctx.CatControl.Setup();
+      ctx.CatControl.Setup(); 
       SetFrequencies();
     }
 
@@ -154,10 +154,10 @@ namespace OrbiNom
       BeginInvoke(() =>
       {
         if (ctx.CatControl.Rx == null) return;
-        int delta = (int)(ctx.CatControl.Rx!.ReadRxFrequency - CorrectedDownlinkFrequency);
+        int delta = (int)(ctx.CatControl.Rx!.LastReadRxFrequency - CorrectedDownlinkFrequency);
         IncrementDownlinkFrequency(delta);
 
-        Debug.WriteLine($"RX Tuned: WrittenRxFrequency {ctx.CatControl.Rx?.WrittenRxFrequency}, ReadRxFrequency {ctx.CatControl.Rx?.ReadRxFrequency}");
+        //Debug.WriteLine($"RX Tuned: WrittenRxFrequency {ctx.CatControl.Rx?.WrittenRxFrequency}, ReadRxFrequency {ctx.CatControl.Rx?.ReadEDRxFrequency}");
         //Debug.WriteLine($"RX tuned: {delta}");
         //Console.Beep();
       });
@@ -168,10 +168,10 @@ namespace OrbiNom
       BeginInvoke(() =>
       {
         if (ctx.CatControl.Tx == null) return;
-        int delta = (int)(ctx.CatControl.Tx.ReadTxFrequency - CorrectedUplinkFrequency);
+        int delta = (int)(ctx.CatControl.Tx.LastReadTxFrequency - CorrectedUplinkFrequency);
         IncrementUplinkFrequency(delta);
 
-        Debug.WriteLine($"TX Tuned: WrittenTxFrequency {ctx.CatControl.Tx?.WrittenTxFrequency}, ReadTxFrequency {ctx.CatControl.Tx?.ReadTxFrequency}");
+        //Debug.WriteLine($"TX Tuned: WrittenTxFrequency {ctx.CatControl.Tx?.WrittenTxFrequency}, ReadTxFrequency {ctx.CatControl.Tx?.ReadEDTxFrequency}");
         //Debug.WriteLine($"TX tuned: {ctx.CatControl.Tx?.ReadTxFrequency - CorrectedUplinkFrequency}");
         //Console.Beep();
       });
@@ -217,7 +217,7 @@ namespace OrbiNom
       double low = ctx.Sdr.Frequency - bandwidth / 2;
       double high = ctx.Sdr.Frequency + bandwidth / 2;
 
-      double targetFrequency = (double)CorrectedDownlinkFrequency!;
+      double targetFrequency = CorrectedDownlinkFrequency!;
 
       if (targetFrequency < low || targetFrequency > high)
         if (ctx.Sdr.IsFrequencySupported(targetFrequency))

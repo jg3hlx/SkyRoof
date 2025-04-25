@@ -103,6 +103,16 @@ namespace OrbiNom.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] cat_info {
+            get {
+                object obj = ResourceManager.GetObject("cat_info", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] dxcc {
             get {
                 object obj = ResourceManager.GetObject("dxcc", resourceCulture);
