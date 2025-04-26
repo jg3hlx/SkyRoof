@@ -85,6 +85,8 @@ namespace OrbiNom
 
     private void DrawSprite(Sprite sprite)
     {
+      if (!sprite.Enabled) return;
+
       gl.BindTexture(OpenGL.GL_TEXTURE_2D, sprite.TextureId);
       CheckError();
 

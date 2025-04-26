@@ -93,13 +93,24 @@ namespace OrbiNom
 
     private void ComputeSatLocation()
     {
-      var p = Satellite.Tracker.Predict().ToGeodetic();
-      var nextP = Satellite.Tracker.Predict(DateTime.UtcNow.AddSeconds(10)).ToGeodetic();
-      var nextCenter = new GeoPoint(nextP.Latitude.Degrees, nextP.Longitude.Degrees);
+      if (Satellite.Tle == null)
+      {
+        Center = Home;
+        Footprint = Math.PI;
+        Azimuth = 0;
+        SatelliteSprite.Enabled = false;
+      }
+      else
+      {
+        var p = Satellite.Tracker.Predict().ToGeodetic();
+        var nextP = Satellite.Tracker.Predict(DateTime.UtcNow.AddSeconds(10)).ToGeodetic();
+        var nextCenter = new GeoPoint(nextP.Latitude.Degrees, nextP.Longitude.Degrees);
 
-      Center = new(p.Latitude.Degrees, p.Longitude.Degrees);
-      Footprint = p.GetFootprintAngle().Radians;
-      Azimuth = (nextCenter - Center).AzimuthRad;
+        Center = new(p.Latitude.Degrees, p.Longitude.Degrees);
+        Footprint = p.GetFootprintAngle().Radians;
+        Azimuth = (nextCenter - Center).AzimuthRad;
+        SatelliteSprite.Enabled = true;
+      }
     }
 
 

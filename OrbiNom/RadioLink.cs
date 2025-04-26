@@ -68,7 +68,9 @@ namespace OrbiNom
     public double DopplerFactor = 0;
     public bool IsAboveHorizon;
     public bool HasUplink => !IsTerrestrial && UplinkFrequency > 0;
-    public bool IsTransponder => Tx != null && Tx.downlink_high.HasValue && Tx.downlink_high != Tx.downlink_low;
+    public bool IsTransponder => Tx != null &&
+      Tx.downlink_high.HasValue && Tx.downlink_high != Tx.downlink_low &&
+      Tx.uplink_low.HasValue && Tx.uplink_high.HasValue;
     public bool IsCrossBand => HasUplink && 
       ((SatnogsDbTransmitter.IsUhfFrequency(UplinkFrequency) != SatnogsDbTransmitter.IsUhfFrequency(DownlinkFrequency)) 
       ||
@@ -78,6 +80,13 @@ namespace OrbiNom
 
     public void ObserveSatellite(SatellitePasses engine)
     {
+      if (Sat?.Tle == null)
+      {
+        DopplerFactor = 0;
+        IsAboveHorizon = false;
+        return;
+      }
+
       var observation = engine.ObserveSatellite(Sat!, DateTime.UtcNow);
       DopplerFactor = observation.RangeRate / 3e5;
       IsAboveHorizon = observation.Elevation > 0;

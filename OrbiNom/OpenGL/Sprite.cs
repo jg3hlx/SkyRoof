@@ -22,6 +22,7 @@ namespace OrbiNom
     private Size ImageSize;
     private float scale = 1;
 
+    public bool Enabled = true;
     public PointF Location;
     public float Angle;
     public float Scale { get => scale; set => SetScale(value); }
