@@ -45,6 +45,9 @@
       UplinkManualCheckbox = new CheckBox();
       UplinkDopplerCheckbox = new CheckBox();
       UplinkFrequencyLabel = new Label();
+      contextMenuStrip1 = new ContextMenuStrip(components);
+      ShowNominalFrequencyMNU = new ToolStripMenuItem();
+      ShowCorrectedFrequencyMNU = new ToolStripMenuItem();
       UplinkLabel = new Label();
       label2 = new Label();
       DownlinkManualSpinner = new NumericUpDown();
@@ -52,13 +55,11 @@
       DownlinkDopplerCheckbox = new CheckBox();
       DownlinkFrequencyLabel = new Label();
       DownlinkLabel = new Label();
-      contextMenuStrip1 = new ContextMenuStrip(components);
-      ShowNominalFrequencyMNU = new ToolStripMenuItem();
-      ShowCorrectedFrequencyMNU = new ToolStripMenuItem();
+      TxBtn = new Button();
       ((System.ComponentModel.ISupportInitialize)RitSpinner).BeginInit();
       ((System.ComponentModel.ISupportInitialize)UplinkManualSpinner).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).BeginInit();
       contextMenuStrip1.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).BeginInit();
       SuspendLayout();
       // 
       // label7
@@ -231,6 +232,27 @@
       UplinkFrequencyLabel.Text = "000,000,000";
       UplinkFrequencyLabel.TextAlign = ContentAlignment.MiddleCenter;
       // 
+      // contextMenuStrip1
+      // 
+      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { ShowNominalFrequencyMNU, ShowCorrectedFrequencyMNU });
+      contextMenuStrip1.Name = "contextMenuStrip1";
+      contextMenuStrip1.Size = new Size(217, 48);
+      contextMenuStrip1.Opening += contextMenuStrip1_Opening;
+      // 
+      // ShowNominalFrequencyMNU
+      // 
+      ShowNominalFrequencyMNU.Name = "ShowNominalFrequencyMNU";
+      ShowNominalFrequencyMNU.Size = new Size(216, 22);
+      ShowNominalFrequencyMNU.Text = "Show Nominal Frequency";
+      ShowNominalFrequencyMNU.Click += ShowNominalFrequencyMNU_Click;
+      // 
+      // ShowCorrectedFrequencyMNU
+      // 
+      ShowCorrectedFrequencyMNU.Name = "ShowCorrectedFrequencyMNU";
+      ShowCorrectedFrequencyMNU.Size = new Size(216, 22);
+      ShowCorrectedFrequencyMNU.Text = "Show Corrected Frequency";
+      ShowCorrectedFrequencyMNU.Click += ShowCorrectedFrequencyMNU_Click;
+      // 
       // UplinkLabel
       // 
       UplinkLabel.AutoEllipsis = true;
@@ -306,32 +328,22 @@
       DownlinkLabel.TabIndex = 26;
       DownlinkLabel.Text = "Terrestrial";
       // 
-      // contextMenuStrip1
+      // TxBtn
       // 
-      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { ShowNominalFrequencyMNU, ShowCorrectedFrequencyMNU });
-      contextMenuStrip1.Name = "contextMenuStrip1";
-      contextMenuStrip1.Size = new Size(217, 48);
-      contextMenuStrip1.Opening += contextMenuStrip1_Opening;
-      // 
-      // ShowNominalFrequencyMNU
-      // 
-      ShowNominalFrequencyMNU.Name = "ShowNominalFrequencyMNU";
-      ShowNominalFrequencyMNU.Size = new Size(216, 22);
-      ShowNominalFrequencyMNU.Text = "Show Nominal Frequency";
-      ShowNominalFrequencyMNU.Click += ShowNominalFrequencyMNU_Click;
-      // 
-      // ShowCorrectedFrequencyMNU
-      // 
-      ShowCorrectedFrequencyMNU.Name = "ShowCorrectedFrequencyMNU";
-      ShowCorrectedFrequencyMNU.Size = new Size(216, 22);
-      ShowCorrectedFrequencyMNU.Text = "Show Corrected Frequency";
-      ShowCorrectedFrequencyMNU.Click += ShowCorrectedFrequencyMNU_Click;
+      TxBtn.Location = new Point(524, 51);
+      TxBtn.Name = "TxBtn";
+      TxBtn.Size = new Size(131, 21);
+      TxBtn.TabIndex = 49;
+      TxBtn.Text = "Transmit";
+      TxBtn.UseVisualStyleBackColor = true;
+      TxBtn.Click += TxBtn_Click;
       // 
       // FrequencyControl
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       BorderStyle = BorderStyle.FixedSingle;
+      Controls.Add(TxBtn);
       Controls.Add(label7);
       Controls.Add(RitCheckbox);
       Controls.Add(RitSpinner);
@@ -359,8 +371,8 @@
       Size = new Size(677, 75);
       ((System.ComponentModel.ISupportInitialize)RitSpinner).EndInit();
       ((System.ComponentModel.ISupportInitialize)UplinkManualSpinner).EndInit();
-      ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).EndInit();
       contextMenuStrip1.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)DownlinkManualSpinner).EndInit();
       ResumeLayout(false);
       PerformLayout();
     }
@@ -393,5 +405,6 @@
     private ContextMenuStrip contextMenuStrip1;
     private ToolStripMenuItem ShowNominalFrequencyMNU;
     private ToolStripMenuItem ShowCorrectedFrequencyMNU;
+    private Button TxBtn;
   }
 }

@@ -2,6 +2,7 @@
   {
     "radio": "IC-9700",
     "comment": "tested by VE3NEA",
+    "tuning_step_hz": 1,
     "capabilities": {
       "read_main_frequency": [ "when_transmitting", "when_receiving" ],
       "read_split_frequency": [ "when_transmitting", "when_receiving" ],
@@ -28,11 +29,12 @@
   {
     "radio": "FT-817",
     "comment": "never tested, may be wrong",
+    "tuning_step_hz": 10,
     "capabilities": {
       "read_main_frequency": [ "when_receiving" ],
       "read_split_frequency": [],
       "set_main_frequency": [ "when_receiving" ],
-      "set_split_frequency": [ "when_receiving" ],
+      "set_split_frequency": [ "before_ptt_on" ],
       "set_main_mode": [ "when_receiving" ],
       "set_split_mode": [ "when_receiving" ]
     },

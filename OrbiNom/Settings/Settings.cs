@@ -25,18 +25,9 @@ namespace OrbiNom
     public AnnouncerSettings Announcements { get; set; } = new();
 
 
-    [DisplayName("RX CAT")]
-    [Description("RX CAT Control via rigctld.exe")]
-
+    [DisplayName("CAT Control")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public CatSettings RxCat { get; set; } = new();
-
-
-    [DisplayName("TX CAT")]
-    [Description("TX CAT Control via rigctld.exe")]
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-    public CatSettings TxCat { get; set; } = new();
-
+    public CatSettings Cat { get; set; } = new();
 
 
     private static string GetFileName()

@@ -19,6 +19,8 @@ namespace OrbiNom
     public RadioLink RadioLink = new();
     private bool Changing;
     private readonly FrequencyEntryForm FrequencyDialog = new();
+    bool Ptt;
+
 
     public FrequencyControl()
     {
@@ -43,6 +45,7 @@ namespace OrbiNom
       RadioLinkToUi();
       ctx.CatControl.Setup();
       RadioLinkToRadio();
+      ShowHideTxButton();
     }
 
     public void SetTerrestrialFrequency(double frequency)
@@ -51,6 +54,7 @@ namespace OrbiNom
       RadioLinkToUi();
       ctx.CatControl.Setup();
       RadioLinkToRadio();
+      ShowHideTxButton();
     }
 
     internal void SetTransponderOffset(SatnogsDbTransmitter transponder, double offset)
@@ -325,14 +329,14 @@ namespace OrbiNom
 
     private void FrequenciesToUi()
     {
-      if (ctx.Settings.RxCat.ShowCorrectedFrequency)
+      if (ctx.Settings.Cat.RxCat.ShowCorrectedFrequency)
         DownlinkFrequencyLabel.Text = $"{RadioLink.CorrectedDownlinkFrequency:n0}*";
       else
         DownlinkFrequencyLabel.Text = $"{RadioLink.DownlinkFrequency:n0}";
 
       if (RadioLink.UplinkFrequency == 0)
         UplinkFrequencyLabel.Text = "000,000,000";
-      else if (ctx.Settings.TxCat.ShowCorrectedFrequency)
+      else if (ctx.Settings.Cat.TxCat.ShowCorrectedFrequency)
         UplinkFrequencyLabel.Text = $"{RadioLink.CorrectedUplinkFrequency:n0}*";
       else
         UplinkFrequencyLabel.Text = $"{RadioLink.UplinkFrequency:n0}";
@@ -401,7 +405,7 @@ namespace OrbiNom
     private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
     {
       bool showCorrected = GetClickedControl(sender) == DownlinkFrequencyLabel ?
-        ctx.Settings.RxCat.ShowCorrectedFrequency : ctx.Settings.TxCat.ShowCorrectedFrequency;
+        ctx.Settings.Cat.RxCat.ShowCorrectedFrequency : ctx.Settings.Cat.TxCat.ShowCorrectedFrequency;
 
       ShowCorrectedFrequencyMNU.Checked = showCorrected;
       ShowNominalFrequencyMNU.Checked = !showCorrected;
@@ -410,9 +414,9 @@ namespace OrbiNom
     private void ShowNominalFrequencyMNU_Click(object sender, EventArgs e)
     {
       if (GetClickedControl(sender) == DownlinkFrequencyLabel)
-        ctx.Settings.RxCat.ShowCorrectedFrequency = false;
+        ctx.Settings.Cat.RxCat.ShowCorrectedFrequency = false;
       else
-        ctx.Settings.TxCat.ShowCorrectedFrequency = false;
+        ctx.Settings.Cat.TxCat.ShowCorrectedFrequency = false;
 
       FrequenciesToUi();
     }
@@ -420,9 +424,9 @@ namespace OrbiNom
     private void ShowCorrectedFrequencyMNU_Click(object sender, EventArgs e)
     {
       if (GetClickedControl(sender) == DownlinkFrequencyLabel)
-        ctx.Settings.RxCat.ShowCorrectedFrequency = true;
+        ctx.Settings.Cat.RxCat.ShowCorrectedFrequency = true;
       else
-        ctx.Settings.TxCat.ShowCorrectedFrequency = true;
+        ctx.Settings.Cat.TxCat.ShowCorrectedFrequency = true;
       FrequenciesToUi();
     }
 
@@ -439,6 +443,19 @@ namespace OrbiNom
       FrequencyDialog.ShowDialog();
       if (FrequencyDialog.EnteredFrequency > 0)
         SetTerrestrialFrequency(FrequencyDialog.EnteredFrequency);
+    }
+
+    private void TxBtn_Click(object sender, EventArgs e)
+    {
+      Ptt = !Ptt && ctx.CatControl.Tx != null;
+      ctx.CatControl.Tx?.SetPtt(Ptt);
+      TxBtn.Text = Ptt ? "Stop Transmitting" : "Transmit";
+    }
+    private void ShowHideTxButton()
+    {
+      TxBtn.Visible = ctx.CatControl.Tx != null && ctx.CatControl.Tx.CatMode != CatMode.RxOnly;
+      Ptt = false;
+      TxBtn.Text = "Transmit";
     }
   }
 }

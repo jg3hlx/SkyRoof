@@ -29,6 +29,7 @@
   public class RadioInfo
   {
     public string radio { get; set; } = "";
+    public int tuning_step_hz { get; set; } = 10;
     public Capabilities capabilities { get; set; } = new();
     public Commands commands { get; set; } = new();
   }

@@ -18,7 +18,7 @@ namespace OrbiNom
     private double PixelsPerMinute;
     private DateTime LastAdvanceTime;
     private TimeSpan LeftSpan = TimeSpan.FromMinutes(5); // Now minus time at leftmost pixel
-    double Zoom = 8;
+    double Zoom = 16;
 
 
 

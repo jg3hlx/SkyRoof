@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
+using System.Speech.Synthesis.TtsEngine;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -17,23 +18,26 @@ namespace OrbiNom
 
   public class CatEngine : IDisposable
   {
-    public RadioInfo RadioInfo;
-    protected CatMode CatMode;
-    protected SynchronizationContext syncContext = SynchronizationContext.Current!;
-    protected EventWaitHandle? wakeupEvent;
-    protected Thread? processingThread;
-    protected bool stopping = false;
+    private RadioInfo RadioInfo;
+    public CatMode CatMode;
+    private SynchronizationContext syncContext = SynchronizationContext.Current!;
+    private Thread? processingThread;
+    private bool stopping = false;
+    private readonly CatRadioSettings Settings;
+    private readonly int Delay;
+    private readonly bool IgnoreDialKnob;
+    private TcpClient? TcpClient;
+
     private bool Ptt => ptt ??= ReadPtt();
     private bool? ptt;
+    private bool PttChanged;
 
     private long RequestedRxFrequency, RequestedTxFrequency;
     private long LastWrittenRxFrequency, LastWrittenTxFrequency;
+    public long LastReadRxFrequency, LastReadTxFrequency;
     private Slicer.Mode? RequestedRxMode, RequestedTxMode;
     private Slicer.Mode? LastWrittenRxMode, LastWrittenTxMode;
-    public long LastReadRxFrequency, LastReadTxFrequency;
-
-    public readonly CatSettings Settings;
-    private TcpClient? TcpClient;
+    private bool? RequestedPtt;
 
     public event EventHandler? StatusChanged;
     public event EventHandler? RxTuned;
@@ -42,26 +46,37 @@ namespace OrbiNom
     public static RadioInfoList BuildRadioInfoList()
     {
       string path = Path.Combine(Utils.GetUserDataFolder(), "cat_info.json");
+      // todo: restore
       //if (!File.Exists(path)) 
         File.WriteAllBytes(path, Resources.cat_info);
       return JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
     }
 
-    public CatEngine(CatSettings settings)
+    public CatEngine(CatRadioSettings settings, int delay, bool ignoreDialKnob)
     {
       Settings = settings;
+      Delay = delay;
+      IgnoreDialKnob = ignoreDialKnob;
       RadioInfo = BuildRadioInfoList().First(r => r.radio == Settings.RadioModel);
     }
 
 
     private void LogFreqs(string msg)
     { 
-      Log.Information($"{msg}  (RxReq={RequestedRxFrequency} RxWr={LastWrittenRxFrequency}  RxRd={LastReadRxFrequency})");
+      Log.Information($"{msg}  (RxReq={RequestedRxFrequency:N0}  RxWr={LastWrittenRxFrequency:N0}  RxRd={LastReadRxFrequency:N0})");
     }
-    private long Round(double freq)
+
+    // some radios use 10 Hz steps and some don't, handle them all the same way
+    private long RoundTo10(double freq)
     {
-      return 10 * (long)Math.Round(freq / 10);
+      int step = RadioInfo.tuning_step_hz;
+      return step * (long)Math.Truncate(freq / step);
+
+      //return step * (long)Math.Round(freq / step);
     }
+
+
+
 
     //----------------------------------------------------------------------------------------------
     //                                      public methods
@@ -75,26 +90,9 @@ namespace OrbiNom
       else if (RadioInfo.commands.setup_split != null) CatMode = CatMode.Split;
       else { Log.Error($"Radio {RadioInfo.radio} does not support split mode"); return; }
 
-      // connect to rigctld
-      TcpClient = new();
-      TcpClient.SendTimeout = 200;
-      TcpClient.ReceiveTimeout = 1000;
-      TcpClient.Connect(Settings.Host, Settings.Port);
-
-      // set up required cat control mode
-      switch (CatMode)
-      {
-        case CatMode.RxOnly:
-        case CatMode.TxOnly:
-          RunSetupSequence(RadioInfo.commands.setup_simplex);
-          break;
-        case CatMode.Split:
-          RunSetupSequence(RadioInfo.commands.setup_split);
-          break;
-        case CatMode.Duplex:
-          RunSetupSequence(RadioInfo.commands.setup_duplex);
-          break;
-      }
+        TcpClient = new();        
+        TcpClient.SendTimeout = 1000;
+        TcpClient.ReceiveTimeout = 1000;
 
       StartThread();
     }
@@ -109,15 +107,16 @@ namespace OrbiNom
 
     public void SetRxFrequency(double frequency)
     {
-      frequency = Round(frequency);
-      LogFreqs($"SetRxFrequency {frequency}");
-      RequestedRxFrequency = (long)Math.Truncate(frequency);
+      frequency = RoundTo10(frequency);
+      //LogFreqs($"SetRxFrequency {frequency}");
+      RequestedRxFrequency = (long)frequency;
     }
 
     public void SetTxFrequency(double frequency)
     {
-      frequency = Round(frequency);
-      RequestedTxFrequency = (long)Math.Truncate(frequency);
+      frequency = RoundTo10(frequency);
+      //LogFreqs($"SetTxFrequency {frequency}");
+      RequestedTxFrequency = (long)frequency;
     }
 
     public void SetRxMode(Slicer.Mode mode)
@@ -128,6 +127,11 @@ namespace OrbiNom
     public void SetTxMode(Slicer.Mode mode)
     {
       RequestedTxMode = mode;
+    }
+
+    public void SetPtt(bool ptt)
+    {
+      RequestedPtt = ptt;
     }
 
     public bool IsRunning()
@@ -148,8 +152,6 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void StartThread()
     {
-      wakeupEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
-
       processingThread = new Thread(new ThreadStart(ThreadProcedure));
       processingThread.IsBackground = true;
       processingThread.Name = GetType().Name;
@@ -160,46 +162,86 @@ namespace OrbiNom
     private void StopThread()
     {
       stopping = true;
-      wakeupEvent!.Set();
-      processingThread!.Join();
+      processingThread?.Join();
       processingThread = null;
-      wakeupEvent.Dispose();
-      wakeupEvent = null;
     }
 
     protected virtual void ThreadProcedure()
     {
+      if (!Connect() || !SetUpRadio()) return;
+      syncContext.Post(s => OnStatusChanged(), null);
+
       while (!stopping)
-      {
         try
         {
-          if (stopping) break;
+          ptt = null; // will read PTT only if needed
 
-          ptt = null; // will read it only if needed
-
-          TryReadRxFrequency();
-          TryReadTxFrequency();
+          if (!IgnoreDialKnob)
+          {
+            TryReadRxFrequency();
+            TryReadTxFrequency();
+          }
+          
           TryWriteRxFrequency();
           TryWriteTxFrequency();
           TryWriteRxMode();
           TryWriteTxMode();
+          TryWritePtt();
 
-          Thread.Sleep(100);
+          Thread.Sleep(Delay);
         }
         catch (SocketException ex)
         {
           Log.Error(ex, $"Socket error in {GetType().Name}");
-
-          // todo: connection lost, terminate thread
-          // Stop();
-          //StatusChanged?.Invoke(this, EventArgs.Empty);
-          //break;
+          TcpClient?.Close();
+          syncContext.Post(s => OnStatusChanged(), null);
+          break;
         }
         catch (Exception ex)
         {
           Log.Error(ex, $"Error in {GetType().Name}");
         }
+    }
+
+    private bool Connect()
+    {
+      try
+      {
+        TcpClient!.Connect(Settings.Host, Settings.Port);
+        return true;
       }
+      catch (SocketException ex)
+      {
+        Log.Error(ex, $"Unable to connect to rigctld at {Settings.Host}:{Settings.Port}");
+        return false;
+      }
+    }
+
+    private bool SetUpRadio()
+    {
+      try
+      {
+        switch (CatMode)
+        {
+          case CatMode.RxOnly:
+          case CatMode.TxOnly:
+            RunSetupSequence(RadioInfo.commands.setup_simplex);
+            break;
+          case CatMode.Split:
+            RunSetupSequence(RadioInfo.commands.setup_split);
+            break;
+          case CatMode.Duplex:
+            RunSetupSequence(RadioInfo.commands.setup_duplex);
+            break;
+        }
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, $"Failed to set up radio {RadioInfo.radio}");
+        return false;
+      }
+
+      return true;
     }
 
 
@@ -216,16 +258,15 @@ namespace OrbiNom
         var reply = SendReadCommand(command);
         if (reply == null) return;
         if (!long.TryParse(reply, out long frequency)) BadReply(reply);
-        frequency = Round(frequency);
+        frequency = RoundTo10(frequency);
 
-        bool changed = LastReadRxFrequency != 0 &&
+        bool changed = LastReadRxFrequency != 0 &&     // first read
           IsDiff(frequency, LastReadRxFrequency) &&    // same freq as before
           IsDiff(frequency, LastWrittenRxFrequency) && // new freq was written
           IsDiff(frequency, LastWrittenTxFrequency);   // tx freq read by accident, ignore
 
         LastReadRxFrequency = frequency;
-        if (changed) 
-          OnRxFrequencyChanged();
+        if (changed) OnRxFrequencyChanged();
       }
     }
 
@@ -244,7 +285,7 @@ namespace OrbiNom
       var reply = SendReadCommand(command);
       if (reply == null) return;
       if (!long.TryParse(reply, out long frequency)) BadReply(reply);
-      frequency = Round(frequency);
+      frequency = RoundTo10(frequency);
 
       bool changed = LastReadTxFrequency != 0 && IsDiff(frequency, LastReadTxFrequency);
       LastReadTxFrequency = frequency;
@@ -262,33 +303,35 @@ namespace OrbiNom
       if (!NeedToWriteRxFrequency()) return;
       if (!HasCapability(RadioInfo.capabilities.set_main_frequency)) return;
 
-      long freq = RequestedRxFrequency;
-      string command = RadioInfo.commands.set_main_frequency!.Replace("{frequency}", $"{freq}");
+      // RequestedRxFrequency may change on another thread while we are writing, use a local copy
+      long frequency = RequestedRxFrequency;
+
+      string command = RadioInfo.commands.set_main_frequency!.Replace("{frequency}", $"{frequency}");
       SendWriteCommand(command);
-      LastWrittenRxFrequency = freq;
-      //LastReadRxFrequency = RequestedRxFrequency;
-      LogFreqs("Rx frequency written");
+      LastWrittenRxFrequency = frequency;
+      //LogFreqs("Rx frequency written");
     }
 
     private void TryWriteTxFrequency()
     {
       if (!NeedToWriteTxFrequency()) return;
 
+      long frequency = RequestedTxFrequency;
+
       // tx only, write main frequency
       string command;
       if (CatMode == CatMode.TxOnly && HasCapability(RadioInfo.capabilities.set_main_frequency))
-        command = RadioInfo.commands.set_main_frequency!.Replace("{frequency}", $"{RequestedTxFrequency}");
+        command = RadioInfo.commands.set_main_frequency!.Replace("{frequency}", $"{frequency}");
       
       // split or duplex, write split frequency
       else if (CatMode != CatMode.TxOnly && HasCapability(RadioInfo.capabilities.set_split_frequency))
-        command = RadioInfo.commands.set_split_frequency!.Replace("{frequency}", $"{RequestedTxFrequency}");
+        command = RadioInfo.commands.set_split_frequency!.Replace("{frequency}", $"{frequency}");
 
       // no capability
       else return;
      
       SendWriteCommand(command);
-      LastWrittenTxFrequency = RequestedTxFrequency;
-      //LastReadTxFrequency = RequestedTxFrequency;
+      LastWrittenTxFrequency = frequency;
     }
 
     private void TryWriteRxMode()
@@ -313,13 +356,45 @@ namespace OrbiNom
         command = RadioInfo.commands.set_split_mode!.Replace("{mode}", $"{RequestedTxMode}");
       else return;
 
-      //SendWriteCommand($"V VFOA");
-      var info = SendReadCommand(" \\get_rig_info");
-
       SendWriteCommand(command);
-
       LastWrittenTxMode = RequestedTxMode;
     }
+
+    private void TryWritePtt()
+    {
+      if (CatMode == CatMode.RxOnly) return;
+      if (!RequestedPtt.HasValue) return;
+      if (RequestedPtt == Ptt) return;
+
+      if (RequestedPtt == false && RadioInfo.commands.set_ptt_off != null)
+        SendWriteCommand(RadioInfo.commands.set_ptt_off);
+
+      if (RequestedPtt == true && RadioInfo.commands.set_ptt_on != null)
+      {
+        TryWriteTxFrequencyBeforePtt();
+        SendWriteCommand(RadioInfo.commands.set_ptt_on);
+      }
+    }
+
+    private void TryWriteTxFrequencyBeforePtt()
+    {
+      if (!RadioInfo.capabilities.set_split_frequency.Contains("before_ptt_on")) return;
+
+      long frequency = RequestedTxFrequency;
+      string command;
+
+      if (CatMode == CatMode.TxOnly && RadioInfo.commands.set_main_frequency != null)
+        command = RadioInfo.commands.set_main_frequency!.Replace("{frequency}", $"{frequency}");
+
+      else if (CatMode != CatMode.TxOnly && RadioInfo.commands.set_split_frequency != null)
+        command = RadioInfo.commands.set_split_frequency!.Replace("{frequency}", $"{frequency}");
+
+      else return;
+
+      SendWriteCommand(command);
+    }
+
+
 
 
 
@@ -340,7 +415,6 @@ namespace OrbiNom
 
     private bool NeedToWriteRxFrequency()
     {
-      LogFreqs("NeedToWriteRxFreq?");
       if (CatMode == CatMode.TxOnly) return false;
       if (RequestedRxFrequency == 0) return false; // never assigned
       return IsDiff(RequestedRxFrequency, LastWrittenRxFrequency);
@@ -349,7 +423,7 @@ namespace OrbiNom
     private bool NeedToWriteTxFrequency()
     {
       if (CatMode == CatMode.RxOnly) return false;
-      if (RequestedTxFrequency == 0) return false; // never assigned
+      if (RequestedTxFrequency == 0) return false; 
       return IsDiff(RequestedTxFrequency, LastWrittenTxFrequency);
     }
 
@@ -397,13 +471,13 @@ namespace OrbiNom
     {
       var reply = SendCommand(command);
       if (reply == null) return null;
-      if (reply.EndsWith("\n")) 
-          {
+      if (reply.EndsWith("\n"))
+      {
         reply = reply.Substring(0, reply.Length - 1);
         Log.Information($"Reply from rigctld: {reply}");
-
         return reply;
       }
+     
       BadReply(reply);
       return null;
     }
@@ -419,7 +493,7 @@ namespace OrbiNom
       catch (Exception ex)
       {
         Log.Error(ex, "Failed to send command to rigctld");
-        return null;
+        throw;
       }
 
       try
@@ -431,7 +505,7 @@ namespace OrbiNom
       catch (Exception ex)
       {
         Log.Error(ex, "Failed to receive reply from rigctld");
-        return null;
+        throw;
       }
     }
 
@@ -444,9 +518,8 @@ namespace OrbiNom
     {
       var reply = SendReadCommand(RadioInfo.commands.read_ptt!);
       bool newPtt = reply == "1";
-
-      //if (newPtt != ptt) LastReadRxFrequency = 0;
-       return newPtt;
+      PttChanged = newPtt != ptt;
+      return newPtt;
     }
 
 
@@ -462,13 +535,13 @@ namespace OrbiNom
 
     protected void OnRxFrequencyChanged()
     {
-      LogFreqs($"OnRxFrequencyChanged");
+      //LogFreqs($"OnRxFrequencyChanged");
       RxTuned?.Invoke(this, EventArgs.Empty);
     }
 
     protected void OnTxFrequencyChanged()
     {
-      LogFreqs($"OnTxFrequencyChanged");
+      //LogFreqs($"OnTxFrequencyChanged");
 
       TxTuned?.Invoke(this, EventArgs.Empty);
     }

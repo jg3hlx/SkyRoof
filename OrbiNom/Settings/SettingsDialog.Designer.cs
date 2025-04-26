@@ -48,7 +48,7 @@ namespace OrbiNom
       panel1.Controls.Add(cancelBtn);
       panel1.Controls.Add(okBtn);
       panel1.Dock = DockStyle.Bottom;
-      panel1.Location = new Point(0, 660);
+      panel1.Location = new Point(0, 825);
       panel1.Margin = new Padding(4, 3, 4, 3);
       panel1.Name = "panel1";
       panel1.Size = new Size(538, 35);
@@ -93,13 +93,14 @@ namespace OrbiNom
       // 
       // grid
       // 
+      grid.BackColor = SystemColors.Control;
       grid.ContextMenuStrip = PropertyGridMenu;
       grid.Dock = DockStyle.Fill;
       grid.Location = new Point(0, 0);
       grid.Margin = new Padding(4, 3, 4, 3);
       grid.Name = "grid";
       grid.PropertySort = PropertySort.NoSort;
-      grid.Size = new Size(538, 660);
+      grid.Size = new Size(538, 825);
       grid.TabIndex = 3;
       grid.ToolbarVisible = false;
       grid.PropertyValueChanged += grid_PropertyValueChanged;
@@ -123,7 +124,7 @@ namespace OrbiNom
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       CancelButton = cancelBtn;
-      ClientSize = new Size(538, 695);
+      ClientSize = new Size(538, 860);
       Controls.Add(grid);
       Controls.Add(panel1);
       Margin = new Padding(4, 3, 4, 3);

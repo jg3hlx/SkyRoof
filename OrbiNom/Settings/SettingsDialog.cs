@@ -20,6 +20,7 @@ namespace OrbiNom
       this.ctx = ctx;
       grid.SelectedObject = Utils.DeepClone(ctx.Settings);
       grid.ExpandAllGridItems();
+      //grid.ExpandTopLevelProperties();
       SelectSection(section);
     }
 
@@ -122,18 +123,25 @@ namespace OrbiNom
     //--------------------------------------------------------------------------------------------------------------
     private void ApplyChangedSettings()
     {
-      if (ChangedFields.Contains("OrbiNom.UserSettings.Square") || 
+      if (ChangedFields.Contains("OrbiNom.UserSettings.Square") ||
           ChangedFields.Contains("OrbiNom.UserSettings.Altitude"))
         ctx.MainForm.SetLocation();
 
       if (ChangedFields.Exists(s => s.StartsWith("OrbiNom.AudioSettings.")))
         ctx.MainForm.ApplyAudioSettings();
 
-      if (ChangedFields.Exists(s => s.StartsWith("OrbiNom.Announcement.Minutes")) || 
+      if (ChangedFields.Exists(s => s.StartsWith("OrbiNom.Announcement.Minutes")) ||
           ChangedFields.Exists(s => s.StartsWith("OrbiNom.Announcement.Enabled")))
         ctx.Announcer.RebuildQueue();
-              
-      ChangedFields.Clear();
+
+      if (ChangedFields.Exists(s => s.StartsWith("OrbiNom.CatSettings.")) ||
+        ChangedFields.Exists(s => s.StartsWith("OrbiNom.CatRadioSettings")))
+      {
+        ctx.CatControl.Setup();
+        ctx.MainForm.ShowCatStatus();
+      }
+
+        ChangedFields.Clear();
     }
   }
 }

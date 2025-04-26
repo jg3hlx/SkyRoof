@@ -20,18 +20,18 @@ namespace OrbiNom
       Tx?.Dispose();
 
       // create rx cat engine
-      if (!ctx.Settings.RxCat.Enabled)
+      if (!ctx.Settings.Cat.RxCat.Enabled)
         Rx = null;
       else 
-        Rx = new CatEngine(ctx.Settings.RxCat);
+        Rx = new CatEngine(ctx.Settings.Cat.RxCat, ctx.Settings.Cat.Delay, ctx.Settings.Cat.IgnoreDialKnob);
 
       // create tx cat engine
-      if (!ctx.Settings.TxCat.Enabled || !ctx.FrequencyControl.RadioLink.HasUplink)
+      if (!ctx.Settings.Cat.TxCat.Enabled || !ctx.FrequencyControl.RadioLink.HasUplink)
         Tx = null;
-      else if (IsSameEngine(ctx.Settings.TxCat, ctx.Settings.RxCat))
+      else if (IsSameEngine(ctx.Settings.Cat.TxCat, ctx.Settings.Cat.RxCat))
         Tx = Rx;      
       else
-        Tx = new CatEngine(ctx.Settings.TxCat);
+        Tx = new CatEngine(ctx.Settings.Cat.TxCat, ctx.Settings.Cat.Delay, ctx.Settings.Cat.IgnoreDialKnob);
 
       // start engines
       if (Rx != null)
@@ -53,12 +53,13 @@ namespace OrbiNom
       ctx.MainForm.ShowCatStatus();
     }
 
-    private bool IsSameEngine(CatSettings txCat, CatSettings rxCat)
+    private bool IsSameEngine(CatRadioSettings txCat, CatRadioSettings rxCat)
     {
-      return ctx.Settings.RxCat.Enabled && ctx.Settings.TxCat.Enabled &&      
-        IsSameHost(ctx.Settings.RxCat.Host, ctx.Settings.TxCat.Host) &&          
-        ctx.Settings.RxCat.Port == ctx.Settings.TxCat.Port &&          
-        ctx.Settings.RxCat.RadioModel == ctx.Settings.TxCat.RadioModel;
+      return rxCat.Enabled 
+        && txCat.Enabled 
+        && IsSameHost(rxCat.Host, txCat.Host) 
+        && rxCat.Port == txCat.Port 
+        && rxCat.RadioModel == txCat.RadioModel;
     }
 
     private bool IsSameHost(string host1, string host2)
