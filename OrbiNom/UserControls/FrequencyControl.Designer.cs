@@ -319,6 +319,7 @@
       DownlinkFrequencyLabel.TabIndex = 27;
       DownlinkFrequencyLabel.Text = "000,000,000";
       DownlinkFrequencyLabel.TextAlign = ContentAlignment.MiddleCenter;
+      DownlinkFrequencyLabel.Click += DownlinkFrequencyLabel_Click;
       // 
       // DownlinkLabel
       // 

@@ -43,7 +43,7 @@ namespace OrbiNom
     {
       SettingsToRadioLink(false);
       RadioLinkToUi();
-      ctx.CatControl.Setup();
+      ctx.CatControl.ApplySettings();
       RadioLinkToRadio();
       ShowHideTxButton();
     }
@@ -52,7 +52,7 @@ namespace OrbiNom
     {
       SettingsToRadioLink(true, frequency);
       RadioLinkToUi();
-      ctx.CatControl.Setup();
+      ctx.CatControl.ApplySettings();
       RadioLinkToRadio();
       ShowHideTxButton();
     }
@@ -89,7 +89,7 @@ namespace OrbiNom
     {
       RadioLink.SetDraggableFrequency(freq);
       RadioLinkToRadio();
-      FrequenciesToUi();
+      RadioLinkToUi();
     }
 
 
@@ -121,9 +121,27 @@ namespace OrbiNom
     internal void ToggleRit()
     {
       RadioLink.RitEnabled = !RadioLink.RitEnabled;
+      RadioLink.ComputeFrequencies();
       RadioLinkToRadio();
       RadioLinkToUi();
     }
+
+    internal void SetRitFrequency(double frequency)
+    {
+      var currentFrequency = RadioLink.CorrectedDownlinkFrequency;
+      if (RadioLink.RitEnabled) currentFrequency -= RadioLink.RitOffset;
+      var delta = frequency - currentFrequency;
+
+      if (Math.Abs(delta) > 25000) return;
+
+      RadioLink.RitEnabled = true;
+      RadioLink.RitOffset = delta;
+      RadioLink.ComputeFrequencies();
+
+      RadioLinkToRadio();
+      RadioLinkToUi();
+    }
+
 
 
 

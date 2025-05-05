@@ -307,6 +307,7 @@ namespace OrbiNom
     {
       var label = ScaleControl.GetLabelUnderCursor(new(x, y));
 
+      // label clicked
       if (label != null)
       {
         ctx.SatelliteSelector.SetSelectedTransmitter(label.Transmitters.First());
@@ -314,7 +315,14 @@ namespace OrbiNom
         return;
       }
 
+      // ctrl-click, rit offset
+      else if (ModifierKeys.HasFlag(Keys.Control))
+      {
+        ctx.FrequencyControl.SetRitFrequency(ScaleControl.PixelToFreq(x));
+        return;
+      }
 
+      // tarnasponder bar clicked
       label = ScaleControl.GetTransponderUnderCursor(x);
 
       // tune to offset in transponder passband
