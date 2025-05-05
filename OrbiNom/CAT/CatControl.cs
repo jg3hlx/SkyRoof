@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OrbiNom
+﻿namespace OrbiNom
 {
   public class CatControl
   {
@@ -12,7 +6,7 @@ namespace OrbiNom
     public CatEngine? Rx, Tx;
 
 
-    internal void Setup()
+    internal void ApplySettings()
     {
       bool crossband = ctx.FrequencyControl.RadioLink.IsCrossBand;
 
@@ -23,7 +17,7 @@ namespace OrbiNom
       if (!ctx.Settings.Cat.RxCat.Enabled)
         Rx = null;
       else 
-        Rx = new CatEngine(ctx.Settings.Cat.RxCat, ctx.Settings.Cat.Delay, ctx.Settings.Cat.IgnoreDialKnob);
+        Rx = new CatEngine(ctx.Settings.Cat.RxCat, ctx.Settings.Cat);
 
       // create tx cat engine
       if (!ctx.Settings.Cat.TxCat.Enabled || !ctx.FrequencyControl.RadioLink.HasUplink)
@@ -31,7 +25,7 @@ namespace OrbiNom
       else if (IsSameEngine(ctx.Settings.Cat.TxCat, ctx.Settings.Cat.RxCat))
         Tx = Rx;      
       else
-        Tx = new CatEngine(ctx.Settings.Cat.TxCat, ctx.Settings.Cat.Delay, ctx.Settings.Cat.IgnoreDialKnob);
+        Tx = new CatEngine(ctx.Settings.Cat.TxCat, ctx.Settings.Cat);
 
       // start engines
       if (Rx != null)

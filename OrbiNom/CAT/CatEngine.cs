@@ -23,12 +23,16 @@ namespace OrbiNom
     private SynchronizationContext syncContext = SynchronizationContext.Current!;
     private Thread? processingThread;
     private bool stopping = false;
-    private readonly CatRadioSettings Settings;
     private readonly int Delay;
     private readonly bool IgnoreDialKnob;
     private TcpClient? TcpClient;
 
     private bool Ptt => ptt ??= ReadPtt();
+
+    public readonly string Host;
+    private readonly ushort Port;
+    private readonly bool log;
+    
     private bool? ptt;
     private bool PttChanged;
 
@@ -52,18 +56,21 @@ namespace OrbiNom
       return JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
     }
 
-    public CatEngine(CatRadioSettings settings, int delay, bool ignoreDialKnob)
+    public CatEngine(CatRadioSettings endpoint, CatSettings settings)
     {
-      Settings = settings;
-      Delay = delay;
-      IgnoreDialKnob = ignoreDialKnob;
-      RadioInfo = BuildRadioInfoList().First(r => r.radio == Settings.RadioModel);
+      Host = endpoint.Host;
+      Port = endpoint.Port;
+      Delay = settings.Delay;
+      IgnoreDialKnob = settings.IgnoreDialKnob;
+      log = settings.LogTraffic;
+
+      RadioInfo = BuildRadioInfoList().First(r => r.radio == endpoint.RadioModel);
     }
 
 
     private void LogFreqs(string msg)
     { 
-      Log.Information($"{msg}  (RxReq={RequestedRxFrequency:N0}  RxWr={LastWrittenRxFrequency:N0}  RxRd={LastReadRxFrequency:N0})");
+      if (log) Log.Information($"{msg}  (RxReq={RequestedRxFrequency:N0}  RxWr={LastWrittenRxFrequency:N0}  RxRd={LastReadRxFrequency:N0})");
     }
 
     // some radios use 10 Hz steps and some don't, handle them all the same way
@@ -108,14 +115,14 @@ namespace OrbiNom
     public void SetRxFrequency(double frequency)
     {
       frequency = RoundTo10(frequency);
-      //LogFreqs($"SetRxFrequency {frequency}");
+      LogFreqs($"SetRxFrequency {frequency}");
       RequestedRxFrequency = (long)frequency;
     }
 
     public void SetTxFrequency(double frequency)
     {
       frequency = RoundTo10(frequency);
-      //LogFreqs($"SetTxFrequency {frequency}");
+      LogFreqs($"SetTxFrequency {frequency}");
       RequestedTxFrequency = (long)frequency;
     }
 
@@ -207,12 +214,12 @@ namespace OrbiNom
     {
       try
       {
-        TcpClient!.Connect(Settings.Host, Settings.Port);
+        TcpClient!.Connect(Host, Port);
         return true;
       }
       catch (SocketException ex)
       {
-        Log.Error(ex, $"Unable to connect to rigctld at {Settings.Host}:{Settings.Port}");
+        Log.Error(ex, $"Unable to connect to rigctld at {Host}:{Port}");
         return false;
       }
     }
@@ -287,7 +294,11 @@ namespace OrbiNom
       if (!long.TryParse(reply, out long frequency)) BadReply(reply);
       frequency = RoundTo10(frequency);
 
-      bool changed = LastReadTxFrequency != 0 && IsDiff(frequency, LastReadTxFrequency);
+      bool changed = LastReadTxFrequency != 0 &&     
+        IsDiff(frequency, LastReadTxFrequency) &&    
+        IsDiff(frequency, LastWrittenTxFrequency) && 
+        IsDiff(frequency, LastWrittenRxFrequency);   
+
       LastReadTxFrequency = frequency;
       if (changed) OnTxFrequencyChanged();
     }
@@ -309,7 +320,7 @@ namespace OrbiNom
       string command = RadioInfo.commands.set_main_frequency!.Replace("{frequency}", $"{frequency}");
       SendWriteCommand(command);
       LastWrittenRxFrequency = frequency;
-      //LogFreqs("Rx frequency written");
+      LogFreqs("Rx frequency written");
     }
 
     private void TryWriteTxFrequency()
@@ -535,13 +546,13 @@ namespace OrbiNom
 
     protected void OnRxFrequencyChanged()
     {
-      //LogFreqs($"OnRxFrequencyChanged");
+      LogFreqs($"OnRxFrequencyChanged");
       RxTuned?.Invoke(this, EventArgs.Empty);
     }
 
     protected void OnTxFrequencyChanged()
     {
-      //LogFreqs($"OnTxFrequencyChanged");
+      LogFreqs($"OnTxFrequencyChanged");
 
       TxTuned?.Invoke(this, EventArgs.Empty);
     }

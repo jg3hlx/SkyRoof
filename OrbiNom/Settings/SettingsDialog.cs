@@ -137,7 +137,7 @@ namespace OrbiNom
       if (ChangedFields.Exists(s => s.StartsWith("OrbiNom.CatSettings.")) ||
         ChangedFields.Exists(s => s.StartsWith("OrbiNom.CatRadioSettings")))
       {
-        ctx.CatControl.Setup();
+        ctx.CatControl.ApplySettings();
         ctx.MainForm.ShowCatStatus();
       }
 

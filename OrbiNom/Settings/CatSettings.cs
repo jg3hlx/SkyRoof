@@ -19,6 +19,11 @@ namespace OrbiNom
     [Description("Delay between the CAT cycles, ms")]
     public int Delay { get; set; } = 100;
 
+    [DisplayName("Log Traffic")]
+    [Description("Log CAT traffic for debugging")]
+    [DefaultValue(false)]
+    public bool LogTraffic { get; set; }
+
     [DisplayName("RX CAT")]
     [Description("RX CAT Control via rigctld.exe")]
 
@@ -29,6 +34,7 @@ namespace OrbiNom
     [Description("TX CAT Control via rigctld.exe")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public CatRadioSettings TxCat { get; set; } = new();
+
 
     public override string ToString() { return string.Empty; }
   }
