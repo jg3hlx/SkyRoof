@@ -85,6 +85,11 @@
     {
       return IsVhfFrequency(freq) || IsUhfFrequency(freq);
     }
+
+    internal bool HasUplink()
+    {
+      return uplink_low != null;
+    }
   }
 
 

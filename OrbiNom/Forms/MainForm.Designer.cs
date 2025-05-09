@@ -30,14 +30,18 @@
     {
       components = new System.ComponentModel.Container();
       Toolbar = new Panel();
+      RotatorControl = new RotatorControl();
+      panel7 = new Panel();
       GainControl = new GainControl();
       panel3 = new Panel();
+      panel6 = new Panel();
       FrequencyControl = new FrequencyControl();
       panel1 = new Panel();
       SatelliteSelector = new SatelliteSelector();
       ClockPanel = new Panel();
       Clock = new VE3NEA.Clock.Clock();
       panel2 = new Panel();
+      panel5 = new Panel();
       DockHost = new WeifenLuo.WinFormsUI.Docking.DockPanel();
       vS2015LightTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015LightTheme();
       menuStrip1 = new MenuStrip();
@@ -68,6 +72,8 @@
       timer = new System.Windows.Forms.Timer(components);
       StatusStrip = new StatusStrip();
       toolStripStatusLabel2 = new ToolStripStatusLabel();
+      SatDataLedLabel = new ToolStripStatusLabel();
+      SatDataStatusLabel = new ToolStripStatusLabel();
       SdrLedLabel = new ToolStripStatusLabel();
       SdrStatusLabel = new ToolStripStatusLabel();
       SoundcardLedLabel = new ToolStripStatusLabel();
@@ -79,14 +85,16 @@
       RxCatStatusLabel = new ToolStripStatusLabel();
       TxCatLedLabel = new ToolStripStatusLabel();
       TxCatStatusLabel = new ToolStripStatusLabel();
-      SatDataLedLabel = new ToolStripStatusLabel();
-      SatDataStatusLabel = new ToolStripStatusLabel();
       IqOutputLedLabel = new ToolStripStatusLabel();
       IqOutputStatusLabel = new ToolStripStatusLabel();
+      RotatorLedLabel = new ToolStripStatusLabel();
+      RotatorStatusLabel = new ToolStripStatusLabel();
       NoiseFloorLabel = new ToolStripStatusLabel();
       CpuLoadlabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
+      panel4 = new Panel();
       Toolbar.SuspendLayout();
+      panel3.SuspendLayout();
       ClockPanel.SuspendLayout();
       menuStrip1.SuspendLayout();
       StatusStrip.SuspendLayout();
@@ -94,6 +102,8 @@
       // 
       // Toolbar
       // 
+      Toolbar.Controls.Add(RotatorControl);
+      Toolbar.Controls.Add(panel7);
       Toolbar.Controls.Add(GainControl);
       Toolbar.Controls.Add(panel3);
       Toolbar.Controls.Add(FrequencyControl);
@@ -101,11 +111,29 @@
       Toolbar.Controls.Add(SatelliteSelector);
       Toolbar.Controls.Add(ClockPanel);
       Toolbar.Controls.Add(panel2);
+      Toolbar.Controls.Add(panel5);
       Toolbar.Dock = DockStyle.Top;
       Toolbar.Location = new Point(0, 24);
       Toolbar.Name = "Toolbar";
-      Toolbar.Size = new Size(1610, 78);
+      Toolbar.Size = new Size(1835, 78);
       Toolbar.TabIndex = 0;
+      // 
+      // RotatorControl
+      // 
+      RotatorControl.BorderStyle = BorderStyle.FixedSingle;
+      RotatorControl.Dock = DockStyle.Left;
+      RotatorControl.Location = new Point(1437, 0);
+      RotatorControl.Name = "RotatorControl";
+      RotatorControl.Size = new Size(210, 78);
+      RotatorControl.TabIndex = 8;
+      // 
+      // panel7
+      // 
+      panel7.Dock = DockStyle.Left;
+      panel7.Location = new Point(1433, 0);
+      panel7.Name = "panel7";
+      panel7.Size = new Size(4, 78);
+      panel7.TabIndex = 10;
       // 
       // GainControl
       // 
@@ -113,16 +141,25 @@
       GainControl.Dock = DockStyle.Left;
       GainControl.Location = new Point(1196, 0);
       GainControl.Name = "GainControl";
-      GainControl.Size = new Size(261, 78);
+      GainControl.Size = new Size(237, 78);
       GainControl.TabIndex = 7;
       // 
       // panel3
       // 
+      panel3.Controls.Add(panel6);
       panel3.Dock = DockStyle.Left;
       panel3.Location = new Point(1192, 0);
       panel3.Name = "panel3";
       panel3.Size = new Size(4, 78);
       panel3.TabIndex = 6;
+      // 
+      // panel6
+      // 
+      panel6.Dock = DockStyle.Left;
+      panel6.Location = new Point(0, 0);
+      panel6.Name = "panel6";
+      panel6.Size = new Size(4, 78);
+      panel6.TabIndex = 7;
       // 
       // FrequencyControl
       // 
@@ -156,22 +193,24 @@
       // 
       // ClockPanel
       // 
-      ClockPanel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      ClockPanel.BorderStyle = BorderStyle.FixedSingle;
       ClockPanel.Controls.Add(Clock);
-      ClockPanel.Location = new Point(1508, 0);
+      ClockPanel.Dock = DockStyle.Right;
+      ClockPanel.Location = new Point(1714, 0);
       ClockPanel.Name = "ClockPanel";
       ClockPanel.Padding = new Padding(3);
-      ClockPanel.Size = new Size(102, 54);
+      ClockPanel.Size = new Size(117, 78);
       ClockPanel.TabIndex = 1;
       // 
       // Clock
       // 
       Clock.BackColor = Color.MidnightBlue;
+      Clock.BorderStyle = BorderStyle.FixedSingle;
       Clock.Dock = DockStyle.Fill;
       Clock.Location = new Point(3, 3);
-      Clock.Margin = new Padding(2, 3, 2, 3);
+      Clock.Margin = new Padding(5);
       Clock.Name = "Clock";
-      Clock.Size = new Size(96, 48);
+      Clock.Size = new Size(109, 70);
       Clock.TabIndex = 1;
       Clock.UtcMode = true;
       // 
@@ -183,6 +222,14 @@
       panel2.Size = new Size(4, 78);
       panel2.TabIndex = 5;
       // 
+      // panel5
+      // 
+      panel5.Dock = DockStyle.Right;
+      panel5.Location = new Point(1831, 0);
+      panel5.Name = "panel5";
+      panel5.Size = new Size(4, 78);
+      panel5.TabIndex = 9;
+      // 
       // DockHost
       // 
       DockHost.DefaultFloatWindowSize = new Size(445, 445);
@@ -192,7 +239,7 @@
       DockHost.Name = "DockHost";
       DockHost.Padding = new Padding(6);
       DockHost.ShowAutoHideContentOnHover = false;
-      DockHost.Size = new Size(1610, 573);
+      DockHost.Size = new Size(1835, 589);
       DockHost.TabIndex = 4;
       DockHost.Theme = vS2015LightTheme1;
       // 
@@ -201,7 +248,7 @@
       menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, GroupViewPanelMNU, toolsToolStripMenuItem, helpToolStripMenuItem });
       menuStrip1.Location = new Point(0, 0);
       menuStrip1.Name = "menuStrip1";
-      menuStrip1.Size = new Size(1610, 24);
+      menuStrip1.Size = new Size(1835, 24);
       menuStrip1.TabIndex = 5;
       menuStrip1.Text = "menuStrip1";
       // 
@@ -378,11 +425,11 @@
       // StatusStrip
       // 
       StatusStrip.ImageScalingSize = new Size(24, 24);
-      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, SoundcardDropdownBtn, VacLedLabel, VacStatusLabel, RxCatLedLabel, RxCatStatusLabel, TxCatLedLabel, TxCatStatusLabel, SatDataLedLabel, SatDataStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, NoiseFloorLabel, CpuLoadlabel });
-      StatusStrip.Location = new Point(0, 675);
+      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SatDataLedLabel, SatDataStatusLabel, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, SoundcardDropdownBtn, VacLedLabel, VacStatusLabel, RxCatLedLabel, RxCatStatusLabel, TxCatLedLabel, TxCatStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, RotatorLedLabel, RotatorStatusLabel, NoiseFloorLabel, CpuLoadlabel });
+      StatusStrip.Location = new Point(0, 691);
       StatusStrip.Name = "StatusStrip";
       StatusStrip.ShowItemToolTips = true;
-      StatusStrip.Size = new Size(1610, 35);
+      StatusStrip.Size = new Size(1835, 35);
       StatusStrip.TabIndex = 6;
       StatusStrip.Text = "statusStrip1";
       // 
@@ -391,6 +438,23 @@
       toolStripStatusLabel2.AutoSize = false;
       toolStripStatusLabel2.Name = "toolStripStatusLabel2";
       toolStripStatusLabel2.Size = new Size(10, 30);
+      // 
+      // SatDataLedLabel
+      // 
+      SatDataLedLabel.Font = new Font("Webdings", 9F);
+      SatDataLedLabel.ForeColor = Color.Gray;
+      SatDataLedLabel.Name = "SatDataLedLabel";
+      SatDataLedLabel.Size = new Size(21, 30);
+      SatDataLedLabel.Text = "n";
+      // 
+      // SatDataStatusLabel
+      // 
+      SatDataStatusLabel.Font = new Font("Segoe UI", 10F);
+      SatDataStatusLabel.Name = "SatDataStatusLabel";
+      SatDataStatusLabel.Size = new Size(89, 30);
+      SatDataStatusLabel.Text = "Satellite Data";
+      SatDataStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+      SatDataStatusLabel.ToolTipText = "Network";
       // 
       // SdrLedLabel
       // 
@@ -515,23 +579,6 @@
       TxCatStatusLabel.MouseEnter += StatusLabel_MouseEnter;
       TxCatStatusLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
-      // SatDataLedLabel
-      // 
-      SatDataLedLabel.Font = new Font("Webdings", 9F);
-      SatDataLedLabel.ForeColor = Color.Gray;
-      SatDataLedLabel.Name = "SatDataLedLabel";
-      SatDataLedLabel.Size = new Size(21, 30);
-      SatDataLedLabel.Text = "n";
-      // 
-      // SatDataStatusLabel
-      // 
-      SatDataStatusLabel.Font = new Font("Segoe UI", 10F);
-      SatDataStatusLabel.Name = "SatDataStatusLabel";
-      SatDataStatusLabel.Size = new Size(89, 30);
-      SatDataStatusLabel.Text = "Satellite Data";
-      SatDataStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
-      SatDataStatusLabel.ToolTipText = "Network";
-      // 
       // IqOutputLedLabel
       // 
       IqOutputLedLabel.Font = new Font("Webdings", 9F);
@@ -545,10 +592,32 @@
       // 
       IqOutputStatusLabel.Font = new Font("Segoe UI", 10F);
       IqOutputStatusLabel.Name = "IqOutputStatusLabel";
-      IqOutputStatusLabel.Size = new Size(86, 30);
-      IqOutputStatusLabel.Text = "I/Q Output  ";
+      IqOutputStatusLabel.Size = new Size(78, 30);
+      IqOutputStatusLabel.Text = "I/Q Output";
       IqOutputStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
       IqOutputStatusLabel.Visible = false;
+      // 
+      // RotatorLedLabel
+      // 
+      RotatorLedLabel.Font = new Font("Webdings", 9F);
+      RotatorLedLabel.ForeColor = Color.Gray;
+      RotatorLedLabel.Name = "RotatorLedLabel";
+      RotatorLedLabel.Size = new Size(21, 30);
+      RotatorLedLabel.Text = "n";
+      RotatorLedLabel.Click += RotLedLabel_Click;
+      RotatorLedLabel.MouseEnter += StatusLabel_MouseEnter;
+      RotatorLedLabel.MouseLeave += StatusLabel_MouseLeave;
+      // 
+      // RotatorStatusLabel
+      // 
+      RotatorStatusLabel.Font = new Font("Segoe UI", 10F);
+      RotatorStatusLabel.Name = "RotatorStatusLabel";
+      RotatorStatusLabel.Size = new Size(55, 30);
+      RotatorStatusLabel.Text = "Rotator";
+      RotatorStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
+      RotatorStatusLabel.Click += RotLedLabel_Click;
+      RotatorStatusLabel.MouseEnter += StatusLabel_MouseEnter;
+      RotatorStatusLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
       // NoiseFloorLabel
       // 
@@ -566,11 +635,20 @@
       CpuLoadlabel.Text = "CPU Load: 00.0%";
       CpuLoadlabel.TextAlign = ContentAlignment.MiddleLeft;
       // 
+      // panel4
+      // 
+      panel4.Dock = DockStyle.Left;
+      panel4.Location = new Point(0, 102);
+      panel4.Name = "panel4";
+      panel4.Size = new Size(4, 589);
+      panel4.TabIndex = 7;
+      // 
       // MainForm
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(1610, 710);
+      ClientSize = new Size(1835, 726);
+      Controls.Add(panel4);
       Controls.Add(DockHost);
       Controls.Add(Toolbar);
       Controls.Add(menuStrip1);
@@ -581,6 +659,7 @@
       FormClosing += MainForm_FormClosing;
       Load += MainForm_Load;
       Toolbar.ResumeLayout(false);
+      panel3.ResumeLayout(false);
       ClockPanel.ResumeLayout(false);
       menuStrip1.ResumeLayout(false);
       menuStrip1.PerformLayout();
@@ -649,5 +728,12 @@
     private GainControl GainControl;
     private ToolStripStatusLabel RxCatLedLabel;
     private ToolStripStatusLabel RxCatStatusLabel;
+    private RotatorControl RotatorControl;
+    private Panel panel5;
+    private Panel panel4;
+    private ToolStripStatusLabel RotatorLedLabel;
+    private ToolStripStatusLabel RotatorStatusLabel;
+    private Panel panel7;
+    private Panel panel6;
   }
 }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System;
 using System.Collections;
 using System.Reflection;
+using OmniRig;
 
 namespace OrbiNom
 {
@@ -25,11 +26,13 @@ namespace OrbiNom
 
       ctx.SatelliteSelector = SatelliteSelector;
       ctx.FrequencyControl = FrequencyControl;
+      ctx.RotatorControl = RotatorControl;
       SatelliteSelector.ctx = ctx;
       FrequencyControl.ctx = ctx;
       GainControl.ctx = ctx;
       ctx.Announcer.ctx = ctx;
       ctx.CatControl.ctx = ctx;
+      ctx.RotatorControl.ctx = ctx;
 
       ctx.Settings.LoadFromFile();
 
@@ -46,7 +49,8 @@ namespace OrbiNom
       ctx.IqVacSoundcard.StateChanged += Soundcard_StateChanged;
 
       ApplyAudioSettings();
-      ctx.CatControl.Setup();
+      ctx.CatControl.ApplySettings();
+      ctx.RotatorControl.ApplySettings();
     }
 
     private void MainForm_Load(object sender, EventArgs e)
@@ -165,7 +169,7 @@ namespace OrbiNom
 
     internal void ConfigureWaterfall()
     {
-      if (ctx.WaterfallPanel == null || ctx.Sdr?.Info == null || SpectrumAnalyzer == null) 
+      if (ctx.WaterfallPanel == null || ctx.Sdr?.Info == null || SpectrumAnalyzer == null)
         return;
 
       SetWaterfallSpeed();
@@ -636,16 +640,23 @@ namespace OrbiNom
     private void RxCatLabel_Click(object sender, EventArgs e)
     {
       ctx.Settings.Cat.RxCat.Enabled = !ctx.Settings.Cat.RxCat.Enabled;
-      ctx.CatControl.Setup();
+      ctx.CatControl.ApplySettings();
       ShowCatStatus();
     }
 
     private void TxCatLabel_Click(object sender, EventArgs e)
     {
       ctx.Settings.Cat.TxCat.Enabled = !ctx.Settings.Cat.TxCat.Enabled;
-      ctx.CatControl.Setup();
+      ctx.CatControl.ApplySettings();
       ShowCatStatus();
     }
+
+    private void RotLedLabel_Click(object sender, EventArgs e)
+    {
+      ctx.Settings.Rotator.Enabled = !ctx.Settings.Rotator.Enabled;
+      ctx.RotatorControl.ApplySettings();
+    }
+
 
     public void ShowCatStatus()
     {
@@ -655,7 +666,7 @@ namespace OrbiNom
 
       if (!ctx.Settings.Cat.TxCat.Enabled) TxCatLedLabel.ForeColor = Color.Gray;
       else if (!ctx.FrequencyControl.RadioLink.HasUplink) TxCatLedLabel.ForeColor = Color.Black;
-      else if (!ctx.CatControl.Tx!.IsRunning()) TxCatLedLabel.ForeColor = Color.Red;
+      else if (!ctx.CatControl.Tx?.IsRunning() ?? false) TxCatLedLabel.ForeColor = Color.Red;
       else TxCatLedLabel.ForeColor = Color.Lime;
 
       RxCatStatusLabel.ToolTipText = ctx.CatControl.Rx?.GetStatusString() ?? "Disabled";
@@ -666,6 +677,16 @@ namespace OrbiNom
         TxCatStatusLabel.ToolTipText = "No Uplink";
       else
         TxCatStatusLabel.ToolTipText = ctx.CatControl.Tx?.GetStatusString();
+    }
+
+    public void ShowRotatorStatus()
+    {
+      if (!ctx.Settings.Rotator.Enabled) RotatorStatusLabel.ForeColor = Color.Gray;
+      else if (ctx.FrequencyControl.RadioLink.IsTerrestrial) RotatorStatusLabel.ForeColor = Color.Black;
+      else if (ctx.RotatorControl.IsRunning()) RotatorStatusLabel.ForeColor = Color.Lime;
+      else RotatorStatusLabel.ForeColor = Color.Red;
+
+      RotatorStatusLabel.ToolTipText = ctx.RotatorControl.GetStatusString();
     }
 
 
@@ -747,6 +768,8 @@ namespace OrbiNom
       ctx.PassesPanel?.UpdatePassTimes();
       ctx.TimelinePanel?.Advance();
       ctx.Sdr?.Retry();
+      ctx.CatControl.Rx?.Retry();
+      ctx.CatControl.Tx?.Retry();
       ctx.Announcer.AnnouncePasses();
 
       ShowCpuUsage();

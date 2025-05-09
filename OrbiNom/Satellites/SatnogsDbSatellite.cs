@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using SGPdotNET.Observation;
 using static OrbiNom.SatnogsDbSatellite;
+using Newtonsoft.Json;
 
 namespace OrbiNom
 {
@@ -146,6 +147,7 @@ namespace OrbiNom
     [ReadOnly(true)]
     [Category("Orbit")]
     [DisplayName("Period, min")]
+    [JsonIgnore]
     public int? Period { get; set; }
 
     [ReadOnly(true)]
@@ -190,7 +192,7 @@ namespace OrbiNom
     private List<string>? transmittersHint;
 
     [Browsable(false)]
-    public Satellite Tracker { get => tracker ??= CreateTracker();  }
+    internal Satellite Tracker { get => tracker ??= CreateTracker();  }
 
 
 
@@ -244,8 +246,8 @@ namespace OrbiNom
       else Flags |= SatelliteFlags.NonHam;
 
       // band
-      if (Transmitters.Any(t => t.IsVhf())) Flags |= SatelliteFlags.Vhf;
-      if (Transmitters.Any(t => t.IsUhf())) Flags |= SatelliteFlags.Uhf;
+      if (Transmitters.Any(t => t.IsVhf() && t.HasUplink())) Flags |= SatelliteFlags.Vhf;
+      if (Transmitters.Any(t => t.IsUhf() && t.HasUplink())) Flags |= SatelliteFlags.Uhf;
       if ((Flags & (SatelliteFlags.Vhf | SatelliteFlags.Uhf)) == SatelliteFlags.None)
         Flags |= SatelliteFlags.OtherBands;
 

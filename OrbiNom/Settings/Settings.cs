@@ -29,6 +29,9 @@ namespace OrbiNom
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public CatSettings Cat { get; set; } = new();
 
+    [DisplayName("Rotator Control")]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public RotatorSettings Rotator { get; set; } = new();
 
     private static string GetFileName()
     {

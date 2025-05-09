@@ -32,6 +32,7 @@ namespace VE3NEA.Clock
     {
       utcMode = value;
       utcLabel.BackColor = utcMode ? Color.Aqua : Color.Teal;
+      localLabel.BackColor = utcMode ? Color.Teal : Color.Aqua;
       ShowTime();
     }
 
@@ -39,7 +40,12 @@ namespace VE3NEA.Clock
     {
       DateTime now = utcMode ? DateTime.UtcNow : DateTime.Now;
       timeLabel.Text = now.ToString("HH:mm:ss");
-      dateLabel.Text = now.ToString("MMM dd");      
+      dateLabel.Text = now.ToString("MMMM dd, yyyy");
+    }
+
+    private void dateLabel_Click(object sender, EventArgs e)
+    {
+
     }
   }
 }

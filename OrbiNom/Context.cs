@@ -19,8 +19,9 @@ namespace OrbiNom
 
     // main form
     public MainForm MainForm;
-    public FrequencyControl FrequencyControl;
     public SatelliteSelector SatelliteSelector;
+    public FrequencyControl FrequencyControl;
+    public RotatorControl RotatorControl;
 
     // panels
     public GroupViewPanel? GroupViewPanel;

@@ -7,6 +7,7 @@ using System.Speech.Synthesis.TtsEngine;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using CSCore.Win32;
 using Newtonsoft.Json;
 using OrbiNom.Properties;
 using Serilog;
@@ -34,7 +35,6 @@ namespace OrbiNom
     private readonly bool log;
     
     private bool? ptt;
-    private bool PttChanged;
 
     private long RequestedRxFrequency, RequestedTxFrequency;
     private long LastWrittenRxFrequency, LastWrittenTxFrequency;
@@ -97,10 +97,6 @@ namespace OrbiNom
       else if (RadioInfo.commands.setup_split != null) CatMode = CatMode.Split;
       else { Log.Error($"Radio {RadioInfo.radio} does not support split mode"); return; }
 
-        TcpClient = new();        
-        TcpClient.SendTimeout = 1000;
-        TcpClient.ReceiveTimeout = 1000;
-
       StartThread();
     }
 
@@ -111,6 +107,13 @@ namespace OrbiNom
       TcpClient?.Dispose();
       TcpClient = null;
     }
+
+
+    internal void Retry()
+    {
+      if (!IsRunning()) StartThread();
+    }
+
 
     public void SetRxFrequency(double frequency)
     {
@@ -143,7 +146,7 @@ namespace OrbiNom
 
     public bool IsRunning()
     {
-      return TcpClient?.Connected ?? false;
+      return TcpClient?.Connected ?? false; //{!} .Active() ?
     }
 
     public string GetStatusString()
@@ -188,7 +191,7 @@ namespace OrbiNom
             TryReadRxFrequency();
             TryReadTxFrequency();
           }
-          
+
           TryWriteRxFrequency();
           TryWriteTxFrequency();
           TryWriteRxMode();
@@ -200,7 +203,6 @@ namespace OrbiNom
         catch (SocketException ex)
         {
           Log.Error(ex, $"Socket error in {GetType().Name}");
-          TcpClient?.Close();
           syncContext.Post(s => OnStatusChanged(), null);
           break;
         }
@@ -208,10 +210,16 @@ namespace OrbiNom
         {
           Log.Error(ex, $"Error in {GetType().Name}");
         }
+
+      Disconnect();
     }
 
     private bool Connect()
     {
+      TcpClient = new();
+      TcpClient.SendTimeout = 1000;
+      TcpClient.ReceiveTimeout = 1000;
+
       try
       {
         TcpClient!.Connect(Host, Port);
@@ -220,8 +228,16 @@ namespace OrbiNom
       catch (SocketException ex)
       {
         Log.Error(ex, $"Unable to connect to rigctld at {Host}:{Port}");
+        Disconnect();
         return false;
       }
+    }
+
+    private void Disconnect()
+    {
+      TcpClient?.Close();
+      TcpClient = null;
+      OnStatusChanged();
     }
 
     private bool SetUpRadio()
@@ -245,6 +261,7 @@ namespace OrbiNom
       catch (Exception ex)
       {
         Log.Error(ex, $"Failed to set up radio {RadioInfo.radio}");
+        Disconnect();
         return false;
       }
 
@@ -529,7 +546,6 @@ namespace OrbiNom
     {
       var reply = SendReadCommand(RadioInfo.commands.read_ptt!);
       bool newPtt = reply == "1";
-      PttChanged = newPtt != ptt;
       return newPtt;
     }
 
