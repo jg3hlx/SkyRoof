@@ -67,7 +67,7 @@ namespace OrbiNom
     public double UplinkFrequency, CorrectedUplinkFrequency;
     public double DopplerFactor = 0;
     public bool IsAboveHorizon;
-    public bool HasUplink => !IsTerrestrial && UplinkFrequency > 0;
+    public bool HasUplink => !IsTerrestrial && UplinkFrequency > 0 && SatnogsDbTransmitter.IsHamFrequency(UplinkFrequency);
     public bool IsTransponder => Tx != null &&
       Tx.downlink_high.HasValue && Tx.downlink_high != Tx.downlink_low &&
       Tx.uplink_low.HasValue && Tx.uplink_high.HasValue;

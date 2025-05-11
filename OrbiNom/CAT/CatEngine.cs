@@ -42,6 +42,7 @@ namespace OrbiNom
     private Slicer.Mode? RequestedRxMode, RequestedTxMode;
     private Slicer.Mode? LastWrittenRxMode, LastWrittenTxMode;
     private bool? RequestedPtt;
+    private bool isRunning;
 
     public event EventHandler? StatusChanged;
     public event EventHandler? RxTuned;
@@ -111,7 +112,7 @@ namespace OrbiNom
 
     internal void Retry()
     {
-      if (!IsRunning()) StartThread();
+      if (TcpClient == null) StartThread();
     }
 
 
@@ -146,7 +147,8 @@ namespace OrbiNom
 
     public bool IsRunning()
     {
-      return TcpClient?.Connected ?? false; //{!} .Active() ?
+      return isRunning;
+     //return TcpClient?.Connected ?? false; //{!} .Active() ?
     }
 
     public string GetStatusString()
@@ -212,6 +214,7 @@ namespace OrbiNom
         }
 
       Disconnect();
+      isRunning = false;
     }
 
     private bool Connect()
@@ -482,8 +485,16 @@ namespace OrbiNom
     //----------------------------------------------------------------------------------------------
     private void RunSetupSequence(string[]? setup_simplex)
     {
+      bool ok = true;
+
       foreach (string cmd in setup_simplex!)
-        SendWriteCommand(cmd);
+        ok = ok && SendWriteCommand(cmd);
+
+      if (ok)
+      {
+        isRunning = true;
+        OnStatusChanged();
+      }
     }
 
     private bool SendWriteCommand(string command)

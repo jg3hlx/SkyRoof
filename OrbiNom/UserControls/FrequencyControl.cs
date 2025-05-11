@@ -367,9 +367,8 @@ namespace OrbiNom
       offset = RadioLink.UplinkFrequency * RadioLink.DopplerFactor;
       UplinkDopplerLabel.Text = offset == 0 ? "0,000" : $"{sign}{offset:n0}";
 
-
       // downlink
-      bool bright = !RadioLink.IsTerrestrial && RadioLink.IsAboveHorizon;
+      bool bright = ctx.CatControl.Rx?.IsRunning() ?? false;
       if (SatnogsDbTransmitter.IsUhfFrequency(RadioLink.DownlinkFrequency))
         DownlinkFrequencyLabel.ForeColor = bright ? Color.Cyan : Color.Teal;
       else if (SatnogsDbTransmitter.IsVhfFrequency(RadioLink.DownlinkFrequency))
@@ -378,6 +377,7 @@ namespace OrbiNom
         DownlinkFrequencyLabel.ForeColor = bright ? Color.White : Color.Gray;
 
       // uplink
+      bright = ctx.CatControl.Tx?.IsRunning() ?? false;
       if (!RadioLink.HasUplink)
         UplinkFrequencyLabel.ForeColor = Color.Gray;
       else if (RadioLink.Tx!.IsUhf((long)RadioLink.UplinkFrequency))
