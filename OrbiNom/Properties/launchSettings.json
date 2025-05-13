@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "OrbiNom": {
-      "commandName": "Project",
-      "hotReloadEnabled": false,
-      "nativeDebugging": false
-    }
-  }
-}
