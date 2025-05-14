@@ -115,7 +115,7 @@
       Toolbar.Dock = DockStyle.Top;
       Toolbar.Location = new Point(0, 24);
       Toolbar.Name = "Toolbar";
-      Toolbar.Size = new Size(1835, 78);
+      Toolbar.Size = new Size(1834, 78);
       Toolbar.TabIndex = 0;
       // 
       // RotatorControl
@@ -196,7 +196,7 @@
       ClockPanel.BorderStyle = BorderStyle.FixedSingle;
       ClockPanel.Controls.Add(Clock);
       ClockPanel.Dock = DockStyle.Right;
-      ClockPanel.Location = new Point(1714, 0);
+      ClockPanel.Location = new Point(1713, 0);
       ClockPanel.Name = "ClockPanel";
       ClockPanel.Padding = new Padding(3);
       ClockPanel.Size = new Size(117, 78);
@@ -225,7 +225,7 @@
       // panel5
       // 
       panel5.Dock = DockStyle.Right;
-      panel5.Location = new Point(1831, 0);
+      panel5.Location = new Point(1830, 0);
       panel5.Name = "panel5";
       panel5.Size = new Size(4, 78);
       panel5.TabIndex = 9;
@@ -239,7 +239,7 @@
       DockHost.Name = "DockHost";
       DockHost.Padding = new Padding(6);
       DockHost.ShowAutoHideContentOnHover = false;
-      DockHost.Size = new Size(1835, 589);
+      DockHost.Size = new Size(1834, 824);
       DockHost.TabIndex = 4;
       DockHost.Theme = vS2015LightTheme1;
       // 
@@ -248,7 +248,7 @@
       menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, GroupViewPanelMNU, toolsToolStripMenuItem, helpToolStripMenuItem });
       menuStrip1.Location = new Point(0, 0);
       menuStrip1.Name = "menuStrip1";
-      menuStrip1.Size = new Size(1835, 24);
+      menuStrip1.Size = new Size(1834, 24);
       menuStrip1.TabIndex = 5;
       menuStrip1.Text = "menuStrip1";
       // 
@@ -426,10 +426,10 @@
       // 
       StatusStrip.ImageScalingSize = new Size(24, 24);
       StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SatDataLedLabel, SatDataStatusLabel, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, SoundcardDropdownBtn, VacLedLabel, VacStatusLabel, RxCatLedLabel, RxCatStatusLabel, TxCatLedLabel, TxCatStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, RotatorLedLabel, RotatorStatusLabel, NoiseFloorLabel, CpuLoadlabel });
-      StatusStrip.Location = new Point(0, 691);
+      StatusStrip.Location = new Point(0, 926);
       StatusStrip.Name = "StatusStrip";
       StatusStrip.ShowItemToolTips = true;
-      StatusStrip.Size = new Size(1835, 35);
+      StatusStrip.Size = new Size(1834, 35);
       StatusStrip.TabIndex = 6;
       StatusStrip.Text = "statusStrip1";
       // 
@@ -640,14 +640,14 @@
       panel4.Dock = DockStyle.Left;
       panel4.Location = new Point(0, 102);
       panel4.Name = "panel4";
-      panel4.Size = new Size(4, 589);
+      panel4.Size = new Size(4, 824);
       panel4.TabIndex = 7;
       // 
       // MainForm
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(1835, 726);
+      ClientSize = new Size(1834, 961);
       Controls.Add(panel4);
       Controls.Add(DockHost);
       Controls.Add(Toolbar);

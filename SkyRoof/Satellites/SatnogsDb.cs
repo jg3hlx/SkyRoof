@@ -148,8 +148,7 @@ namespace SkyRoof
         File.Exists(Path.Combine(DownloadsFolder, "satellites.json")) &&
         File.Exists(Path.Combine(DownloadsFolder, "transmitters.json")) &&
         File.Exists(Path.Combine(DownloadsFolder, "tle.json")) &&
-        File.Exists(Path.Combine(DownloadsFolder, "JE9PEL.csv")) &&
-        File.Exists(Path.Combine(DownloadsFolder, "LoTW_FAQ.html"));
+        File.Exists(Path.Combine(DownloadsFolder, "JE9PEL.csv"));
     }
     public void ImportAll()
     {

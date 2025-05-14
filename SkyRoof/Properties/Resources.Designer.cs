@@ -113,6 +113,16 @@ namespace SkyRoof.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] default_docking {
+            get {
+                object obj = ResourceManager.GetObject("default_docking", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] dxcc {
             get {
                 object obj = ResourceManager.GetObject("dxcc", resourceCulture);

@@ -71,7 +71,7 @@ namespace SkyRoof
   public class SatelliteDetailsFormSettings
   {
   public Size Size { get; set; }
-    public int SplitterPos { get; set; } = -1;
+    public int SplitterDistance { get; set; } = -1;
   }
 
   public class SatelliteGroupsFormSettings

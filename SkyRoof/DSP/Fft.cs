@@ -1,5 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO;
+using System.Runtime.InteropServices;
 using MathNet.Numerics;
+using SkyRoof.Forms;
 
 
 namespace VE3NEA
@@ -10,6 +12,8 @@ namespace VE3NEA
     private IntPtr InputPtr;
     private IntPtr OutputPtr;
     private IntPtr Plan;
+    WaitBox WaitBox = new();
+
 
     public T[] InputData;
     public Complex32[] OutputData;
@@ -42,12 +46,22 @@ namespace VE3NEA
 
       // FFT plan
       NativeFftw.make_planner_thread_safe();
-      Plan = typeof(T) == typeof(float) ?
-        NativeFftw.dft_r2c_1d(InputData.Length, InputPtr, OutputPtr, flags)
-        :
-        NativeFftw.dft_1d(InputData.Length, InputPtr, OutputPtr, NativeFftw.FftwDirection.Forward, flags);
+
+      if (!File.Exists(WisdomPath))
+      {
+        WaitBox.Show();
+        Application.DoEvents();
+      }
+
+      if (typeof(T) == typeof(float))
+        Plan = NativeFftw.dft_r2c_1d(InputData.Length, InputPtr, OutputPtr, flags);
+      else
+        Plan = NativeFftw.dft_1d(InputData.Length, InputPtr, OutputPtr, NativeFftw.FftwDirection.Forward, flags);
+
+      WaitBox.Hide();
     }
 
+    
     public void Dispose()
     {
       if (Plan != IntPtr.Zero) NativeFftw.destroy_plan(Plan);

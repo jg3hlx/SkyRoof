@@ -82,8 +82,11 @@ namespace SkyRoof
       ValidateWaterfallViewport();
       ScaleControl.Refresh();
 
-      WaterfallControl.Pan = (ctx.Sdr.Info.Frequency - ScaleControl.CenterFrequency) / ScaleControl.VisibleBandwidth * 2;
-      WaterfallControl.OpenglControl.Refresh();
+      if (ctx.Sdr != null)
+      {
+        WaterfallControl.Pan = (ctx.Sdr.Info.Frequency - ScaleControl.CenterFrequency) / ScaleControl.VisibleBandwidth * 2;
+        WaterfallControl.OpenglControl.Refresh();
+      }
     }
 
     internal void ClearWaterfall()

@@ -91,7 +91,9 @@ namespace SkyRoof
 
   public class SatelliteCustomization
   {
-    public string sat_id;
+    // sat_id is needed only if the sat was renamed
+    public string? sat_id;
+
     public string? Name;
     public string? SelectedTransmitterId;
 

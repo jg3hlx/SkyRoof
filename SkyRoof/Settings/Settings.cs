@@ -1,7 +1,7 @@
 ﻿using VE3NEA;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using JTSkimmer;
+using System.Text;
 
 namespace SkyRoof
 {
@@ -42,16 +42,20 @@ namespace SkyRoof
     {
       if (File.Exists(GetFileName()))
         JsonConvert.PopulateObject(File.ReadAllText(GetFileName()), this);
+
       SetDefaults();
     }
 
     public void SaveToFile()
     {
-      File.WriteAllText(GetFileName(), JsonConvert.SerializeObject(this));
+      File.WriteAllText(GetFileName(), JsonConvert.SerializeObject(this, Formatting.Indented));
     }
 
     private void SetDefaults()
     {
+      if (Ui.DockingLayoutString == null)
+        Ui.DockingLayoutString = Encoding.UTF8.GetString(Properties.Resources.default_docking);
+
       Satellites.Sanitize();
     }
   }

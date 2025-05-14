@@ -83,7 +83,7 @@
       Controls.Add(label1);
       FormBorderStyle = FormBorderStyle.FixedToolWindow;
       Name = "DownloadDialog";
-      StartPosition = FormStartPosition.CenterParent;
+      StartPosition = FormStartPosition.CenterScreen;
       Text = "Satellite Data";
       Shown += DownloadDialog_Shown;
       ResumeLayout(false);

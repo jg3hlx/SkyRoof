@@ -59,7 +59,7 @@ namespace SkyRoof
 
       // apply settings
       ctx.Settings.Ui.RestoreWindowPosition(this);
-      if (!ctx.Settings.Ui.RestoreDockingLayout(this)) SetDefaultDockingLayout();
+      ctx.Settings.Ui.RestoreDockingLayout(this);
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
 
       SetupDsp();
@@ -82,7 +82,7 @@ namespace SkyRoof
       ctx.SpeakerSoundcard.Dispose();
       ctx.AudioVacSoundcard?.Dispose();
       ctx.IqVacSoundcard?.Dispose();
-      Fft<float>.SaveWisdom();
+      Fft<Complex32>.SaveWisdom();
     }
 
     private void EnsureUserDetails()
@@ -109,12 +109,10 @@ namespace SkyRoof
 
     private void SetupDsp()
     {
-      Fft<float>.LoadWisdom(Path.Combine(Utils.GetUserDataFolder(), "wsjtx_wisdom.dat"));
+      Fft<Complex32>.LoadWisdom(Path.Combine(Utils.GetUserDataFolder(), "wsjtx_wisdom.dat"));
 
       SpectrumAnalyzer = new(WaterfallControl.SPECTRA_WIDTH, 6_000_000);
       SpectrumAnalyzer.SpectrumAvailable += Spect_SpectrumAvailable;
-
-
     }
 
     private void Spect_SpectrumAvailable(object? sender, DataEventArgs<float> e)
@@ -378,7 +376,8 @@ namespace SkyRoof
       ctx.SatnogsDb.TleUpdated += SatnogsDb_TleUpdated;
 
       ctx.SatnogsDb.LoadFromFile();
-      SatnogsDb_ListUpdated(null, null);
+      if (ctx.SatnogsDb.Loaded)
+        SatnogsDb_ListUpdated(null, null);
     }
 
     private void CheckDownloadSatelliteList()
@@ -707,11 +706,6 @@ namespace SkyRoof
       panel.Show(DockHost, rect);
     }
 
-    private void SetDefaultDockingLayout()
-    {
-      GroupViewMNU_Click(null, null);
-    }
-
     public IDockContent? MakeDockContentFromPersistString(string persistString)
     {
       switch (persistString)
@@ -801,6 +795,7 @@ namespace SkyRoof
       {
         ctx.Settings.Satellites.LastDownloadTime = DateTime.UtcNow;
         ctx.Settings.Satellites.LastTleTime = ctx.Settings.Satellites.LastDownloadTime;
+        ctx.Settings.SaveToFile();
       }
 
       ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
