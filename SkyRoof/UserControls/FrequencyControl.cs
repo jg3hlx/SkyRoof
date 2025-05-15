@@ -176,7 +176,7 @@ namespace SkyRoof
     private void RadioLinkToRadio()
     {
       // mode in slicer
-      if (ctx.Slicer != null) ctx.Slicer.CurrentMode = RadioLink.DownlinkMode;
+      if (ctx.Slicer != null) ctx.Slicer.NewMode = RadioLink.DownlinkMode;
 
       // mode in external radio
       ctx.CatControl.Rx?.SetRxMode(RadioLink.DownlinkMode);

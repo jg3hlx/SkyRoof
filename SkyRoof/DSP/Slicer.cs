@@ -32,12 +32,10 @@ namespace SkyRoof
     private DataEventArgsPool<Complex32> ComplexArgsPool = new();
     private double RationalResamplerInputRate;
     private double offset;
-    private Mode mode;
-    private bool ModeChanged = false;
-
+    public Mode CurrentMode, NewMode;
+    
 
     public double InputRate { get; private set; }
-    public Mode CurrentMode { get => mode; set => SetMode(value); }
     public double Bandwidth { get => Bandwidths[(int)CurrentMode]; }
     public double FrequencyOffset { get => offset; set => SetOffset(value); }
 
@@ -57,21 +55,15 @@ namespace SkyRoof
       RationalResamplerInputRate = CreateOctaveResampler();
       CreateRationalResampler();
 
-      freqdem = NativeLiquidDsp.freqdem_create(1); 
+      freqdem = NativeLiquidDsp.freqdem_create(1);
 
-      CurrentMode = mode;
+      SetMode(mode);
     }
 
     public void SetOffset(double offset)
     {
       this.offset = offset;
       NativeLiquidDsp.nco_crcf_set_frequency(FirstMixer, (float)(Geo.TwoPi * offset / InputRate));
-    }
-
-    private void SetMode(Mode mode)
-    {
-      this.mode = mode;
-      ModeChanged = true;
     }
 
 
@@ -149,7 +141,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     protected override void Process(DataEventArgs<Complex32> args)
     {
-      CheckModeChange();
+      if (NewMode != CurrentMode) SetMode(NewMode);
 
       InputBuffer.Data = args.Data;
       InputBuffer.Count = args.Count;
@@ -222,10 +214,9 @@ namespace SkyRoof
       RationalResamplerOutputBuffer.Count = 0;
     }
 
-    private void CheckModeChange()
+    private void SetMode(Mode mode)
     {
-      if (!ModeChanged) return;
-      ModeChanged = false;
+      CurrentMode = mode;
 
       CreateFilter();
 
