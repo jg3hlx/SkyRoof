@@ -660,12 +660,12 @@ namespace SkyRoof
     public void ShowCatStatus()
     {
       if (ctx.CatControl.Rx == null) RxCatLedLabel.ForeColor = Color.Gray;
-      else if (!ctx.CatControl.Rx!.IsRunning()) RxCatLedLabel.ForeColor = Color.Red;
+      else if (!ctx.CatControl.Rx!.IsRunning) RxCatLedLabel.ForeColor = Color.Red;
       else RxCatLedLabel.ForeColor = Color.Lime;
 
       if (!ctx.Settings.Cat.TxCat.Enabled) TxCatLedLabel.ForeColor = Color.Gray;
       else if (!ctx.FrequencyControl.RadioLink.HasUplink) TxCatLedLabel.ForeColor = Color.Black;
-      else if (!ctx.CatControl.Tx?.IsRunning() ?? false) TxCatLedLabel.ForeColor = Color.Red;
+      else if (!ctx.CatControl.Tx?.IsRunning ?? false) TxCatLedLabel.ForeColor = Color.Red;
       else TxCatLedLabel.ForeColor = Color.Lime;
 
       RxCatStatusLabel.ToolTipText = ctx.CatControl.Rx?.GetStatusString() ?? "Disabled";

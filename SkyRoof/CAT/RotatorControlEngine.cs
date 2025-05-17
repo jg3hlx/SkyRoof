@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 
 namespace SkyRoof
 {
-  public class RotatorEngine
+  public class RotatorControlEngine : ControlEngine
   {
-    public Context ctx;
     private bool enabled;
 
-    public RotatorEngine()
+    public RotatorControlEngine(RotatorSettings settings) : base(settings.Host, settings.Port, settings)
     {
+    
     }
+    
 
     public bool Enabled {get => enabled; set => SetEnabled(value); }
 
@@ -29,6 +30,18 @@ namespace SkyRoof
 
     public void Stop()
     {
+    }
+
+    protected override void SendCommands()
+    {
+     
+    }
+
+    protected override bool Setup()
+    {
+      // nothing needs to be done here
+
+      return true;
     }
   }
 }

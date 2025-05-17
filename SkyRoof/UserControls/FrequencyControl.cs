@@ -368,7 +368,7 @@ namespace SkyRoof
       UplinkDopplerLabel.Text = offset == 0 ? "0,000" : $"{sign}{offset:n0}";
 
       // downlink
-      bool bright = ctx.CatControl.Rx?.IsRunning() ?? false;
+      bool bright = ctx.CatControl.Rx?.IsRunning ?? false;
       if (SatnogsDbTransmitter.IsUhfFrequency(RadioLink.DownlinkFrequency))
         DownlinkFrequencyLabel.ForeColor = bright ? Color.Cyan : Color.Teal;
       else if (SatnogsDbTransmitter.IsVhfFrequency(RadioLink.DownlinkFrequency))
@@ -377,7 +377,7 @@ namespace SkyRoof
         DownlinkFrequencyLabel.ForeColor = bright ? Color.White : Color.Gray;
 
       // uplink
-      bright = ctx.CatControl.Tx?.IsRunning() ?? false;
+      bright = ctx.CatControl.Tx?.IsRunning ?? false;
       if (!RadioLink.HasUplink)
         UplinkFrequencyLabel.ForeColor = Color.Gray;
       else if (RadioLink.Tx!.IsUhf((long)RadioLink.UplinkFrequency))
@@ -474,7 +474,7 @@ namespace SkyRoof
     private void ShowHideTxButton()
     {
       //TxBtn.Visible = ctx.CatControl.Tx != null && ctx.CatControl.Tx.CatMode != CatMode.RxOnly;
-      TxBtn.Visible = ctx.CatControl.Tx != null && ctx.CatControl.Tx.IsRunning();
+      TxBtn.Visible = ctx.CatControl.Tx != null && ctx.CatControl.Tx.IsRunning;
       Ptt = false;
       TxBtn.Text = "Transmit";
     }

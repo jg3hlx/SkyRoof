@@ -3,7 +3,7 @@
   public class CatControl
   {
     public Context ctx;
-    public CatEngine? Rx, Tx;
+    public CatControlEngine? Rx, Tx;
 
 
     internal void ApplySettings()
@@ -17,7 +17,7 @@
       if (!ctx.Settings.Cat.RxCat.Enabled)
         Rx = null;
       else 
-        Rx = new CatEngine(ctx.Settings.Cat.RxCat, ctx.Settings.Cat);
+        Rx = new CatControlEngine(ctx.Settings.Cat.RxCat, ctx.Settings.Cat);
 
       // create tx cat engine
       if (!ctx.Settings.Cat.TxCat.Enabled || !ctx.FrequencyControl.RadioLink.HasUplink)
@@ -25,7 +25,7 @@
       else if (IsSameEngine(ctx.Settings.Cat.TxCat, ctx.Settings.Cat.RxCat))
         Tx = Rx;      
       else
-        Tx = new CatEngine(ctx.Settings.Cat.TxCat, ctx.Settings.Cat);
+        Tx = new CatControlEngine(ctx.Settings.Cat.TxCat, ctx.Settings.Cat);
 
       // start engines
       if (Rx != null)

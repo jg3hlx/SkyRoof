@@ -15,6 +15,7 @@ namespace SkyRoof
   public partial class RotatorControl : UserControl
   {
     public Context ctx;
+    private RotatorControlEngine? engine;
     private AzElEntryDialog Dialog = new();
 
     public RotatorControl()
@@ -28,24 +29,26 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                        engine
     //----------------------------------------------------------------------------------------------
-    internal void ApplySettings()
+    public void ApplySettings()
     {
-
+      engine?.Dispose();
+      engine = new RotatorControlEngine(ctx.Settings.Rotator);
     }
 
-    internal bool IsRunning()
+    public bool IsRunning()
     {
       return true;
     }
 
-    internal void Go(int value1, int value2)
+    public void Go(int lat, int lon)
     {
-
+      engine.Go(lat, lon);
     }
 
-    private void StopRotation()
+    public void StopRotation()
     {
-
+      TrackCheckbox.Checked = false;
+      engine.Stop();
     }
 
 

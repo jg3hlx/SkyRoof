@@ -17,23 +17,14 @@ namespace SkyRoof
 {
   public enum CatMode { RxOnly, TxOnly, Split, Duplex }
 
-  public class CatEngine : IDisposable
+  public class CatControlEngine : ControlEngine
   {
     private RadioInfo RadioInfo;
     public CatMode CatMode;
-    private SynchronizationContext syncContext = SynchronizationContext.Current!;
-    private Thread? processingThread;
-    private bool stopping = false;
-    private readonly int Delay;
     private readonly bool IgnoreDialKnob;
-    private TcpClient? TcpClient;
 
     private bool Ptt => ptt ??= ReadPtt();
 
-    public readonly string Host;
-    private readonly ushort Port;
-    private readonly bool log;
-    
     private bool? ptt;
 
     private long RequestedRxFrequency, RequestedTxFrequency;
@@ -42,9 +33,7 @@ namespace SkyRoof
     private Slicer.Mode? RequestedRxMode, RequestedTxMode;
     private Slicer.Mode? LastWrittenRxMode, LastWrittenTxMode;
     private bool? RequestedPtt;
-    private bool isRunning;
 
-    public event EventHandler? StatusChanged;
     public event EventHandler? RxTuned;
     public event EventHandler? TxTuned;
 
@@ -53,24 +42,19 @@ namespace SkyRoof
       string path = Path.Combine(Utils.GetUserDataFolder(), "cat_info.json");
       // todo: restore
       //if (!File.Exists(path)) 
-        File.WriteAllBytes(path, Resources.cat_info);
+      File.WriteAllBytes(path, Resources.cat_info);
+
       return JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
     }
 
-    public CatEngine(CatRadioSettings endpoint, CatSettings settings)
+    public CatControlEngine(CatRadioSettings radioSettings, CatSettings catSettings) : base(radioSettings.Host, radioSettings.Port, catSettings)
     {
-      Host = endpoint.Host;
-      Port = endpoint.Port;
-      Delay = settings.Delay;
-      IgnoreDialKnob = settings.IgnoreDialKnob;
-      log = settings.LogTraffic;
-
-      RadioInfo = BuildRadioInfoList().First(r => r.radio == endpoint.RadioModel);
+      RadioInfo = BuildRadioInfoList().First(r => r.radio == radioSettings.RadioModel);
     }
 
 
     private void LogFreqs(string msg)
-    { 
+    {
       if (log) Log.Information($"{msg}  (RxReq={RequestedRxFrequency:N0}  RxWr={LastWrittenRxFrequency:N0}  RxRd={LastReadRxFrequency:N0})");
     }
 
@@ -101,21 +85,6 @@ namespace SkyRoof
       StartThread();
     }
 
-    protected virtual void Stop()
-    {
-      if (stopping) return;
-      StopThread();
-      TcpClient?.Dispose();
-      TcpClient = null;
-    }
-
-
-    internal void Retry()
-    {
-      if (TcpClient == null) StartThread();
-    }
-
-
     public void SetRxFrequency(double frequency)
     {
       frequency = RoundTo10(frequency);
@@ -145,16 +114,7 @@ namespace SkyRoof
       RequestedPtt = ptt;
     }
 
-    public bool IsRunning()
-    {
-      return isRunning;
-     //return TcpClient?.Connected ?? false; //{!} .Active() ?
-    }
 
-    public string GetStatusString()
-    {
-      return IsRunning() ? "Connected" : "Disconnected";
-    }
 
 
 
@@ -162,112 +122,52 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                        thread 
     //----------------------------------------------------------------------------------------------
-    private void StartThread()
+    protected override void SendCommands()
     {
-      processingThread = new Thread(new ThreadStart(ThreadProcedure));
-      processingThread.IsBackground = true;
-      processingThread.Name = GetType().Name;
-      processingThread.Start();
-      processingThread.Priority = ThreadPriority.Highest;
-    }
+      // will read PTT only if needed
+      ptt = null; 
 
-    private void StopThread()
-    {
-      stopping = true;
-      processingThread?.Join();
-      processingThread = null;
-    }
-
-    protected virtual void ThreadProcedure()
-    {
-      if (!Connect() || !SetUpRadio()) return;
-
-      while (!stopping)
-        try
-        {
-          ptt = null; // will read PTT only if needed
-
-          if (!IgnoreDialKnob)
-          {
-            TryReadRxFrequency();
-            TryReadTxFrequency();
-          }
-
-          TryWriteRxFrequency();
-          TryWriteTxFrequency();
-          TryWriteRxMode();
-          TryWriteTxMode();
-          TryWritePtt();
-
-          Thread.Sleep(Delay);
-        }
-        catch (SocketException ex)
-        {
-          Log.Error(ex, $"Socket error in {GetType().Name}");
-          syncContext.Post(s => OnStatusChanged(), null);
-          break;
-        }
-        catch (Exception ex)
-        {
-          Log.Error(ex, $"Error in {GetType().Name}");
-        }
-
-      Disconnect();
-      isRunning = false;
-    }
-
-    private bool Connect()
-    {
-      TcpClient = new();
-      TcpClient.SendTimeout = 1000;
-      TcpClient.ReceiveTimeout = 1000;
-
-      try
+      if (!IgnoreDialKnob)
       {
-        TcpClient!.Connect(Host, Port);
-        return true;
+        TryReadRxFrequency();
+        TryReadTxFrequency();
       }
-      catch (SocketException ex)
-      {
-        Log.Error(ex, $"Unable to connect to rigctld at {Host}:{Port}");
-        Disconnect();
-        OnStatusChanged();
-        return false;
-      }
+
+      TryWriteRxFrequency();
+      TryWriteTxFrequency();
+      TryWriteRxMode();
+      TryWriteTxMode();
+      TryWritePtt();
     }
 
-    private void Disconnect()
-    {
-      TcpClient?.Close();
-      TcpClient = null;
-    }
 
-    private bool SetUpRadio()
+    protected override bool Setup()
     {
       try
       {
+        bool ok = false;
+
         switch (CatMode)
         {
           case CatMode.RxOnly:
           case CatMode.TxOnly:
-            RunSetupSequence(RadioInfo.commands.setup_simplex);
+            ok = SendWriteCommands(RadioInfo.commands.setup_simplex);
             break;
           case CatMode.Split:
-            RunSetupSequence(RadioInfo.commands.setup_split);
+            ok = SendWriteCommands(RadioInfo.commands.setup_split);
             break;
           case CatMode.Duplex:
-            RunSetupSequence(RadioInfo.commands.setup_duplex);
+            ok = SendWriteCommands(RadioInfo.commands.setup_duplex);
             break;
         }
+
+        return ok;
       }
       catch (Exception ex)
       {
         Log.Error(ex, $"Failed to set up radio {RadioInfo.radio}");
-        Disconnect();
         return false;
       }
-
-      return true;
     }
 
 
@@ -313,13 +213,20 @@ namespace SkyRoof
       if (!long.TryParse(reply, out long frequency)) BadReply(reply);
       frequency = RoundTo10(frequency);
 
-      bool changed = LastReadTxFrequency != 0 &&     
-        IsDiff(frequency, LastReadTxFrequency) &&    
-        IsDiff(frequency, LastWrittenTxFrequency) && 
-        IsDiff(frequency, LastWrittenRxFrequency);   
+      bool changed = LastReadTxFrequency != 0 &&
+        IsDiff(frequency, LastReadTxFrequency) &&
+        IsDiff(frequency, LastWrittenTxFrequency) &&
+        IsDiff(frequency, LastWrittenRxFrequency);
 
       LastReadTxFrequency = frequency;
       if (changed) OnTxFrequencyChanged();
+    }
+
+    private bool ReadPtt()
+    {
+      var reply = SendReadCommand(RadioInfo.commands.read_ptt!);
+      bool newPtt = reply == "1";
+      return newPtt;
     }
 
 
@@ -352,14 +259,14 @@ namespace SkyRoof
       string command;
       if (CatMode == CatMode.TxOnly && HasCapability(RadioInfo.capabilities.set_main_frequency))
         command = RadioInfo.commands.set_main_frequency!.Replace("{frequency}", $"{frequency}");
-      
+
       // split or duplex, write split frequency
       else if (CatMode != CatMode.TxOnly && HasCapability(RadioInfo.capabilities.set_split_frequency))
         command = RadioInfo.commands.set_split_frequency!.Replace("{frequency}", $"{frequency}");
 
       // no capability
       else return;
-     
+
       SendWriteCommand(command);
       LastWrittenTxFrequency = frequency;
     }
@@ -368,7 +275,7 @@ namespace SkyRoof
     {
       if (!NeedToWriteRxMode()) return;
       if (!HasCapability(RadioInfo.capabilities.set_main_mode)) return;
-     
+
       string mode = $"{RequestedRxMode}".Replace("_D", "");
       string command = RadioInfo.commands.set_main_mode!.Replace("{mode}", mode);
       SendWriteCommand(command);
@@ -453,7 +360,7 @@ namespace SkyRoof
     private bool NeedToWriteTxFrequency()
     {
       if (CatMode == CatMode.RxOnly) return false;
-      if (RequestedTxFrequency == 0) return false; 
+      if (RequestedTxFrequency == 0) return false;
       return IsDiff(RequestedTxFrequency, LastWrittenTxFrequency);
     }
 
@@ -480,118 +387,18 @@ namespace SkyRoof
 
 
     //----------------------------------------------------------------------------------------------
-    //                                       commands
-    //----------------------------------------------------------------------------------------------
-    private void RunSetupSequence(string[]? setup_simplex)
-    {
-      bool ok = true;
-
-      foreach (string cmd in setup_simplex!)
-        ok = ok && SendWriteCommand(cmd);
-
-      if (ok)
-      {
-        isRunning = true;
-        OnStatusChanged();
-      }
-    }
-
-    private bool SendWriteCommand(string command)
-    {
-      var reply = SendCommand(command);
-      if (reply == "RPRT 0\n") return true;
-
-      else if (reply != null) BadReply(reply);
-      return false;
-    }
-
-    private string? SendReadCommand(string command)
-    {
-      var reply = SendCommand(command);
-      if (reply == null) return null;
-      if (reply.EndsWith("\n"))
-      {
-        reply = reply.Substring(0, reply.Length - 1);
-        Log.Information($"Reply from rigctld: {reply}");
-        return reply;
-      }
-     
-      BadReply(reply);
-      return null;
-    }
-
-    private string? SendCommand(string command)
-    {
-      try
-      {
-        Log.Information($"Sending command to rigctld: {command}");
-        byte[] commandBytes = Encoding.ASCII.GetBytes(command + "\n");
-        TcpClient!.Client.Send(commandBytes);
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex, "Failed to send command to rigctld");
-        throw;
-      }
-
-      try
-      {
-        byte[] replyBytes = new byte[1024];
-        int replyByteCount = TcpClient.Client.Receive(replyBytes);
-        return Encoding.ASCII.GetString(replyBytes, 0, replyByteCount);
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex, "Failed to receive reply from rigctld");
-        throw;
-      }
-    }
-
-    private void BadReply(string reply)
-    {
-      Log.Error($"Unexpected reply from rigctld: {reply}");
-    }
-
-    private bool ReadPtt()
-    {
-      var reply = SendReadCommand(RadioInfo.commands.read_ptt!);
-      bool newPtt = reply == "1";
-      return newPtt;
-    }
-
-
-
-
-    //----------------------------------------------------------------------------------------------
     //                                      events
     //----------------------------------------------------------------------------------------------
-    protected void OnStatusChanged()
-    {
-      StatusChanged?.Invoke(this, EventArgs.Empty);
-    }
-
     protected void OnRxFrequencyChanged()
     {
       LogFreqs($"OnRxFrequencyChanged");
-      RxTuned?.Invoke(this, EventArgs.Empty);
+      syncContext.Post(s => RxTuned?.Invoke(this, EventArgs.Empty), null);
     }
 
     protected void OnTxFrequencyChanged()
     {
       LogFreqs($"OnTxFrequencyChanged");
-
-      TxTuned?.Invoke(this, EventArgs.Empty);
-    }
-
-
-
-
-    //----------------------------------------------------------------------------------------------
-    //                                      IDisposable
-    //----------------------------------------------------------------------------------------------
-    public virtual void Dispose()
-    {
-      Stop();
+      syncContext.Post(s => TxTuned?.Invoke(this, EventArgs.Empty), null);
     }
   }
 }

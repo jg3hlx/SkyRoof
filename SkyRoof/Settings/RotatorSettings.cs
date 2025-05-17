@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SkyRoof
 {
-  public class RotatorSettings
+  public class RotatorSettings : ControlEngineSettings
   {
     [DefaultValue(false)]
     public bool Enabled { get; set; } = false;
@@ -50,6 +50,5 @@ namespace SkyRoof
     [Description("The tracking step size, in degrees")]
     [DefaultValue(5)]
     public int Precision { get; set; } = 5;
-
   }
 }

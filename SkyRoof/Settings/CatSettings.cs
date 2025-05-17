@@ -8,25 +8,29 @@ using VE3NEA;
 
 namespace SkyRoof
 {
-  public class CatSettings
+  public class ControlEngineSettings
+  {
+    [DefaultValue(100)]
+    [Description("Delay between the command cycles, ms")]
+    public int Delay { get; set; } = 100;
+
+    [DisplayName("Log Traffic")]
+    [Description("Log command traffic for debugging")]
+    [DefaultValue(false)]
+    public bool LogTraffic { get; set; }
+  
+    public override string ToString() { return string.Empty; }
+  }
+
+  public class CatSettings : ControlEngineSettings
   {
     [DefaultValue(false)]
     [DisplayName("Ignore Dial Knob")]
     [Description("Tune only from the software")]
     public bool IgnoreDialKnob { get; set; } = false;
 
-    [DefaultValue(100)]
-    [Description("Delay between the CAT cycles, ms")]
-    public int Delay { get; set; } = 100;
-
-    [DisplayName("Log Traffic")]
-    [Description("Log CAT traffic for debugging")]
-    [DefaultValue(false)]
-    public bool LogTraffic { get; set; }
-
     [DisplayName("RX CAT")]
     [Description("RX CAT Control via rigctld.exe")]
-
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public CatRadioSettings RxCat { get; set; } = new();
 
@@ -34,16 +38,10 @@ namespace SkyRoof
     [Description("TX CAT Control via rigctld.exe")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public CatRadioSettings TxCat { get; set; } = new();
-
-
-    public override string ToString() { return string.Empty; }
   }
 
   public class CatRadioSettings
   {
-    [DefaultValue(false)]
-    public bool Enabled { get; set; }
-
     [DefaultValue("127.0.0.1")]
     [Description("rigctld host")]
     public string Host { get; set; } = "127.0.0.1";
@@ -52,6 +50,9 @@ namespace SkyRoof
     [Description("rigctld port")]
     [DefaultValue((ushort)4532)]
     public ushort Port { get; set; } = 4532;
+
+    [DefaultValue(false)]
+    public bool Enabled { get; set; }
 
     [TypeConverter(typeof(RadioModelConverter))]
     [DisplayName("Radio Model")]
