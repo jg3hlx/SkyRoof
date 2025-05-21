@@ -29,14 +29,16 @@ namespace SkyRoof
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
       SatelliteAzimuthLabel = new Label();
       label1 = new Label();
       label2 = new Label();
       SatelliteElevationLabel = new Label();
       TrackCheckbox = new CheckBox();
       AntennaElevationLabel = new Label();
-      AntennaBearingLabel = new Label();
+      AntennaAzimuthLabel = new Label();
       StopBtn = new Button();
+      toolTip1 = new ToolTip(components);
       SuspendLayout();
       // 
       // SatelliteAzimuthLabel
@@ -45,18 +47,19 @@ namespace SkyRoof
       SatelliteAzimuthLabel.Cursor = Cursors.Hand;
       SatelliteAzimuthLabel.Font = new Font("Microsoft Sans Serif", 16F);
       SatelliteAzimuthLabel.ForeColor = Color.Aqua;
-      SatelliteAzimuthLabel.Location = new Point(8, 20);
+      SatelliteAzimuthLabel.Location = new Point(8, 18);
       SatelliteAzimuthLabel.Name = "SatelliteAzimuthLabel";
       SatelliteAzimuthLabel.Size = new Size(59, 34);
       SatelliteAzimuthLabel.TabIndex = 28;
       SatelliteAzimuthLabel.Text = "180°";
       SatelliteAzimuthLabel.TextAlign = ContentAlignment.MiddleCenter;
+      toolTip1.SetToolTip(SatelliteAzimuthLabel, "Satellite Azimuth\r\n\r\nClick for manual rotator control");
       SatelliteAzimuthLabel.Click += AzEl_Click;
       // 
       // label1
       // 
       label1.AutoSize = true;
-      label1.Location = new Point(8, 3);
+      label1.Location = new Point(8, 1);
       label1.Name = "label1";
       label1.Size = new Size(52, 15);
       label1.TabIndex = 29;
@@ -65,7 +68,7 @@ namespace SkyRoof
       // label2
       // 
       label2.AutoSize = true;
-      label2.Location = new Point(75, 3);
+      label2.Location = new Point(75, 1);
       label2.Name = "label2";
       label2.Size = new Size(55, 15);
       label2.TabIndex = 31;
@@ -77,18 +80,19 @@ namespace SkyRoof
       SatelliteElevationLabel.Cursor = Cursors.Hand;
       SatelliteElevationLabel.Font = new Font("Microsoft Sans Serif", 16F);
       SatelliteElevationLabel.ForeColor = Color.Aqua;
-      SatelliteElevationLabel.Location = new Point(75, 20);
+      SatelliteElevationLabel.Location = new Point(75, 18);
       SatelliteElevationLabel.Name = "SatelliteElevationLabel";
       SatelliteElevationLabel.Size = new Size(59, 34);
       SatelliteElevationLabel.TabIndex = 30;
       SatelliteElevationLabel.Text = "90°";
       SatelliteElevationLabel.TextAlign = ContentAlignment.MiddleCenter;
+      toolTip1.SetToolTip(SatelliteElevationLabel, "Satellite Elevation\r\n\r\nClick for manual rotator control");
       SatelliteElevationLabel.Click += AzEl_Click;
       // 
       // TrackCheckbox
       // 
       TrackCheckbox.AutoSize = true;
-      TrackCheckbox.Location = new Point(146, 9);
+      TrackCheckbox.Location = new Point(146, 13);
       TrackCheckbox.Name = "TrackCheckbox";
       TrackCheckbox.Size = new Size(53, 19);
       TrackCheckbox.TabIndex = 32;
@@ -98,25 +102,29 @@ namespace SkyRoof
       // 
       // AntennaElevationLabel
       // 
-      AntennaElevationLabel.Location = new Point(75, 58);
+      AntennaElevationLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+      AntennaElevationLabel.Location = new Point(75, 56);
       AntennaElevationLabel.Name = "AntennaElevationLabel";
-      AntennaElevationLabel.Size = new Size(57, 15);
+      AntennaElevationLabel.Size = new Size(59, 15);
       AntennaElevationLabel.TabIndex = 34;
-      AntennaElevationLabel.Text = "36.1°";
+      AntennaElevationLabel.Text = "90.0°";
       AntennaElevationLabel.TextAlign = ContentAlignment.MiddleCenter;
+      toolTip1.SetToolTip(AntennaElevationLabel, "Antenna Elevation");
       // 
-      // AntennaBearingLabel
+      // AntennaAzimuthLabel
       // 
-      AntennaBearingLabel.Location = new Point(8, 58);
-      AntennaBearingLabel.Name = "AntennaBearingLabel";
-      AntennaBearingLabel.Size = new Size(57, 15);
-      AntennaBearingLabel.TabIndex = 33;
-      AntennaBearingLabel.Text = "178.5°";
-      AntennaBearingLabel.TextAlign = ContentAlignment.MiddleCenter;
+      AntennaAzimuthLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+      AntennaAzimuthLabel.Location = new Point(8, 56);
+      AntennaAzimuthLabel.Name = "AntennaAzimuthLabel";
+      AntennaAzimuthLabel.Size = new Size(59, 15);
+      AntennaAzimuthLabel.TabIndex = 33;
+      AntennaAzimuthLabel.Text = "360.0°";
+      AntennaAzimuthLabel.TextAlign = ContentAlignment.MiddleCenter;
+      toolTip1.SetToolTip(AntennaAzimuthLabel, "Antenna Azimuth");
       // 
       // StopBtn
       // 
-      StopBtn.Location = new Point(146, 42);
+      StopBtn.Location = new Point(146, 44);
       StopBtn.Name = "StopBtn";
       StopBtn.Size = new Size(53, 22);
       StopBtn.TabIndex = 35;
@@ -131,7 +139,7 @@ namespace SkyRoof
       BorderStyle = BorderStyle.FixedSingle;
       Controls.Add(StopBtn);
       Controls.Add(AntennaElevationLabel);
-      Controls.Add(AntennaBearingLabel);
+      Controls.Add(AntennaAzimuthLabel);
       Controls.Add(TrackCheckbox);
       Controls.Add(label2);
       Controls.Add(SatelliteElevationLabel);
@@ -150,8 +158,9 @@ namespace SkyRoof
     private Label label2;
     private Label SatelliteElevationLabel;
     private Label AntennaElevationLabel;
-    private Label AntennaBearingLabel;
+    private Label AntennaAzimuthLabel;
     private Button StopBtn;
     public CheckBox TrackCheckbox;
+    private ToolTip toolTip1;
   }
 }

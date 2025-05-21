@@ -1,4 +1,4 @@
-﻿namespace SkyRoof.Forms
+﻿namespace SkyRoof
 {
   partial class AzElEntryDialog
   {
@@ -121,6 +121,7 @@
       Controls.Add(panel1);
       FormBorderStyle = FormBorderStyle.FixedToolWindow;
       Name = "AzElEntryDialog";
+      ShowInTaskbar = false;
       StartPosition = FormStartPosition.Manual;
       Text = "Manual Rotator Control";
       panel1.ResumeLayout(false);

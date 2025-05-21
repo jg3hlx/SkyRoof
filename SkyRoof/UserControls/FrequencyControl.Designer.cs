@@ -56,6 +56,7 @@
       DownlinkFrequencyLabel = new Label();
       DownlinkLabel = new Label();
       TxBtn = new Button();
+      toolTip1 = new ToolTip(components);
       ((System.ComponentModel.ISupportInitialize)RitSpinner).BeginInit();
       ((System.ComponentModel.ISupportInitialize)UplinkManualSpinner).BeginInit();
       contextMenuStrip1.SuspendLayout();
@@ -407,5 +408,6 @@
     private ToolStripMenuItem ShowNominalFrequencyMNU;
     private ToolStripMenuItem ShowCorrectedFrequencyMNU;
     private Button TxBtn;
+    private ToolTip toolTip1;
   }
 }

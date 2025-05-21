@@ -44,6 +44,7 @@ namespace SkyRoof
       SettingsToRadioLink(false);
       RadioLinkToUi();
       ctx.CatControl.ApplySettings();
+      ctx.RotatorControl.SetSatellite(ctx.SatelliteSelector.SelectedSatellite);
       RadioLinkToRadio();
       ShowHideTxButton();
     }
@@ -53,6 +54,7 @@ namespace SkyRoof
       SettingsToRadioLink(true, frequency);
       RadioLinkToUi();
       ctx.CatControl.ApplySettings();
+      ctx.RotatorControl.SetSatellite(null);
       RadioLinkToRadio();
       ShowHideTxButton();
     }
@@ -375,6 +377,7 @@ namespace SkyRoof
         DownlinkFrequencyLabel.ForeColor = bright ? Color.Yellow : Color.Olive;
       else
         DownlinkFrequencyLabel.ForeColor = bright ? Color.White : Color.Gray;
+      toolTip1.SetToolTip(DownlinkFrequencyLabel, MakeDownlinkTooltip());
 
       // uplink
       bright = ctx.CatControl.Tx?.IsRunning ?? false;
@@ -386,10 +389,38 @@ namespace SkyRoof
         UplinkFrequencyLabel.ForeColor = bright ? Color.Yellow : Color.Olive;
       else
         UplinkFrequencyLabel.ForeColor = bright ? Color.White : Color.Gray;
+      toolTip1.SetToolTip(UplinkFrequencyLabel, MakeUplinkTooltip());
 
       ShowHideTxButton();    
     }
 
+    private string MakeUplinkTooltip()
+    {
+      if (RadioLink.UplinkFrequency == 0) return "No Uplink Frequency";
+
+      string tooltip = $"Nominal frequency:   {RadioLink.UplinkFrequency:n0} Hz\n";
+
+      if (!RadioLink.IsTerrestrial)
+        tooltip += $"Corrected frequency: {RadioLink.CorrectedUplinkFrequency:n0} Hz\n";
+
+      if (RadioLink.IsTransponder)
+        tooltip += $"Transponder offset:     {RadioLink.TransponderOffset:n0} Hz\n";
+
+      return tooltip + "\nRight-click for options";
+    }
+
+    private string MakeDownlinkTooltip()
+    {
+      string tooltip = $"Nominal frequency:   {RadioLink.DownlinkFrequency:n0} Hz\n";
+
+      if (!RadioLink.IsTerrestrial)
+        tooltip += $"Corrected frequency: {RadioLink.CorrectedDownlinkFrequency:n0} Hz\n";
+
+      if (RadioLink.IsTransponder)
+        tooltip += $"Transponder offset:     {RadioLink.TransponderOffset:n0} Hz\n";
+
+      return tooltip + "\nClick for manual entry\nRight-click for options";
+    }
 
     public void UiToRadioLink()
     {

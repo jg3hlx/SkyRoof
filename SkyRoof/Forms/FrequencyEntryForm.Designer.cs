@@ -72,6 +72,7 @@
       FormBorderStyle = FormBorderStyle.FixedToolWindow;
       Margin = new Padding(4, 3, 4, 3);
       Name = "FrequencyEntryForm";
+      ShowInTaskbar = false;
       StartPosition = FormStartPosition.Manual;
       Text = "Tune to Frequency";
       FormClosing += FrequencyEntryForm_FormClosing;

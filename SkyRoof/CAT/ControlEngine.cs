@@ -25,7 +25,7 @@ namespace SkyRoof
     public bool IsRunning {get; private set;}
 
 
-    public ControlEngine(string host, ushort port, ControlEngineSettings settings)
+    public ControlEngine(string host, ushort port, IControlEngineSettings settings)
     {
       Host = host;
       Port = port;
@@ -71,7 +71,7 @@ namespace SkyRoof
         while (!stopping)
           try
           {
-            SendCommands();
+            ReadWrite();
             Thread.Sleep(Delay);
           }
           catch (SocketException ex)
@@ -92,7 +92,7 @@ namespace SkyRoof
     }
 
     protected abstract bool Setup();
-    protected abstract void SendCommands();
+    protected abstract void ReadWrite();
 
 
 
@@ -175,7 +175,7 @@ namespace SkyRoof
       if (reply.EndsWith("\n"))
       {
         reply = reply.Substring(0, reply.Length - 1);
-        Log.Information($"Reply from rigctld: {reply}");
+        Log.Information($"Reply from rig/cat ctld: {reply}");
         return reply;
       }
 
@@ -187,13 +187,13 @@ namespace SkyRoof
     {
       try
       {
-        Log.Information($"Sending command to rigctld: {command}");
+        Log.Information($"Sending command to rig/cat ctld: {command}");
         byte[] commandBytes = Encoding.ASCII.GetBytes(command + "\n");
         TcpClient!.Client.Send(commandBytes);
       }
       catch (Exception ex)
       {
-        Log.Error(ex, "Failed to send command to rigctld");
+        Log.Error(ex, "Failed to send command to rig/cat ctld");
         throw;
       }
 
@@ -205,14 +205,14 @@ namespace SkyRoof
       }
       catch (Exception ex)
       {
-        Log.Error(ex, "Failed to receive reply from rigctld");
+        Log.Error(ex, "Failed to receive reply from rig/cat ctld");
         throw;
       }
     }
 
     protected void BadReply(string reply)
     {
-      Log.Error($"Unexpected reply from rigctld: {reply}");
+      Log.Error($"Unexpected reply from rig/cat ctld: {reply}");
     }
 
 

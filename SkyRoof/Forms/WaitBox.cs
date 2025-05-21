@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SkyRoof.Forms
+namespace VE3NEA
 {
   public partial class WaitBox : Form
   {

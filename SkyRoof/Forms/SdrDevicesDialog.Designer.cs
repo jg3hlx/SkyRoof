@@ -92,20 +92,20 @@ namespace SkyRoof
       // 
       DeviceListMenu.Items.AddRange(new ToolStripItem[] { SelectSdrMNU, DeleteSdrMNU });
       DeviceListMenu.Name = "PropertyGridMenu";
-      DeviceListMenu.Size = new Size(181, 70);
+      DeviceListMenu.Size = new Size(108, 48);
       DeviceListMenu.Opening += DeviceListMenu_Opening;
       // 
       // SelectSdrMNU
       // 
       SelectSdrMNU.Name = "SelectSdrMNU";
-      SelectSdrMNU.Size = new Size(180, 22);
+      SelectSdrMNU.Size = new Size(107, 22);
       SelectSdrMNU.Text = "Select";
       SelectSdrMNU.Click += SelectSdrMNU_Click;
       // 
       // DeleteSdrMNU
       // 
       DeleteSdrMNU.Name = "DeleteSdrMNU";
-      DeleteSdrMNU.Size = new Size(180, 22);
+      DeleteSdrMNU.Size = new Size(107, 22);
       DeleteSdrMNU.Text = "Delete";
       DeleteSdrMNU.Click += DeleteSdrMNU_Click;
       // 
@@ -153,6 +153,7 @@ namespace SkyRoof
       MaximizeBox = false;
       MinimizeBox = false;
       Name = "SdrDevicesDialog";
+      ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterParent;
       Text = "SDR Devices";
       FormClosing += SdrDevicesDialog_FormClosing;

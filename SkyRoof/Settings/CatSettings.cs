@@ -8,7 +8,13 @@ using VE3NEA;
 
 namespace SkyRoof
 {
-  public class ControlEngineSettings
+  public interface IControlEngineSettings
+  {
+    public int Delay {get; set; }
+    public bool LogTraffic { get; set; }
+  }
+
+  public class CatSettings : IControlEngineSettings
   {
     [DefaultValue(100)]
     [Description("Delay between the command cycles, ms")]
@@ -18,12 +24,7 @@ namespace SkyRoof
     [Description("Log command traffic for debugging")]
     [DefaultValue(false)]
     public bool LogTraffic { get; set; }
-  
-    public override string ToString() { return string.Empty; }
-  }
 
-  public class CatSettings : ControlEngineSettings
-  {
     [DefaultValue(false)]
     [DisplayName("Ignore Dial Knob")]
     [Description("Tune only from the software")]

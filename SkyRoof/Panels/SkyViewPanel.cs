@@ -16,6 +16,7 @@ namespace SkyRoof
     private readonly Image OkImage, XMarkImage, ArrowImage, SatImage;
     private readonly Brush BlueBrush = new SolidBrush(Color.FromArgb(230, 249, 255));
     private readonly Brush SilverBrush = new SolidBrush(Color.FromArgb(242, 242, 242));
+    private readonly Brush PinkBrush = new SolidBrush(Color.FromArgb(50, 255, 0, 0));
 
 
     public SkyViewPanel() { InitializeComponent(); }
@@ -118,11 +119,24 @@ namespace SkyRoof
       var g = e.Graphics;
       g.SmoothingMode = SmoothingMode.AntiAlias;
       DrawBackground(g);
+      DrawRotatorPosition(g);
 
       SatLabelRects.Clear();
 
       if (OrbitRadioBtn.Checked) DrawPass(g, Pass);
       else DrawRealTime(g);
+    }
+
+    private void DrawRotatorPosition(Graphics g)
+    {
+      if (!ctx.RotatorControl.IsRunning()) return;
+
+      var center = AzElToXY(ctx.RotatorControl.AntBearing.Azimuth * Geo.RinD, ctx.RotatorControl.AntBearing.Elevation * Geo.RinD);
+      float size = 4 * Math.Min(16, 0.04f * Radius + 5);
+
+      RectangleF rect = new(center.X - size / 2, center.Y - size / 2, size, size);
+      var brush = PinkBrush;
+      g.FillEllipse(brush, rect);
     }
 
     private void DrawBackground(Graphics g)
@@ -145,7 +159,7 @@ namespace SkyRoof
 
       // circles
       var pen = OrbitRadioBtn.Checked ? Pens.Gray : Pens.Teal;
-      for (float r = Radius / 3; r <= Radius; r += Radius / 3)
+      for (float r = Radius / 3; r <= 1.1 * Radius; r += Radius / 3)
       {
         rect = new RectangleF(Center.X - r, Center.Y - r, 2 * r, 2 * r);
         g.DrawEllipse(pen, rect);
@@ -275,8 +289,13 @@ namespace SkyRoof
 
     private PointF ObservationToXY(TopocentricObservation obs)
     {
-      double ro = 1 - obs.Elevation.Radians / Utils.HalfPi;
-      double phi = Utils.HalfPi - obs.Azimuth.Radians;
+      return AzElToXY(obs.Azimuth.Radians, obs.Elevation.Radians);
+    }
+
+    private PointF AzElToXY(double azimuth, double elevation)
+    {
+      double ro = 1 - elevation / Utils.HalfPi;
+      double phi = Utils.HalfPi - azimuth;
 
       return new PointF(
         Center.X + (float)(Radius * ro * Math.Cos(phi)),

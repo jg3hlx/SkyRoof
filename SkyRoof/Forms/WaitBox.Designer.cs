@@ -1,4 +1,4 @@
-﻿namespace SkyRoof.Forms
+﻿namespace VE3NEA
 {
   partial class WaitBox
   {

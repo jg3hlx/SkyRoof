@@ -7,8 +7,17 @@ using System.Threading.Tasks;
 
 namespace SkyRoof
 {
-  public class RotatorSettings : ControlEngineSettings
+  public class RotatorSettings : IControlEngineSettings
   {
+    [DefaultValue(100)]
+    [Description("Delay between the command cycles, ms")]
+    public int Delay { get; set; } = 300;
+
+    [DisplayName("Log Traffic")]
+    [Description("Log command traffic for debugging")]
+    [DefaultValue(false)]
+    public bool LogTraffic { get; set; }
+    
     [DefaultValue(false)]
     public bool Enabled { get; set; } = false;
 
@@ -49,6 +58,6 @@ namespace SkyRoof
     [DisplayName("Step Size")]
     [Description("The tracking step size, in degrees")]
     [DefaultValue(5)]
-    public int Precision { get; set; } = 5;
+    public int StepSize { get; set; } = 5;
   }
 }

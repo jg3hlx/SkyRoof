@@ -141,7 +141,10 @@ namespace SkyRoof
         ctx.MainForm.ShowCatStatus();
       }
 
-        ChangedFields.Clear();
+      if (ChangedFields.Exists(s => s.StartsWith("SkyRoof.RotatorSettings.")))
+        ctx.RotatorControl.ApplySettings(true);
+
+      ChangedFields.Clear();
     }
   }
 }

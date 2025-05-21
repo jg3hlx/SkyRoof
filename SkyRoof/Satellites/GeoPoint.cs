@@ -191,4 +191,26 @@
     public static bool operator ==(GeoPoint p2, GeoPoint p1) => p2.LatitudeRad == p1.LatitudeRad && p2.LongitudeRad == p1.LongitudeRad;
     public static bool operator !=(GeoPoint p2, GeoPoint p1) => p2.LatitudeRad != p1.LatitudeRad || p2.LongitudeRad != p1.LongitudeRad;
   }
+
+  public class Bearing
+  {
+    public double Azimuth { get; set; }
+    public double Elevation { get; set; }
+    public Bearing(double azimuth, double elevation)
+    {
+      Azimuth = azimuth;
+      Elevation = elevation;
+    }
+    public static bool operator ==(Bearing? b2, Bearing? b1) => b2?.Azimuth == b1?.Azimuth && b2?.Elevation == b1?.Elevation;
+    public static bool operator !=(Bearing? b2, Bearing? b1) => b2?.Azimuth != b1?.Azimuth || b2?.Elevation != b1?.Elevation;
+    public static double AngleBetween(Bearing b1, Bearing b2)
+    {
+      // haversine formula
+      double se = Math.Sin((b2.Elevation - b1.Elevation) * Geo.RinD / 2);
+      double ce = Math.Cos(b1.Elevation * Geo.RinD) * Math.Cos(b2.Elevation * Geo.RinD);
+      double sa = Math.Sin((b2.Azimuth - b1.Azimuth) * Geo.RinD / 2);
+      double a = se * se + ce * sa * sa;
+      return Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)) * 2 * Geo.DinR;
+    }
+  }
 }

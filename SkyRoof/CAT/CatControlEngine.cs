@@ -122,7 +122,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                        thread 
     //----------------------------------------------------------------------------------------------
-    protected override void SendCommands()
+    protected override void ReadWrite()
     {
       // will read PTT only if needed
       ptt = null; 

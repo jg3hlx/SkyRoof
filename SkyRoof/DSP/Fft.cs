@@ -1,14 +1,11 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using MathNet.Numerics;
-using SkyRoof.Forms;
 
 
 namespace VE3NEA
 {
   internal class Fft<T> : IDisposable
   {
-    private readonly int Size;
     private IntPtr InputPtr;
     private IntPtr OutputPtr;
     private IntPtr Plan;
@@ -21,8 +18,6 @@ namespace VE3NEA
 
     public Fft(int size, NativeFftw.FftwFlags flags = NativeFftw.FftwFlags.Patient)
     {
-      Size = size;
-
       // managed buffers visible to the calling code
       if (typeof(T) == typeof(float))
       {

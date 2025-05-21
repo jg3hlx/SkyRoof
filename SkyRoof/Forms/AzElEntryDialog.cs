@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using VE3NEA;
 
-namespace SkyRoof.Forms
+namespace SkyRoof
 {
   public partial class AzElEntryDialog : Form
   {
@@ -29,10 +21,10 @@ namespace SkyRoof.Forms
 
     private void SetupSpinners()
     {
-      AzimuthSpinner.Minimum = ctx.Settings.Rotator.MinAzimuth - ctx.Settings.Rotator.AzimuthOffset;
-      AzimuthSpinner.Maximum = ctx.Settings.Rotator.MaxAzimuth - ctx.Settings.Rotator.AzimuthOffset;
-      ElevationSpinner.Minimum = ctx.Settings.Rotator.MinElevation - ctx.Settings.Rotator.ElevationOffset;
-      ElevationSpinner.Maximum = ctx.Settings.Rotator.MaxElevation - ctx.Settings.Rotator.ElevationOffset;
+      AzimuthSpinner.Minimum = ctx.Settings.Rotator.MinAzimuth;
+      AzimuthSpinner.Maximum = ctx.Settings.Rotator.MaxAzimuth;
+      ElevationSpinner.Minimum = ctx.Settings.Rotator.MinElevation;
+      ElevationSpinner.Maximum = ctx.Settings.Rotator.MaxElevation;
     }
 
     private void OkBtn_Click(object sender, EventArgs e)
@@ -44,7 +36,8 @@ namespace SkyRoof.Forms
     private void StartRotation()
     {
       ctx.RotatorControl.TrackCheckbox.Checked = false;
-      ctx.RotatorControl.Go((int)AzimuthSpinner.Value, (int)ElevationSpinner.Value);
+      var bearing = new Bearing((double)AzimuthSpinner.Value, (double)ElevationSpinner.Value);
+      ctx.RotatorControl.RotateTo(bearing);
     }
   }
 }

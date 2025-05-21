@@ -680,10 +680,10 @@ namespace SkyRoof
 
     public void ShowRotatorStatus()
     {
-      if (!ctx.Settings.Rotator.Enabled) RotatorStatusLabel.ForeColor = Color.Gray;
-      else if (ctx.FrequencyControl.RadioLink.IsTerrestrial) RotatorStatusLabel.ForeColor = Color.Black;
-      else if (ctx.RotatorControl.IsRunning()) RotatorStatusLabel.ForeColor = Color.Lime;
-      else RotatorStatusLabel.ForeColor = Color.Red;
+      if (!ctx.Settings.Rotator.Enabled) RotatorLedLabel.ForeColor = Color.Gray;
+      else if (ctx.FrequencyControl.RadioLink.IsTerrestrial) RotatorLedLabel.ForeColor = Color.Black;
+      else if (ctx.RotatorControl.IsRunning()) RotatorLedLabel.ForeColor = Color.Lime;
+      else RotatorLedLabel.ForeColor = Color.Red;
 
       RotatorStatusLabel.ToolTipText = ctx.RotatorControl.GetStatusString();
     }
@@ -753,7 +753,7 @@ namespace SkyRoof
       Clock.ShowTime();
       ctx.SkyViewPanel?.Advance();
       ctx.WaterfallPanel?.ScaleControl?.Invalidate();
-      FrequencyControl?.ClockTick();
+      FrequencyControl.ClockTick();
     }
 
     private void OneSecondTick()
@@ -765,6 +765,8 @@ namespace SkyRoof
       ctx.CatControl.Rx?.Retry();
       ctx.CatControl.Tx?.Retry();
       ctx.Announcer.AnnouncePasses();
+      RotatorControl.Retry();
+      RotatorControl.Advance();
 
       ShowCpuUsage();
     }

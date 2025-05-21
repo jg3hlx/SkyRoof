@@ -1,47 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
+using VE3NEA;
 
 namespace SkyRoof
 {
   public class RotatorControlEngine : ControlEngine
   {
-    private bool enabled;
+    public Bearing? RequestedBearing, LastReadBearing, LastWrittenBearing;
+
+    public event EventHandler? BearingChanged;
 
     public RotatorControlEngine(RotatorSettings settings) : base(settings.Host, settings.Port, settings)
     {
-    
-    }
-    
-
-    public bool Enabled {get => enabled; set => SetEnabled(value); }
-
-    private void SetEnabled(bool value)
-    {
-      
-    }
-
-    public void Go(int azimuth, int elevation)
-    {
-    }
-
-    public void Stop()
-    {
-    }
-
-    protected override void SendCommands()
-    {
-     
+      StartThread();
     }
 
     protected override bool Setup()
     {
-      // nothing needs to be done here
-
       return true;
+    }
+
+    public void RotateTo(Bearing bearing)
+    {
+      RequestedBearing = bearing;
+    }
+
+    private void OnBearingChanged()
+    {
+      syncContext.Post(s => BearingChanged?.Invoke(this, EventArgs.Empty), null);
+    }
+
+    public void StopRotation()
+    {
+      if (TcpClient == null || !TcpClient.Connected) return;
+      RequestedBearing = LastWrittenBearing = null;
+      SendWriteCommand("S");
+    }
+
+    protected override void ReadWrite()
+    {
+      if (TcpClient == null || !TcpClient.Connected) return;
+      WriteBearing();
+      ReadBearing();
+    }
+
+    private void WriteBearing()
+    {
+      if (RequestedBearing == LastWrittenBearing) return;
+
+      SendWriteCommand($"P {RequestedBearing!.Azimuth:F1} {RequestedBearing.Elevation:F1}");
+      LastWrittenBearing = RequestedBearing;
+    }
+
+    private void ReadBearing()
+    {
+      var reply = SendReadCommand("p");
+      if (reply == null) return;
+
+      var parts = reply.Split('\n');
+      if (parts.Length != 2) { BadReply(reply); return; }
+      if (!double.TryParse(parts[0], out double azimuth)) { BadReply(reply); return; }
+      if (!double.TryParse(parts[1], out double elevation)) { BadReply(reply); return; }
+
+      var bearing = new Bearing(azimuth, elevation);
+      if ( bearing == LastReadBearing) return;
+
+      LastReadBearing = bearing;
+      OnBearingChanged();
     }
   }
 }

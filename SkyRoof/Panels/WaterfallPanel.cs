@@ -120,6 +120,7 @@ namespace SkyRoof
     private void WaterfallControl_Resize(object sender, EventArgs e)
     {
       ScaleControl.HistoryRowCount = WaterfallControl.Height;
+      ValidateWaterfallViewport();
     }
 
 

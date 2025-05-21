@@ -305,6 +305,8 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     public void BuildLabels()
     {
+      if (ctx == null) return;
+
       var now = DateTime.UtcNow;
       Labels.Clear();
 
