@@ -11,6 +11,7 @@ namespace SkyRoof
     private AzElEntryDialog Dialog = new();
     private SatnogsDbSatellite? Satellite;
     private Bearing SatBearing, LastWrittenBearing;
+    private bool WasAboveHorizon = false;
     public Bearing AntBearing { get => engine!.LastReadBearing; }
 
     public RotatorControl()
@@ -71,32 +72,36 @@ namespace SkyRoof
     {
       if (engine == null) return;
 
-      bearing = Sanitize(bearing);
-      engine.RotateTo(bearing);
-      LastWrittenBearing = bearing;
+      var sanitizedBearing = Sanitize(bearing);
+      engine.RotateTo(sanitizedBearing);
+      LastWrittenBearing = sanitizedBearing;
     }
 
     public void StopRotation()
     {
       TrackCheckbox.Checked = false;
+      WasAboveHorizon = false;
       engine?.StopRotation();
     }
 
     private Bearing Sanitize(Bearing bearing)
     {
       var sett = ctx.Settings.Rotator;
+      var sanitizedBearing = new Bearing(bearing.Azimuth, bearing.Elevation);
 
-      bearing.Azimuth += sett.AzimuthOffset;
-      bearing.Elevation += sett.ElevationOffset;
+      sanitizedBearing.Azimuth += sett.AzimuthOffset;
+      sanitizedBearing.Elevation += sett.ElevationOffset;
 
-      bearing.Azimuth = Math.Max(sett.MinAzimuth, Math.Min(bearing.Azimuth, sett.MaxAzimuth));
-      bearing.Elevation = Math.Max(sett.MinElevation, Math.Min(bearing.Elevation, sett.MaxElevation));
+      sanitizedBearing.Azimuth = Math.Max(sett.MinAzimuth, Math.Min(sanitizedBearing.Azimuth, sett.MaxAzimuth));
+      sanitizedBearing.Elevation = Math.Max(sett.MinElevation, Math.Min(sanitizedBearing.Elevation, sett.MaxElevation));
       
-      return bearing;
+      return sanitizedBearing;
     }
 
     public void SetSatellite(SatnogsDbSatellite? sat)
     {
+      if (sat == Satellite) return;
+
       Satellite = sat;
       engine?.StopRotation();
 
@@ -167,6 +172,9 @@ namespace SkyRoof
 
       var obs = ctx.SdrPasses.ObserveSatellite(Satellite, DateTime.UtcNow);
       SatBearing = new Bearing(obs.Azimuth.Degrees, obs.Elevation.Degrees);
+      
+      WasAboveHorizon = WasAboveHorizon || SatBearing.Elevation > 0;
+      if (WasAboveHorizon && SatBearing.Elevation < -3) StopRotation();
 
       if (engine != null && TrackCheckbox.Checked)
       {
@@ -184,7 +192,7 @@ namespace SkyRoof
       Color satColor = TrackCheckbox.Checked ? Color.Aqua : Color.Teal;
 
       bool trackError = TrackCheckbox.Checked && (!IsRunning() || Bearing.AngleBetween(SatBearing, AntBearing) > 1.5 * ctx.Settings.Rotator.StepSize);
-      Color antColor = trackError ? Color.Red : Color.Transparent;
+      Color antColor = trackError ? Color.LightCoral : Color.Transparent;
 
       SatelliteAzimuthLabel.ForeColor = satColor;
       SatelliteElevationLabel.ForeColor = satColor;
