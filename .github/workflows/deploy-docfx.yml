@@ -3,6 +3,8 @@ name: Deploy DocFX Site to GitHub Pages
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'docs/**'
 
 permissions:
   contents: write
