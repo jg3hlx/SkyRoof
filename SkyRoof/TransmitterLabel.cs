@@ -15,6 +15,7 @@
     public RectangleF Rect;
     internal float endX;
 
+
     public TransmitterLabel(SatellitePass pass, long freq)
     {
       Pass = pass;
