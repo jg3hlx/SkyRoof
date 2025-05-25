@@ -189,6 +189,8 @@ namespace SkyRoof
 
     private void BearingToUi()
     {
+      if (SatBearing == null) { ResetUi(); return; }
+        
       Color satColor = TrackCheckbox.Checked ? Color.Aqua : Color.Teal;
 
       bool trackError = TrackCheckbox.Checked && (!IsRunning() || Bearing.AngleBetween(SatBearing, AntBearing) > 1.5 * ctx.Settings.Rotator.StepSize);
