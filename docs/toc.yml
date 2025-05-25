@@ -1,2 +1,12 @@
-- name: User's Manual
-  href: users_manual/
+pdf: false
+items:
+    - name: Download
+      href: download.md
+    - name: Quick Start
+      href: quick_start.md
+    - name: User's Guide
+      href: users_guide/
+    - name: Source Code
+      href: https://github.com/VE3NEA/SkyRoof
+    - name: Credits
+      href: credits.md

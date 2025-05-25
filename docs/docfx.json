@@ -28,7 +28,9 @@
       "_appName": "SkyRoof",
       "_appTitle": "SkyRoof",
       "_enableSearch": true,
-      "pdf": true
+	  "pdfFileName": "skyroof_users_guide.pdf",
+	  "pdfTocPage": true,
+	  "pdfCoverPage": "users_guide/pdf_cover.html"
     },
   }
 }
