@@ -29,6 +29,7 @@
     private void InitializeComponent()
     {
       components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       Toolbar = new Panel();
       RotatorControl = new RotatorControl();
       panel7 = new Panel();
@@ -653,6 +654,7 @@
       Controls.Add(Toolbar);
       Controls.Add(menuStrip1);
       Controls.Add(StatusStrip);
+      Icon = (Icon)resources.GetObject("$this.Icon");
       MainMenuStrip = menuStrip1;
       Name = "MainForm";
       Text = "Form1";

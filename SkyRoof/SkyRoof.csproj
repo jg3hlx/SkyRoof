@@ -14,6 +14,7 @@
     <FileVersion></FileVersion>
     <Platforms>AnyCPU;x64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ApplicationIcon>SkyRoof.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -63,6 +64,7 @@
     <Content Include="..\Vendor\fontawesome-free-6.4.2-web\fa-solid-900.ttf" Link="fa-solid-900.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="SkyRoof.ico" />
   </ItemGroup>
 
   <ItemGroup>
