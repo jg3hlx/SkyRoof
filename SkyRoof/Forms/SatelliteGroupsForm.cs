@@ -87,7 +87,7 @@ namespace SkyRoof
     {
       var item = new ListViewItem([
         sat.name,
-        sat.norad_cat_id.ToString(),
+        sat.norad_cat_id!.ToString(),
         $"{sat.launched:yyyy-MM-dd}",
         string.Join(", ", sat.Transmitters.Select(t => t.service).Where(s=>s != "Unknown").Distinct().Order()),
         ]);

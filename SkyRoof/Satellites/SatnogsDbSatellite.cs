@@ -229,8 +229,6 @@ namespace SkyRoof
       AllNames.AddRange(JE9PEL_Callsigns);
 
       AllNames = AllNames.Distinct().Where(n => n != "").ToList();
-      SearchText = $"{MakeSearchText(string.Join("|", AllNames))}|{norad_cat_id}";
-
       SearchText = $"{string.Join("|", AllNames.Select(MakeSearchText))}|{norad_cat_id}";
     }
 

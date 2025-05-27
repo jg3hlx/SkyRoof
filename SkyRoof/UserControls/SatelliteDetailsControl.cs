@@ -63,7 +63,7 @@ namespace SkyRoof
         if (tx.IsVhf()) item.BackColor = Color.LightGoldenrodYellow;
         if (tx.IsUhf()) item.BackColor = Color.LightCyan;
         if (tx.service == "Amateur") item.Font = new(item.Font, FontStyle.Bold);
-        if (!tx.alive || tx.status != "active") item.ForeColor = Color.Silver; //item.Font = new(item.Font, FontStyle.Strikeout);
+        if (!tx.alive || tx.status != "active") item.ForeColor = Color.Silver; 
         
         // tooltip
         item.ToolTipText = tx.GetTooltipText();

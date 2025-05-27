@@ -67,8 +67,6 @@ namespace SkyRoof
 
       if (sat.Transmitters.Any(t => t.IsUhf() && t.HasUplink())) item.BackColor = Color.LightCyan;
       else if (sat.Transmitters.Any(t => t.IsVhf() && t.HasUplink())) item.BackColor = Color.LightGoldenrodYellow;
-      //if (sat.Flags.HasFlag(SatelliteFlags.Uhf)) item.BackColor = Color.LightCyan;
-      //else if (sat.Flags.HasFlag(SatelliteFlags.Vhf)) item.BackColor = Color.LightGoldenrodYellow;
 
       if (sat.Flags.HasFlag(SatelliteFlags.Ham)) item.Font = new(item.Font, FontStyle.Bold);
       if (!sat.status.StartsWith("alive")) item.ForeColor = Color.Silver;

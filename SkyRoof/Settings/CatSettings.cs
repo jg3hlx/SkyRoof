@@ -16,8 +16,8 @@ namespace SkyRoof
 
   public class CatSettings : IControlEngineSettings
   {
-    [DefaultValue(100)]
     [Description("Delay between the command cycles, ms")]
+    [DefaultValue(100)]
     public int Delay { get; set; } = 100;
 
     [DisplayName("Log Traffic")]
@@ -39,6 +39,8 @@ namespace SkyRoof
     [Description("TX CAT Control via rigctld.exe")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public CatRadioSettings TxCat { get; set; } = new();
+
+    public override string ToString() { return string.Empty; }
   }
 
   public class CatRadioSettings
@@ -58,6 +60,7 @@ namespace SkyRoof
     [TypeConverter(typeof(RadioModelConverter))]
     [DisplayName("Radio Type")]
     [Description("Defines the capabilities of the radio")]
+    [DefaultValue("Duplex Transceiver")]
     public string RadioType { get; set; } = "Duplex Transceiver";
 
     [DisplayName("Show Corrected Frequency")]
