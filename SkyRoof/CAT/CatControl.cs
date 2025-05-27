@@ -53,7 +53,7 @@
         && txCat.Enabled 
         && IsSameHost(rxCat.Host, txCat.Host) 
         && rxCat.Port == txCat.Port 
-        && rxCat.RadioModel == txCat.RadioModel;
+        && rxCat.RadioType == txCat.RadioType;
     }
 
     private bool IsSameHost(string host1, string host2)

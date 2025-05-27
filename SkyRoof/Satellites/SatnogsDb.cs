@@ -62,6 +62,7 @@ namespace SkyRoof
     internal void ReplaceSatelliteList(SatnogsDb db)
     {
       SatelliteList = db.SatelliteList;
+      loaded = SatelliteList.Count > 0;
       ListUpdated?.Invoke(this, EventArgs.Empty);
     }
 

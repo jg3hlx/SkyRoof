@@ -40,16 +40,14 @@ namespace SkyRoof
     public static RadioInfoList BuildRadioInfoList()
     {
       string path = Path.Combine(Utils.GetUserDataFolder(), "cat_info.json");
-      // todo: restore
-      //if (!File.Exists(path)) 
-      File.WriteAllBytes(path, Resources.cat_info);
+      if (!File.Exists(path)) File.WriteAllBytes(path, Resources.cat_info);
 
       return JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
     }
 
     public CatControlEngine(CatRadioSettings radioSettings, CatSettings catSettings) : base(radioSettings.Host, radioSettings.Port, catSettings)
     {
-      RadioInfo = BuildRadioInfoList().First(r => r.radio == radioSettings.RadioModel);
+      RadioInfo = BuildRadioInfoList().First(r => r.radio == radioSettings.RadioType);
     }
 
 

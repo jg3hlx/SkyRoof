@@ -56,9 +56,9 @@ namespace SkyRoof
     public bool Enabled { get; set; }
 
     [TypeConverter(typeof(RadioModelConverter))]
-    [DisplayName("Radio Model")]
+    [DisplayName("Radio Type")]
     [Description("Defines the capabilities of the radio")]
-    public string RadioModel { get; set; } = "IC-9700";
+    public string RadioType { get; set; } = "Duplex Transceiver";
 
     [DisplayName("Show Corrected Frequency")]
     [Description("Show the frequency with all corrections (True) or the nominal frequency (False)")]

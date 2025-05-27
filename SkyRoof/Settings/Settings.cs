@@ -56,7 +56,7 @@ namespace SkyRoof
       if (Ui.DockingLayoutString == null)
         Ui.DockingLayoutString = Encoding.UTF8.GetString(Properties.Resources.default_docking);
 
-      Satellites.Sanitize();
+      Satellites.Sanitize(true);
     }
   }
 }

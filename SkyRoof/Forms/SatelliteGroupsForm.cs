@@ -43,7 +43,7 @@ namespace SkyRoof
       // satellites to listview
       foreach (var sat in ctx.SatnogsDb.Satellites) AllItems.Add(ItemFromSat(sat));
       ApplyFilter();
-      UpdatedDateLabel.Text = $"Updated {updateTime:yyy-mm-dd}";
+      UpdatedDateLabel.Text = $"Updated {updateTime:yyyy-MM-dd}";
 
       // groups to treeview
       foreach (var group in ctx.Settings.Satellites.SatelliteGroups)
@@ -88,7 +88,7 @@ namespace SkyRoof
       var item = new ListViewItem([
         sat.name,
         sat.norad_cat_id.ToString(),
-        $"{sat.launched:yyyy-mm-dd}",
+        $"{sat.launched:yyyy-MM-dd}",
         string.Join(", ", sat.Transmitters.Select(t => t.service).Where(s=>s != "Unknown").Distinct().Order()),
         ]);
 

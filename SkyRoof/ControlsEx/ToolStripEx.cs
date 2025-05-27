@@ -1,4 +1,4 @@
-﻿namespace JTSkimmer
+﻿namespace VE3NEA
 {
   // react to the first click even if ToolStrip is not active. 
   public class ToolStripEx : ToolStrip

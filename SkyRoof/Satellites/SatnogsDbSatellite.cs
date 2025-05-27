@@ -274,7 +274,7 @@ namespace SkyRoof
           $"footprint: {Footprint} km\naltitude: {Altitude}";
       tooltipText += $"\nradio: {radio}";
       if (!string.IsNullOrEmpty(LotwName)) tooltipText += "\nAccepted by LoTW";
-      tooltipText += $"\nupdated: {updated:yyyy-mm-dd}";
+      tooltipText += $"\nupdated: {updated:yyyy-MM-dd}";
 
       return tooltipText;
     }

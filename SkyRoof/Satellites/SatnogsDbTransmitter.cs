@@ -46,7 +46,7 @@
       if (uplink_low != null) result += $"Uplink: {uplink}\n";
       result += $"Downlink: {downlink}\nMode: {mode}\n";
       if (uplink_low != null) result += $"Inverted: {invert}\n";
-      result += $"Service: {service}\nUpdated: {updated:yyyy-mm-dd}";
+      result += $"Service: {service}\nUpdated: {updated:yyyy-MM-dd}";
 
       return result;
     }

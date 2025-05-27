@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Permissions;
 using System.Security.Policy;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 /*
     "SatelliteGroups": [
@@ -38,7 +41,7 @@ namespace SkyRoof
 
     public Dictionary<string, SatelliteCustomization> SatelliteCustomizations = new();
     public Dictionary<string, TransmitterCustomization> TransmitterCustomizations = new();
-    
+
     public List<SatelliteGroup> SatelliteGroups = new();
     public string SelectedGroupId;
     public string SelectedSatelliteId;
@@ -52,19 +55,24 @@ namespace SkyRoof
       Sanitize();
     }
 
-    public void Sanitize()
+    public void Sanitize(bool useDefaultGroups = false)
     {
       // ensure groups are non-empty
       SatelliteGroups.RemoveAll(g => g.SatelliteIds.Count == 0);
 
-      // ensure that at least 1 group is present
       if (SatelliteGroups.Count == 0)
-      {
-        var group = new SatelliteGroup { Name = "Orbital Stations" };
-        group.SatelliteIds.Add("XSKZ-5603-1870-9019-3066"); // ISS
-        group.SatelliteIds.Add("AYDR - 6527 - 9294 - 8555 - 4924"); // CSS
-        SatelliteGroups.Add(group);
-      }
+        if (useDefaultGroups)
+        {
+          // default groups
+          string str = Encoding.UTF8.GetString(Properties.Resources.default_groups);
+          SatelliteGroups = JsonConvert.DeserializeObject<List<SatelliteGroup>>(str)!;
+        }
+        else
+          // ensure that at least 1 group is present
+          SatelliteGroups =
+            [new SatelliteGroup {Name = "Orbital Stations",
+              SatelliteIds = ["XSKZ-5603-1870-9019-3066", "AYDR-6527-9294-8555-4924"]}];
+
 
       // ensure there is a selected group
       var selectedGroup = SatelliteGroups.FirstOrDefault(g => g.Id == SelectedGroupId);
