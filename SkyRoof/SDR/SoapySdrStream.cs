@@ -81,6 +81,7 @@ namespace VE3NEA
       if (sampleCount < 0)
       {
         var errorCode = (SoapySdrError)sampleCount;
+        sampleCount = 0;
         if (errorCode == SoapySdrError.SOAPY_SDR_OVERFLOW) 
           Log.Error("SoapySDR readStream overflow");
         else

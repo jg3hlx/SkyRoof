@@ -175,7 +175,7 @@ namespace SkyRoof
       if (reply.EndsWith("\n"))
       {
         reply = reply.Substring(0, reply.Length - 1);
-        Log.Information($"Reply from rig/cat ctld: {reply}");
+        if (log) Log.Information($"Reply from rig/cat ctld: {reply}");
         return reply;
       }
 
@@ -187,7 +187,7 @@ namespace SkyRoof
     {
       try
       {
-        Log.Information($"Sending command to rig/cat ctld: {command}");
+        if (log) Log.Information($"Sending command to rig/cat ctld: {command}");
         byte[] commandBytes = Encoding.ASCII.GetBytes(command + "\n");
         TcpClient!.Client.Send(commandBytes);
       }
