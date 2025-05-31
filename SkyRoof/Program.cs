@@ -7,9 +7,12 @@ namespace SkyRoof
     [STAThread]
     static void Main()
     {
-      ExceptionLogger.Initialize();
-      ApplicationConfiguration.Initialize();
-      Application.Run(new MainForm());
+      using (new SingleInstanceEnforcer())
+      {
+        ExceptionLogger.Initialize(); ExceptionLogger.Initialize();
+        ApplicationConfiguration.Initialize();
+        Application.Run(new MainForm());
+      }
     }
   }
 }
