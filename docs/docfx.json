@@ -4,7 +4,7 @@
     "content": [
       {
         "files": [
-          "**/*.{md,yml}"
+          "**/*.{md,htm,html,yml}"
         ],
         "exclude": [
           "_site/**"
@@ -25,12 +25,15 @@
 	  "templates/my-template"
     ],
     "globalMetadata": {
-      "_appName": "SkyRoof",
+      "_appName": "  kyRoof",
       "_appTitle": "SkyRoof",
-      "_enableSearch": true,
+      "_appLogoPath": "images/s_over_the_globe.svg",
+      "_appFaviconPath": "images/SkyRoof.ico",      
+	  "_enableSearch": true,
 	  "pdfFileName": "skyroof_users_guide.pdf",
 	  "pdfTocPage": true,
-	  "pdfCoverPage": "users_guide/pdf_cover.html"
+	  "pdfCoverPage": "users_guide/pdf_cover.html",
+	  "_disableContribution": true,
     },
   }
 }

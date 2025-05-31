@@ -1,41 +1,43 @@
-Introduction
-  Overview
-  Data Folder 
-  Satellite Data
++ Overview
++ System Requirements
   
 Setting Up
-  First Run
-  Creating Satellite Groups
-  Configuring Window Layout
-  Setting Up SDR
-  Calibrating PPM Correction
-  Setting Up CAT Control
-  Setting Up Rotator Control
+  + Quick Start
+  + Creating Satellite Groups
+  + Configuring the Window Layout
+  + Setting Up SDR
+  + Calibrating PPM Correction
+  + Setting Up Audio
+  + Setting Up Voice Announcements
+  + Setting Up CAT Control
+  + Setting Up Rotator Control
   
 User Interface
-  Satellites and Groups
-  SDR Devices
-  Settings
+  + Satellites and Groups Window
+  + Satellite Details Window
+  + Color Highlighting  
+  + Settings Window
   
-  Panels
-    Satellite Selection Panel
-    Frequency Control Panel
-    Gain Control Panel
-    Antenna Rotator Panel
+  Toolbar
+    + Satellite Selector
+    + Frequency Control
+    + Gain Control
+    + Rotator Control
 	
-  Windows
-    Current Group
-	Satellite Details
-	Satellite Transmitters
-	Satellite Passes
-	Frequency Scale
-	Waterfall Display
-	Time Line
-	Sky View
-	Earth View	
+  Panels
+    + Current Group
+  	+ Satellite Details
+  	+ Satellite Transmitters
+  	+ Satellite Passes
+  	+ Frequency Scale
+  	+ Waterfall Display
+  	+ Time Line
+  	+ Sky View
+  	+ Earth View	
   
-Operating
-  Browsing the Bands
-  Working the Satellites
-  Using External Programs
+Miscellaneous
+  Satellite Data
+  + Doppler Tracking
+  + User Data Folder 
+  
   
