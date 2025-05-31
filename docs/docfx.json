@@ -34,6 +34,7 @@
 	  "pdfTocPage": true,
 	  "pdfCoverPage": "users_guide/pdf_cover.html",
 	  "_disableContribution": true,
-    },
+    "_googleAnalyticsTagId": "G-1MMW827H44"
+    }
   }
 }
