@@ -14,7 +14,7 @@ _Copyright &copy; 2025 Alex Shovkoplyas, VE3NEA_
 
 ![email](images/email_me.png)
 
-<br><br><br><br>
+<br><br><br>
 [
 ![Main Window](images/main_window_TH.png)
 ](images/main_window.png)
