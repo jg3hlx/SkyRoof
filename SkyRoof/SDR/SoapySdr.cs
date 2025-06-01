@@ -41,7 +41,7 @@ namespace VE3NEA
       IntPtr nativeKwargs = kwArgs.ToNative();
       var device = NativeSoapySdr.SoapySDRDevice_make(nativeKwargs);
       Marshal.FreeHGlobal(nativeKwargs);
-      SoapySdr.CheckError();
+      CheckError();
       return device;
     }
 

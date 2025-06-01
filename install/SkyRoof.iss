@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SkyRoof"
-#define MyAppVersion "1.0 beta"
+#define MyAppVersion "1.1 beta"
 #define MyAppPublisher "Alex VE3NEA"
 #define MyAppURL "https://ve3nea.github.io/SkyRoof"
 #define MyAppExeName "SkyRoof.exe"
@@ -43,7 +43,6 @@ Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.exe; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.pdb; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.runtimeconfig.json; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SoapySDR.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SoapySDR.pdb; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Drawing.Common.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Private.Windows.Core.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Speech.dll; DestDir: {app}
@@ -51,12 +50,9 @@ Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\WeifenLuo.WinFormsUI.Dockin
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\airspy.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\airspySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\airspySupport.pdb; DestDir: {app}\lib\SoapySDR\modules0.8-3
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\rtlsdr.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\rtlsdrSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\rtlsdrSupport.pdb; DestDir: {app}\lib\SoapySDR\modules0.8-3
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\sdrPlaySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\sdrPlaySupport.pdb; DestDir: {app}\lib\SoapySDR\modules0.8-3
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll; DestDir: {app}\runtimes\win\lib\net9.0
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\System.Speech.dll; DestDir: {app}\runtimes\win\lib\net9.0
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\CSCore.dll; DestDir: {app}
@@ -64,7 +60,6 @@ Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\fa-solid-900.ttf; DestDir: 
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libfftw3f-3.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libgcc_s_sjlj-1.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libliquid.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libliquid.pdb; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libusb-1.0.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\MathNet.Filtering.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\MathNet.Numerics.dll; DestDir: {app}
@@ -89,6 +84,8 @@ Filename: {app}\{#MyAppExeName}; Description: {cm:LaunchProgram,{#StringChange(M
 function InitializeSetup: Boolean;
 begin
   Dependency_AddDotNet90Desktop;
+  Dependency_AddVC2015To2022;
+
   Result := True;
 end;
 [Dirs]

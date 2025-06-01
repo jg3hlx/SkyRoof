@@ -1,11 +1,13 @@
 ﻿using System.Diagnostics;
 using Serilog;
 using SharpGL;
+using SkyRoof;
 
 namespace VE3NEA
 {
   public class ExceptionLogger
   {
+    // private static StderrInterceptor StderrInterceptor = new();
     public static void Initialize()
     {
       string fileName = Path.Combine(Utils.GetUserDataFolder(), "Logs", "log_.txt");
@@ -17,6 +19,11 @@ namespace VE3NEA
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
       Log.Information($"Starting {typeof(Utils).Assembly.GetName().FullName}");
+
+
+      // intercept messages written to stderr by the c++ DLL
+      //  StderrInterceptor.StderrReceived += (sender, message) => Log.Error("Received from DLL stderr: " + message);
+      //  StderrInterceptor.RedirectStderr();
     }
 
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof.zip v.1.00 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.00-beta/SkyRoof.zip)
+[SkyRoof.zip v.1.1 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.1-beta/SkyRoof.zip)
 
 <br>
 
@@ -16,6 +16,10 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 
 ### Release Notes
 
-#### v.1.00 Beta
+#### v.1.1 Beta
+
+- missing DLL's added to the installer.
+
+#### v.1.0 Beta
 
 - the first public release.
