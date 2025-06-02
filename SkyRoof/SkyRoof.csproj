@@ -68,9 +68,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\Forks\SoapySDR\build\lib\Release\SoapySDR.dll" Link="SoapySDR.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="..\Vendor\fftw-3.3.5\libfftw3f-3.dll" Link="libfftw3f-3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -89,19 +86,19 @@
     <None Include="..\Vendor\SoapySDR\pthreadVC2.dll" Link="pthreadVC2.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\Vendor\SoapySDR\SDR\airspy.dll" Link="lib\SoapySDR\modules0.8-3\airspy.dll">
+    <None Include="..\Vendor\SoapySDR\SDR\airspy.dll" Link="lib\SoapySDR\modules0.8\airspy.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\Vendor\SoapySDR\SDR\airspySupport.dll" Link="lib\SoapySDR\modules0.8-3\airspySupport.dll">
+    <None Include="..\Vendor\SoapySDR\SDR\airspySupport.dll" Link="lib\SoapySDR\modules0.8\airspySupport.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\Vendor\SoapySDR\SDR\rtlsdr.dll" Link="lib\SoapySDR\modules0.8-3\rtlsdr.dll">
+    <None Include="..\Vendor\SoapySDR\SDR\rtlsdr.dll" Link="lib\SoapySDR\modules0.8\rtlsdr.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\Vendor\SoapySDR\SDR\rtlsdrSupport.dll" Link="lib\SoapySDR\modules0.8-3\rtlsdrSupport.dll">
+    <None Include="..\Vendor\SoapySDR\SDR\rtlsdrSupport.dll" Link="lib\SoapySDR\modules0.8\rtlsdrSupport.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\Vendor\SoapySDR\SDR\sdrPlaySupport.dll" Link="lib\SoapySDR\modules0.8-3\sdrPlaySupport.dll">
+    <None Include="..\Vendor\SoapySDR\SDR\sdrPlaySupport.dll" Link="lib\SoapySDR\modules0.8\sdrPlaySupport.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

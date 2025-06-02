@@ -5,7 +5,7 @@ namespace VE3NEA
 {
   public static class SoapySdr
   {
-    public static string ABIVersion => "0.8-3";
+    public static string ABIVersion => "0.8";
 
     static SoapySdr()
     {
