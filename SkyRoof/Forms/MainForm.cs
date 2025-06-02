@@ -62,7 +62,6 @@ namespace SkyRoof
       ctx.Settings.Ui.RestoreDockingLayout(this);
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
 
-      SetupDsp();
       StartSdrIfEnabled();
     }
 
@@ -105,14 +104,21 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                        sdr
     //----------------------------------------------------------------------------------------------
-    internal WidebandSpectrumAnalyzer SpectrumAnalyzer;
+    internal WidebandSpectrumAnalyzer? SpectrumAnalyzer;
 
-    private void SetupDsp()
+    public void CreateSpectrumAnalyzer()
     {
       Fft<Complex32>.LoadWisdom(Path.Combine(Utils.GetUserDataFolder(), "wsjtx_wisdom.dat"));
 
-      SpectrumAnalyzer = new(WaterfallControl.SPECTRA_WIDTH, 6_000_000);
+      SpectrumAnalyzer = new(ctx.WaterfallPanel!.WaterfallControl.SpectraWidth, 6_000_000);
       SpectrumAnalyzer.SpectrumAvailable += Spect_SpectrumAvailable;
+    }
+
+    public void DestroySpectrumAnalyzer()
+    {
+      SpectrumAnalyzer!.SpectrumAvailable -= Spect_SpectrumAvailable;
+      SpectrumAnalyzer.Dispose();
+      SpectrumAnalyzer = null;
     }
 
     private void Spect_SpectrumAvailable(object? sender, DataEventArgs<float> e)

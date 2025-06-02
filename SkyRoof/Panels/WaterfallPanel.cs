@@ -23,6 +23,7 @@ namespace SkyRoof
       ctx.MainForm.WaterfallMNU.Checked = true;
 
       SplitContainer.SplitterDistance = ctx.Settings.Waterfall.SplitterDistance;
+      ctx.MainForm.CreateSpectrumAnalyzer();
       ApplySettings();
       ctx.MainForm.ConfigureWaterfall();
 
@@ -42,6 +43,7 @@ namespace SkyRoof
 
     private void WaterfallPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
+      ctx.MainForm.DestroySpectrumAnalyzer();
       ctx.WaterfallPanel = null;
       ctx.MainForm.WaterfallMNU.Checked = false;
 

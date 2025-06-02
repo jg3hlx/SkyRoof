@@ -48,11 +48,11 @@ Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Private.Windows.Core
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Speech.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\WeifenLuo.WinFormsUI.Docking.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\airspy.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\airspySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\rtlsdr.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\rtlsdrSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8-3\sdrPlaySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspy.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdr.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdrSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\sdrPlaySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll; DestDir: {app}\runtimes\win\lib\net9.0
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\System.Speech.dll; DestDir: {app}\runtimes\win\lib\net9.0
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\CSCore.dll; DestDir: {app}

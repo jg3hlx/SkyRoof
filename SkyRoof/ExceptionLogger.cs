@@ -12,7 +12,12 @@ namespace VE3NEA
     {
       string fileName = Path.Combine(Utils.GetUserDataFolder(), "Logs", "log_.txt");
       Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
-          .WriteTo.File(fileName, rollingInterval: RollingInterval.Day, fileSizeLimitBytes: (int)10e6, retainedFileCountLimit: 10).CreateLogger();
+          .WriteTo.File(fileName, 
+            rollingInterval: RollingInterval.Day, 
+            fileSizeLimitBytes: 1_000_000, 
+            retainedFileCountLimit: 10,
+            shared: true
+           ).CreateLogger();
 
       Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
       AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);

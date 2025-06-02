@@ -17,12 +17,11 @@ namespace SkyRoof
   {
     static bool OpenglInfoNeeded = true;
 
-    private const int TEXTURE_WIDTH = 32768; // opengl limit
-    private const int TEXTURE_FOLD = 4;      // one spectrum takes 4 rows in the texture
-    private const int SPECTRA_HEIGHT = 2048; // full screen height for most screen sizes
-
-    public const int SPECTRA_WIDTH = TEXTURE_WIDTH * TEXTURE_FOLD;
-    private const int TEXTURE_HEIGHT = SPECTRA_HEIGHT * TEXTURE_FOLD;
+    private int TextureWidth;
+    private int TextureFold;
+    private int SpectraHeight;
+    public int SpectraWidth;
+    private int TextureHeight;
     
     
     private VertexBufferArray VertexBufferArray;
@@ -57,8 +56,9 @@ namespace SkyRoof
       CheckError(gl, false);
 
       LogOpenglInformation();
+      ChooseTextureSize();
 
-      gl.Disable(OpenGL.GL_DEPTH_TEST);
+    gl.Disable(OpenGL.GL_DEPTH_TEST);
       CheckError(gl);
 
       ShaderProgram = new ShaderProgram();
@@ -78,7 +78,7 @@ namespace SkyRoof
       gl.Uniform1(ShaderProgram.GetUniformLocation(gl, "paletteTexture"), 1);
       CheckError(gl);
 
-      IndexedTexture = new(OpenglControl.OpenGL, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+      IndexedTexture = new(OpenglControl.OpenGL, TextureWidth, TextureHeight);
       SetPalette(Palette);
 
       CreateVba(gl);
@@ -106,6 +106,30 @@ namespace SkyRoof
       str = gl.GetString(OpenGL.GL_SHADING_LANGUAGE_VERSION​);
       if (gl.GetError() != OpenGL.GL_NO_ERROR) str = "<Error>";
       Log.Information($"OpenGL shading language: {str}");
+
+      int[] maxTextureSize = new int[1];
+      gl.GetInteger(OpenGL.GL_MAX_TEXTURE_SIZE, maxTextureSize);
+      Log.Information("OpenGL max. texture size: " + maxTextureSize[0]);
+    }
+
+    internal void ChooseTextureSize()
+    {
+      // max texture size
+      int[] maxTextureSize = new int[1];
+      OpenglControl.OpenGL.GetInteger(OpenGL.GL_MAX_TEXTURE_SIZE, maxTextureSize);
+
+      // screen hight
+      int screenHeight = Screen.AllScreens.Max(s => s.Bounds.Height);
+
+      // set texture size
+      TextureWidth = maxTextureSize[0];
+      SpectraHeight = screenHeight > 1280 ? 2048 : 1024;
+      int maxTextureFold = maxTextureSize[0] / SpectraHeight;
+      SpectraWidth = Math.Min(1<<17, TextureWidth * maxTextureFold); // spectrum width up to 128K
+      TextureFold = SpectraWidth / TextureWidth;
+      TextureHeight = SpectraHeight * TextureFold;
+
+      Log.Information($"Waterfall textue: {TextureWidth}x{TextureHeight}, spectra: {SpectraWidth}x{SpectraHeight}, fold: {TextureFold}");
     }
 
     internal void SetPalette(Palette palette)
@@ -175,7 +199,7 @@ namespace SkyRoof
       CheckError(gl);
 
       //UpdateScrollPosOnDraw();
-      float scrollHeight = OpenglControl.Size.Height / (float)SPECTRA_HEIGHT;
+      float scrollHeight = OpenglControl.Size.Height / (float)SpectraHeight;
 
       // a bug in SharpGL prevents ShaderProgram.SetUniform1 from setting int 
       gl.Uniform1(ShaderProgram.GetUniformLocation(gl, "in_ScreenWidth"), OpenglControl.Size.Width);
@@ -193,6 +217,13 @@ namespace SkyRoof
       ShaderProgram.SetUniform1(gl, "in_Brightness", computeBrightness());
       CheckError(gl);
       ShaderProgram.SetUniform1(gl, "in_Contrast", Contrast);
+      CheckError(gl);
+
+      gl.Uniform1(ShaderProgram.GetUniformLocation(gl, "in_TextureFold"), TextureFold);
+      CheckError(gl);
+      gl.Uniform1(ShaderProgram.GetUniformLocation(gl, "in_TextureWidth"), TextureWidth);
+      CheckError(gl);
+      gl.Uniform1(ShaderProgram.GetUniformLocation(gl, "in_SpectraHeight"), SpectraHeight);
       CheckError(gl);
 
       gl.DrawArrays(OpenGL.GL_TRIANGLE_STRIP, 0, 4);
@@ -246,11 +277,11 @@ namespace SkyRoof
 
       BeginInvoke(() =>
       {
-        IndexedTexture.SetRows(Row * TEXTURE_FOLD, TEXTURE_FOLD, spectrumCopy);
+        IndexedTexture.SetRows(Row * TextureFold, TextureFold, spectrumCopy);
         ArrayPool.Return(spectrumCopy);
 
-        if (++Row == SPECTRA_HEIGHT) Row = 0;
-        ScrollPos = Row / (float)SPECTRA_HEIGHT;
+        if (++Row == SpectraHeight) Row = 0;
+        ScrollPos = Row / (float)SpectraHeight;
         OpenglControl.Invalidate();
       });
     }

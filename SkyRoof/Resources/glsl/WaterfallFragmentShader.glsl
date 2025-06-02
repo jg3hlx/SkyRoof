@@ -11,34 +11,32 @@ uniform float in_ScrollPos;
 uniform float in_ScrollHeight;
 uniform float in_Brightness;
 uniform float in_Contrast;
+uniform int   in_TextureFold;
+uniform int   in_TextureWidth;
+uniform int   in_SpectraHeight;
 
 out vec4 out_Color;
-
-const int TEXTURE_FOLD = 4;
-const int TEXTURE_WIDTH = 32768;
-const int SPECTRA_HEIGHT = 2048;
-
-const int SPECTRA_WIDTH = TEXTURE_WIDTH * TEXTURE_FOLD;
-const int TEXTURE_HEIGHT = SPECTRA_HEIGHT * TEXTURE_FOLD;
 
 float sample_texture(int x, int y)
 {
   // a scpectrum is stored in 4 rows of texture.
   // convert index-into-spectra to index-into-texture
-  int texelX = x % TEXTURE_WIDTH;
-	int texelY = y * TEXTURE_FOLD + x / TEXTURE_WIDTH;
+  int texelX = x % in_TextureWidth;
+	int texelY = y * in_TextureFold + x / in_TextureWidth;
 
   return texelFetch(indexedTexture, ivec2(texelX, texelY), 0).r;
 }
 
 void main(void) 
 {
+  int spectraWidth = in_TextureWidth * in_TextureFold;
+
   // y coordinate in the spectra after scrolling
   float spectraYfloat = fract(2 - pass_PixCoord.t * in_ScrollHeight + in_ScrollPos);
-  int spectraY = int(SPECTRA_HEIGHT * spectraYfloat);	
+  int spectraY = int(in_SpectraHeight * spectraYfloat);	
 	
 	// texels per pixel: stretch or shrink factor
-	float scale = SPECTRA_WIDTH / float(in_ScreenWidth * in_zoom);	
+	float scale = spectraWidth / float(in_ScreenWidth * in_zoom);	
 	float luminance = 0;
 
 	if (scale > 1)
@@ -53,7 +51,7 @@ void main(void)
 	else
 	{
 		// stretch: interpolate between 2 texels
-		float spectraX = pass_PixCoord.s * SPECTRA_WIDTH;
+		float spectraX = pass_PixCoord.s * spectraWidth;
 		int spectraXint = int(spectraX);
 		float a = spectraX - spectraXint;
 		float v1 = sample_texture(spectraXint, spectraY);

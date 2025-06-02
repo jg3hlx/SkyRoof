@@ -9,27 +9,30 @@ namespace SkyRoof
     public float Median;
     public event EventHandler<DataEventArgs<float>>? SpectrumAvailable;
 
-    internal readonly Spectrum<Complex32> Spectrum;
+    internal Spectrum<Complex32>? Spectrum;
 
 
     internal WidebandSpectrumAnalyzer(int size, int step)
     {
-      Spectrum = new(size, step, 2);
+      Spectrum = new(size, step, 4);
       Spectrum.SpectrumAvailable += Spectrum_SpectrumAvailable;
     }
 
     public override void Dispose()
     {
-      Spectrum.Dispose();
+      base.Dispose();
+      Spectrum?.Dispose();
+      Spectrum = null;
     }
 
     protected override void Process(DataEventArgs<Complex32> args)    
     {
-      Spectrum.Process(args);
+      Spectrum?.Process(args);
     }
 
     private void Spectrum_SpectrumAvailable(object? sender, DataEventArgs<float> e)
     {
+      if (Spectrum == null) return;
       Median = FilterMedian(Spectrum.FastMedian);
       SpectrumAvailable?.Invoke(this, e);
     }
