@@ -1,12 +1,16 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Serilog;
 using SharpGL;
 using SkyRoof;
+using VE3NEA;
 
 namespace VE3NEA
 {
   public class ExceptionLogger
   {
+    private static NativeSoapySdr.SoapySDRLogHandlerDelegate LogHandlerDelegate = new(SoapySdrLogHandler);
+
     // private static StderrInterceptor StderrInterceptor = new();
     public static void Initialize()
     {
@@ -25,10 +29,8 @@ namespace VE3NEA
 
       Log.Information($"Starting {typeof(Utils).Assembly.GetName().FullName}");
 
-
-      // intercept messages written to stderr by the c++ DLL
-      //  StderrInterceptor.StderrReceived += (sender, message) => Log.Error("Received from DLL stderr: " + message);
-      //  StderrInterceptor.RedirectStderr();
+      NativeSoapySdr.SoapySDR_registerLogHandler(LogHandlerDelegate);
+      //NativeSoapySdr.SoapySDR_setLogLevel(NativeSoapySdr.SoapySDRLogLevel.SOAPY_SDR_DEBUG);
     }
 
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -45,7 +47,7 @@ namespace VE3NEA
 
     private static DialogResult ShowDialog(Exception e)
     {
-      string errorMessage = $"Exception: {e.Message}\nModule: {e.Source} \nFunction: {e.TargetSite}"; // + "\n\nStack Trace:\n" + e.StackTrace;
+      string errorMessage = $"Exception: {e.Message}\nModule: {e.Source} \nFunction: {e.TargetSite}";
       return MessageBox.Show(errorMessage, AppDomain.CurrentDomain.FriendlyName, MessageBoxButtons.AbortRetryIgnore,
           MessageBoxIcon.Stop);
     }
@@ -63,6 +65,17 @@ namespace VE3NEA
           Log.Error(message);
           Debug.WriteLine(message);
         }
+    }
+
+    public static void SoapySdrLogHandler(NativeSoapySdr.SoapySDRLogLevel logLevel, IntPtr messagePtr)
+    {
+      try
+      {
+        if (messagePtr == IntPtr.Zero) return;
+        string message = Marshal.PtrToStringAnsi(messagePtr)!;
+        Log.Information($"[{logLevel}]: {message}");
+      }
+      catch { }
     }
   }
 }

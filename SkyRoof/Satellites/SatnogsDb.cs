@@ -35,7 +35,10 @@ namespace SkyRoof
 
       try
       {
+        loaded = false;
         string path = Path.Combine(DataFolder, "Satellites.json");
+        if (!File.Exists(path)) return;
+
         string json = File.ReadAllText(path);
         var satellites = JsonConvert.DeserializeObject<SatnogsDbSatelliteList>(json);
         SatelliteList = satellites.ToDictionary(s => s.sat_id);

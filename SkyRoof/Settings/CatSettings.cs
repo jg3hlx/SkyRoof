@@ -60,8 +60,8 @@ namespace SkyRoof
     [TypeConverter(typeof(RadioModelConverter))]
     [DisplayName("Radio Type")]
     [Description("Defines the capabilities of the radio")]
-    [DefaultValue("Duplex Transceiver")]
-    public string RadioType { get; set; } = "Duplex Transceiver";
+    [DefaultValue("Duplex transceiver")]
+    public string RadioType { get; set; } = "Duplex transceiver";
 
     [DisplayName("Show Corrected Frequency")]
     [Description("Show the frequency with all corrections (True) or the nominal frequency (False)")]

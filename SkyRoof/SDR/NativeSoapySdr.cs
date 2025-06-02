@@ -32,7 +32,19 @@ namespace VE3NEA
       SOAPY_SDR_UNDERFLOW = -7
     }
 
-    public struct SoapySDRKwargs
+    public enum SoapySDRLogLevel
+    {
+      SOAPY_SDR_FATAL = 1,
+      SOAPY_SDR_CRITICAL = 2,
+      SOAPY_SDR_ERROR = 3,
+      SOAPY_SDR_WARNING = 4,
+      SOAPY_SDR_NOTICE = 5,
+      SOAPY_SDR_INFO = 6,
+      SOAPY_SDR_DEBUG = 7,
+      SOAPY_SDR_TRACE = 8,
+      SOAPY_SDR_SSI = 9
+    }
+  public struct SoapySDRKwargs
     {
       public int size;
       public IntPtr keys;
@@ -62,6 +74,11 @@ namespace VE3NEA
       public IntPtr optionNames;
     }
 
+
+
+    // delegate for the log handler
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void SoapySDRLogHandlerDelegate(SoapySDRLogLevel logLevel, IntPtr messagePtr);
 
 
     public const string DLL_NAME = "SoapySDR";
@@ -204,5 +221,11 @@ namespace VE3NEA
 
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
     public static extern SoapySdrError SoapySDRDevice_setGainElement(IntPtr device, Direction direction, nint channel, string name, double value);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern void SoapySDR_registerLogHandler(SoapySDRLogHandlerDelegate handler);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern void SoapySDR_setLogLevel(SoapySDRLogLevel logLevel);
   }
 }
