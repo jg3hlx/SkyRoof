@@ -18,7 +18,7 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 
 #### v.1.2 Beta
 
-- waterfall display now works with most video cards;
+- waterfall display is now less demanding to the video card capabilities;
 - improved logging.
 
 #### v.1.1 Beta

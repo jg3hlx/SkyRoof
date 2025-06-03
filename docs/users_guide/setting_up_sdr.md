@@ -14,8 +14,10 @@ engine to interface with the SDR radios. Currently it supports:
 > It may be possible to add support of other SDR devices to SkyRoof. Contact me if you have an unsupported SDR
 > and are willing to do extensive testing.
 
-If you plan on using one of the SDRplay radios with SkyRoof, download the latest SDRplay API from
-[their web site](https://www.sdrplay.com/api/) and install it on your system.
+If you plan on using one of the SDRplay radios with SkyRoof, download the latest SDRplay API from their
+[web site](https://www.sdrplay.com/api/) and install it on your system, then find the `sdrplay_api.dll` file
+in the API installation and copy it to the same sub-folder in the SkyRoof folder where sdrPlaySupport.dll is located,
+currently `SkyRoof\lib\SoapySDR\modules0.8\`.
 
 ## Selecting an SDR device
 

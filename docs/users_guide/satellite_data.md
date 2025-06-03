@@ -17,12 +17,12 @@ SkyRoof obtains satellite date from sevaral sources:
     only if the satellite abbreviation is one of those published on their
     [web site](https://lotw.arrl.org/lotw-help/frequently-asked-questions).
     These abbreviations are stored in a file in the
-    [User Data folder](user_data_folder.md), you can view them in the
+    [Data folder](data_folder.md), you can view them in the
     [Satellite Details window](satellite_details_window.md).
 
 - [AMSAT Live OSCAR Satellite Status Page](https://www.amsat.org/status/) accepts satellite
     observations with their own satellite abbreviations, these abbreviations are stored in a file in the
-    [User Data folder](user_data_folder.md).
+    [Data folder](data_folder.md).
 
 ## TLE
 
