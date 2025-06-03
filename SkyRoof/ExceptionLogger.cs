@@ -30,7 +30,6 @@ namespace VE3NEA
       Log.Information($"Starting {typeof(Utils).Assembly.GetName().FullName}");
 
       NativeSoapySdr.SoapySDR_registerLogHandler(LogHandlerDelegate);
-      //NativeSoapySdr.SoapySDR_setLogLevel(NativeSoapySdr.SoapySDRLogLevel.SOAPY_SDR_DEBUG);
     }
 
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

@@ -101,6 +101,9 @@
     <None Include="..\Vendor\SoapySDR\SDR\sdrPlaySupport.dll" Link="lib\SoapySDR\modules0.8\sdrPlaySupport.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="..\Vendor\SoapySDR\SoapySDR.dll" Link="SoapySDR.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -152,9 +155,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Pothosware.SoapySDR.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="SoapySDR.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SoapySDRCSharpSWIG.pdb">

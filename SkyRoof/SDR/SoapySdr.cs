@@ -1,27 +1,34 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using Serilog;
 
 namespace VE3NEA
 {
   public static class SoapySdr
   {
-    public static string ABIVersion => "0.8";
-
     static SoapySdr()
     {
       SetSoapySdrPluginFolder();
     }
 
-
     // Force SoapySDR to look for the SDR drivers in a sub-folder of the app folder
     public static void SetSoapySdrPluginFolder()
     {
+      // app directory to env. var.
       string? appDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
       if (appDir == null) throw new Exception("Cannot get assembly location");
       Environment.SetEnvironmentVariable("SOAPY_SDR_ROOT", appDir);
-      string path = Environment.GetEnvironmentVariable("PATH") ?? "";
-      path = $"{appDir}\\lib\\SoapySDR\\modules{ABIVersion};{path}";
-      Environment.SetEnvironmentVariable("PATH", path);
+
+      // path to plugins folder
+      var abiVersionPtr = NativeSoapySdr.SoapySDR_getABIVersion();
+      string ABIVersion = Marshal.PtrToStringAnsi(abiVersionPtr)!;
+      string pluginsPath = $"{appDir}\\lib\\SoapySDR\\modules{ABIVersion}";
+
+      // add plugins folder to PATH env. var.
+      string originalPath = Environment.GetEnvironmentVariable("PATH") ?? "";
+      Environment.SetEnvironmentVariable("PATH", $"{pluginsPath};{originalPath}");
+      Log.Information($"Setting SoapySDR plugin path: {pluginsPath}");
+      if (!Directory.Exists(pluginsPath)) Log.Error("Plugins path does not exist");
     }
 
     public static SoapySdrDeviceInfo[] EnumerateDevices(string args = "")

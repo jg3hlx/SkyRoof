@@ -227,5 +227,11 @@ namespace VE3NEA
 
     [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
     public static extern void SoapySDR_setLogLevel(SoapySDRLogLevel logLevel);
+
+    [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr SoapySDR_getABIVersion();
+
+
+    
   }
 }
