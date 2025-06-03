@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SkyRoof"
-#define MyAppVersion "1.1 beta"
+#define MyAppVersion "1.2 Beta"
 #define MyAppPublisher "Alex VE3NEA"
 #define MyAppURL "https://ve3nea.github.io/SkyRoof"
 #define MyAppExeName "SkyRoof.exe"
@@ -48,11 +48,11 @@ Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Private.Windows.Core
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Speech.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\WeifenLuo.WinFormsUI.Docking.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspy.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdr.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdrSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\sdrPlaySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8-3
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspy.dll; DestDir: {app}\lib\SoapySDR\modules0.8
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdr.dll; DestDir: {app}\lib\SoapySDR\modules0.8
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdrSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\sdrPlaySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll; DestDir: {app}\runtimes\win\lib\net9.0
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\System.Speech.dll; DestDir: {app}\runtimes\win\lib\net9.0
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\CSCore.dll; DestDir: {app}

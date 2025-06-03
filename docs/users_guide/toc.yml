@@ -71,5 +71,5 @@ items:
       href: satellite_data.md
     - name: Doppler Tracking
       href: doppler_tracking.md
-    - name: User Data Folder
-      href: user_data_folder.md
+    - name: Data Folder
+      href: data_folder.md

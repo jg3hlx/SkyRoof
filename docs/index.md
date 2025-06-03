@@ -51,3 +51,7 @@ The program can work without an SDR, or even without any radio at all, but many 
 ## See Also
 
 - [System Requirements](users_guide/system_requirements.md)
+
+## Discussion Group
+
+- [SkyRoof](https://groups.google.com/g/skyroof) at Google Groups
