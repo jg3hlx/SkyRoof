@@ -221,6 +221,7 @@ namespace SkyRoof
       if (e.Button == MouseButtons.Left)
       {
         var dx = e.X - MouseDownX;
+
         if (!Dragging && Math.Abs(dx) > 2 && ScaleControl.IsMouseInFilter(MouseDownX))
         {
           Dragging = true;

@@ -42,11 +42,8 @@ namespace VE3NEA
       // FFT plan
       NativeFftw.make_planner_thread_safe();
 
-      if (!File.Exists(WisdomPath))
-      {
-        WaitBox.Show();
-        Application.DoEvents();
-      }
+      WaitBox.Show();
+      Application.DoEvents();
 
       if (typeof(T) == typeof(float))
         Plan = NativeFftw.dft_r2c_1d(InputData.Length, InputPtr, OutputPtr, flags);
@@ -55,7 +52,6 @@ namespace VE3NEA
 
       WaitBox.Hide();
     }
-
     
     public void Dispose()
     {
@@ -79,7 +75,6 @@ namespace VE3NEA
       complexSpan.CopyTo(OutputData);
     }
 
-
     private static string? WisdomPath;
 
     public static void LoadWisdom(string path)
@@ -91,7 +86,7 @@ namespace VE3NEA
     public static void SaveWisdom()
     {
       if (string.IsNullOrEmpty(WisdomPath)) return;
-      Directory.CreateDirectory(Path.GetDirectoryName(WisdomPath));
+      Directory.CreateDirectory(Path.GetDirectoryName(WisdomPath)!);
       NativeFftw.export_wisdom_to_filename(WisdomPath);
     }
   }

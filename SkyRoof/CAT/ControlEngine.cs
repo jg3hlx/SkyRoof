@@ -175,7 +175,7 @@ namespace SkyRoof
       if (reply.EndsWith("\n"))
       {
         reply = reply.Substring(0, reply.Length - 1);
-        if (log) Log.Information($"Reply from rig/cat ctld: {reply}");
+        if (log) Log.Information($"Reply from {GetType().Name} ctld: {reply}");
         return reply;
       }
 
@@ -187,13 +187,13 @@ namespace SkyRoof
     {
       try
       {
-        if (log) Log.Information($"Sending command to rig/cat ctld: {command}");
+        if (log) Log.Information($"Sending command to {GetType().Name} ctld: {command}");
         byte[] commandBytes = Encoding.ASCII.GetBytes(command + "\n");
         TcpClient!.Client.Send(commandBytes);
       }
       catch (Exception ex)
       {
-        Log.Error(ex, "Failed to send command to rig/cat ctld");
+        Log.Error(ex, "Failed to send command to {GetType().Name} ctld");
         throw;
       }
 
@@ -205,14 +205,14 @@ namespace SkyRoof
       }
       catch (Exception ex)
       {
-        Log.Error(ex, "Failed to receive reply from rig/cat ctld");
+        Log.Error(ex, "Failed to receive reply from {GetType().Name} ctld");
         throw;
       }
     }
 
     protected void BadReply(string reply)
     {
-      Log.Error($"Unexpected reply from rig/cat ctld: {reply}");
+      Log.Error($"Unexpected reply from {GetType().Name} ctld: {reply.Trim()}");
     }
 
 

@@ -256,7 +256,10 @@ namespace SkyRoof
 
       // selected sat BG
       if (label.Transmitters.Contains(ctx.SatelliteSelector.SelectedTransmitter))
-        g.FillRectangle(Brushes.Aqua, label.Rect);
+        if (ctx.FrequencyControl.RadioLink.IsTerrestrial)
+          g.FillRectangle(Brushes.PaleTurquoise, label.Rect);
+        else
+          g.FillRectangle(Brushes.Aqua, label.Rect);
 
       // sat name
       var brush = Brushes.Blue;

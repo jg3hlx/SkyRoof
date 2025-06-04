@@ -115,17 +115,18 @@ namespace SkyRoof
     internal void ChooseTextureSize()
     {
       // max texture size
-      int[] maxTextureSize = new int[1];
-      OpenglControl.OpenGL.GetInteger(OpenGL.GL_MAX_TEXTURE_SIZE, maxTextureSize);
+      int[] intArray = new int[1];
+      OpenglControl.OpenGL.GetInteger(OpenGL.GL_MAX_TEXTURE_SIZE, intArray);
+      int maxTextureSize = intArray[0];
 
       // screen hight
       int screenHeight = Screen.AllScreens.Max(s => s.Bounds.Height);
 
       // set texture size
-      TextureWidth = maxTextureSize[0];
+      TextureWidth = maxTextureSize;
       SpectraHeight = screenHeight > 1280 ? 2048 : 1024;
-      int maxTextureFold = maxTextureSize[0] / SpectraHeight;
-      SpectraWidth = Math.Min(1<<17, TextureWidth * maxTextureFold); // spectrum width up to 128K
+      int maxTextureFold = maxTextureSize / SpectraHeight;
+      SpectraWidth = Math.Min(1<<18, TextureWidth * maxTextureFold); // spectrum width up to 128K
       TextureFold = SpectraWidth / TextureWidth;
       TextureHeight = SpectraHeight * TextureFold;
 
