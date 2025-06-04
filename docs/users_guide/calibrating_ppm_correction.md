@@ -33,7 +33,7 @@ panel on the toolbar to open the frequency entry dialog:
 
 3. Enter the frequency of the channel plus the FCCH offset:
 
-    ```
+    ```text
     890,800,000 + 67,708 = 890,867,708 Hz
     ```
 
@@ -55,7 +55,7 @@ panel on the toolbar to open the frequency entry dialog:
 
 8. Compute the PPM correction. The frequency error measured in the previuos step is 3,760 Hz, so the PPM is:
 
-    ```
+    ```text
     3,760 / 890,867,708 * 1e6 = 4.22 PPM
     ```
 

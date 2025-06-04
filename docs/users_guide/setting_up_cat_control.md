@@ -18,7 +18,15 @@ then download **hamlib-w64-4.6.2.exe**, or a later version if available.
 
     The arguments on the command line must be tailored for your specific radio and COM port settings. Refer to the
     [rigctld documentation](https://hamlib.sourceforge.net/html/rigctld.1.html) for a complete description
-    of the arguments. In the example above the following arguments are used:
+    of the arguments.
+
+    Assuming that HamLib is installed in the default location, here is an example string for the shortcut:
+
+    ```cmd
+    "C:\Program Files\hamlib-w64-4.6.2\bin\rigctld.exe" -m 3081 -r COM9 -s 115200 
+    ```
+
+    In the string above the following arguments are used:
 
     - **-m 3081** - the radio model is IC-9700;
     - **-r COM9** - the COM port used by the radio. In this case, the USB connection to IC-9700 creates two virtual
