@@ -129,6 +129,9 @@ namespace SkyRoof
       }
     }
 
+    // dragging changes either the absolute frequency (terrestrial),
+    // or the transponder offset (transponder),
+    // or the manual correction (transmitter)
     internal double GetDraggableFrequency()
     {
       if (IsTerrestrial) return DownlinkFrequency;
@@ -141,13 +144,22 @@ namespace SkyRoof
       if (IsTerrestrial)
         DownlinkFrequency = freq;
 
+      else if (!IsAboveHorizon)
+      {
+        Console.Beep();
+        return;
+      }
+
       else if (IsTransponder)
       {
-        //todo: bring to range
-        Debug.Assert(freq >= 0 && freq <= Tx!.uplink_high - Tx!.uplink_low);
+        freq = Math.Max(0, Math.Min(freq, (double)(Tx!.uplink_high! - Tx!.uplink_low!)));
         TransponderOffset = freq;
       }
-      else DownlinkManualCorrection = freq;
+      else
+      {
+        freq = Math.Max(-25000, Math.Min(25000, freq));
+        DownlinkManualCorrection = freq;
+      }
 
       ComputeFrequencies();
     }
