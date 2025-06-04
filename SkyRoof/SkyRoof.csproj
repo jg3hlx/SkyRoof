@@ -101,6 +101,9 @@
     <None Include="..\Vendor\SoapySDR\SDR\sdrPlaySupport.dll" Link="lib\SoapySDR\modules0.8\sdrPlaySupport.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="..\Vendor\SoapySDR\SDR\sdrplay_api.dll" Link="lib\SoapySDR\modules0.8\sdrplay_api.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="..\Vendor\SoapySDR\SoapySDR.dll" Link="SoapySDR.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
