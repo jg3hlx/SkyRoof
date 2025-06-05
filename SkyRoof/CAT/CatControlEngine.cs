@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net.Sockets;
 using System.Speech.Synthesis.TtsEngine;
@@ -9,8 +10,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using CSCore.Win32;
 using Newtonsoft.Json;
-using SkyRoof.Properties;
 using Serilog;
+using SkyRoof.Properties;
 using VE3NEA;
 
 namespace SkyRoof
@@ -61,8 +62,6 @@ namespace SkyRoof
     {
       int step = RadioInfo.tuning_step_hz;
       return step * (long)Math.Truncate(freq / step);
-
-      //return step * (long)Math.Round(freq / step);
     }
 
 
@@ -181,7 +180,7 @@ namespace SkyRoof
         string command = RadioInfo.commands.read_main_frequency!;
         var reply = SendReadCommand(command);
         if (reply == null) return;
-        if (!long.TryParse(reply, out long frequency)) BadReply(reply);
+        if (!long.TryParse(reply, CultureInfo.InvariantCulture, out long frequency)) BadReply(reply);
         frequency = RoundTo10(frequency);
 
         bool changed = LastReadRxFrequency != 0 &&     // first read
@@ -208,7 +207,7 @@ namespace SkyRoof
 
       var reply = SendReadCommand(command);
       if (reply == null) return;
-      if (!long.TryParse(reply, out long frequency)) BadReply(reply);
+      if (!long.TryParse(reply, CultureInfo.InvariantCulture, out long frequency)) BadReply(reply);
       frequency = RoundTo10(frequency);
 
       bool changed = LastReadTxFrequency != 0 &&

@@ -285,11 +285,11 @@ namespace SkyRoof
 
       // inclination
       string s = Tle.tle2.Substring(8, 8);
-      if (float.TryParse(s, out float v)) Inclination = (int)v;
+      if (float.TryParse(s, CultureInfo.InvariantCulture, out float v)) Inclination = (int)v;
 
       // period
       s = Tle.tle2.Substring(52, 10);
-      if (float.TryParse(s, out v)) Period = (int)(1440f / v);
+      if (float.TryParse(s, CultureInfo.InvariantCulture, out v)) Period = (int)(1440f / v);
 
       try
       {

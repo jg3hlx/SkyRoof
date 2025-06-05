@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
+using Serilog;
 using VE3NEA;
 
 namespace SkyRoof
@@ -64,10 +66,12 @@ namespace SkyRoof
       var reply = SendReadCommand("p");
       if (reply == null) return;
 
-      var parts = reply.Split('\n');
+      var parts = reply.Trim().Split('\n');
+      if (log) Log.Information($"Rotator reply parsed: {string.Join('|', parts)}");
       if (parts.Length != 2) { BadReply(reply); return; }
-      if (!double.TryParse(parts[0], out double azimuth)) { BadReply(reply); return; }
-      if (!double.TryParse(parts[1], out double elevation)) { BadReply(reply); return; }
+
+      if (!double.TryParse(parts[0], CultureInfo.InvariantCulture, out double azimuth)) { BadReply(reply); return; }
+      if (!double.TryParse(parts[1], CultureInfo.InvariantCulture, out double elevation)) { BadReply(reply); return; }
 
       var bearing = new Bearing(azimuth, elevation);
       if ( bearing == LastReadBearing) return;

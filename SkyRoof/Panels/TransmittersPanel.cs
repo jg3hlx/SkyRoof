@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -25,9 +26,10 @@ namespace SkyRoof
 
     public TransmittersPanel(Context ctx)
     {
+      this.ctx = ctx;
+
       InitializeComponent();
 
-      this.ctx = ctx;
       ctx.TransmittersPanel = this;
       ctx.MainForm.TransmittersMNU.Checked = true;
       SetSatellite();
@@ -97,7 +99,7 @@ namespace SkyRoof
 
         // band color
         var match = Regex.Match(t.Downlink, "^[0-9.]+");
-        if (match.Success && float.TryParse(match.Groups[0].Value, out float freq))
+        if (match.Success && float.TryParse(match.Groups[0].Value, CultureInfo.InvariantCulture, out float freq))
           if (freq >= 144 && freq <= 148) item.BackColor = Color.LightGoldenrodYellow;
           else if (freq >= 430 && freq <= 440) item.BackColor = Color.LightCyan;
 
