@@ -26,7 +26,10 @@ or click on the downlink frequency display and enter the frequency in the **Tune
 
 ### Mode
 
-The **Mode** drop-down box applies to the SDR receiver, if it is enabled, and to the external receiver,
+Select the mode manually for every satellite transmiter that you are using.
+Your selection is remembered and restored when the transmitter is selected again.
+
+The **Mode** selected in the drop-down box applies to the SDR receiver, if it is enabled, and to the external receiver,
 if RX CAT is enabled. To enable or disable the SDR or RX CAT, click on the corresponding label
 on the status bar.
 
@@ -96,6 +99,8 @@ This setting is remembered for each satellite.
 
 The dial knob of the transceiver can be used to tune the frequency when CAT control is enabled
 and the **Ignore Dial Knob** option is set to **false**.
+
+When both RX CAT and TX CAT are enabled, the dial knob controls the receiver frequency.
 
 > [!Note]
 > When the radio is in the SAT mode, the NOR/REV switch should be in the NOR position for correct

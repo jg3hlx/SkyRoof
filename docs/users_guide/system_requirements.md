@@ -6,7 +6,7 @@
 - **Internet**: required, to download satellite data;
 - **SDR**: optional, but highly recommended. Supported models:
   - Airspy Mini;
-  - SDRplay;
+  - SDRplay (except RSP1b);
   - RTL-SDR.
 
   Contact me for other models;
