@@ -25,8 +25,8 @@ namespace SkyRoof
 
     public SdrDevicesDialog(Context ctx)
     {
-      InitializeComponent();
       this.ctx = ctx;
+      InitializeComponent();
 
       using (var ms = new MemoryStream(Properties.Resources.radio_button_on)) { RadioOnImage = Image.FromStream(ms); }
       using (var ms = new MemoryStream(Properties.Resources.radio_button_off)) { RadioOffImage = Image.FromStream(ms); }

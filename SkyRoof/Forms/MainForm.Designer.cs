@@ -66,7 +66,7 @@
       DownloadTleMNU = new ToolStripMenuItem();
       helpToolStripMenuItem = new ToolStripMenuItem();
       OnlineHelpMNU = new ToolStripMenuItem();
-      emailTheAuthorToolStripMenuItem = new ToolStripMenuItem();
+      SupportGroupMNU = new ToolStripMenuItem();
       DataFolderMNU = new ToolStripMenuItem();
       toolStripMenuItem2 = new ToolStripSeparator();
       AboutMNU = new ToolStripMenuItem();
@@ -379,7 +379,7 @@
       // 
       // helpToolStripMenuItem
       // 
-      helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { OnlineHelpMNU, emailTheAuthorToolStripMenuItem, DataFolderMNU, toolStripMenuItem2, AboutMNU });
+      helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { OnlineHelpMNU, SupportGroupMNU, DataFolderMNU, toolStripMenuItem2, AboutMNU });
       helpToolStripMenuItem.Name = "helpToolStripMenuItem";
       helpToolStripMenuItem.Size = new Size(44, 20);
       helpToolStripMenuItem.Text = "Help";
@@ -387,33 +387,33 @@
       // OnlineHelpMNU
       // 
       OnlineHelpMNU.Name = "OnlineHelpMNU";
-      OnlineHelpMNU.Size = new Size(172, 22);
+      OnlineHelpMNU.Size = new Size(180, 22);
       OnlineHelpMNU.Text = "Online Help...";
       OnlineHelpMNU.Click += WebsiteMNU_Click;
       // 
-      // emailTheAuthorToolStripMenuItem
+      // SupportGroupMNU
       // 
-      emailTheAuthorToolStripMenuItem.Name = "emailTheAuthorToolStripMenuItem";
-      emailTheAuthorToolStripMenuItem.Size = new Size(172, 22);
-      emailTheAuthorToolStripMenuItem.Text = "Email the Author...";
-      emailTheAuthorToolStripMenuItem.Click += EmailTheAuthorMNU_Click;
+      SupportGroupMNU.Name = "SupportGroupMNU";
+      SupportGroupMNU.Size = new Size(180, 22);
+      SupportGroupMNU.Text = "Support Group...";
+      SupportGroupMNU.Click += SupportGroupMNU_Click;
       // 
       // DataFolderMNU
       // 
       DataFolderMNU.Name = "DataFolderMNU";
-      DataFolderMNU.Size = new Size(172, 22);
+      DataFolderMNU.Size = new Size(180, 22);
       DataFolderMNU.Text = "Data Folder...";
       DataFolderMNU.Click += DataFolderMNU_Click;
       // 
       // toolStripMenuItem2
       // 
       toolStripMenuItem2.Name = "toolStripMenuItem2";
-      toolStripMenuItem2.Size = new Size(169, 6);
+      toolStripMenuItem2.Size = new Size(177, 6);
       // 
       // AboutMNU
       // 
       AboutMNU.Name = "AboutMNU";
-      AboutMNU.Size = new Size(172, 22);
+      AboutMNU.Size = new Size(180, 22);
       AboutMNU.Text = "About...";
       AboutMNU.Click += AboutMNU_Click;
       // 
@@ -701,7 +701,7 @@
     public ToolStripMenuItem TimelineMNU;
     public ToolStripMenuItem SkyViewMNU;
     public ToolStripMenuItem EarthViewMNU;
-    private ToolStripMenuItem emailTheAuthorToolStripMenuItem;
+    private ToolStripMenuItem SupportGroupMNU;
     private StatusStrip StatusStrip;
     private ToolStripStatusLabel toolStripStatusLabel2;
     private ToolStripStatusLabel SdrLedLabel;

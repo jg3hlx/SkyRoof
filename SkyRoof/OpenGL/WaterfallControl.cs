@@ -126,7 +126,7 @@ namespace SkyRoof
       TextureWidth = maxTextureSize;
       SpectraHeight = screenHeight > 1280 ? 2048 : 1024;
       int maxTextureFold = maxTextureSize / SpectraHeight;
-      SpectraWidth = Math.Min(1<<18, TextureWidth * maxTextureFold); // spectrum width up to 128K
+      SpectraWidth = Math.Min(1<<17, TextureWidth * maxTextureFold); // spectrum width up to 128K
       TextureFold = SpectraWidth / TextureWidth;
       TextureHeight = SpectraHeight * TextureFold;
 

@@ -65,8 +65,8 @@ namespace SkyRoof
 
     [DisplayName("Show Corrected Frequency")]
     [Description("Show the frequency with all corrections (True) or the nominal frequency (False)")]
-    [DefaultValue(false)]
-    public bool ShowCorrectedFrequency { get; set; }
+    [DefaultValue(true)]
+    public bool ShowCorrectedFrequency { get; set; } = true;
 
     public override string ToString() { return string.Empty; }
   }

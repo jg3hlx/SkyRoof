@@ -467,7 +467,7 @@ namespace SkyRoof
     private void GroupViewMNU_Click(object sender, EventArgs e)
     {
       if (ctx.GroupViewPanel == null)
-        new GroupViewPanel(ctx).Show(DockHost, DockState.DockLeft);
+        ShowFloatingPanel(new GroupViewPanel(ctx));
       else
         ctx.GroupViewPanel.Close();
     }
@@ -491,7 +491,7 @@ namespace SkyRoof
     private void SatellitePassesMNU_Click(object sender, EventArgs e)
     {
       if (ctx.PassesPanel == null)
-        new PassesPanel(ctx).Show(DockHost, DockState.DockRight);
+        ShowFloatingPanel(new PassesPanel(ctx));
       else
         ctx.PassesPanel.Close();
     }
@@ -499,7 +499,7 @@ namespace SkyRoof
     private void TimelineMNU_Click(object sender, EventArgs e)
     {
       if (ctx.TimelinePanel == null)
-        new TimelinePanel(ctx).Show(DockHost, DockState.DockBottom);
+        ShowFloatingPanel(new TimelinePanel(ctx));
       else
         ctx.TimelinePanel.Close();
     }
@@ -538,9 +538,9 @@ namespace SkyRoof
       Process.Start(new ProcessStartInfo("https://ve3nea.github.io/SkyRoof") { UseShellExecute = true });
     }
 
-    private void EmailTheAuthorMNU_Click(object sender, EventArgs e)
+    private void SupportGroupMNU_Click(object sender, EventArgs e)
     {
-      Process.Start(new ProcessStartInfo("mailto:ve3nea@dxatlas.com") { UseShellExecute = true });
+      Process.Start(new ProcessStartInfo("https://groups.google.com/g/skyroof") { UseShellExecute = true });
     }
 
     private void AboutMNU_Click(object sender, EventArgs e)
