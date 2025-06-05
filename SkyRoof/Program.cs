@@ -22,7 +22,7 @@ namespace SkyRoof
         }
         finally
         {
-          Log.Information("Application is shutting down");
+          Log.Information("Stopping SkyRoof");
           Log.CloseAndFlush();
         }
       }

@@ -19,7 +19,8 @@ namespace SkyRoof
 
     protected Thread? processingThread;
     protected TcpClient? TcpClient;
-    protected bool stopping = false;    
+    protected bool stopping = false;
+    protected bool ErrorLogged = false;
 
     public event EventHandler? StatusChanged;
     public bool IsRunning {get; private set;}
@@ -113,7 +114,11 @@ namespace SkyRoof
       }
       catch (SocketException ex)
       {
-        Log.Error(ex, $"Unable to connect to {Host}:{Port}");
+        if (!ErrorLogged)
+        {
+          ErrorLogged = true;
+          Log.Error(ex, $"Unable to connect to {Host}:{Port}");
+        }
         return false;
       }
     }
