@@ -36,42 +36,43 @@ Name: english; MessagesFile: compiler:Default.isl
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked
 
 [Files]
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.WinForms.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.deps.json; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.exe; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.pdb; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.runtimeconfig.json; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SoapySDR.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Drawing.Common.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Private.Windows.Core.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Speech.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\WeifenLuo.WinFormsUI.Docking.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspy.dll; DestDir: {app}\lib\SoapySDR\modules0.8
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdr.dll; DestDir: {app}\lib\SoapySDR\modules0.8
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdrSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\sdrPlaySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll; DestDir: {app}\runtimes\win\lib\net9.0
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\System.Speech.dll; DestDir: {app}\runtimes\win\lib\net9.0
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\CSCore.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\fa-solid-900.ttf; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libfftw3f-3.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libgcc_s_sjlj-1.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libliquid.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libusb-1.0.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\MathNet.Filtering.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\MathNet.Numerics.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Microsoft.Win32.SystemEvents.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Newtonsoft.Json.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\pthreadVC2.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Serilog.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Serilog.Sinks.File.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SGP.NET.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SGP.NET.pdb; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.dll; DestDir: {app}
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.SceneGraph.dll; DestDir: {app}
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.WinForms.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.deps.json; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.exe; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.pdb; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.runtimeconfig.json; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SoapySDR.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Drawing.Common.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Private.Windows.Core.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\System.Speech.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\WeifenLuo.WinFormsUI.Docking.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspy.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdr.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdrSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\sdrplay_api.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\sdrPlaySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll; DestDir: {app}\runtimes\win\lib\net9.0; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\System.Speech.dll; DestDir: {app}\runtimes\win\lib\net9.0; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\CSCore.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\fa-solid-900.ttf; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libfftw3f-3.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libgcc_s_sjlj-1.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libliquid.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\libusb-1.0.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\MathNet.Filtering.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\MathNet.Numerics.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Microsoft.Win32.SystemEvents.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Newtonsoft.Json.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\pthreadVC2.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Serilog.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Serilog.Sinks.File.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SGP.NET.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SGP.NET.pdb; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.SceneGraph.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 
 [Icons]
 Name: {commonprograms}\{#MyAppName}; Filename: {app}\{#MyAppExeName}

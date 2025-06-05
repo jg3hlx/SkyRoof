@@ -155,6 +155,7 @@ namespace SkyRoof
         freq = Math.Max(0, Math.Min(freq, (double)(Tx!.uplink_high! - Tx!.uplink_low!)));
         TransponderOffset = freq;
       }
+
       else
       {
         freq = Math.Max(-25000, Math.Min(25000, freq));
@@ -174,7 +175,14 @@ namespace SkyRoof
       }
 
       // terrestrial
-      else if (IsTerrestrial) DownlinkFrequency += delta;
+      else if (IsTerrestrial) 
+        DownlinkFrequency += delta;
+
+      //else if (!IsAboveHorizon)
+      //{
+      //  Console.Beep();
+      //  return;
+      //}
 
       // transponder
       else if (IsTransponder)
