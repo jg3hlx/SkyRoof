@@ -16,10 +16,11 @@ namespace SkyRoof
     }
     public SatelliteDetailsPanel(Context ctx)
     {
+      this.ctx = ctx;
+
       InitializeComponent();
       DesignedSize = Size;
 
-      this.ctx = ctx;
       ctx.SatelliteDetailsPanel = this;
       ctx.MainForm.SatelliteDetailsMNU.Checked = true;
 

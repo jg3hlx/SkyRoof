@@ -24,8 +24,8 @@ namespace SkyRoof
 
     public DockContentEx(Context ctx)
     {
-      InitializeComponent();
       this.ctx = ctx;
+      InitializeComponent();
     }
 
 

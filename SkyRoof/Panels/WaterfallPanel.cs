@@ -5,9 +5,9 @@ namespace SkyRoof
   public partial class WaterfallPanel : DockContent
   {
     public Context ctx;
-    private double SdrCenterFrequency => ctx.Sdr?.Info?.Frequency ?? SdrConst.UHF_CENTER_FREQUENCY;
-    private double MaxBandwidth => ctx.Sdr?.Info?.MaxBandwidth ?? SdrConst.MAX_BANDWIDTH;
-    private double SamplingRate => ctx.Sdr?.Info?.SampleRate ?? SdrConst.MAX_BANDWIDTH;
+    private double SdrCenterFrequency => ctx?.Sdr?.Info?.Frequency ?? SdrConst.UHF_CENTER_FREQUENCY;
+    private double MaxBandwidth => ctx?.Sdr?.Info?.MaxBandwidth ?? SdrConst.MAX_BANDWIDTH;
+    private double SamplingRate => ctx?.Sdr?.Info?.SampleRate ?? SdrConst.MAX_BANDWIDTH;
 
     public WaterfallPanel()
     {
@@ -16,8 +16,9 @@ namespace SkyRoof
 
     public WaterfallPanel(Context ctx)
     {
-      InitializeComponent();
       this.ctx = ctx;
+
+      InitializeComponent();
 
       ctx.WaterfallPanel = this;
       ctx.MainForm.WaterfallMNU.Checked = true;

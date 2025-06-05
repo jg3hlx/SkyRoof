@@ -22,9 +22,9 @@ namespace SkyRoof
 
     public PassesPanel(Context ctx)
     {
+      this.ctx = ctx;
       InitializeComponent();
 
-      this.ctx = ctx;
       ctx.PassesPanel = this;
       ctx.MainForm.SatellitePassesMNU.Checked = true;
 

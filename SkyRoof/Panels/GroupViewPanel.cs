@@ -26,9 +26,9 @@ namespace SkyRoof
 
     public GroupViewPanel(Context ctx)
     {
+      this.ctx = ctx;
       InitializeComponent();
 
-      this.ctx = ctx;
       this.ctx.GroupViewPanel = this;
       this.ctx.MainForm.GroupViewMNU.Checked = true;
       LoadGroup();

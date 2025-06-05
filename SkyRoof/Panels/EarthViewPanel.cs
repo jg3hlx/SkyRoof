@@ -33,9 +33,9 @@ namespace SkyRoof
 
     public EarthViewPanel(Context ctx)
     {
+      this.ctx = ctx;
       InitializeComponent();
 
-      this.ctx = ctx;
       ctx.EarthViewPanel = this;
       ctx.MainForm.EarthViewMNU.Checked = true;
 

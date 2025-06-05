@@ -13,9 +13,10 @@ namespace SkyRoof
 
     internal UserDetailsDialog(Context ctx)
     {
+      this.ctx = ctx;
+
       InitializeComponent();
 
-      this.ctx = ctx;
       LoadSettings();
       ValidateAll();
     }

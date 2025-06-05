@@ -12,7 +12,7 @@ namespace SkyRoof
     private SatnogsDbSatellite? Satellite;
     private Bearing SatBearing, LastWrittenBearing;
     private bool WasAboveHorizon = false;
-    public Bearing AntBearing { get => engine!.LastReadBearing; }
+    public Bearing? AntBearing { get => engine?.LastReadBearing; }
 
     public RotatorControl()
     {
@@ -193,7 +193,7 @@ namespace SkyRoof
         
       Color satColor = TrackCheckbox.Checked ? Color.Aqua : Color.Teal;
 
-      bool trackError = TrackCheckbox.Checked && (!IsRunning() || Bearing.AngleBetween(SatBearing, AntBearing) > 1.5 * ctx.Settings.Rotator.StepSize);
+      bool trackError = TrackCheckbox.Checked && (!IsRunning() || AntBearing == null || Bearing.AngleBetween(SatBearing, AntBearing) > 1.5 * ctx.Settings.Rotator.StepSize);
       Color antColor = trackError ? Color.LightCoral : Color.Transparent;
 
       SatelliteAzimuthLabel.ForeColor = satColor;

@@ -23,9 +23,9 @@ namespace SkyRoof
 
     public SkyViewPanel(Context ctx)
     {
+      this.ctx = ctx;
       InitializeComponent();
       
-      this.ctx = ctx;
       ctx.SkyViewPanel = this;
       ctx.MainForm.SkyViewMNU.Checked = true;
 
@@ -130,6 +130,7 @@ namespace SkyRoof
     private void DrawRotatorPosition(Graphics g)
     {
       if (!ctx.RotatorControl.IsRunning()) return;
+      if (ctx.RotatorControl.AntBearing == null) return; 
 
       var center = AzElToXY(ctx.RotatorControl.AntBearing.Azimuth * Geo.RinD, ctx.RotatorControl.AntBearing.Elevation * Geo.RinD);
       float size = 4 * Math.Min(16, 0.04f * Radius + 5);

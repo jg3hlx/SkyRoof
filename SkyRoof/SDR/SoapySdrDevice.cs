@@ -124,8 +124,9 @@ namespace VE3NEA
       if (!IsRunning()) return;
 
       Stopping = true;
-      Thread!.Join();
+      Thread?.Join();
       Thread = null;
+      Device = IntPtr.Zero;
     }
 
     private void ThreadProcedure()

@@ -15,8 +15,9 @@ namespace SkyRoof
 
     internal WaterfallSildersDlg(Context ctx)
     {
-      InitializeComponent();
       this.ctx = ctx;
+
+      InitializeComponent();
 
       label1.Font = ctx.AwesomeFont14;
       label1.Text = FontAwesomeIcons.Sun;

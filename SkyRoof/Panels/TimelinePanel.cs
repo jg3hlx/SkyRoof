@@ -26,9 +26,9 @@ namespace SkyRoof
 
     public TimelinePanel(Context ctx)
     {
+      this.ctx = ctx;
       InitializeComponent();
       
-      this.ctx = ctx;
       ctx.TimelinePanel = this;
       ctx.MainForm.TimelineMNU.Checked = true;
 
