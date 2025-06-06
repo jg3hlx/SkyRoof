@@ -115,22 +115,54 @@ namespace SkyRoof
     internal void ChooseTextureSize()
     {
       // max texture size
-      int[] intArray = new int[1];
-      OpenglControl.OpenGL.GetInteger(OpenGL.GL_MAX_TEXTURE_SIZE, intArray);
-      int maxTextureSize = intArray[0];
+      Size maxTextureSize = GetMaxTextureSize();
 
       // screen hight
       int screenHeight = Screen.AllScreens.Max(s => s.Bounds.Height);
 
       // set texture size
-      TextureWidth = maxTextureSize;
+      TextureWidth = maxTextureSize.Width;
       SpectraHeight = screenHeight > 1280 ? 2048 : 1024;
-      int maxTextureFold = maxTextureSize / SpectraHeight;
+      int maxTextureFold = maxTextureSize.Height / SpectraHeight;
+
       SpectraWidth = Math.Min(1<<17, TextureWidth * maxTextureFold); // spectrum width up to 128K
       TextureFold = SpectraWidth / TextureWidth;
       TextureHeight = SpectraHeight * TextureFold;
 
-      Log.Information($"Waterfall textue: {TextureWidth}x{TextureHeight}, spectra: {SpectraWidth}x{SpectraHeight}, fold: {TextureFold}");
+      Log.Information($"Waterfall textue: max: {maxTextureSize.Width}x{maxTextureSize.Height}  " +
+        $"used: {TextureWidth}x{TextureHeight}, " +
+        $"spectra: {SpectraWidth}x{SpectraHeight}, fold: {TextureFold}");
+    }
+
+    private Size GetMaxTextureSize()
+    {
+      int[] intArray = new int[1];
+      OpenglControl.OpenGL.GetInteger(OpenGL.GL_MAX_TEXTURE_SIZE, intArray);
+      Size size = new Size(intArray[0], intArray[0]);
+
+      while (size.Height > 64 && !TryAllocateTexture(size))
+          size.Height /= 2;
+
+      return size;
+    }
+
+    private bool TryAllocateTexture(Size size)
+    {
+      OpenGL gl = OpenglControl.OpenGL;
+
+      uint[] texture = new uint[1];
+      gl.GenTextures(1, texture);
+      gl.BindTexture(OpenGL.GL_TEXTURE_2D, texture[0]);
+
+      while (gl.GetError() != OpenGL.GL_NO_ERROR) { }
+
+      gl.TexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_R32F, size.Width, size.Height, 0,
+        OpenGL.GL_RED, OpenGL.GL_BYTE, IntPtr.Zero);
+
+      var error = gl.GetError();
+      gl.DeleteTextures(1, texture);
+
+      return error == OpenGL.GL_NO_ERROR;
     }
 
     internal void SetPalette(Palette palette)
