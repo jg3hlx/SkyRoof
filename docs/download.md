@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof.zip v.1.3 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.3-beta/SkyRoof.zip)
+[SkyRoof.zip v.1.4 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.4-beta/SkyRoof.zip)
 
 <br>
 
@@ -15,6 +15,12 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.4 Beta
+
+- added support of azimuth-only rotators;
+- fixed overlapped text on the monitors with non-standard text size;
+- the watrfall may now work on the low end video cards, with lower spectrum resolution.
 
 #### v.1.3 Beta
 
