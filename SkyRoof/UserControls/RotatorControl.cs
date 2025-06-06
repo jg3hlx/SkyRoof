@@ -168,7 +168,7 @@ namespace SkyRoof
 
     internal void Advance()
     {
-      if (!ctx.Settings.Rotator.Enabled || Satellite == null) return;
+      if (Satellite == null) return;
 
       var obs = ctx.SdrPasses.ObserveSatellite(Satellite, DateTime.UtcNow);
       SatBearing = new Bearing(obs.Azimuth.Degrees, obs.Elevation.Degrees);
@@ -179,7 +179,7 @@ namespace SkyRoof
       if (engine != null && TrackCheckbox.Checked)
       {
         var bearing = Sanitize(SatBearing);
-        var diff = Bearing.AngleBetween(bearing, LastWrittenBearing);
+        var diff = AngleBetween(bearing, LastWrittenBearing);
         if (diff >= ctx.Settings.Rotator.StepSize) RotateTo(SatBearing);
       }
 
@@ -193,7 +193,7 @@ namespace SkyRoof
         
       Color satColor = TrackCheckbox.Checked ? Color.Aqua : Color.Teal;
 
-      bool trackError = TrackCheckbox.Checked && (!IsRunning() || AntBearing == null || Bearing.AngleBetween(SatBearing, AntBearing) > 1.5 * ctx.Settings.Rotator.StepSize);
+      bool trackError = TrackCheckbox.Checked && (!IsRunning() || AntBearing == null || AngleBetween(SatBearing, AntBearing!) > 1.5 * ctx.Settings.Rotator.StepSize);
       Color antColor = trackError ? Color.LightCoral : Color.Transparent;
 
       SatelliteAzimuthLabel.ForeColor = satColor;
@@ -214,6 +214,15 @@ namespace SkyRoof
         AntennaAzimuthLabel.Text = "---";
         AntennaElevationLabel.Text = "---";
       }
+    }
+
+    private double AngleBetween(Bearing bearing1, Bearing bearing2)
+    {
+      if (ctx.Settings.Rotator.MinElevation == ctx.Settings.Rotator.MaxElevation)
+        // rotator is not elevation capable, so we only check azimuth
+        return Bearing.AzimuthDifference(bearing1, bearing2);
+      else
+        return Bearing.AngleBetween(bearing1, bearing2);
     }
   }
 }

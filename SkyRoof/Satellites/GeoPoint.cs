@@ -212,5 +212,12 @@
       double a = se * se + ce * sa * sa;
       return Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)) * 2 * Geo.DinR;
     }
+
+    public static double AzimuthDifference(Bearing b1, Bearing b2)
+    {
+      double diff = Math.Abs(b1.Azimuth - b2.Azimuth);
+      if (diff > 180) diff = 360 - diff;
+      return diff;
+    }
   }
 }

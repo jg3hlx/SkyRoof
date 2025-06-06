@@ -76,7 +76,7 @@ namespace SkyRoof
       label1.Name = "label1";
       label1.Size = new Size(71, 15);
       label1.TabIndex = 8;
-      label1.Text = "SDR DEvices";
+      label1.Text = "SDR Devices";
       // 
       // Grid
       // 
@@ -135,7 +135,7 @@ namespace SkyRoof
       label2.Name = "label2";
       label2.Size = new Size(111, 15);
       label2.TabIndex = 10;
-      label2.Text = "SDR DEvice Settings";
+      label2.Text = "SDR Device Settings";
       // 
       // SdrDevicesDialog
       // 

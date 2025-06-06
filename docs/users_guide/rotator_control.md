@@ -25,7 +25,7 @@ bearing but does not attempt to change it. Tick the **Track** checkbox to start 
 the check box is cleared when a different satellite is selected.
 
 In the satellite tracking mode, the antenna bearing turns pink if it differs from the satellite position
-by more than the **Step Size** setting entered in the
+by more than 1.5 the **Step Size** setting entered in the
 [rotator settings](setting_up_rotator_control.md).
 
 ## Manual Control

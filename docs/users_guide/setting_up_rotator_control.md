@@ -48,3 +48,9 @@ Click on **Tools / Settings** in the main menu to open the
     allow you to apply a correction;
 - **Step Size** - to prevent the rotator from starting and stopping too often, change the bearing
     only when the required change is greater than the step size. The default value is 5 degrees.
+
+<br>
+
+If your rotator does not control elevation, set the MinimumElevation and MaximumElevation to the same value. With such settings,
+wrong elevation will not be considered a bearing error. Note that the bearing error is indicated with a pink color
+on the [Rotator Control](rotator_control.md) panel.
