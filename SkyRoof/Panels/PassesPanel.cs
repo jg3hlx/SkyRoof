@@ -29,7 +29,11 @@ namespace SkyRoof
       ctx.MainForm.SatellitePassesMNU.Checked = true;
 
       BoldFont = new Font(listViewEx1.Font, FontStyle.Bold);
-      listViewEx1.SetRowHeight(45);
+
+      int rowHeight = TextRenderer.MeasureText("0", Font, Size, TextFormatFlags.NoPadding).Height * 2 + 15;
+      listViewEx1.SetRowHeight(rowHeight);
+      
+      
       listViewEx1.SetTooltipDelay(1500);
       SetRadioButtonIndex(ctx.Settings.Ui.SatellitePassesPanel.RadioButtoIndex);
       if (listViewEx1.VirtualListSize == 0) ShowPasses();

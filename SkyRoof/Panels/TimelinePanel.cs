@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Security.Policy;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SkyRoof
@@ -8,7 +9,7 @@ namespace SkyRoof
   public partial class TimelinePanel : DockContent
   {
     private const double MaxPixelsPerMinute = 60; // at max zoom, 1 pixel = 1 second
-    private const int ScaleHeight = 35;
+    private int ScaleHeight = 35;
 
     private static readonly TimeSpan HistoryTimeSpan = TimeSpan.FromMinutes(-30);
     private static readonly TimeSpan PredictionTimeSpan = TimeSpan.FromDays(2);
@@ -85,6 +86,7 @@ namespace SkyRoof
       g.FillRectangle(lgb, rect);
 
       // time scale
+      ScaleHeight = TextRenderer.MeasureText("0", Font, Size, TextFormatFlags.NoPadding).Height * 2 + 7;
       rect = new RectangleF(0, ClientSize.Height - ScaleHeight, ClientSize.Width, ScaleHeight);
       g.FillRectangle(Brushes.Silver, rect);
 

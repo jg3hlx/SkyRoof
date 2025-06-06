@@ -46,7 +46,7 @@ namespace VE3NEA
       if (m.Msg == WM_NCCALCSIZE)
       {
         int style = (int)GetWindowLongPtr(Handle, GWL_STYLE);
-        if ((style & WS_HSCROLL) == WS_HSCROLL) 
+        if ((style & WS_HSCROLL) == WS_HSCROLL)
           SetWindowLongPtr(Handle, GWL_STYLE, style & ~WS_HSCROLL);
       }
 
@@ -83,6 +83,20 @@ namespace VE3NEA
     {
       var tooltip = SendMessage(Handle, LVM_GETTOOLTIPS, 0, 0);
       SendMessage(tooltip, TTM_SETDELAYTIME, TTDT_AUTOMATIC, delayMs);
+    }
+
+
+
+
+    //--------------------------------------------------------------------------------------------------------------
+    //              resize columns depending on DPI: https://stackoverflow.com/questions/10795134
+    //--------------------------------------------------------------------------------------------------------------
+    protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
+    {
+      base.ScaleControl(factor, specified);
+
+      foreach (ColumnHeader column in Columns)
+        column.Width = (int)(column.Width * factor.Width);
     }
   }
 }

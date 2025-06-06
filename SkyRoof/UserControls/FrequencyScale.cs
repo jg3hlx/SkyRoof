@@ -148,11 +148,14 @@ namespace SkyRoof
       double pixPerHz = width / VisibleBandwidth;
 
       //select tick step
+      string sampleText = (CenterFrequency * 1e-6).ToString("F3");
+      double labelWidth = TextRenderer.MeasureText(sampleText, Font, Size, TextFormatFlags.NoPadding).Width;
+
       double TickStep = 200;
       double LabelStep = 1000;
       for (int i = 0; i <= 24; ++i)
       {
-        if (LabelStep * pixPerHz > 60) break;
+        if (LabelStep * pixPerHz > labelWidth + 16) break;
         LabelStep *= TickMults[i % 3];
         TickStep *= TickMults[(i + 1) % 3];
       }
