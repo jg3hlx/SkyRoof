@@ -20,7 +20,7 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 
 - added support of azimuth-only rotators;
 - fixed overlapped text on the monitors with non-standard text size;
-- the watrfall may now work on the low end video cards, with lower spectrum resolution.
+- the waterfall may now work on the low end video cards, with lower spectrum resolution.
 
 #### v.1.3 Beta
 
