@@ -45,7 +45,7 @@
       RadioButtonsPanel.Controls.Add(OrbitRadioBtn);
       RadioButtonsPanel.Dock = DockStyle.Top;
       RadioButtonsPanel.Location = new Point(0, 0);
-      RadioButtonsPanel.MaximumSize = new Size(0, 60);
+      RadioButtonsPanel.MaximumSize = new Size(0, 100);
       RadioButtonsPanel.Name = "RadioButtonsPanel";
       RadioButtonsPanel.Size = new Size(314, 25);
       RadioButtonsPanel.TabIndex = 1;

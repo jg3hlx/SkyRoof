@@ -147,15 +147,15 @@ namespace SkyRoof
       double leftFreq = CenterFrequency - VisibleBandwidth / 2;
       double pixPerHz = width / VisibleBandwidth;
 
-      //select tick step
       string sampleText = (CenterFrequency * 1e-6).ToString("F3");
-      double labelWidth = TextRenderer.MeasureText(sampleText, Font, Size, TextFormatFlags.NoPadding).Width;
+      var labelSize = TextRenderer.MeasureText(sampleText, Font, Size, TextFormatFlags.NoPadding);
 
+      //select tick step
       double TickStep = 200;
       double LabelStep = 1000;
       for (int i = 0; i <= 24; ++i)
       {
-        if (LabelStep * pixPerHz > labelWidth + 16) break;
+        if (LabelStep * pixPerHz > labelSize.Width + 25) break;
         LabelStep *= TickMults[i % 3];
         TickStep *= TickMults[(i + 1) % 3];
       }
@@ -167,14 +167,18 @@ namespace SkyRoof
       //draw lagre ticks and labels
       while (true)
       {
+        // large tick
         float x = (float)FreqToPixel(freq);
         if (x > width) break;
-        float y = height - 30;
-        g.DrawLine(Pens.Black, x, height - 12, x, height);
+        float y = height - 0.7f * labelSize.Height;
+        g.DrawLine(Pens.Black, x, y, x, height);
 
+        // label
         string freqText = (freq * 1e-6).ToString("F3");
         x -= g.MeasureString(freqText, Font).Width / 2;
+        y = height - 1.8f * labelSize.Height;
         g.DrawString(freqText, Font, Brushes.Black, x, y);
+
         freq += LabelStep;
       }
 
@@ -184,7 +188,8 @@ namespace SkyRoof
       {
         float x = (float)FreqToPixel(freq);
         if (x > width) break;
-        g.DrawLine(Pens.Black, x, height - 6, x, height);
+        float y = height - 0.35f * labelSize.Height;
+        g.DrawLine(Pens.Black, x, y, x, height);
         freq += TickStep;
       }
     }

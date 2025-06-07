@@ -41,13 +41,15 @@
       // 
       // flowLayoutPanel1
       // 
+      flowLayoutPanel1.AutoSize = true;
       flowLayoutPanel1.Controls.Add(CurrentSatBtn);
       flowLayoutPanel1.Controls.Add(GroupBtn);
       flowLayoutPanel1.Controls.Add(AllBtn);
       flowLayoutPanel1.Dock = DockStyle.Top;
       flowLayoutPanel1.Location = new Point(0, 0);
+      flowLayoutPanel1.MaximumSize = new Size(0, 100);
       flowLayoutPanel1.Name = "flowLayoutPanel1";
-      flowLayoutPanel1.Size = new Size(434, 27);
+      flowLayoutPanel1.Size = new Size(434, 25);
       flowLayoutPanel1.TabIndex = 0;
       // 
       // CurrentSatBtn
@@ -90,9 +92,9 @@
       panel1.AutoScroll = true;
       panel1.Controls.Add(listViewEx1);
       panel1.Dock = DockStyle.Fill;
-      panel1.Location = new Point(0, 27);
+      panel1.Location = new Point(0, 25);
       panel1.Name = "panel1";
-      panel1.Size = new Size(434, 557);
+      panel1.Size = new Size(434, 559);
       panel1.TabIndex = 1;
       // 
       // listViewEx1
@@ -106,7 +108,7 @@
       listViewEx1.Name = "listViewEx1";
       listViewEx1.OwnerDraw = true;
       listViewEx1.ShowItemToolTips = true;
-      listViewEx1.Size = new Size(434, 557);
+      listViewEx1.Size = new Size(434, 559);
       listViewEx1.TabIndex = 0;
       listViewEx1.UseCompatibleStateImageBehavior = false;
       listViewEx1.View = View.Details;
@@ -119,7 +121,8 @@
       // 
       // PassesPanel
       // 
-      AutoScaleMode = AutoScaleMode.Inherit;
+      AutoScaleDimensions = new SizeF(7F, 15F);
+      AutoScaleMode = AutoScaleMode.Font;
       ClientSize = new Size(434, 584);
       Controls.Add(panel1);
       Controls.Add(flowLayoutPanel1);
@@ -130,6 +133,7 @@
       flowLayoutPanel1.PerformLayout();
       panel1.ResumeLayout(false);
       ResumeLayout(false);
+      PerformLayout();
     }
 
     #endregion
