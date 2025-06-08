@@ -81,6 +81,23 @@ carry a telemetry or beacon transmitter that you can use to set the manual offse
 
 ![MO-122](../images/mo-122.png)
 
+## Aligning The Uplink and Downlink Frequencies
+
+The screenshot below shows how to set Manual Correcttion for the uplink and downlink for a linear transponder, such as RS-44.
+
+1. Select the beacon transmitter of the satellite and asjust the Downlink Manual Correction setting to align the transmitter label
+and its signal trace on the waterfall. For RS-44 the required correction is about -1900 Hz. If your offset is different, then yor SDR
+requires [PPM calibration](calibrating_ppm_correction.md).
+
+2. Select the transponder transmitter and find a clear frequency within the transmonder segment. Send a sequence of dots
+and adjust the Uplink Manual Correction to align the center of the green rectangle with the trace of your signals coming from the satellite.
+
+![RX TX alignment](../images/rx_tx_alignment.png)
+
+These adjustments need to be done only once. They stay the same, within a few tens of Herts, between the satellite passes.
+
+When TX CAT is enabled, RX CAT is disabled and the Ignore Dial Knob is set to false in the Settings, it is possilbe to asjust
+the Uplink Manual Offset using the dial knob on the radio.
 
 ## RIT
 

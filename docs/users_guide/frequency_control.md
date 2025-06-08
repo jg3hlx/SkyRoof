@@ -83,17 +83,8 @@ only if the selected satellite transmitter has an uplink. The bright color of th
 means that TX CAT is enabled and working properly. The **Transmit** button switches
 the external radio between the RX and TX modes.
 
-The **Manual** offset of the uplink is for aligning your transmit and receive signals.
-To adjust the manual offset:
-
-- wait until the satellite in question is above the horizon;
-- select a clear frequency within the transponder segment and send a sequence of dots in the CW mode;
-- find your own signal on the
-    [Waterfall Display](waterfall_display.md)
-    and adjust the manual offset to bring the signal to the center of the green rectangle on the
-    [Frequency Scale](frequency_scale.md).
-
-This setting is remembered for each satellite.
+The **Manual Correction** setting of the uplink allows you to align your transmit and receive frequencies.
+See the [Frequency Scale](frequency_scale.md) section for details.
 
 ## Dial Knob
 
