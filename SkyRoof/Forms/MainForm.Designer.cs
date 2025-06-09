@@ -64,6 +64,7 @@
       toolStripMenuItem1 = new ToolStripSeparator();
       DownloadSatDataMNU = new ToolStripMenuItem();
       DownloadTleMNU = new ToolStripMenuItem();
+      LoadTleMNU = new ToolStripMenuItem();
       helpToolStripMenuItem = new ToolStripMenuItem();
       OnlineHelpMNU = new ToolStripMenuItem();
       SupportGroupMNU = new ToolStripMenuItem();
@@ -332,7 +333,7 @@
       // 
       // toolsToolStripMenuItem
       // 
-      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, DownloadSatDataMNU, DownloadTleMNU });
+      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, DownloadSatDataMNU, DownloadTleMNU, LoadTleMNU });
       toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
       toolsToolStripMenuItem.Size = new Size(46, 20);
       toolsToolStripMenuItem.Text = "Tools";
@@ -374,8 +375,15 @@
       // 
       DownloadTleMNU.Name = "DownloadTleMNU";
       DownloadTleMNU.Size = new Size(216, 22);
-      DownloadTleMNU.Text = "Download Only TLE";
+      DownloadTleMNU.Text = "Download TLE Only";
       DownloadTleMNU.Click += DownloadTleMNU_Click;
+      // 
+      // LoadTleMNU
+      // 
+      LoadTleMNU.Name = "LoadTleMNU";
+      LoadTleMNU.Size = new Size(216, 22);
+      LoadTleMNU.Text = "Load TLE From File...";
+      LoadTleMNU.Click += LoadTleMNU_Click;
       // 
       // helpToolStripMenuItem
       // 
@@ -387,33 +395,33 @@
       // OnlineHelpMNU
       // 
       OnlineHelpMNU.Name = "OnlineHelpMNU";
-      OnlineHelpMNU.Size = new Size(180, 22);
+      OnlineHelpMNU.Size = new Size(161, 22);
       OnlineHelpMNU.Text = "Online Help...";
       OnlineHelpMNU.Click += WebsiteMNU_Click;
       // 
       // SupportGroupMNU
       // 
       SupportGroupMNU.Name = "SupportGroupMNU";
-      SupportGroupMNU.Size = new Size(180, 22);
+      SupportGroupMNU.Size = new Size(161, 22);
       SupportGroupMNU.Text = "Support Group...";
       SupportGroupMNU.Click += SupportGroupMNU_Click;
       // 
       // DataFolderMNU
       // 
       DataFolderMNU.Name = "DataFolderMNU";
-      DataFolderMNU.Size = new Size(180, 22);
+      DataFolderMNU.Size = new Size(161, 22);
       DataFolderMNU.Text = "Data Folder...";
       DataFolderMNU.Click += DataFolderMNU_Click;
       // 
       // toolStripMenuItem2
       // 
       toolStripMenuItem2.Name = "toolStripMenuItem2";
-      toolStripMenuItem2.Size = new Size(177, 6);
+      toolStripMenuItem2.Size = new Size(158, 6);
       // 
       // AboutMNU
       // 
       AboutMNU.Name = "AboutMNU";
-      AboutMNU.Size = new Size(180, 22);
+      AboutMNU.Size = new Size(161, 22);
       AboutMNU.Text = "About...";
       AboutMNU.Click += AboutMNU_Click;
       // 
@@ -737,5 +745,6 @@
     private ToolStripStatusLabel RotatorStatusLabel;
     private Panel panel7;
     private Panel panel6;
+    private ToolStripMenuItem LoadTleMNU;
   }
 }

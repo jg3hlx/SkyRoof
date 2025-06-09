@@ -448,6 +448,15 @@ namespace SkyRoof
       DownloadTle().DoNotAwait();
     }
 
+    private void LoadTleMNU_Click(object sender, EventArgs e)
+    {
+      var dlg = new OpenFileDialog();
+      dlg.Filter = "JSON Files (*.json)|*.json|Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+      if (dlg.ShowDialog() != DialogResult.OK) return;
+
+      ctx.SatnogsDb.LoadTleFromFile(dlg.FileName);
+    }
+
     private void DataFolderMNU_Click(object sender, EventArgs e)
     {
       Process.Start("explorer.exe", Utils.GetUserDataFolder());

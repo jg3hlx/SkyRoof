@@ -1,7 +1,10 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.DirectoryServices.ActiveDirectory;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Serilog;
-using System.ComponentModel;
+using SGPdotNET.TLE;
 using VE3NEA;
 
 namespace SkyRoof
@@ -43,7 +46,7 @@ namespace SkyRoof
         var satellites = JsonConvert.DeserializeObject<SatnogsDbSatelliteList>(json);
         SatelliteList = satellites.ToDictionary(s => s.sat_id);
 
-        foreach(var sat in satellites)
+        foreach (var sat in satellites)
           foreach (var tx in sat.Transmitters)
             tx.Satellite = sat;
 
@@ -108,7 +111,7 @@ namespace SkyRoof
     {
       cts = new CancellationTokenSource();
       await Download("tle");
-     
+
       try
       {
         ImportSatnogsTle();
@@ -221,7 +224,7 @@ namespace SkyRoof
     private void ImportSatnogsTle()
     {
       string json = File.ReadAllText(Path.Combine(DownloadsFolder, "tle.json"));
-      SatnogsDbTleList tles = JsonConvert.DeserializeObject<SatnogsDbTleList>(json);
+      SatnogsDbTleList tles = JsonConvert.DeserializeObject<SatnogsDbTleList>(json)!;
 
       foreach (SatnogsDbTle tle in tles)
         if (SatelliteList.TryGetValue(tle.sat_id, out SatnogsDbSatellite sat))
@@ -266,6 +269,64 @@ namespace SkyRoof
           sat.BuildAllNames();
         }
       }
+    }
+
+    internal void LoadTleFromFile(string tleFileName)
+    {
+      Log.Information($"Loading TLE from file: {tleFileName}");
+
+      string tleContent = File.ReadAllText(tleFileName);
+      SatnogsDbTleList tles;
+
+      try
+      {
+        if (Path.GetExtension(tleFileName).ToLower() == ".json")
+          tles = JsonConvert.DeserializeObject<SatnogsDbTleList>(tleContent)!;
+        else
+          tles = TlesFromText(tleContent);
+
+        foreach (var tle in tles)
+        {
+          var sat = Satellites.FirstOrDefault(s => s.norad_cat_id == tle.norad_cat_id);
+          if (sat != null) sat.Tle = tle;
+        }
+
+        SaveToFile();
+        TleUpdated?.Invoke(this, EventArgs.Empty);
+        Log.Information($"TLE loaded");
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, "Load TLE from file failed");
+        throw;
+      }
+    }
+
+    private SatnogsDbTleList TlesFromText(string tleContent)
+    {
+      string[] lines = tleContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+      if (lines.Length % 3 != 0)
+        throw new ArgumentException("TLE file must have a multiple of 3 lines (name, line1, line2).");
+
+      for (int i = 0; i < lines.Length; i += 3)
+        if (lines[i].Length < 1 || lines[i + 1].Length < 69 || lines[i + 2].Length < 69 ||
+          !lines[i + 1].StartsWith("1 ") || !lines[i + 2].StartsWith("2 "))
+          throw new ArgumentException("Invalid TLE format detected.");
+
+      SatnogsDbTleList tles = new();
+
+      for (int i = 0; i < lines.Length; i += 3)
+        tles.Add(new SatnogsDbTle
+        {
+          tle0 = lines[i].Trim(),
+          tle1 = lines[i + 1].Trim(),
+          tle2 = lines[i + 2].Trim(),
+          tle_source = "Local file",
+          updated = DateTime.Now,
+          norad_cat_id = int.Parse(lines[i + 1].Substring(2, 5).Trim(), CultureInfo.InvariantCulture)
+        });
+    
+      return tles;
     }
   }
 }
