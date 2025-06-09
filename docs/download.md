@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof.zip v.1.4 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.4-beta/SkyRoof.zip)
+[SkyRoof.zip v.1.5 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.5-beta/SkyRoof.zip)
 
 <br>
 
@@ -15,6 +15,12 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.5 Beta
+
+- added command to load TLE from file;
+- added support of RTL-SDR Blog V.4;
+- improved handling of non-standard text size.
 
 #### v.1.4 Beta
 

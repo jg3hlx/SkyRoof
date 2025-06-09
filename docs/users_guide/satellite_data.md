@@ -54,3 +54,14 @@ The light next to the label turns yellow if the satellite data are not up to dat
 
 In addition to automatic downloads, the data may be manually downloaded at any time using
 the **Tools / Download All Satellite Data** and **Tools / Download Only TLE** menu commands.
+
+## Loading TLE from File
+
+If your system is not connected to the Internet, you can load TLE data from a local file
+using the **Tools / Load TLE from File** menu command. Two TLE formats are supported:
+
+- **.json** - TLE data from the SatNOGS web site, recommended ([download](https://db.satnogs.org/api/tle/?format=json));
+- **.txt** - 3-line TLE data in a text file, available from many sources, e.g. CelesTrak
+    ([download](https://celestrak.org/NORAD/elements/gp.php?GROUP=amateur&FORMAT=tle)).
+
+Note that TLE import cannot add new satellites, it only loads orbital elements for the satellites already in the database.
