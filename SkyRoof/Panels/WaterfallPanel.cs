@@ -1,4 +1,5 @@
-﻿using WeifenLuo.WinFormsUI.Docking;
+﻿using Serilog;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace SkyRoof
 {
@@ -16,6 +17,7 @@ namespace SkyRoof
 
     public WaterfallPanel(Context ctx)
     {
+      Log.Information("Creating WaterfallPanel");
       this.ctx = ctx;
 
       InitializeComponent();
@@ -44,6 +46,7 @@ namespace SkyRoof
 
     private void WaterfallPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
+      Log.Information("Closing WaterfallPanel");
       ctx.MainForm.DestroySpectrumAnalyzer();
       ctx.WaterfallPanel = null;
       ctx.MainForm.WaterfallMNU.Checked = false;

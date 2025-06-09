@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Diagnostics;
+using Serilog;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SkyRoof
@@ -16,6 +17,7 @@ namespace SkyRoof
     }
     public SatelliteDetailsPanel(Context ctx)
     {
+      Log.Information("Creating SatelliteDetailsPanel");
       this.ctx = ctx;
 
       InitializeComponent();
@@ -47,6 +49,7 @@ namespace SkyRoof
 
     private void SatelliteDetailsPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
+      Log.Information("Closing SatelliteDetailsPanel");
       ctx.SatelliteDetailsPanel = null;
       ctx.MainForm.SatelliteDetailsMNU.Checked = false;
     }

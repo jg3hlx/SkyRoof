@@ -3,6 +3,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using VE3NEA;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static SkyRoof.GroupViewPanel;
+using Serilog;
 
 namespace SkyRoof
 {
@@ -22,6 +23,7 @@ namespace SkyRoof
 
     public PassesPanel(Context ctx)
     {
+      Log.Information("Creating PassesPanel");
       this.ctx = ctx;
       InitializeComponent();
 
@@ -47,6 +49,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     private void PassesPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
+      Log.Information("Closing PassesPanel");
       ctx.PassesPanel = null;
       ctx.MainForm.SatellitePassesMNU.Checked = false;
     }

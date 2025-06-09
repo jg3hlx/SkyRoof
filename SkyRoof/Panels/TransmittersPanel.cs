@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Serilog;
 using SGPdotNET.Observation;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -26,6 +27,7 @@ namespace SkyRoof
 
     public TransmittersPanel(Context ctx)
     {
+      Log.Information("Creating TransmittersPanel");
       this.ctx = ctx;
 
       InitializeComponent();
@@ -53,6 +55,7 @@ namespace SkyRoof
 
     private void TransmittersPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
+      Log.Information("Closing TransmittersPanel");
       ctx.TransmittersPanel = null;
       ctx.MainForm.TransmittersMNU.Checked = false;
     }

@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -26,6 +27,7 @@ namespace SkyRoof
 
     public GroupViewPanel(Context ctx)
     {
+      Log.Information("Creating GroupViewPanel");
       this.ctx = ctx;
       InitializeComponent();
 
@@ -36,6 +38,7 @@ namespace SkyRoof
 
     private void GroupViewPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
+      Log.Information("Closing GroupViewPanel");
       ctx.GroupViewPanel = null;
       ctx.MainForm.GroupViewMNU.Checked = false;
     }

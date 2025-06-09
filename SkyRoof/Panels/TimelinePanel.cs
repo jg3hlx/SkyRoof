@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Security.Policy;
+using Serilog;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SkyRoof
@@ -27,6 +28,7 @@ namespace SkyRoof
 
     public TimelinePanel(Context ctx)
     {
+      Log.Information("Creating TimelinePanel");
       this.ctx = ctx;
       InitializeComponent();
       
@@ -38,6 +40,7 @@ namespace SkyRoof
 
     private void TimelinePanel_FormClosing(object sender, FormClosingEventArgs e)
     {
+      Log.Information("Closing TimelinePanel");
       ctx.TimelinePanel = null;
       ctx.MainForm.TimelineMNU.Checked = false;
     }

@@ -34,6 +34,7 @@ namespace SkyRoof
     public EarthViewPanel(Context ctx)
     {
       this.ctx = ctx;
+      Log.Information("Creating EarthViewPanel");
       InitializeComponent();
 
       ctx.EarthViewPanel = this;
@@ -52,6 +53,7 @@ namespace SkyRoof
 
     private void EarthViewPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
+      Log.Information("Closing EarthViewPanel");
       ctx.EarthViewPanel = null;
       ctx.MainForm.EarthViewMNU.Checked = false;
     }

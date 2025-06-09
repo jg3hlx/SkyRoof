@@ -3,6 +3,7 @@ using System.Drawing.Drawing2D;
 using WeifenLuo.WinFormsUI.Docking;
 using VE3NEA;
 using SGPdotNET.Observation;
+using Serilog;
 
 namespace SkyRoof
 {
@@ -23,6 +24,7 @@ namespace SkyRoof
 
     public SkyViewPanel(Context ctx)
     {
+      Log.Information("Creating SkyViewPanel");
       this.ctx = ctx;
       InitializeComponent();
       
@@ -43,6 +45,7 @@ namespace SkyRoof
 
     private void SkyViewPanel_FormClosing(object sender, FormClosingEventArgs e)
     {
+      Log.Information("Closing SkyViewPanel");
       ctx.SkyViewPanel = null;
       ctx.MainForm.SkyViewMNU.Checked = false;
     }

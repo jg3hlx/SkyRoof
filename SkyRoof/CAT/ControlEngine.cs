@@ -51,8 +51,7 @@ namespace SkyRoof
       processingThread = new Thread(new ThreadStart(ThreadProcedure));
       processingThread.IsBackground = true;
       processingThread.Name = GetType().Name;
-      processingThread.Start();
-      processingThread.Priority = ThreadPriority.Highest;
+      processingThread.Start();      
     }
 
     protected void StopThread()
@@ -64,6 +63,8 @@ namespace SkyRoof
 
     private void ThreadProcedure()
     {
+      processingThread!.Priority = ThreadPriority.Highest;
+
       if (Connect() && Setup())
       {
         IsRunning = true;

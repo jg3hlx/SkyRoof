@@ -73,18 +73,5 @@ namespace SkyRoof
 
       Close();
     }
-
-
-    /*
-
-POST
-	https://www.amsat.org/status/submit.php
-SatName=RS-44&SatReport=Heard&SatMonth=03&SatDay=19&SatYear=2025&SatHour=2&SatPeriod=2&SatCall=VE3NEA&SatGridSquare=FN03GW&SatSubmit=Submit+Data
-    /status/submit.php?
-SatSubmit=yes&Confirm=yes&SatName=RS-44&SatYear=2025&SatMonth=03&SatDay=19&SatHour=21&SatPeriod=0&SatCall=VE3NEA&SatReport=Heard&SatGridSquare=FN03gw
-
-GET
-https://www.amsat.org/status/submit.php?SatSubmit=yes&Confirm=yes&SatName=RS-44&SatYear=2025&SatMonth=03&SatDay=19&SatHour=2&SatPeriod=2&SatCall=VE3NEA&SatReport=Heard&SatGridSquare=FN03gw
-*/
   }
 }
