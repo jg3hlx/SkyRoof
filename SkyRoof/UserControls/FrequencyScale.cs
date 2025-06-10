@@ -256,7 +256,8 @@ namespace SkyRoof
       LastXPositions[row] = label.x;
 
       // rect from x, row and size
-      float LastY = height - 27 - row * (size.Height - 3);
+      float LastY = height - 1.8f * size.Height - row * (size.Height - 3);
+
       label.Rect = new RectangleF(label.x, LastY - size.Height, size.Width + 3, size.Height);
 
       // line
