@@ -37,8 +37,8 @@
       textBox1 = new TextBox();
       label3 = new Label();
       textBox2 = new TextBox();
-      numericUpDown1 = new NumericUpDown();
       label4 = new Label();
+      numericUpDown1 = new NumericUpDown();
       panel1.SuspendLayout();
       flowLayoutPanel1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
@@ -112,7 +112,6 @@
       // label2
       // 
       label2.AutoSize = true;
-      label2.ForeColor = Color.Red;
       label2.Location = new Point(16, 39);
       label2.Margin = new Padding(4, 0, 4, 0);
       label2.Name = "label2";
@@ -151,14 +150,6 @@
       textBox2.TabIndex = 1;
       textBox2.TextChanged += textBoxes_TextChanged;
       // 
-      // numericUpDown1
-      // 
-      numericUpDown1.Location = new Point(15, 145);
-      numericUpDown1.Maximum = new decimal(new int[] { 8849, 0, 0, 0 });
-      numericUpDown1.Name = "numericUpDown1";
-      numericUpDown1.Size = new Size(200, 23);
-      numericUpDown1.TabIndex = 100;
-      // 
       // label4
       // 
       label4.AutoSize = true;
@@ -168,6 +159,14 @@
       label4.Size = new Size(91, 15);
       label4.TabIndex = 101;
       label4.Text = "Altitude, meters";
+      // 
+      // numericUpDown1
+      // 
+      numericUpDown1.Location = new Point(15, 145);
+      numericUpDown1.Maximum = new decimal(new int[] { 8849, 0, 0, 0 });
+      numericUpDown1.Name = "numericUpDown1";
+      numericUpDown1.Size = new Size(200, 23);
+      numericUpDown1.TabIndex = 100;
       // 
       // UserDetailsDialog
       // 

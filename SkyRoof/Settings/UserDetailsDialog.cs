@@ -24,7 +24,7 @@ namespace SkyRoof
     internal static bool UserDetailsAvailable(Context ctx)
     {
       var sett = ctx.Settings.User;
-      return !string.IsNullOrEmpty(sett.Call) && !string.IsNullOrEmpty(sett.Square);
+      return !string.IsNullOrEmpty(sett.Square);
     }
 
     private void okBtn_Click(object sender, EventArgs e)
@@ -53,19 +53,10 @@ namespace SkyRoof
 
     private void ValidateAll()
     {
-      bool allOk = true;
-
-      // call
-      bool ok = Utils.CallsignRegex.IsMatch(textBox1.Text.Trim());
-      label2.ForeColor = ok ? SystemColors.WindowText : Color.Red;
-      allOk = allOk && ok;
-
-      // square
-      ok = textBox2.Text.Length == 6 && GridSquare.IsValid(textBox2.Text.Trim());
+      bool ok = textBox2.Text.Length == 6 && GridSquare.IsValid(textBox2.Text.Trim());
       label3.ForeColor = ok ? SystemColors.WindowText : Color.Red;
-      allOk = allOk && ok;
 
-      okBtn.Enabled = allOk;
+      okBtn.Enabled = ok;
     }
   }
 }

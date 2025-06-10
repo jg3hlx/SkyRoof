@@ -397,6 +397,13 @@ namespace SkyRoof
 
     private void ReportToAmsatMNU_Click(object sender, EventArgs e)
     {
+      if (string.IsNullOrEmpty(ctx.Settings.User.Call))
+      {
+        MessageBox.Show("Please set your callsign in Settings before sending a report.",
+          "Callsign not set", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+
       var item = (ToolStripMenuItem)sender;
       var sat = (SatnogsDbSatellite)item.Tag!;
       AmsatReportDialog.SendReport(ctx, sat);
