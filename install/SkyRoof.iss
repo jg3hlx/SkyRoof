@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SkyRoof"
-#define MyAppVersion "1.5 Beta"
+#define MyAppVersion "1.5"
 #define MyAppPublisher "Alex VE3NEA"
 #define MyAppURL "https://ve3nea.github.io/SkyRoof"
 #define MyAppExeName "SkyRoof.exe"
@@ -12,14 +12,14 @@
 [Setup]
 AppId={{9411e0db-111f-43f3-8466-f53d93669847}
 AppName={#MyAppName}
-AppVersion={#MyAppVersion}
+AppVersion={#MyAppVersion} Beta
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\Afreet\{#MyAppName}
 DisableProgramGroupPage=yes
-OutputBaseFilename=SkyRoofSetup
+OutputBaseFilename=SkyRoofSetup-v.{#MyAppVersion}-beta
 SetupIconFile=C:\Proj\DSP\SkyRoof\SkyRoof\SkyRoof.ico
 Compression=lzma
 SolidCompression=true
