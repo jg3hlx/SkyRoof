@@ -3,6 +3,7 @@
 ## Hardware
 
 - **Computer**: any modern 64-bit PC;
+- **Monitor**: screen resolution 1900x1280 or higher  4K recommended;
 - **Internet**: required, to download satellite data;
 - **SDR**: optional, but highly recommended. Supported models:
   - Airspy Mini;

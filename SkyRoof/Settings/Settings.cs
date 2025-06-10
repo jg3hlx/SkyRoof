@@ -11,6 +11,7 @@ namespace SkyRoof
     public SatelliteSettings Satellites = new();
     public SdrSettings Sdr = new();
     public WaterfallSettings Waterfall = new();
+    public LatestVersionInfo LatestVersion = new();
 
 
 

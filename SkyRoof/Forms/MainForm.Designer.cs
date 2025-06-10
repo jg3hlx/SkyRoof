@@ -92,6 +92,7 @@
       RotatorLedLabel = new ToolStripStatusLabel();
       RotatorStatusLabel = new ToolStripStatusLabel();
       NoiseFloorLabel = new ToolStripStatusLabel();
+      UpdateLabel = new ToolStripStatusLabel();
       CpuLoadlabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       panel4 = new Panel();
@@ -434,7 +435,7 @@
       // StatusStrip
       // 
       StatusStrip.ImageScalingSize = new Size(24, 24);
-      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SatDataLedLabel, SatDataStatusLabel, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, SoundcardDropdownBtn, VacLedLabel, VacStatusLabel, RxCatLedLabel, RxCatStatusLabel, TxCatLedLabel, TxCatStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, RotatorLedLabel, RotatorStatusLabel, NoiseFloorLabel, CpuLoadlabel });
+      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SatDataLedLabel, SatDataStatusLabel, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, SoundcardDropdownBtn, VacLedLabel, VacStatusLabel, RxCatLedLabel, RxCatStatusLabel, TxCatLedLabel, TxCatStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, RotatorLedLabel, RotatorStatusLabel, NoiseFloorLabel, CpuLoadlabel, UpdateLabel });
       StatusStrip.Location = new Point(0, 926);
       StatusStrip.Name = "StatusStrip";
       StatusStrip.ShowItemToolTips = true;
@@ -636,6 +637,20 @@
       NoiseFloorLabel.TextAlign = ContentAlignment.MiddleLeft;
       NoiseFloorLabel.Visible = false;
       // 
+      // UpdateLabel
+      // 
+      UpdateLabel.BackColor = Color.Lime;
+      UpdateLabel.Font = new Font("Segoe UI", 9F, FontStyle.Underline);
+      UpdateLabel.ForeColor = Color.Blue;
+      UpdateLabel.Name = "UpdateLabel";
+      UpdateLabel.Padding = new Padding(10, 0, 10, 0);
+      UpdateLabel.Size = new Size(81, 30);
+      UpdateLabel.Text = "Download";
+      UpdateLabel.Visible = false;
+      UpdateLabel.Click += UpdateLabel_Click;
+      UpdateLabel.MouseEnter += StatusLabel_MouseEnter;
+      UpdateLabel.MouseLeave += StatusLabel_MouseLeave;
+      // 
       // CpuLoadlabel
       // 
       CpuLoadlabel.DisplayStyle = ToolStripItemDisplayStyle.Text;
@@ -746,5 +761,6 @@
     private Panel panel7;
     private Panel panel6;
     private ToolStripMenuItem LoadTleMNU;
+    private ToolStripStatusLabel UpdateLabel;
   }
 }

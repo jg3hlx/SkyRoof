@@ -63,6 +63,16 @@ namespace SkyRoof
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
 
       StartSdrIfEnabled();
+
+      VersionChecker = new VersionChecker(ctx.Settings.LatestVersion);
+      VersionChecker.UpdateAvailable += UpdateAvailable_handler;
+      VersionChecker.CheckVersionAsync().DoNotAwait();
+    }
+
+    private void UpdateAvailable_handler(object? sender, EventArgs e)
+    {
+      UpdateLabel.Text = $"Download {ctx.Settings.LatestVersion.Name}";
+      UpdateLabel.Visible = true;
     }
 
     private void MainForm_FormClosing(object sender, EventArgs e)
@@ -745,6 +755,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     private const int TICKS_PER_SECOND = 8;
     nuint TickCount;
+    private VersionChecker VersionChecker;
 
     private void timer_Tick(object sender, EventArgs e)
     {
@@ -896,6 +907,11 @@ namespace SkyRoof
     {
       SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
       ctx.SkyViewPanel?.SetPass(pass);
+    }
+
+    private void UpdateLabel_Click(object sender, EventArgs e)
+    {
+      Process.Start(new ProcessStartInfo(ctx.Settings.LatestVersion.Url!) { UseShellExecute = true });
     }
   }
 }
