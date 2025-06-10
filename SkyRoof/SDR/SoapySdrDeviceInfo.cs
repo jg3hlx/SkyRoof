@@ -50,8 +50,9 @@ namespace VE3NEA
       MaxBandwidth = Math.Min(SdrConst.MAX_BANDWIDTH, MaxBandwidth);
       MaxBandwidth = Math.Min(0.9 * SampleRate, MaxBandwidth);
 
-      // hardware filter bandwidth
-      HardwareBandwidth = GetBestMatch(BandwidthRange, 1.1 * MaxBandwidth);
+      // hardware filter bandwidth (could be initially 0)
+      HardwareBandwidth = Math.Max(HardwareBandwidth, 1.1 * MaxBandwidth);
+      HardwareBandwidth = GetBestMatch(BandwidthRange, HardwareBandwidth);
     }
 
 
