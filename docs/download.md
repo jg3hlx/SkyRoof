@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof.zip v.1.5 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.5-beta/SkyRoof.zip)
+[SkyRoof.zip v.1.6 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.6-beta/SkyRoofSetup-v.1.6-beta.zip)
 
 <br>
 
@@ -15,6 +15,13 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.6 Beta
+
+- added support of remote SDR;
+- added automatic checking for software updates;
+- the user is no longer required to enter a Ham callsign;
+- re-entered satellites are now removed from the groups to prevent errors.
 
 #### v.1.5 Beta
 

@@ -20,3 +20,7 @@ screen width is only `1900 / 2 = 950 pixels`. To fix this, right-click on the De
 to a lower value.
 
 ---
+
+**Q** How can I run two instances of SkyRoof?
+
+**A** By default, only one instance of Skyroof can run at any time, but there is a work around. Make a copy of the SkyRoof.exe file in the same folder, but with a different name, e.g., SkyRoof_2.exe. Each exe will have its own settings, its own data folder, and will run independently of the other instance.

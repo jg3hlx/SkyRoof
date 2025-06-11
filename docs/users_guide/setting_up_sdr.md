@@ -41,3 +41,20 @@ The two settings, common to all radios, are:
 - **Single Gain** - when set to true, the SDR gain is controlled by the **RF Gain** slider on the toolbar.
   This is the recommended setting. When it is set to false, the settings in the **Stage Gains** are applied to the
   individual stages of the SDR, and the gain slider is disabled.
+
+  ## Using Remote SDR
+
+  SkyRoof can use SDR devices connected to a remote computer via the
+  [SoapyRemote](https://github.com/pothosware/SoapyRemote) driver. To enable remote access to SDR:
+  
+  - **On the remote computer:**
+    - install the **SoapySDRServer** that comes with
+    [SoapySDR](https://github.com/pothosware/SoapySDR/wiki)
+    and run it.
+  - **In SkyRoof:**
+    - enable **SoapyRemote** in the **Settings** dialog;
+    - enter the **host** and **port number** of the remote computer.
+
+      ![SoapyRemote Settings](../images/soapyremote_settings.png)
+
+    - Open the **SDR Devices** dialog and select one of the remote SDR devices from the list.

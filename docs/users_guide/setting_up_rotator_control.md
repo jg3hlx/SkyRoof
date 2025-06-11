@@ -12,12 +12,12 @@ Create a shortcut to start **rotctld.exe*, with command line arguments:
 
 The arguments on the command line must be tailored for your specific rotator and COM port settings. Refer to the
 [rotctld documentation](https://hamlib.sourceforge.net/html/rotctld.1.html) for a complete description
-of the arguments. 
+of the arguments.
 
 Assuming that HamLib is installed in the default location, here is an example string for the shortcut:
 
 ```cmd
-"C:\Program Files\hamlib-w64-4.6.2\bin\rotctld.exe" -m 601 -r COM12 -s 9600 
+"C:\Program Files\hamlib-w64-4.5.5\bin\rotctld.exe" -m 601 -r COM12 -s 9600 
 ```
 
 In the string above the following arguments are used:

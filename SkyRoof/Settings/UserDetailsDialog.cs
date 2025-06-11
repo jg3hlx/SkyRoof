@@ -24,7 +24,7 @@ namespace SkyRoof
     internal static bool UserDetailsAvailable(Context ctx)
     {
       var sett = ctx.Settings.User;
-      return !string.IsNullOrEmpty(sett.Square);
+      return !string.IsNullOrEmpty(sett?.Square);
     }
 
     private void okBtn_Click(object sender, EventArgs e)
@@ -35,7 +35,7 @@ namespace SkyRoof
     private void LoadSettings()
     {
       textBox1.Text = ctx.Settings.User.Call;
-      if (ctx.Settings.User.Square != "JJ00jj") textBox2.Text = ctx.Settings.User.Square;
+      textBox2.Text = ctx.Settings.User.Square;
       numericUpDown1.Value = ctx.Settings.User.Altitude;
     }
 

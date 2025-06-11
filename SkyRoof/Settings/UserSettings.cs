@@ -10,7 +10,7 @@ namespace SkyRoof
 
     [DisplayName("Grid Square")]
     [Description("Your grid square")]
-    public string Square { get; set; } = "JJ00jj";
+    public string Square { get; set; } = "";
 
     [DisplayName("Altitude")]
     [Description("Your altitude above the sea level, in meters")]

@@ -16,8 +16,9 @@ You will be presented with the User Details dialog:
 
 ![User Details Dialog](../images/user_details.png)
 
-Enter your callsign, 6-character grid square and, optionally, your altitude above the sea level.
-This step is required, the program cannot proceed without that information.
+Enter your callsign, 6-character grid square and your altitude above the sea level.
+The grid square is required, the program cannot proceed without that information. The other two
+values are optional.
 
 ### Satellite Data Download
 

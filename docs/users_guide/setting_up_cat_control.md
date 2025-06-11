@@ -9,8 +9,8 @@
 
 SkyRoof uses **rigctld.exe**, a HamLib-based CAT control daemon, to control the radio.
 
-1. Download HamLib from [its GitHub page](https://github.com/Hamlib/Hamlib): click on **Releases / Latest**,
-then download **hamlib-w64-4.6.2.exe**, or a later version if available.
+1. Download **hamlib-w64-4.5.5.exe** [from GitHub](https://github.com/Hamlib/Hamlib/releases/tag/4.5.5).
+Other versions may not work correctly.
 2. Run the downloaded file to install HamLib, note the folder where it is installed.
 3. Create a shortcut to start **rigctld.exe*, with command line arguments:
 
@@ -23,7 +23,7 @@ then download **hamlib-w64-4.6.2.exe**, or a later version if available.
     Assuming that HamLib is installed in the default location, here is an example string for the shortcut:
 
     ```cmd
-    "C:\Program Files\hamlib-w64-4.6.2\bin\rigctld.exe" -m 3081 -r COM9 -s 115200 
+    "C:\Program Files\hamlib-w64-4.5.5\bin\rigctld.exe" -m 3081 -r COM9 -s 115200 
     ```
 
     In the string above the following arguments are used:
