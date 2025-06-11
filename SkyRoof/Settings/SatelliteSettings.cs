@@ -50,7 +50,7 @@ namespace SkyRoof
     {
       // remove deleted sats
       foreach (var group in SatelliteGroups)
-        group.SatelliteIds.RemoveAll(id => db.GetSatellite(id) == null);
+        group.SatelliteIds.RemoveAll(id => db.GetSatellite(id)?.Tle == null);
 
       Sanitize();
     }

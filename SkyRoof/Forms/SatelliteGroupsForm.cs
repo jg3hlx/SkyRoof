@@ -465,8 +465,14 @@ namespace SkyRoof
       DoDragDrop(sats, DragDropEffects.All);
     }
 
-    private void AddSatellitesToTree(List<SatnogsDbSatellite>? sats, TreeNode dst)
+    private void AddSatellitesToTree(List<SatnogsDbSatellite> sats, TreeNode dst)
     {
+      if (sats.Any(sat => !sat.Flags.HasFlag(SatelliteFlags.Alive)))
+      {
+        MessageBox.Show("You can only add alive satellites to groups.", "SkyRoof", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+
       // default to first group
       if (dst == null && treeView1.Nodes.Count > 0) dst = treeView1.Nodes[0];
 
