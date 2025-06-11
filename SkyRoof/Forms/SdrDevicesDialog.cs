@@ -48,14 +48,27 @@ namespace SkyRoof
       Devices = Utils.DeepClone(ctx.Settings.Sdr.Devices);
       var oldNames = Devices.Select(x => x.Name).ToList();
 
-      // currently available devices
-      var presentDevices = SoapySdr.EnumerateDevices();
-      var presentNames = presentDevices.Select(x => x.Name).ToList();
 
-      // keep previous 
+      // currently available local devices
+      var localDevices = SoapySdr.EnumerateDevices();
+
+      // currently available remote devices
+      IEnumerable<SoapySdrDeviceInfo> remoteDevices = [];
+      if (ctx.Settings.SoapyRemote.Enabled)      
+      {
+        string host = $"{ctx.Settings.SoapyRemote.Host}:{ctx.Settings.SoapyRemote.Port}";
+        remoteDevices = SoapySdr.EnumerateDevices($"remote={host}, driver=remote").Where(dev => dev.KwArgs["remote:driver"] != "audio");
+        foreach (var device in remoteDevices) device.KwArgs["label"] = $"Remote: {device.Name}";
+      }
+
+      // merge local and remote devices
+      var presentDevices = localDevices.Concat(remoteDevices);
+
+      // keep previously detected devices 
+      var presentNames = presentDevices.Select(x => x.Name).ToList();
       foreach (var dev in Devices) dev.Present = presentNames.Contains(dev.Name);
-      
-      // add new
+
+      // add new devices
       var newDevices = presentDevices.Where(dev => !oldNames.Contains(dev.Name));
       foreach (var dev in newDevices) ctx.MainForm.SuggestSdrSettings(dev);
       Devices.AddRange(newDevices);

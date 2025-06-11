@@ -34,6 +34,13 @@ namespace SkyRoof
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public RotatorSettings Rotator { get; set; } = new();
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    [Description("Use SDR on a remote computer via the SoapyRemote protocol")]
+    public SoapyRemoteSettings SoapyRemote { get; set; } = new();
+
+
+
+
     private static string GetFileName()
     {
       return Path.Combine(Utils.GetUserDataFolder(), "Settings.json");

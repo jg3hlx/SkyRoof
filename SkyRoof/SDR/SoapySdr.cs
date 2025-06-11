@@ -39,7 +39,11 @@ namespace VE3NEA
       if (ptr == IntPtr.Zero) return Array.Empty<SoapySdrDeviceInfo>();
       var kwargs = SoapySdrHelper.MarshalKwArgsArray(ptr, length);
       var result = kwargs.Select(args => new SoapySdrDeviceInfo(args)).ToArray();
-      foreach (var dev in result) dev.Present = true;
+      foreach (var dev in result)
+      {
+        dev.Present = true;
+        Log.Information($"Found SoapySDR device: {dev.Name} ({dev.KwArgs})");
+      }
       return result;
     }
 
