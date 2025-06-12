@@ -9,7 +9,9 @@ namespace SkyRoof
 {
   public class AmsatSettings
   {
-    [DefaultValue(false)] 
+    [DisplayName("Download Enabled")]
+    [Description("Download satellite status info from the AMSAT web site")]
+    [DefaultValue(false)]
     public bool Enabled { get; set; } = false;
 
     public override string ToString() { return ""; }

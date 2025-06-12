@@ -148,7 +148,7 @@ namespace SkyRoof
         if (ctx.Settings.Amsat.Enabled)
           ctx.AmsatStatusLoader.GetStatusesAsync();
         else
-          ctx.GroupViewPanel?.ShowAmsatStatuses(null);
+          ctx.GroupViewPanel?.ShowAmsatStatuses();
 
           ChangedFields.Clear();
     }

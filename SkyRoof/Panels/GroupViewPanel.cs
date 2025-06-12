@@ -34,8 +34,6 @@ namespace SkyRoof
       this.ctx.GroupViewPanel = this;
       this.ctx.MainForm.GroupViewMNU.Checked = true;
       LoadGroup();
-
-      ctx.AmsatStatusLoader.GetStatusesAsync();
     }
 
     private void GroupViewPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -51,6 +49,8 @@ namespace SkyRoof
       var sett = ctx.Settings.Satellites;
       var group = sett.SatelliteGroups.First(g => g.Id == sett.SelectedGroupId);
       Items = group.SatelliteIds.Select(id => ItemFromSat(ctx.SatnogsDb.GetSatellite(id))).ToArray();
+      ShowAmsatStatuses();
+
       listView1.VirtualListSize = Items.Length;
       listView1.Invalidate();
 
@@ -91,22 +91,26 @@ namespace SkyRoof
       listView1.Invalidate();
     }
 
-    public void ShowAmsatStatuses(Dictionary<int, bool>? statuses)
+    public void ShowAmsatStatuses()
     {
-      if (statuses == null)
-        foreach (var item in Items)
+      if (!ctx.Settings.Amsat.Enabled)
+      {
+        listView1.SmallImageList = null;
+        return;
+      }
+
+      listView1.SmallImageList = imageList1;
+      var statuses = ctx.AmsatStatusLoader.Statuses;
+
+      foreach (var item in Items)
+      {
+        int? norad_id = ((ItemData)item.Tag!).Sat.norad_cat_id;
+
+        if (norad_id != null && statuses.TryGetValue(norad_id.Value, out bool status))
+          item.ImageIndex = status ? 1 : 2;
+        else
           item.ImageIndex = -1;
-
-      else
-        foreach (var item in Items)
-        {
-          int? norad_id = ((ItemData)item.Tag!).Sat.norad_cat_id;
-
-          if (norad_id == null)
-            item.ImageIndex = -1;
-          else if (statuses.TryGetValue(norad_id.Value, out bool status))
-            item.ImageIndex = status ? 1 : 2;
-        }
+      }
     }
 
     public void UpdatePassTimes()

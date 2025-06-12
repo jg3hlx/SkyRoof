@@ -68,6 +68,8 @@ namespace SkyRoof
       VersionChecker = new VersionChecker(ctx.Settings.LatestVersion);
       VersionChecker.UpdateAvailable += UpdateAvailable_handler;
       VersionChecker.CheckVersionAsync().DoNotAwait();
+
+      ctx.AmsatStatusLoader.GetStatusesAsync();
     }
 
     private void UpdateAvailable_handler(object? sender, EventArgs e)

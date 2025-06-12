@@ -39,7 +39,6 @@ namespace SkyRoof
     public SoapyRemoteSettings SoapyRemote { get; set; } = new();
 
     [DisplayName("Amsat Satellite Status")]
-    [Description("Download satellite status info from the AMSAT web site")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public AmsatSettings Amsat { get; set; } = new();
 

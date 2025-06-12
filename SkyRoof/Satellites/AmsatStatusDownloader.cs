@@ -7,10 +7,11 @@ namespace SkyRoof
 {
   public class AmsatStatusLoader
   {
+    private readonly string url = "https://www.amsat.org/status/?app=SkyRoof";
     private readonly string[] activeColors = ["#4169E1", "#9900FF"];
     private readonly string[] inactiveColors = ["yellow", "red"]; 
-    private readonly Dictionary<int, bool> statuses = [];
 
+    public readonly Dictionary<int, bool> Statuses = [];
     public Context ctx;
 
     public async void GetStatusesAsync()
@@ -39,7 +40,7 @@ namespace SkyRoof
         return;
       }
 
-      ctx.GroupViewPanel?.ShowAmsatStatuses(statuses);
+      ctx.GroupViewPanel?.ShowAmsatStatuses();
     }
 
     private async void ParseAmsatHtml(string html)
@@ -50,7 +51,7 @@ namespace SkyRoof
       var tables = document.QuerySelectorAll("table");
       var rows = tables[2].QuerySelectorAll("tr");
 
-      statuses.Clear();
+      Statuses.Clear();
       foreach (var row in rows.Skip(1)) ParseRow(row);
     }
 
@@ -75,11 +76,11 @@ namespace SkyRoof
         else if (inactiveColors.Contains(color)) status = false;
         else return;
 
-        if (statuses.ContainsKey(norad_id.Value))
+        if (Statuses.ContainsKey(norad_id.Value))
           // true if at least one transmitter is active
-          statuses[norad_id.Value] = statuses[norad_id.Value] || status;
+          Statuses[norad_id.Value] = Statuses[norad_id.Value] || status;
         else
-          statuses[norad_id.Value] = status;
+          Statuses[norad_id.Value] = status;
       }
     }
 
@@ -88,7 +89,6 @@ namespace SkyRoof
         using (HttpClient client = new HttpClient())
         {
           // download
-          string url = "https://www.amsat.org/status/";
           var response = await client.GetAsync(url);
           return await response.Content.ReadAsStringAsync();
         }
