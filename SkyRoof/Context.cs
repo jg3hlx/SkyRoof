@@ -16,6 +16,7 @@ namespace SkyRoof
     public GroupSatellitePasses GroupPasses;
     public HamSatellitePasses HamPasses;
     public SdrSatellitePasses SdrPasses;
+    public AmsatStatusLoader AmsatStatusLoader = new();
 
     // main form
     public MainForm MainForm;

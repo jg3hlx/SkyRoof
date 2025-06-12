@@ -60,6 +60,7 @@
       listView1.Size = new Size(414, 383);
       listView1.SmallImageList = imageList1;
       listView1.Sorting = SortOrder.Ascending;
+      listView1.StateImageList = imageList1;
       listView1.TabIndex = 8;
       listView1.UseCompatibleStateImageBehavior = false;
       listView1.View = View.Details;
@@ -110,6 +111,8 @@
       imageList1.ImageStream = (ImageListStreamer)resources.GetObject("imageList1.ImageStream");
       imageList1.TransparentColor = Color.Transparent;
       imageList1.Images.SetKeyName(0, "checkmark.bmp");
+      imageList1.Images.SetKeyName(1, "ok_small.png");
+      imageList1.Images.SetKeyName(2, "xmark_small.png");
       // 
       // GroupNameLabel
       // 

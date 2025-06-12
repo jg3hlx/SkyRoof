@@ -34,6 +34,8 @@ namespace SkyRoof
       this.ctx.GroupViewPanel = this;
       this.ctx.MainForm.GroupViewMNU.Checked = true;
       LoadGroup();
+
+      ctx.AmsatStatusLoader.GetStatusesAsync();
     }
 
     private void GroupViewPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -83,10 +85,28 @@ namespace SkyRoof
       var selectedSat = ctx.SatelliteSelector.SelectedSatellite;
 
       foreach (var item in Items)
-        item.ImageIndex = ((ItemData)item.Tag!).Sat == selectedSat ? 0 : -1;
+        item.StateImageIndex = ((ItemData)item.Tag!).Sat == selectedSat ? 0 : -1;
 
       listView1.SelectedIndices.Clear();
       listView1.Invalidate();
+    }
+
+    public void ShowAmsatStatuses(Dictionary<int, bool>? statuses)
+    {
+      if (statuses == null)
+        foreach (var item in Items)
+          item.ImageIndex = -1;
+
+      else
+        foreach (var item in Items)
+        {
+          int? norad_id = ((ItemData)item.Tag!).Sat.norad_cat_id;
+
+          if (norad_id == null)
+            item.ImageIndex = -1;
+          else if (statuses.TryGetValue(norad_id.Value, out bool status))
+            item.ImageIndex = status ? 1 : 2;
+        }
     }
 
     public void UpdatePassTimes()

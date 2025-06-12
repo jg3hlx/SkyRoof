@@ -92,10 +92,11 @@
       RotatorLedLabel = new ToolStripStatusLabel();
       RotatorStatusLabel = new ToolStripStatusLabel();
       NoiseFloorLabel = new ToolStripStatusLabel();
-      UpdateLabel = new ToolStripStatusLabel();
       CpuLoadlabel = new ToolStripStatusLabel();
+      UpdateLabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       panel4 = new Panel();
+      DownloadAmsatMNU = new ToolStripMenuItem();
       Toolbar.SuspendLayout();
       panel3.SuspendLayout();
       ClockPanel.SuspendLayout();
@@ -334,7 +335,7 @@
       // 
       // toolsToolStripMenuItem
       // 
-      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, DownloadSatDataMNU, DownloadTleMNU, LoadTleMNU });
+      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, DownloadSatDataMNU, DownloadTleMNU, DownloadAmsatMNU, LoadTleMNU });
       toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
       toolsToolStripMenuItem.Size = new Size(46, 20);
       toolsToolStripMenuItem.Text = "Tools";
@@ -637,6 +638,14 @@
       NoiseFloorLabel.TextAlign = ContentAlignment.MiddleLeft;
       NoiseFloorLabel.Visible = false;
       // 
+      // CpuLoadlabel
+      // 
+      CpuLoadlabel.DisplayStyle = ToolStripItemDisplayStyle.Text;
+      CpuLoadlabel.Name = "CpuLoadlabel";
+      CpuLoadlabel.Size = new Size(96, 30);
+      CpuLoadlabel.Text = "CPU Load: 00.0%";
+      CpuLoadlabel.TextAlign = ContentAlignment.MiddleLeft;
+      // 
       // UpdateLabel
       // 
       UpdateLabel.BackColor = Color.Lime;
@@ -651,14 +660,6 @@
       UpdateLabel.MouseEnter += StatusLabel_MouseEnter;
       UpdateLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
-      // CpuLoadlabel
-      // 
-      CpuLoadlabel.DisplayStyle = ToolStripItemDisplayStyle.Text;
-      CpuLoadlabel.Name = "CpuLoadlabel";
-      CpuLoadlabel.Size = new Size(96, 30);
-      CpuLoadlabel.Text = "CPU Load: 00.0%";
-      CpuLoadlabel.TextAlign = ContentAlignment.MiddleLeft;
-      // 
       // panel4
       // 
       panel4.Dock = DockStyle.Left;
@@ -666,6 +667,13 @@
       panel4.Name = "panel4";
       panel4.Size = new Size(4, 824);
       panel4.TabIndex = 7;
+      // 
+      // DownloadAmsatMNU
+      // 
+      DownloadAmsatMNU.Name = "DownloadAmsatMNU";
+      DownloadAmsatMNU.Size = new Size(216, 22);
+      DownloadAmsatMNU.Text = "Download AMSAT Statuses";
+      DownloadAmsatMNU.Click += DownloadAmsatMNU_Click;
       // 
       // MainForm
       // 
@@ -762,5 +770,6 @@
     private Panel panel6;
     private ToolStripMenuItem LoadTleMNU;
     private ToolStripStatusLabel UpdateLabel;
+    private ToolStripMenuItem DownloadAmsatMNU;
   }
 }

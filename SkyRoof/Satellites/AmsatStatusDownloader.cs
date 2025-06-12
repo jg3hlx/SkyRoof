@@ -1,0 +1,97 @@
+﻿using AngleSharp;
+using AngleSharp.Dom;
+using Serilog;
+
+
+namespace SkyRoof
+{
+  public class AmsatStatusLoader
+  {
+    private readonly string[] activeColors = ["#4169E1", "#9900FF"];
+    private readonly string[] inactiveColors = ["yellow", "red"]; 
+    private readonly Dictionary<int, bool> statuses = [];
+
+    public Context ctx;
+
+    public async void GetStatusesAsync()
+    {
+      if (!ctx.Settings.Amsat.Enabled || ctx.GroupViewPanel == null) return;
+
+      string html;
+
+      try
+      {
+        html = await DownloadStatusesAsync();
+      }
+      catch (Exception ex)
+      {
+        Log.Error("Error downloading AMSAT status", ex);
+        return;
+      }
+
+      try
+      {
+        ParseAmsatHtml(html);
+      }
+      catch (Exception ex)
+      {
+        Log.Error("Error parsing AMSAT status", ex);
+        return;
+      }
+
+      ctx.GroupViewPanel?.ShowAmsatStatuses(statuses);
+    }
+
+    private async void ParseAmsatHtml(string html)
+    {
+      var config = Configuration.Default.WithDefaultLoader();
+      var context = BrowsingContext.New(config);
+      var document = await context.OpenAsync(req => req.Content(html));
+      var tables = document.QuerySelectorAll("table");
+      var rows = tables[2].QuerySelectorAll("tr");
+
+      statuses.Clear();
+      foreach (var row in rows.Skip(1)) ParseRow(row);
+    }
+
+    private void ParseRow(IElement row)
+    {
+      {
+        var cells = row.QuerySelectorAll("td").ToArray();
+        string satId = cells[0].TextContent;
+        int? norad_id = new SatelliteNames().Amsat.FirstOrDefault(s => s.Value.Contains(satId)).Key;
+
+        if (norad_id == null)
+        {
+          Log.Warning($"Parsing AMSAT status error: no norad_id found for {satId}");
+          return;
+        }
+
+        string? color = cells.Skip(1).Take(24).Select(cell => cell.GetAttribute("bgcolor"))
+          .Where(color => color != "C0C0C0").FirstOrDefault();
+
+        bool status;
+        if (activeColors.Contains(color)) status = true;
+        else if (inactiveColors.Contains(color)) status = false;
+        else return;
+
+        if (statuses.ContainsKey(norad_id.Value))
+          // true if at least one transmitter is active
+          statuses[norad_id.Value] = statuses[norad_id.Value] || status;
+        else
+          statuses[norad_id.Value] = status;
+      }
+    }
+
+    private async Task<string> DownloadStatusesAsync()
+    { 
+        using (HttpClient client = new HttpClient())
+        {
+          // download
+          string url = "https://www.amsat.org/status/";
+          var response = await client.GetAsync(url);
+          return await response.Content.ReadAsStringAsync();
+        }
+    }
+  }
+}

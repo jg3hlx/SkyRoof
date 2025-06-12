@@ -65,3 +65,22 @@ using the **Tools / Load TLE from File** menu command. Two TLE formats are suppo
     ([download](https://celestrak.org/NORAD/elements/gp.php?GROUP=amateur&FORMAT=tle)).
 
 Note that TLE import cannot add new satellites, it only loads orbital elements for the satellites already in the database.
+
+## AMSAT Satellite Status
+
+[AMSAT Live OSCAR Satellite Status Page](https://www.amsat.org/status/) is a crowd-soourced, real-time Ham satellite status page.
+
+### Posting Status Data
+
+You can post your satellite status observations the the AMSAT web site either by filling the sumbission form on their
+site, or using the right-click menu of the satellite   labels on the [Frequency Scale](frequency_scale.md).
+A valid Ham callsign must be entered in the [Settings window](settings_window.md) for this function to work.
+
+### Downloading Status Data
+
+Set the **Amsat Satellite Status / Enable** option in the Settings window to `true` to enable automatic downloads of the
+satellite status information from the AMSAT web site. The statuses are shown on the [Current Group](current_group_panel.md)
+panel, the green and red icons represent the active and inactive status respecively.
+
+Satellite status data are downloaded once an hour. You can manually download it at any time using the
+**Tools / Download AMSAT Statuses** menu command.

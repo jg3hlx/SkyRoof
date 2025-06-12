@@ -144,7 +144,13 @@ namespace SkyRoof
       if (ChangedFields.Exists(s => s.StartsWith("SkyRoof.RotatorSettings.")))
         ctx.RotatorControl.ApplySettings(true);
 
-      ChangedFields.Clear();
+      if (ChangedFields.Exists(s => s.StartsWith("SkyRoof.AmsatSettings.")))
+        if (ctx.Settings.Amsat.Enabled)
+          ctx.AmsatStatusLoader.GetStatusesAsync();
+        else
+          ctx.GroupViewPanel?.ShowAmsatStatuses(null);
+
+          ChangedFields.Clear();
     }
   }
 }

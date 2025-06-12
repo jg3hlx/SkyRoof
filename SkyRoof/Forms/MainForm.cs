@@ -33,6 +33,7 @@ namespace SkyRoof
       ctx.Announcer.ctx = ctx;
       ctx.CatControl.ctx = ctx;
       ctx.RotatorControl.ctx = ctx;
+      ctx.AmsatStatusLoader.ctx = ctx;
 
       ctx.Settings.LoadFromFile();
 
@@ -572,6 +573,11 @@ namespace SkyRoof
       EditSdrDevices();
     }
 
+    private void DownloadAmsatMNU_Click(object sender, EventArgs e)
+    {
+      ctx.Settings.Amsat.Enabled = true;
+      ctx.AmsatStatusLoader.GetStatusesAsync();
+    }
 
 
 
@@ -809,6 +815,7 @@ namespace SkyRoof
     {
       CheckDownloadSatelliteList();
       CheckDownloadTle();
+      ctx.AmsatStatusLoader.GetStatusesAsync();
     }
 
 
