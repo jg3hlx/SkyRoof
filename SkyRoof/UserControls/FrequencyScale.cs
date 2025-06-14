@@ -354,6 +354,8 @@ namespace SkyRoof
 
     internal bool IsMouseInFilter(int x)
     {
+      if (ctx?.Slicer?.Enabled != true) return false;
+
       var rect = GetPassbandRect();
       return x >= rect.Left && x <= rect.Right;
     }
