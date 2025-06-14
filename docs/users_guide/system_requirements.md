@@ -2,8 +2,9 @@
 
 ## Hardware
 
-- **Computer**: any modern 64-bit PC;
-- **Monitor**: screen resolution 1900x1280 or higher  4K recommended;
+- **Computer**: 64-bit PC. 3-GHz Quad-core CPU is recommended;
+- **Video Card**:  OpenGL 3.3 or higher, 512 Mb of texture memory;
+- **Monitor**: screen resolution 1900x1280 or higher, 4K recommended;
 - **Internet**: required, to download satellite data;
 - **SDR**: optional, but highly recommended. Supported models:
   - Airspy Mini;

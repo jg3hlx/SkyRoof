@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof.zip v.1.6 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.6-beta/SkyRoofSetup-v.1.6-beta.zip)
+[SkyRoof.zip v.1.7 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.7-beta/SkyRoofSetup-v.1.7-beta.zip)
 
 <br>
 
@@ -15,6 +15,13 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.7 Beta
+
+- added a real-time satellite status indicator to the
+[Current Group](users_guide/current_group_panel.md) panel. Must be enabled in Settings.
+
+    ![Current Group](images/current_group.png)
 
 #### v.1.6 Beta
 
