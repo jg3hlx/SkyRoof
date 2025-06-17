@@ -2,7 +2,7 @@
 
 **Q:** I downloaded SkyRoof, and my virus scanner shows an infection. Is it real?
 
-**A:** Most likely, it is a false detection. However, it is always a good idea to test the dwonload links before downloading any software. There are several online virus scanning services that you can use to check the link.
+**A:** Most likely, it is a false detection. However, it is always a good idea to test the dwonload links **before downloading** any software. There are several online virus scanning services that you can use to check the link.
 [VirusTotal](https://www.virustotal.com/gui/home/url) and [Hybrid Analysis](https://www.hybrid-analysis.com/})
 are just two examples.
 
