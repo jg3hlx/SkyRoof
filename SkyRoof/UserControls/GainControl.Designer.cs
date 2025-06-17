@@ -43,9 +43,9 @@
       label1.AutoSize = true;
       label1.Location = new Point(1, 11);
       label1.Name = "label1";
-      label1.Size = new Size(49, 15);
+      label1.Size = new Size(47, 15);
       label1.TabIndex = 25;
-      label1.Text = "RG Gain";
+      label1.Text = "RF Gain";
       // 
       // RfGainSlider
       // 

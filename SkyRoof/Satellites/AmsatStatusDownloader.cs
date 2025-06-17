@@ -1,6 +1,8 @@
-﻿using AngleSharp;
+﻿using System.Xml.Linq;
+using AngleSharp;
 using AngleSharp.Dom;
 using Serilog;
+using VE3NEA;
 
 
 namespace SkyRoof
@@ -14,9 +16,9 @@ namespace SkyRoof
     public readonly Dictionary<int, bool> Statuses = [];
     public Context ctx;
 
-    public async void GetStatusesAsync()
+    public async Task<bool> GetStatusesAsync()
     {
-      if (!ctx.Settings.Amsat.Enabled || ctx.GroupViewPanel == null) return;
+      if (!ctx.Settings.Amsat.Enabled || ctx.GroupViewPanel == null) return true;
 
       string html;
 
@@ -26,8 +28,8 @@ namespace SkyRoof
       }
       catch (Exception ex)
       {
-        Log.Error("Error downloading AMSAT status", ex);
-        return;
+        Log.Error(ex, "Error downloading AMSAT status");
+        return false;
       }
 
       try
@@ -36,11 +38,13 @@ namespace SkyRoof
       }
       catch (Exception ex)
       {
-        Log.Error("Error parsing AMSAT status", ex);
-        return;
+        Log.Error(ex, "Error parsing AMSAT status");
+        File.WriteAllText(Path.Combine(Utils.GetUserDataFolder(), "Downloads", "amsat_status_error.html"), html);
+        return false;
       }
 
       ctx.GroupViewPanel?.ShowAmsatStatuses();
+      return true;
     }
 
     private async void ParseAmsatHtml(string html)

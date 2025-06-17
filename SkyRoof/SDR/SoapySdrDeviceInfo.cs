@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Serilog;
 using SkyRoof;
 using static VE3NEA.NativeSoapySdr;
 
@@ -34,12 +35,19 @@ namespace VE3NEA
     {
       KwArgs = kwArgs;
 
-      Device = SoapySdr.CreateDevice(kwArgs);
-      ReadCapabilities();
-      ReadProperties();
-      SoapySdr.ReleaseDevice(Device);
+      try
+      {
+        Device = SoapySdr.CreateDevice(kwArgs);
+        ReadCapabilities();
+        ReadProperties();
+        SoapySdr.ReleaseDevice(Device);
 
-      Present = true;
+        Present = true;
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, $"Failed to create SoapySdr device for {kwArgs}");
+      }
     }
 
     internal void ValidateRateAndBandwidth()

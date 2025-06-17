@@ -3,6 +3,7 @@ using System.DirectoryServices.ActiveDirectory;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Serilog;
 using SGPdotNET.TLE;
 using VE3NEA;
@@ -15,6 +16,7 @@ namespace SkyRoof
     private Dictionary<string, SatnogsDbSatellite> SatelliteList = new();
     private readonly HttpClient DownloadHttpClient = new();
     private CancellationTokenSource cts;
+    private JsonSerializerSettings JsonSettings = new();
 
     public IEnumerable<SatnogsDbSatellite> Satellites { get => SatelliteList.Values; }
     public bool Loaded { get => loaded; }
@@ -30,6 +32,8 @@ namespace SkyRoof
       DataFolder = Utils.GetUserDataFolder();
       DownloadsFolder = Path.Combine(DataFolder, "Downloads");
       Directory.CreateDirectory(DownloadsFolder);
+
+      JsonSettings.Converters.Add(new IsoDateTimeConverter { DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ssK" });
     }
 
     public void LoadFromFile()
@@ -199,14 +203,14 @@ namespace SkyRoof
     private void ImportSatnogsSatellites()
     {
       string json = File.ReadAllText(Path.Combine(DownloadsFolder, "satellites.json"));
-      SatnogsDbSatelliteList satellites = JsonConvert.DeserializeObject<SatnogsDbSatelliteList>(json);
+      SatnogsDbSatelliteList satellites = JsonConvert.DeserializeObject<SatnogsDbSatelliteList>(json, JsonSettings)!;
       SatelliteList = satellites.ToDictionary(s => s.sat_id);
     }
 
     private void ImportSatnogsTransmitters()
     {
       string json = File.ReadAllText(Path.Combine(DownloadsFolder, "transmitters.json"));
-      SatnogsDbTransmitterList transmitters = JsonConvert.DeserializeObject<SatnogsDbTransmitterList>(json)!;
+      SatnogsDbTransmitterList transmitters = JsonConvert.DeserializeObject<SatnogsDbTransmitterList>(json, JsonSettings)!;
 
       // only transmitters with downlink frequency are imported.
       // currently 3 transmitters out of 2K+ have downlink_low=null: KOSEN-2, CHUBUSAT-2 and CHUBUSAT-3
@@ -224,7 +228,7 @@ namespace SkyRoof
     private void ImportSatnogsTle()
     {
       string json = File.ReadAllText(Path.Combine(DownloadsFolder, "tle.json"));
-      SatnogsDbTleList tles = JsonConvert.DeserializeObject<SatnogsDbTleList>(json)!;
+      SatnogsDbTleList tles = JsonConvert.DeserializeObject<SatnogsDbTleList>(json, JsonSettings)!;
 
       foreach (SatnogsDbTle tle in tles)
         if (SatelliteList.TryGetValue(tle.sat_id, out SatnogsDbSatellite sat))
@@ -281,7 +285,7 @@ namespace SkyRoof
       try
       {
         if (Path.GetExtension(tleFileName).ToLower() == ".json")
-          tles = JsonConvert.DeserializeObject<SatnogsDbTleList>(tleContent)!;
+          tles = JsonConvert.DeserializeObject<SatnogsDbTleList>(tleContent, JsonSettings)!;
         else
           tles = TlesFromText(tleContent);
 
@@ -325,7 +329,7 @@ namespace SkyRoof
           updated = DateTime.Now,
           norad_cat_id = int.Parse(lines[i + 1].Substring(2, 5).Trim(), CultureInfo.InvariantCulture)
         });
-    
+
       return tles;
     }
   }

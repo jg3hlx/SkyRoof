@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace VE3NEA
@@ -38,11 +39,11 @@ namespace VE3NEA
 
       if (ptr == IntPtr.Zero) return Array.Empty<SoapySdrDeviceInfo>();
       var kwargs = SoapySdrHelper.MarshalKwArgsArray(ptr, length);
-      var result = kwargs.Select(args => new SoapySdrDeviceInfo(args)).ToArray();
+      var result = kwargs.Select(args => new SoapySdrDeviceInfo(args)).Where(dev => dev.Present).ToArray();
       foreach (var dev in result)
       {
         dev.Present = true;
-        Log.Information($"Found SoapySDR device: {dev.Name} ({dev.KwArgs})");
+        Log.Information($"Found SoapySDR device: {dev.Name} ({JsonConvert.SerializeObject(dev.KwArgs)})");
       }
       return result;
     }

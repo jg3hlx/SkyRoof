@@ -10,6 +10,7 @@ using CSCore.Win32;
 using Serilog;
 using SGPdotNET.CoordinateSystem;
 using SGPdotNET.Observation;
+using SGPdotNET.TLE;
 using SGPdotNET.Util;
 using SharpGL;
 using VE3NEA;
@@ -207,8 +208,17 @@ namespace SkyRoof
     {
       IEnumerable<SatellitePass> result = new List<SatellitePass>();
       if (satellite.Tle == null) return result;
+      Satellite tracker;
 
-      var tracker = new Satellite(satellite.Tle.tle0, satellite.Tle.tle1, satellite.Tle.tle2);
+      try
+      {
+        tracker = new Satellite(satellite.Tle.tle0, satellite.Tle.tle1, satellite.Tle.tle2);
+      }
+      catch (Exception e)
+      {
+        Log.Error(e, $"Error creating tracker from TLE: |{satellite.Tle.tle0}|{satellite.Tle.tle1}|{satellite.Tle.tle2}|. {e.Message}");
+        return result;
+      }
 
       try
       {

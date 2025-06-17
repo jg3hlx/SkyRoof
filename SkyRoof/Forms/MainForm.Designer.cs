@@ -64,6 +64,7 @@
       toolStripMenuItem1 = new ToolStripSeparator();
       DownloadSatDataMNU = new ToolStripMenuItem();
       DownloadTleMNU = new ToolStripMenuItem();
+      DownloadAmsatMNU = new ToolStripMenuItem();
       LoadTleMNU = new ToolStripMenuItem();
       helpToolStripMenuItem = new ToolStripMenuItem();
       OnlineHelpMNU = new ToolStripMenuItem();
@@ -96,7 +97,7 @@
       UpdateLabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       panel4 = new Panel();
-      DownloadAmsatMNU = new ToolStripMenuItem();
+      toolStripMenuItem3 = new ToolStripSeparator();
       Toolbar.SuspendLayout();
       panel3.SuspendLayout();
       ClockPanel.SuspendLayout();
@@ -335,7 +336,7 @@
       // 
       // toolsToolStripMenuItem
       // 
-      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, DownloadSatDataMNU, DownloadTleMNU, DownloadAmsatMNU, LoadTleMNU });
+      toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, DownloadSatDataMNU, DownloadTleMNU, DownloadAmsatMNU, toolStripMenuItem3, LoadTleMNU });
       toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
       toolsToolStripMenuItem.Size = new Size(46, 20);
       toolsToolStripMenuItem.Text = "Tools";
@@ -380,6 +381,13 @@
       DownloadTleMNU.Text = "Download TLE Only";
       DownloadTleMNU.Click += DownloadTleMNU_Click;
       // 
+      // DownloadAmsatMNU
+      // 
+      DownloadAmsatMNU.Name = "DownloadAmsatMNU";
+      DownloadAmsatMNU.Size = new Size(216, 22);
+      DownloadAmsatMNU.Text = "Download AMSAT Statuses";
+      DownloadAmsatMNU.Click += DownloadAmsatMNU_Click;
+      // 
       // LoadTleMNU
       // 
       LoadTleMNU.Name = "LoadTleMNU";
@@ -397,33 +405,33 @@
       // OnlineHelpMNU
       // 
       OnlineHelpMNU.Name = "OnlineHelpMNU";
-      OnlineHelpMNU.Size = new Size(161, 22);
+      OnlineHelpMNU.Size = new Size(180, 22);
       OnlineHelpMNU.Text = "Online Help...";
       OnlineHelpMNU.Click += WebsiteMNU_Click;
       // 
       // SupportGroupMNU
       // 
       SupportGroupMNU.Name = "SupportGroupMNU";
-      SupportGroupMNU.Size = new Size(161, 22);
+      SupportGroupMNU.Size = new Size(180, 22);
       SupportGroupMNU.Text = "Support Group...";
       SupportGroupMNU.Click += SupportGroupMNU_Click;
       // 
       // DataFolderMNU
       // 
       DataFolderMNU.Name = "DataFolderMNU";
-      DataFolderMNU.Size = new Size(161, 22);
+      DataFolderMNU.Size = new Size(180, 22);
       DataFolderMNU.Text = "Data Folder...";
       DataFolderMNU.Click += DataFolderMNU_Click;
       // 
       // toolStripMenuItem2
       // 
       toolStripMenuItem2.Name = "toolStripMenuItem2";
-      toolStripMenuItem2.Size = new Size(158, 6);
+      toolStripMenuItem2.Size = new Size(177, 6);
       // 
       // AboutMNU
       // 
       AboutMNU.Name = "AboutMNU";
-      AboutMNU.Size = new Size(161, 22);
+      AboutMNU.Size = new Size(180, 22);
       AboutMNU.Text = "About...";
       AboutMNU.Click += AboutMNU_Click;
       // 
@@ -668,12 +676,10 @@
       panel4.Size = new Size(4, 824);
       panel4.TabIndex = 7;
       // 
-      // DownloadAmsatMNU
+      // toolStripMenuItem3
       // 
-      DownloadAmsatMNU.Name = "DownloadAmsatMNU";
-      DownloadAmsatMNU.Size = new Size(216, 22);
-      DownloadAmsatMNU.Text = "Download AMSAT Statuses";
-      DownloadAmsatMNU.Click += DownloadAmsatMNU_Click;
+      toolStripMenuItem3.Name = "toolStripMenuItem3";
+      toolStripMenuItem3.Size = new Size(213, 6);
       // 
       // MainForm
       // 
@@ -771,5 +777,6 @@
     private ToolStripMenuItem LoadTleMNU;
     private ToolStripStatusLabel UpdateLabel;
     private ToolStripMenuItem DownloadAmsatMNU;
+    private ToolStripSeparator toolStripMenuItem3;
   }
 }

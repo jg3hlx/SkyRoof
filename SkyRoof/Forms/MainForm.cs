@@ -419,7 +419,7 @@ namespace SkyRoof
       DownloadTle().DoNotAwait();
     }
 
-    private async Task DownloadTle()
+    private async Task<bool> DownloadTle()
     {
       try
       {
@@ -430,12 +430,14 @@ namespace SkyRoof
         await ctx.SatnogsDb.DownloadTle();
         DownloadOk = true;
         Log.Information("TLE downloaded");
+        return true;
       }
       catch (Exception ex)
       {
         DownloadOk = false;
         Log.Error(ex, "TLE download failed");
         ShowSatDataStatus();
+        return false;
       }
     }
 
@@ -456,9 +458,12 @@ namespace SkyRoof
       DownloadSatList();
     }
 
-    private void DownloadTleMNU_Click(object sender, EventArgs e)
+    private async void DownloadTleMNU_Click(object sender, EventArgs e)
     {
-      DownloadTle().DoNotAwait();
+      bool ok = await DownloadTle();
+      if (!ok)
+        MessageBox.Show("Failed to download TLE data",
+          "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 
     private void LoadTleMNU_Click(object sender, EventArgs e)
@@ -575,10 +580,13 @@ namespace SkyRoof
       EditSdrDevices();
     }
 
-    private void DownloadAmsatMNU_Click(object sender, EventArgs e)
+    private async void DownloadAmsatMNU_Click(object sender, EventArgs e)
     {
       ctx.Settings.Amsat.Enabled = true;
-      ctx.AmsatStatusLoader.GetStatusesAsync();
+      bool ok = await ctx.AmsatStatusLoader.GetStatusesAsync();
+      if (!ok) 
+        MessageBox.Show("Failed to download AMSAT statuses",                   
+          "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 
 
