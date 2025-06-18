@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof.zip v.1.7 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.7-beta/SkyRoofSetup-v.1.7-beta.zip)
+[SkyRoof.zip v.1.8 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.8-beta/SkyRoofSetup-v.1.8-beta.zip)
 
 <br>
 
@@ -15,6 +15,11 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.8 Beta
+
+- added support of RSP1b and RSPdx-R2 SDR;
+- improved error handling and logging.
 
 #### v.1.7 Beta
 

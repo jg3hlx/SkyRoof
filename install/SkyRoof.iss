@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SkyRoof"
-#define MyAppVersion "1.7"
+#define MyAppVersion "1.8"
 #define MyAppPublisher "Alex VE3NEA"
 #define MyAppURL "https://ve3nea.github.io/SkyRoof"
 #define MyAppExeName "SkyRoof.exe"
