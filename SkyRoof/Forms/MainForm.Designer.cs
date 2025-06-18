@@ -65,6 +65,7 @@
       DownloadSatDataMNU = new ToolStripMenuItem();
       DownloadTleMNU = new ToolStripMenuItem();
       DownloadAmsatMNU = new ToolStripMenuItem();
+      toolStripMenuItem3 = new ToolStripSeparator();
       LoadTleMNU = new ToolStripMenuItem();
       helpToolStripMenuItem = new ToolStripMenuItem();
       OnlineHelpMNU = new ToolStripMenuItem();
@@ -97,7 +98,8 @@
       UpdateLabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       panel4 = new Panel();
-      toolStripMenuItem3 = new ToolStripSeparator();
+      toolStripMenuItem4 = new ToolStripSeparator();
+      ResetWindowLayoutMNU = new ToolStripMenuItem();
       Toolbar.SuspendLayout();
       panel3.SuspendLayout();
       ClockPanel.SuspendLayout();
@@ -273,7 +275,7 @@
       // 
       // GroupViewPanelMNU
       // 
-      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, TransmittersMNU, SatellitePassesMNU, WaterfallMNU, TimelineMNU, SkyViewMNU, EarthViewMNU });
+      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, TransmittersMNU, SatellitePassesMNU, WaterfallMNU, TimelineMNU, SkyViewMNU, EarthViewMNU, toolStripMenuItem4, ResetWindowLayoutMNU });
       GroupViewPanelMNU.Name = "GroupViewPanelMNU";
       GroupViewPanelMNU.Size = new Size(44, 20);
       GroupViewPanelMNU.Text = "View";
@@ -281,56 +283,56 @@
       // GroupViewMNU
       // 
       GroupViewMNU.Name = "GroupViewMNU";
-      GroupViewMNU.Size = new Size(182, 22);
+      GroupViewMNU.Size = new Size(194, 22);
       GroupViewMNU.Text = "Group";
       GroupViewMNU.Click += GroupViewMNU_Click;
       // 
       // SatelliteDetailsMNU
       // 
       SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
-      SatelliteDetailsMNU.Size = new Size(182, 22);
+      SatelliteDetailsMNU.Size = new Size(194, 22);
       SatelliteDetailsMNU.Text = "Satellite Details";
       SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
       // 
       // TransmittersMNU
       // 
       TransmittersMNU.Name = "TransmittersMNU";
-      TransmittersMNU.Size = new Size(182, 22);
+      TransmittersMNU.Size = new Size(194, 22);
       TransmittersMNU.Text = "Satellite Transmitters";
       TransmittersMNU.Click += TransmittersMNU_Click;
       // 
       // SatellitePassesMNU
       // 
       SatellitePassesMNU.Name = "SatellitePassesMNU";
-      SatellitePassesMNU.Size = new Size(182, 22);
+      SatellitePassesMNU.Size = new Size(194, 22);
       SatellitePassesMNU.Text = "Satellite Passes";
       SatellitePassesMNU.Click += SatellitePassesMNU_Click;
       // 
       // WaterfallMNU
       // 
       WaterfallMNU.Name = "WaterfallMNU";
-      WaterfallMNU.Size = new Size(182, 22);
+      WaterfallMNU.Size = new Size(194, 22);
       WaterfallMNU.Text = "Waterfall";
       WaterfallMNU.Click += WaterfallMNU_Click;
       // 
       // TimelineMNU
       // 
       TimelineMNU.Name = "TimelineMNU";
-      TimelineMNU.Size = new Size(182, 22);
+      TimelineMNU.Size = new Size(194, 22);
       TimelineMNU.Text = "Timeline";
       TimelineMNU.Click += TimelineMNU_Click;
       // 
       // SkyViewMNU
       // 
       SkyViewMNU.Name = "SkyViewMNU";
-      SkyViewMNU.Size = new Size(182, 22);
+      SkyViewMNU.Size = new Size(194, 22);
       SkyViewMNU.Text = "SkyV iew";
       SkyViewMNU.Click += SkyViewMNU_Click;
       // 
       // EarthViewMNU
       // 
       EarthViewMNU.Name = "EarthViewMNU";
-      EarthViewMNU.Size = new Size(182, 22);
+      EarthViewMNU.Size = new Size(194, 22);
       EarthViewMNU.Text = "Earth View";
       EarthViewMNU.Click += EarthViewMNU_Click;
       // 
@@ -388,6 +390,11 @@
       DownloadAmsatMNU.Text = "Download AMSAT Statuses";
       DownloadAmsatMNU.Click += DownloadAmsatMNU_Click;
       // 
+      // toolStripMenuItem3
+      // 
+      toolStripMenuItem3.Name = "toolStripMenuItem3";
+      toolStripMenuItem3.Size = new Size(213, 6);
+      // 
       // LoadTleMNU
       // 
       LoadTleMNU.Name = "LoadTleMNU";
@@ -405,33 +412,33 @@
       // OnlineHelpMNU
       // 
       OnlineHelpMNU.Name = "OnlineHelpMNU";
-      OnlineHelpMNU.Size = new Size(180, 22);
+      OnlineHelpMNU.Size = new Size(161, 22);
       OnlineHelpMNU.Text = "Online Help...";
       OnlineHelpMNU.Click += WebsiteMNU_Click;
       // 
       // SupportGroupMNU
       // 
       SupportGroupMNU.Name = "SupportGroupMNU";
-      SupportGroupMNU.Size = new Size(180, 22);
+      SupportGroupMNU.Size = new Size(161, 22);
       SupportGroupMNU.Text = "Support Group...";
       SupportGroupMNU.Click += SupportGroupMNU_Click;
       // 
       // DataFolderMNU
       // 
       DataFolderMNU.Name = "DataFolderMNU";
-      DataFolderMNU.Size = new Size(180, 22);
+      DataFolderMNU.Size = new Size(161, 22);
       DataFolderMNU.Text = "Data Folder...";
       DataFolderMNU.Click += DataFolderMNU_Click;
       // 
       // toolStripMenuItem2
       // 
       toolStripMenuItem2.Name = "toolStripMenuItem2";
-      toolStripMenuItem2.Size = new Size(177, 6);
+      toolStripMenuItem2.Size = new Size(158, 6);
       // 
       // AboutMNU
       // 
       AboutMNU.Name = "AboutMNU";
-      AboutMNU.Size = new Size(180, 22);
+      AboutMNU.Size = new Size(161, 22);
       AboutMNU.Text = "About...";
       AboutMNU.Click += AboutMNU_Click;
       // 
@@ -676,10 +683,17 @@
       panel4.Size = new Size(4, 824);
       panel4.TabIndex = 7;
       // 
-      // toolStripMenuItem3
+      // toolStripMenuItem4
       // 
-      toolStripMenuItem3.Name = "toolStripMenuItem3";
-      toolStripMenuItem3.Size = new Size(213, 6);
+      toolStripMenuItem4.Name = "toolStripMenuItem4";
+      toolStripMenuItem4.Size = new Size(191, 6);
+      // 
+      // ResetWindowLayoutMNU
+      // 
+      ResetWindowLayoutMNU.Name = "ResetWindowLayoutMNU";
+      ResetWindowLayoutMNU.Size = new Size(194, 22);
+      ResetWindowLayoutMNU.Text = "Reset Window Layaout";
+      ResetWindowLayoutMNU.Click += ResetWindowLayoutMNU_Click;
       // 
       // MainForm
       // 
@@ -778,5 +792,7 @@
     private ToolStripStatusLabel UpdateLabel;
     private ToolStripMenuItem DownloadAmsatMNU;
     private ToolStripSeparator toolStripMenuItem3;
+    private ToolStripSeparator toolStripMenuItem4;
+    private ToolStripMenuItem ResetWindowLayoutMNU;
   }
 }

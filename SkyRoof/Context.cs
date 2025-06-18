@@ -32,8 +32,12 @@ namespace SkyRoof
     public SkyViewPanel? SkyViewPanel;
     public EarthViewPanel? EarthViewPanel;
     public TransmittersPanel? TransmittersPanel;
-    public SoapySdrDevice? Sdr;
     public WaterfallPanel? WaterfallPanel;
+
+    // devices
+    public SoapySdrDevice? Sdr;
+    public Slicer? Slicer;
+    public CatControl CatControl = new();
 
     // soundcards
     public readonly Soundcard<float> SpeakerSoundcard = new();
@@ -41,9 +45,16 @@ namespace SkyRoof
     public readonly Soundcard<Complex32> IqVacSoundcard = new();
     public readonly Announcer Announcer = new();
 
-    // dsp
-    public Slicer? Slicer;
-
-    public CatControl CatControl = new();
+    public void ClosePanels()
+    {
+      GroupViewPanel?.Close();
+      SatelliteDetailsPanel?.Close();
+      PassesPanel?.Close();
+      TimelinePanel?.Close();
+      SkyViewPanel?.Close();
+      EarthViewPanel?.Close();
+      TransmittersPanel?.Close();
+      WaterfallPanel?.Close();
+    }
   }
 }

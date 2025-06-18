@@ -1,15 +1,16 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
+using System.Speech.Synthesis;
+using System.Windows.Forms;
+using CSCore.CoreAudioAPI;
 using MathNet.Numerics;
+using OmniRig;
 using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
-using CSCore.CoreAudioAPI;
-using System.Speech.Synthesis;
-using System.Collections.Generic;
-using System;
-using System.Collections;
-using System.Reflection;
-using OmniRig;
 
 namespace SkyRoof
 {
@@ -584,9 +585,15 @@ namespace SkyRoof
     {
       ctx.Settings.Amsat.Enabled = true;
       bool ok = await ctx.AmsatStatusLoader.GetStatusesAsync();
-      if (!ok) 
-        MessageBox.Show("Failed to download AMSAT statuses",                   
+      if (!ok)
+        MessageBox.Show("Failed to download AMSAT statuses",
           "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+
+    private void ResetWindowLayoutMNU_Click(object sender, EventArgs e)
+    {
+      ctx.ClosePanels();
+      ctx.Settings.Ui.RestoreDockingLayout(this);
     }
 
 
