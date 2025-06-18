@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SkyRoof"
-#define MyAppVersion "1.8"
+#define MyAppVersion "1.9"
 #define MyAppPublisher "Alex VE3NEA"
 #define MyAppURL "https://ve3nea.github.io/SkyRoof"
 #define MyAppExeName "SkyRoof.exe"
@@ -54,6 +54,7 @@ Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtl
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\rtlsdrSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\sdrplay_api.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\sdrPlaySupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\remoteSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll; DestDir: {app}\runtimes\win\lib\net9.0; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\System.Speech.dll; DestDir: {app}\runtimes\win\lib\net9.0; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\CSCore.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
@@ -73,6 +74,7 @@ Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SGP.NET.dll; DestDir: {app}
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SGP.NET.pdb; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.SceneGraph.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\AngleSharp.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 
 [Icons]
 Name: {commonprograms}\{#MyAppName}; Filename: {app}\{#MyAppExeName}

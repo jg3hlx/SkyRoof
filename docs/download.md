@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof.zip v.1.8 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.8-beta/SkyRoofSetup-v.1.8-beta.zip)
+[SkyRoof.zip v.1.9 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.9-beta/SkyRoofSetup-v.1.9-beta.zip)
 
 <br>
 
@@ -15,6 +15,11 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.9 Beta
+
+- added command to reset window layout;
+- missing dll files added to the installer.
 
 #### v.1.8 Beta
 

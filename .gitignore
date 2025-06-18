@@ -6,9 +6,7 @@
 todo.txt
 docs/_site
 *.grf
-howto.txt
-SkyRoofSetup.exe
-Skyroof.zip
+release_steps.txt
 install/Output/
 
 
