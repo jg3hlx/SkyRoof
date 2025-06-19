@@ -1,9 +1,9 @@
 # Overview
 
-SkyRoof is an open source, 64-bit Windows application for Hams and satellite enthusiasts, 
-available on the terms of the GPL v.3 license. It combines satellite trackikng and SDR functions in one program, 
-which opens some interesting possibilities. For example, all satellite traces on the waterfall are labeled 
-with satellite names, the boundaries of the transponder segments follow the Doppler shift, 
+SkyRoof is an open source, 64-bit Windows application for Hams and satellite enthusiasts,
+available on the terms of the GPL v.3 license. It combines satellite tracking and SDR functions in one program,
+which opens some interesting possibilities. For example, all satellite traces on the waterfall are labeled
+with satellite names, the boundaries of the transponder segments follow the Doppler shift,
 and all frequency tuning is done visually, with a mouse.
 
 ![Main Window](../images/main_window_TH.png)
@@ -15,7 +15,7 @@ The main features of SkyRoof are:
 - detailed information about all satellites that transmit in the Ham bands;
 - satellite tracking in real time;
 - pass prediction for the selected satellites;
-- visual representation of the current satllite position and future passes, using:
+- visual representation of the current satellite position and future passes, using:
   - Sky View - the view of the sky from your location;
   - Earth View - the view of the Earth from the satellite;
   - Time Line - the satellite passes on the time scale;

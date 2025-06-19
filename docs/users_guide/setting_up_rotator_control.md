@@ -2,7 +2,7 @@
 
 ## rotctld.exe
 
-SkyRoof uses **rotctld.exe**, a HamLib-based rotator control daemon, to control the antanna rotator.
+SkyRoof uses **rotctld.exe**, a HamLib-based rotator control daemon, to control the antenna rotator.
 See the [Setting Up CAT Control](setting_up_cat_control.md) section for the instructions how to
 download and install HamLib.
 

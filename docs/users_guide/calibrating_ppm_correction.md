@@ -53,7 +53,7 @@ panel on the toolbar to open the frequency entry dialog:
     [Frequency Control](frequency_control.md) and [Frequency Scale](frequency_scale.md) sections. For now, just use the
     up/down buttons in the RIT offset box, or spin the mouse wheel over that box.
 
-8. Compute the PPM correction. The frequency error measured in the previuos step is 3,760 Hz, so the PPM is:
+8. Compute the PPM correction. The frequency error measured in the previous step is 3,760 Hz, so the PPM is:
 
     ```text
     3,760 / 890,867,708 * 1e6 = 4.22 PPM

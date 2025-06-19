@@ -30,7 +30,7 @@ by more than 1.5 the **Step Size** setting entered in the
 
 ## Manual Control
 
-Click on the satellite positon display to open the **Manual Rotator Control** window:
+Click on the satellite position display to open the **Manual Rotator Control** window:
 
 ![Manual Rotator Control](../images/manual_rotator_control.png)
 

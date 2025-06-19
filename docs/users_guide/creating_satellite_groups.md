@@ -1,6 +1,6 @@
 # Creating Satellite Groups
 
-SkyRoof comes with two pre-defined groups of satellites created for your convenience, **Active Ham Sats** and **CW Beacons**. 
+SkyRoof comes with two pre-defined groups of satellites created for your convenience, **Active Ham Sats** and **CW Beacons**.
 The first group
 lists the satellites carrying the linear transponders, FM repeaters or digital systems that were available to Hams
 at the time of this writing. The second group includes the satellites that send beacon signals or telemetry in Morse Code,

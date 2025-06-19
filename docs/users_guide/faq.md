@@ -2,7 +2,7 @@
 
 **Q:** I downloaded SkyRoof, and my virus scanner shows an infection. Is it real?
 
-**A:** Most likely, it is a false detection. However, it is always a good idea to test the dwonload links **before downloading** any software. There are several online virus scanning services that you can use to check the link.
+**A:** Most likely, it is a false detection. However, it is always a good idea to test the download links **before downloading** any software. There are several online virus scanning services that you can use to check the link.
 [VirusTotal](https://www.virustotal.com/gui/home/url) and [Hybrid Analysis](https://www.hybrid-analysis.com/})
 are just two examples.
 
@@ -19,7 +19,7 @@ follow the instructions in their documentation.
 
 ---
 
-**Q:** The right part of the SkyRoof toolbar does not fit in the screen, even though the screen resoltuion is 1980x1280.
+**Q:** The right part of the SkyRoof toolbar does not fit in the screen, even though the screen resolution is 1980x1280.
 
 **A:** This happens because your **text size** setting in Windows is too high. For example, if it is set to 200%, the effective
 screen width is only `1900 / 2 = 950 pixels`. To fix this, right-click on the Desktop, click on **Display Settings** and set the text size
@@ -29,4 +29,4 @@ to a lower value.
 
 **Q:** How can I run two instances of SkyRoof?
 
-**A:** By default, only one instance of Skyroof can run at any time, but there is a work around. Make a copy of the SkyRoof.exe file in the same folder, but with a different name, e.g., SkyRoof_2.exe. Each exe will have its own settings, its own data folder, and will run independently of the other instance.
+**A:** By default, only one instance of SkyRoof can run at any time, but there is a work around. Make a copy of the SkyRoof.exe file in the same folder, but with a different name, e.g., SkyRoof_2.exe. Each exe will have its own settings, its own data folder, and will run independently of the other instance.

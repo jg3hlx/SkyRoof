@@ -11,4 +11,4 @@ The transmitters are highlighted according to the downlink band. Ham transmitter
 
 The blue links at the bottom of the window open the web pages with extra information about the satellite.
 
-See the [Satellite Data](satellite_data.md) section for the desctiption of the satellite data available in SkyRoof.
+See the [Satellite Data](satellite_data.md) section for the description of the satellite data available in SkyRoof.

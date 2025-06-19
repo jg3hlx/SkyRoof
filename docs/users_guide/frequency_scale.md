@@ -24,7 +24,7 @@ The names of the satellites that belong to the current group are shown in bold;
 
 The current transmitter has its satellite name on the light blue background.
 
-Move the mosue cursor over a satellite name to see the details on the mouse tooltip.
+Move the mouse cursor over a satellite name to see the details on the mouse tooltip.
 
 Right-click on a satellite name to open the popup menu with these commands:
 
@@ -83,26 +83,26 @@ carry a telemetry or beacon transmitter that you can use to set the manual offse
 
 ## Aligning The Uplink and Downlink Frequencies
 
-The screenshot below shows how to set Manual Correcttion for the uplink and downlink for a linear transponder, such as RS-44.
+The screenshot below shows how to set Manual Correction for the uplink and downlink for a linear transponder, such as RS-44.
 
-1. Select the beacon transmitter of the satellite and asjust the Downlink Manual Correction setting to align the transmitter label
+1. Select the beacon transmitter of the satellite and adjust the Downlink Manual Correction setting to align the transmitter label
 and its signal trace on the waterfall. For RS-44 the required correction is about -1900 Hz. If your offset is different, then yor SDR
 requires [PPM calibration](calibrating_ppm_correction.md).
 
-2. Select the transponder transmitter and find a clear frequency within the transmonder segment. Send a sequence of dots
+2. Select the transponder transmitter and find a clear frequency within the transponder segment. Send a sequence of dots
 and adjust the Uplink Manual Correction to align the center of the green rectangle with the trace of your signals coming from the satellite.
 
 ![RX TX alignment](../images/rx_tx_alignment.png)
 
-These adjustments need to be done only once. They stay the same, within a few tens of Herts, between the satellite passes.
+These adjustments need to be done only once. They stay the same, within a few tens of Hertz, between the satellite passes.
 
-When TX CAT is enabled, RX CAT is disabled and the Ignore Dial Knob is set to false in the Settings, it is possilbe to asjust
+When TX CAT is enabled, RX CAT is disabled and the Ignore Dial Knob is set to false in the Settings, it is possible to adjust
 the Uplink Manual Offset using the dial knob on the radio.
 
 ## RIT
 
 While the RIT function could be controlled using the
-[Frequency Control](frequency_control.md) panel, it is more convenitent to do this on the frequency scale:
+[Frequency Control](frequency_control.md) panel, it is more convenient to do this on the frequency scale:
 
 ![RIT](../images/rit.png)
 

@@ -2,7 +2,7 @@
 
 ## Data Sources
 
-SkyRoof obtains satellite date from sevaral sources:
+SkyRoof obtains satellite date from several sources:
 
 - [SatNOGS DB](https://db.satnogs.org/) is the main source of satellite data.
     It is a frequently updated, crowd-sourced dataset that contains detailed information
@@ -10,7 +10,7 @@ SkyRoof obtains satellite date from sevaral sources:
 - [JE9PEL Satellite List](https://www.ne.jp/asahi/hamradio/je9pel/satslist.htm) is another
     dataset with information about the satellites, maintained by Mineo Wakita JE9PEL, that,
     in particular,
-    includes the callgigns of the satellites. This dataset presents the frequencies in an
+    includes the callsigns of the satellites. This dataset presents the frequencies in an
     undocumented format, so its data are included in the SkyRoof database only FYI.
 
 - [LoTW](https://www.arrl.org/quick-start) - The ARRL LoTW service accepts satellite QSO
@@ -26,10 +26,10 @@ SkyRoof obtains satellite date from sevaral sources:
 
 ## TLE
 
-The satellite orbit elemants ([TLE](https://celestrak.org/columns/v04n03/) data)
+The satellite orbit elements ([TLE](https://celestrak.org/columns/v04n03/) data)
 are downloaded from **SatNOGS DB**.
 
-SatNOGS obtains these data from differnt sources and makes the latest and most reliable data
+SatNOGS obtains these data from different sources and makes the latest and most reliable data
 available on their web site. The source of TLE and its creation time are shown in the
 [Satellite Details window](satellite_details_window.md)
 or [panel](satellite_details_panel.md):
@@ -68,11 +68,11 @@ Note that TLE import cannot add new satellites, it only loads orbital elements f
 
 ## AMSAT Satellite Status
 
-[AMSAT Live OSCAR Satellite Status Page](https://www.amsat.org/status/) is a crowd-soourced, real-time Ham satellite status page.
+[AMSAT Live OSCAR Satellite Status Page](https://www.amsat.org/status/) is a crowd-sourced, real-time Ham satellite status page.
 
 ### Posting Status Data
 
-You can post your satellite status observations the the AMSAT web site either by filling the sumbission form on their
+You can post your satellite status observations the the AMSAT web site either by filling the submission form on their
 site, or using the right-click menu of the satellite   labels on the [Frequency Scale](frequency_scale.md).
 A valid Ham callsign must be entered in the [Settings window](settings_window.md) for this function to work.
 
@@ -80,7 +80,7 @@ A valid Ham callsign must be entered in the [Settings window](settings_window.md
 
 Set the **Amsat Satellite Status / Enable** option in the Settings window to `true` to enable automatic downloads of the
 satellite status information from the AMSAT web site. The statuses are shown on the [Current Group](current_group_panel.md)
-panel, the green and red icons represent the active and inactive status respecively.
+panel, the green and red icons represent the active and inactive status respectively.
 
 Satellite status data are downloaded once an hour. You can manually download it at any time using the
 **Tools / Download AMSAT Statuses** menu command.

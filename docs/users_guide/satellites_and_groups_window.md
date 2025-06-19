@@ -49,7 +49,7 @@ for information about creating and editing the satellite groups. The following e
 
 - the **[+]** button creates a new group. Press **F2**, or use the popup menu, to rename the group;
 - the **[>]** and **[<]** buttons add or remove the satellites to/from the group;
-- drad-and-drop from the satellite list to the grop adds the satellite to the group;
+- drad-and-drop from the satellite list to the group adds the satellite to the group;
 - drag-and-drop of a satellite between the groups moves it to another group;
 - drag-and-drop with the **Ctrl** key down adds a copy of the satellite to another group;
 - drad-and-drop re-orders the groups, or the satellites in the group;

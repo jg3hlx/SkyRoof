@@ -23,7 +23,7 @@ _Copyright &copy; 2025 Alex Shovkoplyas, VE3NEA_
 
 ## Features
 
-SkyRoof combines satellite trackikng and SDR functions in one application, which opens some interesting possibilities.
+SkyRoof combines satellite tracking and SDR functions in one application, which opens some interesting possibilities.
 <br>
 For example, all satellite traces on the waterfall are labeled with satellite names, the boundaries of the transponder
 <br>
@@ -34,7 +34,7 @@ The main features of SkyRoof are:
 - detailed information about all satellites that transmit in the Ham bands;
 - satellite tracking in real time;
 - pass prediction for the selected satellites;
-- visual representation of the current satllite position and future passes, using:
+- visual representation of the current satellite position and future passes, using:
   - Sky View - the view of the sky from your location;
   - Earth View - the view of the Earth from the satellite;
   - Time Line - the satellite passes on the time scale;

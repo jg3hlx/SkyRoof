@@ -15,7 +15,7 @@ only 200 kHz wide, 145.8-146 MHz, so it also fits completely in the waterfall.
 - Zoom in and out using the mouse wheel
 - Pan by dragging the waterfall horizontally with your mouse
 
-A mouseclick on the waterfall display:
+A mouse-click on the waterfall display:
 
 - tunes the SDR and external radio to a terrestrial signal
 - or, if the frequency is within the transponder segment of a passing satellite, selects
@@ -45,9 +45,9 @@ The waterfall display in SkyRoof solves these problems by computing power spectr
 This has three important consequences:
 
 1. You can zoom in the waterfall display without changing its resolution in Settings, just by spinning the mouse wheel.
-    When zoomed in to the maximum, you can see the signals with a **100x** maginification (20 Hz resolution).
+    When zoomed in to the maximum, you can see the signals with a **100x** magnification (20 Hz resolution).
 
-2. When zoomed out to the maxmimum to see the whole 3-MHz segment, the sensitivity of the waterfall display to
+2. When zoomed out to the maximum to see the whole 3-MHz segment, the sensitivity of the waterfall display to
     narrowband signals improves by about **15 dB** due to oversampling.
 
 3. Spectrum oversampling, however, increases the requirements to the hardware:

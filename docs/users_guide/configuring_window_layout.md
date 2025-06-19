@@ -47,7 +47,7 @@ The [Timeline](time_line_panel.md) panel in the screenshot below is floating. Le
 
 A panel can be switched to the **auto-hide mode**, which allows it to stay hidden until you click on its tab.
 In the screenshot below, notice the **"Timeline" tab** in the bottom-left corner. Clicking this tab temporarily slides the **Timeline** panel into view.
-To enable auto-hide mode, click the **Auto-Hide** button  ![Auto Hide Btn](../images/auto_hide_button.png)  located on the panel’s title bar.
+To enable auto-hide mode, click the **Auto-Hide** button  ![Auto Hide Button](../images/auto_hide_button.png)  located on the panel’s title bar.
 
 ![Dock](../images/dock_5.png)
 

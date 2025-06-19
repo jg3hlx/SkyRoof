@@ -26,7 +26,7 @@ or click on the downlink frequency display and enter the frequency in the **Tune
 
 ### Mode
 
-Select the mode manually for every satellite transmiter that you are using.
+Select the mode manually for every satellite transmitter that you are using.
 Your selection is remembered and restored when the transmitter is selected again.
 
 The **Mode** selected in the drop-down box applies to the SDR receiver, if it is enabled, and to the external receiver,
@@ -64,14 +64,14 @@ buttons, or by spinning the mouse wheel over the box, or by typing the value dir
 more convenient to adjust the correction visually, using the mouse on the
 [Frequency Scale](frequency_scale.md).
 
-The checkbox allows you to disable the manual correcion if necessary.
+The checkbox allows you to disable the manual correction if necessary.
 
 ### RIT
 
-The RIT function is usewul when listening to a conversation of two stations that are not
+The RIT function is useful when listening to a conversation of two stations that are not
 exactly on the same frequency, or when your CQ is answered off the frequency.
 
-The RIT offset may be entered in the RIT box, but it is more convenient to contol it on the
+The RIT offset may be entered in the RIT box, but it is more convenient to control it on the
 [Frequency Scale](frequency_scale.md).
 
 Use the checkbox, or the commands on the **Frequency Scale**, to toggle RIT.

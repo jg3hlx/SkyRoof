@@ -4,7 +4,7 @@ SkyRoof keeps all of its data in the **data folder**.
 
 - Click on **Help / Data Folder** in the main menu to open this folder in File Explorer.
 - To open the folder when the program is not running, type this in File Explorer:
-    `%appdata%\Afreet\Products\SkyRoof` 
+    `%appdata%\Afreet\Products\SkyRoof`
 
 ## Data Files
 

@@ -38,7 +38,7 @@ The two settings, common to all radios, are:
   This setting is important for the correct operation of the Doppler tracking algorithm, see the
   [Calibrating PPM Correction](calibrating_ppm_correction.md) section for details;
 
-- **Single Gain** - when set to true, the SDR gain is controlled by the **RF Gain** slider on the toolbar.
+- **Single Gain** - when set to true (**and AGC is off**), the SDR gain is controlled by the **RF Gain** slider on the toolbar.
   This is the recommended setting. When it is set to false, the settings in the **Stage Gains** are applied to the
   individual stages of the SDR, and the gain slider is disabled.
 

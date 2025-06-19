@@ -4,7 +4,7 @@ The satellite entries in various windows and panels, such as
 [Satellites and Groups window](satellites_and_groups_window.md),
 [Satellites Details window](satellite_details_window.md) and
 [Current Group panel](current_group_panel.md),
-are highlighted according to their propertis:
+are highlighted according to their properties:
 
 - **Cyan background** - the satellite has at least one transmitter in the UHF band;
 - **Yellow background** - the satellite has at least one transmitter in the VHF band;
