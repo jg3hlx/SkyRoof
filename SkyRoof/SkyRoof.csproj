@@ -49,18 +49,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <COMReference Include="OmniRig">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>4fe359c5-a58f-459d-be95-ca559fb4f270</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="..\Vendor\fontawesome-free-6.4.2-web\fa-solid-900.ttf" Link="fa-solid-900.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -128,9 +116,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="SGP.NET">
-      <HintPath>..\Vendor\SGP.NET\SGP.NET\bin\x64\Release\net6.0\SGP.NET.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\Vendor\SGP.NET\SGP.NET\SGP.NET.csproj" />
   </ItemGroup>
 
   <ItemGroup>

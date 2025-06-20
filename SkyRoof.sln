@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyRoof", "SkyRoof\SkyRoof.csproj", "{182D01EA-5285-4A46-8F72-64112BABAB8B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SGP.NET", "Vendor\SGP.NET\SGP.NET\SGP.NET.csproj", "{F09EC6E1-28E8-065C-C540-81E1F5101EE5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{182D01EA-5285-4A46-8F72-64112BABAB8B}.Debug|x64.Build.0 = Debug|x64
 		{182D01EA-5285-4A46-8F72-64112BABAB8B}.Release|x64.ActiveCfg = Release|x64
 		{182D01EA-5285-4A46-8F72-64112BABAB8B}.Release|x64.Build.0 = Release|x64
+		{F09EC6E1-28E8-065C-C540-81E1F5101EE5}.Debug|x64.ActiveCfg = Debug|x64
+		{F09EC6E1-28E8-065C-C540-81E1F5101EE5}.Debug|x64.Build.0 = Debug|x64
+		{F09EC6E1-28E8-065C-C540-81E1F5101EE5}.Release|x64.ActiveCfg = Release|x64
+		{F09EC6E1-28E8-065C-C540-81E1F5101EE5}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
