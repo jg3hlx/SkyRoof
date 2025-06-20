@@ -36,6 +36,7 @@ Name: english; MessagesFile: compiler:Default.isl
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked
 
 [Files]
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SGP.NET.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.WinForms.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.deps.json; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SkyRoof.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
