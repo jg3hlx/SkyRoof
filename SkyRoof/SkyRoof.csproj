@@ -124,8 +124,6 @@
     <None Update="libgcc_s_sjlj-1.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="libliquid.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="libusb-1.0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
