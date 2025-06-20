@@ -23,7 +23,7 @@ OutputBaseFilename=SkyRoofSetup-v.{#MyAppVersion}-beta
 SetupIconFile=..\SkyRoof\SkyRoof.ico
 Compression=lzma
 SolidCompression=true
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesInstallIn64BitMode=x64compatible
 DisableStartupPrompt=true
 ShowLanguageDialog=no
 AlwaysShowComponentsList=true
@@ -70,8 +70,6 @@ Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Newtonsoft.Json.dll; DestDi
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\pthreadVC2.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Serilog.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\Serilog.Sinks.File.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SGP.NET.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
-Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SGP.NET.pdb; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\SharpGL.SceneGraph.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\AngleSharp.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion

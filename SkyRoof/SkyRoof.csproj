@@ -10,27 +10,19 @@
     <Description>SDR-based satellite tracking and signal processing software</Description>
     <Copyright>Copyright © 2025 Alex Shovkoplyas VE3NEA</Copyright>
     <Authors>Alex VE3NEA</Authors>
-    <AssemblyVersion>1.9.*</AssemblyVersion>
-    <FileVersion></FileVersion>
-    <Platforms>AnyCPU;x64</Platforms>
+		<Platforms>x64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ApplicationIcon>SkyRoof.ico</ApplicationIcon>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <Deterministic>False</Deterministic>
-  </PropertyGroup>
+		<Version>1.0</Version>
+		<FileVersion>1.0</FileVersion>
+	</PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Deterministic>False</Deterministic>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <Deterministic>False</Deterministic>
+    <Deterministic>True</Deterministic>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Deterministic>False</Deterministic>
+    <Deterministic>True</Deterministic>
   </PropertyGroup>
 
   <ItemGroup>
