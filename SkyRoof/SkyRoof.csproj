@@ -57,9 +57,6 @@
     <None Include="..\Vendor\liquid-dsp\libliquid.dll" Link="libliquid.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\Vendor\liquid-dsp\libliquid.pdb" Link="libliquid.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="..\Vendor\SoapySDR\libusb-1.0.dll" Link="libusb-1.0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
