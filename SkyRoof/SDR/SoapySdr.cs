@@ -39,6 +39,8 @@ namespace VE3NEA
 
       if (ptr == IntPtr.Zero) return Array.Empty<SoapySdrDeviceInfo>();
       var kwargs = SoapySdrHelper.MarshalKwArgsArray(ptr, length);
+      Log.Information($"SoapySDRDevice_enumerateStrArgs returned:{JsonConvert.SerializeObject(kwargs)}");
+
       var result = kwargs.Select(args => new SoapySdrDeviceInfo(args)).Where(dev => dev.Present).ToArray();
       foreach (var dev in result)
       {
