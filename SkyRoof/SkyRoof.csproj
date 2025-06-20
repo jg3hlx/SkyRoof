@@ -124,7 +124,6 @@
     <None Update="libgcc_s_sjlj-1.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    </None>
     <None Update="libusb-1.0.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
