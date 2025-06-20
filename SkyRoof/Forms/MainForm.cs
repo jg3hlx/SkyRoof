@@ -7,7 +7,6 @@ using System.Speech.Synthesis;
 using System.Windows.Forms;
 using CSCore.CoreAudioAPI;
 using MathNet.Numerics;
-using OmniRig;
 using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
@@ -631,7 +630,7 @@ namespace SkyRoof
       StartTime = time;
       StartSeconds = usedSeconds;
 
-      CpuLoadlabel.Text = $"    CPU Load: {usage:F1}%";
+      CpuLoadlabel.Text = $"    CPU Load: {usage:00.0}%";
     }
 
     private void SdrStatus_Click(object sender, EventArgs e)

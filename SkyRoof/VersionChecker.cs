@@ -28,7 +28,7 @@ namespace SkyRoof
       if (LatestVersion.Major > currentVersion.Major ||
           (LatestVersion.Major == currentVersion.Major && LatestVersion.Minor > currentVersion.Minor))
       {
-        Log.Information("VersionChecker: update available: {LatestVersion.Name})");
+        Log.Information($"VersionChecker: update available: {LatestVersion.Name})");
          UpdateAvailable?.Invoke(this, EventArgs.Empty);
       }
       else

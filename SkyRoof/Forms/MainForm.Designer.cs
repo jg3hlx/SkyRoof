@@ -57,6 +57,8 @@
       TimelineMNU = new ToolStripMenuItem();
       SkyViewMNU = new ToolStripMenuItem();
       EarthViewMNU = new ToolStripMenuItem();
+      toolStripMenuItem4 = new ToolStripSeparator();
+      ResetWindowLayoutMNU = new ToolStripMenuItem();
       toolsToolStripMenuItem = new ToolStripMenuItem();
       SatelliteGroupsMNU = new ToolStripMenuItem();
       SdrDevicesMNU = new ToolStripMenuItem();
@@ -98,8 +100,6 @@
       UpdateLabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       panel4 = new Panel();
-      toolStripMenuItem4 = new ToolStripSeparator();
-      ResetWindowLayoutMNU = new ToolStripMenuItem();
       Toolbar.SuspendLayout();
       panel3.SuspendLayout();
       ClockPanel.SuspendLayout();
@@ -335,6 +335,18 @@
       EarthViewMNU.Size = new Size(194, 22);
       EarthViewMNU.Text = "Earth View";
       EarthViewMNU.Click += EarthViewMNU_Click;
+      // 
+      // toolStripMenuItem4
+      // 
+      toolStripMenuItem4.Name = "toolStripMenuItem4";
+      toolStripMenuItem4.Size = new Size(191, 6);
+      // 
+      // ResetWindowLayoutMNU
+      // 
+      ResetWindowLayoutMNU.Name = "ResetWindowLayoutMNU";
+      ResetWindowLayoutMNU.Size = new Size(194, 22);
+      ResetWindowLayoutMNU.Text = "Reset Window Layaout";
+      ResetWindowLayoutMNU.Click += ResetWindowLayoutMNU_Click;
       // 
       // toolsToolStripMenuItem
       // 
@@ -666,9 +678,10 @@
       UpdateLabel.BackColor = Color.Lime;
       UpdateLabel.Font = new Font("Segoe UI", 9F, FontStyle.Underline);
       UpdateLabel.ForeColor = Color.Blue;
+      UpdateLabel.Margin = new Padding(10, 6, 10, 4);
       UpdateLabel.Name = "UpdateLabel";
       UpdateLabel.Padding = new Padding(10, 0, 10, 0);
-      UpdateLabel.Size = new Size(81, 30);
+      UpdateLabel.Size = new Size(81, 25);
       UpdateLabel.Text = "Download";
       UpdateLabel.Visible = false;
       UpdateLabel.Click += UpdateLabel_Click;
@@ -682,18 +695,6 @@
       panel4.Name = "panel4";
       panel4.Size = new Size(4, 824);
       panel4.TabIndex = 7;
-      // 
-      // toolStripMenuItem4
-      // 
-      toolStripMenuItem4.Name = "toolStripMenuItem4";
-      toolStripMenuItem4.Size = new Size(191, 6);
-      // 
-      // ResetWindowLayoutMNU
-      // 
-      ResetWindowLayoutMNU.Name = "ResetWindowLayoutMNU";
-      ResetWindowLayoutMNU.Size = new Size(194, 22);
-      ResetWindowLayoutMNU.Text = "Reset Window Layaout";
-      ResetWindowLayoutMNU.Click += ResetWindowLayoutMNU_Click;
       // 
       // MainForm
       // 
