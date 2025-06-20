@@ -88,6 +88,13 @@ namespace SkyRoof
       }
 
       var observation = engine.ObserveSatellite(Sat!, DateTime.UtcNow);
+      if (observation == null)
+      {
+        DopplerFactor = 0;
+        IsAboveHorizon = false;
+        return;
+      }
+
       DopplerFactor = observation.RangeRate / 3e5;
       IsAboveHorizon = observation.Elevation > 0;
     }

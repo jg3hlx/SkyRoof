@@ -165,7 +165,12 @@ namespace SkyRoof
         RadioLink.SatCust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(RadioLink.Sat.sat_id);
         RadioLink.TxCust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(RadioLink.Tx.uuid);
         RadioLink.ObserveSatellite(ctx.SdrPasses);
+        isTerrestrial = RadioLink.IsTerrestrial; 
 
+      }
+
+      if (!isTerrestrial)
+      {
         RadioLink.DownlinkDopplerCorrectionEnabled = true;
         RadioLink.DownlinkManualCorrectionEnabled = true;
         RadioLink.UplinkDopplerCorrectionEnabled = true;

@@ -171,6 +171,12 @@ namespace SkyRoof
       if (Satellite == null) return;
 
       var obs = ctx.SdrPasses.ObserveSatellite(Satellite, DateTime.UtcNow);
+      if (obs == null || obs?.Azimuth == null || obs?.Elevation == null)
+      {
+        ResetUi();
+        return;
+      }
+
       SatBearing = new Bearing(obs.Azimuth.Degrees, obs.Elevation.Degrees);
       
       WasAboveHorizon = WasAboveHorizon || SatBearing.Elevation > 0;

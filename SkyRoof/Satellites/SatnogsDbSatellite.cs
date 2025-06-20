@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using SGPdotNET.Observation;
 using static SkyRoof.SatnogsDbSatellite;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace SkyRoof
 {
@@ -199,7 +200,19 @@ namespace SkyRoof
 
     private Satellite? CreateTracker()
     {
-      return Tle == null ? null : new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);
+      if (Tle == null) return null;
+
+      try
+      {
+        return new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, $"Error creating TLE object: |{Tle.tle0}|{Tle.tle1}|{Tle.tle2}|.");
+        return null;
+      }
+
+      //return Tle == null ? null : new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);
     }
 
     private Satellite? tracker;

@@ -214,9 +214,9 @@ namespace SkyRoof
       {
         tracker = new Satellite(satellite.Tle.tle0, satellite.Tle.tle1, satellite.Tle.tle2);
       }
-      catch (Exception e)
+      catch (Exception ex)
       {
-        Log.Error(e, $"Error creating tracker from TLE: |{satellite.Tle.tle0}|{satellite.Tle.tle1}|{satellite.Tle.tle2}|. {e.Message}");
+        Log.Error(ex, $"Error creating tracker from TLE: |{satellite.Tle.tle0}|{satellite.Tle.tle1}|{satellite.Tle.tle2}|.");
         return result;
       }
 
@@ -262,9 +262,11 @@ namespace SkyRoof
       GroundStation = new GroundStation(myLocation);
     }
 
-    internal TopocentricObservation ObserveSatellite(SatnogsDbSatellite satellite, DateTime utcNow)
+    internal TopocentricObservation? ObserveSatellite(SatnogsDbSatellite satellite, DateTime utcNow)
     {
-      return GroundStation.Observe(satellite.Tracker, utcNow);
+      var tracker = satellite.Tracker;
+      if (tracker == null || tracker.Tle == null) return null;
+      return GroundStation.Observe(tracker, utcNow);
     }
 
     internal SatellitePass? GetNextPass(SatnogsDbSatellite satellite)
