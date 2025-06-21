@@ -52,7 +52,9 @@ The program can work without an SDR, or even without any radio at all, but many 
 
 - [System Requirements](users_guide/system_requirements.md)
 
-- [User's Guide in Spanish](https://www.qsl.net/e/ea4bas//Manual/SkyRoof%20Manual_%20sp.pdf)
+- [User's Guide in Spanish](https://www.qsl.net/e/ea4bas//Manual/SkyRoof%20Manual_%20sp.pdf) TNX Miguel EA4BAS
+
+- [Setting Up Remote Access to SDR](https://groups.google.com/g/skyroof/c/mlnz5lN6ZD0) TNX Paolo IZ1MLL
 
 ## Discussion Group
 
