@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Serilog;
 using SkyRoof;
 using static VE3NEA.NativeSoapySdr;
+using static VE3NEA.Utils;
 
 namespace VE3NEA
 {
@@ -12,7 +13,7 @@ namespace VE3NEA
     internal bool Present;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public string Name { get => KwArgs["label"]; }
+    public string Name { get => KwArgs.GetValueOrDefault("label") ?? "<no label>"; }
     public SoapySDRKwargs KwArgs;
     public SoapySDRRange[] FrequencyRange, SampleRateRange, BandwidthRange;
     public SoapySDRRange GainRange;
