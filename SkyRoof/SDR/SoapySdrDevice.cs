@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Channels;
 using System.Xml.Linq;
 using MathNet.Numerics;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
 using static VE3NEA.NativeSoapySdr;
@@ -22,9 +23,9 @@ namespace VE3NEA
     public double Frequency { get => Info.Frequency; set => SetFrequency(value); }
     public bool Enabled { get => enabled; set => SetEnabled(value); }
     public int NormalizedGain { get => GetNormalizedGain();  set => SetNormalizedGain(value); }
-    public bool IsSingleGain => Info.Properties.GetByName("Single Gain")!.Value == "true";
+    public bool IsSingleGain => Info.Properties.GetByName("Single Gain")?.Value == "true";
 
-    public bool CanChangeGain => IsSingleGain && Info.Properties.GetByName("AGC")!.Value != "true";
+    public bool CanChangeGain => IsSingleGain && Info.Properties.GetByName("AGC")?.Value != "true";
 
     private bool enabled;
 
@@ -62,17 +63,22 @@ namespace VE3NEA
 
     private void TryStart(bool logErrors)
     {
+      if (logErrors) Log.Information($"Starting SDR: {Info.Name}");
+      if (logErrors) Log.Information($"with SDR KwArgs: {JsonConvert.SerializeObject(Info.KwArgs)}");
+      if (logErrors) Log.Information($"with SDR Properties: {JsonConvert.SerializeObject(Info.Properties)}");
+
       try
       {
         Start();
         Started = true;
+        Log.Information($"SDR started: {Info?.Name}");
         StateChanged?.Invoke(this, EventArgs.Empty);
       }
       catch (Exception ex)
       {
         Stop();
         Started = false;
-        if (logErrors) Log.Error(ex, $"Error starting {Info.Name}");
+        if (logErrors) Log.Error(ex, $"Error starting {Info?.Name}");
       }
     }
 
@@ -131,6 +137,8 @@ namespace VE3NEA
 
     private void ThreadProcedure()
     {
+      Log.Information($"Starting SDR Read thread");
+
       Stream = new(Device);
 
       while (!Stopping)
@@ -145,6 +153,7 @@ namespace VE3NEA
           break;
         }
 
+      Log.Information($"Terminating SDR Read thread");
       Stream.Dispose();
       Stream = null;
       SoapySdr.ReleaseDevice(Device);

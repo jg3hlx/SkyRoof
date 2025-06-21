@@ -11,6 +11,7 @@ namespace VE3NEA
   {
     public SdrProperty? GetByName(string name)
     {
+      // first found or null
       return Find(x => x.Name == name);
     }
 
