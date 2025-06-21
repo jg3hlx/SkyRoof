@@ -7,12 +7,12 @@
 - **Monitor**: screen resolution 1900x1280 or higher, 4K recommended;
 - **Internet**: required, to download satellite data;
 - **SDR**: optional, but highly recommended. Supported models:
-  - Airspy Mini;
+  - Airspy Mini, Airspy R2;
   - SDRplay;
   - RTL-SDR.
 
   Contact me for other models;
-- **Transceiver**: optional. The beta version was tested with IC-9700, please try it with other models;
+- **Transceiver**: optional. The beta version was tested with IC-9700, IC-705 and IC-910H. Please try it with other models;
 - **Antenna rotator** - optional, any rotator supported by HamLib, please test with yours and let me know.
 
 ## Software
