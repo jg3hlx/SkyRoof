@@ -12,8 +12,9 @@
   - RTL-SDR.
 
   Contact me for other models;
-- **Transceiver**: optional. The beta version was tested with IC-9700, IC-705 and IC-910H. Please try it with other models;
-- **Antenna rotator** - optional, any rotator supported by HamLib, please test with yours and let me know.
+- **Transceiver**: optional. The beta version was tested with IC-9700, IC-705, IC-910H and IC-7100. 
+  Please try it with other models;
+- **Antenna rotator** - optional, any rotator supported by HamLib. Please test with yours and let me know.
 
 ## Software
 

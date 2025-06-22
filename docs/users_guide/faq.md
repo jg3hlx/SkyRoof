@@ -30,3 +30,18 @@ to a lower value.
 **Q:** How can I run two instances of SkyRoof?
 
 **A:** By default, only one instance of SkyRoof can run at any time, but there is a work around. Make a copy of the SkyRoof.exe file in the same folder, but with a different name, e.g., SkyRoof_2.exe. Each exe will have its own settings, its own data folder, and will run independently of the other instance.
+
+---
+
+**Q:** I found an error in the satellite database: one of the satellite transmitters is marked as active, while it has been inactive for years. How can I correct the error?
+
+**A:** SkyRoof uses
+[satellite data](satellite_data.md)
+from the
+[SatNOGS database](https://db.satnogs.org/).
+This database is crowd-sourced, so anyone can suggest changes.
+If you find an error in a satellite record (shown in the
+[Satellite Details](satellite_details_panel.md)
+and
+[Satellite Transmitters](satellite_transmitters_panel.md)
+ panels), click on the "SatNOGS" link in the Satellite Details panel  to open the SatNOGS web site, then click on Transmitters, and select Edit from the drop-down menu. You may need to create an account with them (free) in order to submit changes.
