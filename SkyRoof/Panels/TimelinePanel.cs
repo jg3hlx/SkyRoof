@@ -10,8 +10,7 @@ namespace SkyRoof
   public partial class TimelinePanel : DockContent
   {
     private const double MaxPixelsPerMinute = 60; // at max zoom, 1 pixel = 1 second
-    private int ScaleHeight;
-    private int TopMargin;
+    private int ScaleHeight = 35;
 
     private static readonly TimeSpan HistoryTimeSpan = TimeSpan.FromMinutes(-30);
     private static readonly TimeSpan PredictionTimeSpan = TimeSpan.FromDays(2);
@@ -77,9 +76,9 @@ namespace SkyRoof
       DrawBg(e.Graphics, now);
       DrawDateLabels(e.Graphics, now);
       DrawtimeLabels(e.Graphics, now);
-      DrawElevationlabels(e.Graphics);
       DrawPasses(e.Graphics, now);
     }
+
 
     // todo: bg brightness for day/night
     private void DrawBg(Graphics g, DateTime now)
@@ -90,9 +89,7 @@ namespace SkyRoof
       g.FillRectangle(lgb, rect);
 
       // time scale
-      int textHeight = TextRenderer.MeasureText("0", Font, Size, TextFormatFlags.NoPadding).Height;
-      ScaleHeight = textHeight * 2 + 7;
-      TopMargin = textHeight;
+      ScaleHeight = TextRenderer.MeasureText("0", Font, Size, TextFormatFlags.NoPadding).Height * 2 + 7;
       rect = new RectangleF(0, ClientSize.Height - ScaleHeight, ClientSize.Width, ScaleHeight);
       g.FillRectangle(Brushes.Silver, rect);
 
@@ -179,18 +176,6 @@ namespace SkyRoof
       }
     }
 
-    private void DrawElevationlabels(Graphics g)
-    {
-      float y = ClientSize.Height - ScaleHeight;
-      float dy = (y - TopMargin) / 3;
-      for (int el = 0; el <= 90; el += 30)
-      {
-        g.DrawLine(Pens.Black, 0, y, 7, y);
-        g.DrawString($"{el:00}°", Font, Brushes.Black, 8, y - TopMargin);
-        y -= dy;
-      }
-    }
-
 
 
 
@@ -224,7 +209,7 @@ namespace SkyRoof
 
       now = now.ToUniversalTime();
       float y0 = ClientSize.Height - ScaleHeight;
-      float scaleY = (y0 - TopMargin) / 90f;
+      float scaleY = (y0 - 10) / 90f;
 
       g.SmoothingMode = SmoothingMode.AntiAlias;
 
