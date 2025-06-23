@@ -69,11 +69,33 @@ jobs:
         run: '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "Install\SkyRoof.iss"'
         shell: cmd
 
+      - name: upload-unsigned-artifact
+        id: upload-unsigned-artifact
+        uses: actions/upload-artifact@v4
+        with: 
+          path: 'Install\Output\SkyRoofSetup-v.$version-beta.exe'
+
+
+
+      - name: Sign
+        uses: signpath/github-action-submit-signing-request@v1.1
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: "SkyRoof"
+          project-slug: "SkyRoof"
+          signing-policy-slug: 'test-signing'
+          github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: '\Signed'
+
+
+
+
       - name: Copy and zip installer
         run: |
           $version = "${{ steps.get_version.outputs.version }}"
           $exeName = "SkyRoofSetup-v.$version-beta.exe"
-          $srcPath = "Install\Output\$exeName"
+          $srcPath = "Signed\$exeName"
 
           New-Item -ItemType Directory -Force -Path "output" | Out-Null
           Copy-Item $srcPath -Destination "output\$exeName"
