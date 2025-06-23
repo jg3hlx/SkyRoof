@@ -80,7 +80,7 @@ jobs:
         with:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           github-token: '${{ secrets.GITHUB_TOKEN }}'
-          organization-id: 'SkyRoof'
+          organization-id: '3bf60771-cf88-4c93-81c6-6cc8896015c3'
           project-slug: 'SkyRoof'
           signing-policy-slug: 'test-signing'
           github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
