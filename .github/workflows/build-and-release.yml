@@ -77,7 +77,7 @@ jobs:
       - name: Sign
         uses: signpath/github-action-submit-signing-request@v1.1
         with:
-          signpath-api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
           github-token: '${{ secrets.GITHUB_TOKEN }}'
           organization-id: 'SkyRoof'
           project-slug: 'SkyRoof'
