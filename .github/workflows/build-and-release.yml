@@ -90,12 +90,11 @@ jobs:
       - name: Copy and zip installer
         run: |
           $version = "${{ steps.get_version.outputs.version }}"
-          $exeName = "SkyRoofSetup-v.$version-beta.exe"
-          $srcPath = Signed\SkyRoofSetup.exe
+          $versionedName = "SkyRoofSetup-v.$version-beta"
 
           New-Item -ItemType Directory -Force -Path "output" | Out-Null
-          Copy-Item $srcPath -Destination "output\$exeName"
-          Compress-Archive -Path "output\$exeName" -DestinationPath "Install\SkyRoofSetup-v.$version-beta.zip"
+          Copy-Item Signed\SkyRoofSetup.exe -Destination "output\$versionedName.exe"
+          Compress-Archive -Path "output\$versionedname.exe" -DestinationPath 'Install\$versionedname.zip
         shell: pwsh
 
       - name: Create GitHub Release
