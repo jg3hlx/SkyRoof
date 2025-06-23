@@ -129,7 +129,7 @@
       // 
       RotatorControl.BorderStyle = BorderStyle.FixedSingle;
       RotatorControl.Dock = DockStyle.Left;
-      RotatorControl.Location = new Point(1437, 0);
+      RotatorControl.Location = new Point(1248, 0);
       RotatorControl.Name = "RotatorControl";
       RotatorControl.Size = new Size(210, 78);
       RotatorControl.TabIndex = 8;
@@ -137,7 +137,7 @@
       // panel7
       // 
       panel7.Dock = DockStyle.Left;
-      panel7.Location = new Point(1433, 0);
+      panel7.Location = new Point(1244, 0);
       panel7.Name = "panel7";
       panel7.Size = new Size(4, 78);
       panel7.TabIndex = 10;
@@ -146,16 +146,16 @@
       // 
       GainControl.BorderStyle = BorderStyle.FixedSingle;
       GainControl.Dock = DockStyle.Left;
-      GainControl.Location = new Point(1196, 0);
+      GainControl.Location = new Point(1034, 0);
       GainControl.Name = "GainControl";
-      GainControl.Size = new Size(237, 78);
+      GainControl.Size = new Size(210, 78);
       GainControl.TabIndex = 7;
       // 
       // panel3
       // 
       panel3.Controls.Add(panel6);
       panel3.Dock = DockStyle.Left;
-      panel3.Location = new Point(1192, 0);
+      panel3.Location = new Point(1030, 0);
       panel3.Name = "panel3";
       panel3.Size = new Size(4, 78);
       panel3.TabIndex = 6;
@@ -172,7 +172,7 @@
       // 
       FrequencyControl.BorderStyle = BorderStyle.FixedSingle;
       FrequencyControl.Dock = DockStyle.Left;
-      FrequencyControl.Location = new Point(510, 0);
+      FrequencyControl.Location = new Point(348, 0);
       FrequencyControl.Name = "FrequencyControl";
       FrequencyControl.Size = new Size(682, 78);
       FrequencyControl.TabIndex = 3;
@@ -180,7 +180,7 @@
       // panel1
       // 
       panel1.Dock = DockStyle.Left;
-      panel1.Location = new Point(506, 0);
+      panel1.Location = new Point(344, 0);
       panel1.Name = "panel1";
       panel1.Size = new Size(4, 78);
       panel1.TabIndex = 4;
@@ -191,7 +191,7 @@
       SatelliteSelector.Dock = DockStyle.Left;
       SatelliteSelector.Location = new Point(4, 0);
       SatelliteSelector.Name = "SatelliteSelector";
-      SatelliteSelector.Size = new Size(502, 78);
+      SatelliteSelector.Size = new Size(340, 78);
       SatelliteSelector.TabIndex = 2;
       SatelliteSelector.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
       SatelliteSelector.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;

@@ -41,7 +41,7 @@
       // label1
       // 
       label1.AutoSize = true;
-      label1.Location = new Point(1, 11);
+      label1.Location = new Point(4, 11);
       label1.Name = "label1";
       label1.Size = new Size(47, 15);
       label1.TabIndex = 25;
@@ -50,10 +50,10 @@
       // RfGainSlider
       // 
       RfGainSlider.AutoSize = false;
-      RfGainSlider.Location = new Point(43, 10);
+      RfGainSlider.Location = new Point(46, 10);
       RfGainSlider.Maximum = 100;
       RfGainSlider.Name = "RfGainSlider";
-      RfGainSlider.Size = new Size(150, 32);
+      RfGainSlider.Size = new Size(121, 32);
       RfGainSlider.TabIndex = 24;
       RfGainSlider.TickFrequency = 10;
       RfGainSlider.Value = 100;
@@ -62,7 +62,7 @@
       // AfGainLabel
       // 
       AfGainLabel.BackColor = SystemColors.Control;
-      AfGainLabel.Location = new Point(193, 37);
+      AfGainLabel.Location = new Point(164, 37);
       AfGainLabel.MinimumSize = new Size(40, 0);
       AfGainLabel.Name = "AfGainLabel";
       AfGainLabel.Size = new Size(43, 24);
@@ -73,7 +73,7 @@
       // label2
       // 
       label2.AutoSize = true;
-      label2.Location = new Point(1, 39);
+      label2.Location = new Point(4, 39);
       label2.Name = "label2";
       label2.Size = new Size(48, 15);
       label2.TabIndex = 22;
@@ -83,11 +83,11 @@
       // 
       AfGainSlider.AutoSize = false;
       AfGainSlider.LargeChange = 1;
-      AfGainSlider.Location = new Point(43, 39);
+      AfGainSlider.Location = new Point(46, 39);
       AfGainSlider.Maximum = 0;
       AfGainSlider.Minimum = -50;
       AfGainSlider.Name = "AfGainSlider";
-      AfGainSlider.Size = new Size(150, 32);
+      AfGainSlider.Size = new Size(121, 32);
       AfGainSlider.TabIndex = 21;
       AfGainSlider.TickFrequency = 10;
       AfGainSlider.Value = -25;
@@ -96,7 +96,7 @@
       // RfGainLabel
       // 
       RfGainLabel.BackColor = SystemColors.Control;
-      RfGainLabel.Location = new Point(193, 8);
+      RfGainLabel.Location = new Point(164, 8);
       RfGainLabel.MinimumSize = new Size(40, 0);
       RfGainLabel.Name = "RfGainLabel";
       RfGainLabel.Size = new Size(43, 24);
@@ -116,7 +116,7 @@
       Controls.Add(label2);
       Controls.Add(AfGainSlider);
       Name = "GainControl";
-      Size = new Size(237, 75);
+      Size = new Size(206, 75);
       ((System.ComponentModel.ISupportInitialize)RfGainSlider).EndInit();
       ((System.ComponentModel.ISupportInitialize)AfGainSlider).EndInit();
       ResumeLayout(false);

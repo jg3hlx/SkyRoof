@@ -45,13 +45,11 @@
       // listView1
       // 
       listView1.Activation = ItemActivation.OneClick;
-      listView1.AllowDrop = true;
       listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
       listView1.ContextMenuStrip = contextMenuStrip1;
       listView1.Dock = DockStyle.Fill;
       listView1.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
       listView1.FullRowSelect = true;
-      listView1.LabelEdit = true;
       listView1.Location = new Point(0, 23);
       listView1.MultiSelect = false;
       listView1.Name = "listView1";
@@ -127,8 +125,8 @@
       // 
       // GroupViewPanel
       // 
-      AutoScaleDimensions = new SizeF(7F, 15F);
-      AutoScaleMode = AutoScaleMode.Font;
+      AutoScaleDimensions = new SizeF(96F, 96F);
+      AutoScaleMode = AutoScaleMode.Dpi;
       ClientSize = new Size(414, 406);
       Controls.Add(listView1);
       Controls.Add(GroupNameLabel);
