@@ -94,13 +94,13 @@ jobs:
 
           New-Item -ItemType Directory -Force -Path "output" | Out-Null
           Copy-Item Signed\SkyRoofSetup.exe -Destination "output\$versionedName.exe"
-          Compress-Archive -Path "output\$versionedName.exe" -DestinationPath 'Install\$versionedname.zip'
+          Compress-Archive -Path output\$versionedName.exe -DestinationPath Install\$versionedName.zip
         shell: pwsh
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: SkyRoof v.${{ steps.get_version.outputs.version }} Beta
+          name: SkyRoof v.${{ steps.get_version.outputs.version }} beta
           tag_name: v.${{ steps.get_version.outputs.version }}-beta
           # body: See [Version History](https://ve3nea.github.io/SkyRoof/download.html).
           body: This is an experimental build, please ignore.
