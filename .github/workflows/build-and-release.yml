@@ -61,19 +61,19 @@ jobs:
       - name: Patch .iss file with version
         run: |
           $version = "${{ steps.get_version.outputs.version }}"
-          $issFile = 'Install\SkyRoof.iss'
+          $issFile = 'install\SkyRoof.iss'
           (Get-Content $issFile) -replace '#define MyAppVersion ".*?"', "#define MyAppVersion `"$version`"" | Set-Content $issFile
         shell: pwsh
 
       - name: Package with Inno Setup
-        run: '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "Install\SkyRoof.iss"'
+        run: '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "install\SkyRoof.iss"'
         shell: cmd
 
       - name: Upload Unsigned Artifact
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
         with: 
-          path: 'Install\Output\SkyRoofSetup.exe'
+          path: 'install\Output\SkyRoofSetup.exe'
 
       - name: Sign
         uses: signpath/github-action-submit-signing-request@v1.1
@@ -85,16 +85,16 @@ jobs:
           signing-policy-slug: 'test-signing'
           github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
           wait-for-completion: true
-          output-artifact-directory: Install\Output
+          output-artifact-directory: install\Output
 
       - name: Copy and zip installer
         run: |
           $version = "${{ steps.get_version.outputs.version }}"
           $versionedName = "SkyRoofSetup-v.$version-beta"
 
-          Copy-Item Install\Output\SkyRoofSetup.exe -Destination "Install\Output\$versionedName.exe"
-          Compress-Archive -Path Install\Output\$versionedName.exe -DestinationPath Install\Output\$versionedName.zip
-          Get-ChildItem -recurse
+          Copy-Item install\Output\SkyRoofSetup.exe -Destination "install\Output\$versionedName.exe"
+          Compress-Archive -Path install\Output\$versionedName.exe -DestinationPath install\Output\$versionedName.zip
+          Get-ChildItem -recurse -filter install
         shell: pwsh
 
       - name: Create GitHub Release
@@ -104,6 +104,6 @@ jobs:
           tag_name: v.${{ steps.get_version.outputs.version }}-beta
           # body: See [Version History](https://ve3nea.github.io/SkyRoof/download.html).
           body: This is an experimental build, please ignore.
-          files: Install\Output\SkyRoofSetup.zip
+          files:  install\Output\SkyRoofSetup-v.${{ steps.get_version.outputs.version }}"-beta.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
