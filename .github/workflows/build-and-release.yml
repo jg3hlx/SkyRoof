@@ -61,7 +61,7 @@ jobs:
       - name: Patch .iss file with version
         run: |
           $version = "${{ steps.get_version.outputs.version }}"
-          $issFile = "Install\\SkyRoof.iss"
+          $issFile = 'Install\SkyRoof.iss'
           (Get-Content $issFile) -replace '#define MyAppVersion ".*?"', "#define MyAppVersion `"$version`"" | Set-Content $issFile
         shell: pwsh
 
@@ -69,11 +69,10 @@ jobs:
         run: '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "Install\SkyRoof.iss"'
         shell: cmd
 
-      - name: upload-unsigned-artifact
-        id: upload-unsigned-artifact
+      - name: Upload Unsigned Artifact
         uses: actions/upload-artifact@v4
         with: 
-          path: 'Install\Output\SkyRoofSetup-v.$version-beta.exe'
+          path: 'Install\Output\SkyRoofSetup-v.{{ steps.get_version.outputs.version }}-beta.exe'
 
 
 
@@ -81,8 +80,9 @@ jobs:
         uses: signpath/github-action-submit-signing-request@v1.1
         with:
           api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
-          organization-id: "SkyRoof"
-          project-slug: "SkyRoof"
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+          organization-id: 'SkyRoof'
+          project-slug: 'SkyRoof'
           signing-policy-slug: 'test-signing'
           github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
           wait-for-completion: true
