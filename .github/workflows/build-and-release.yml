@@ -85,16 +85,16 @@ jobs:
           signing-policy-slug: 'test-signing'
           github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
           wait-for-completion: true
-          output-artifact-directory: install\Output
+          output-artifact-directory: install
 
       - name: Copy and zip installer
         run: |
           $version = "${{ steps.get_version.outputs.version }}"
           $versionedName = "SkyRoofSetup-v.$version-beta"
 
-          Copy-Item install\Output\SkyRoofSetup.exe -Destination "install\Output\$versionedName.exe"
-          Compress-Archive -Path install\Output\$versionedName.exe -DestinationPath install\Output\$versionedName.zip
-          Get-ChildItem -Path install\*.* -Recurse -Force
+          Copy-Item install\SkyRoofSetup.exe -Destination "install\$versionedName.exe"
+          Compress-Archive -Path install\$versionedName.exe -DestinationPath install\$versionedName.zip
+          Get-ChildItem -Path install\*.* -recurse
         shell: pwsh
 
       - name: Create GitHub Release
@@ -104,6 +104,6 @@ jobs:
           tag_name: v.${{ steps.get_version.outputs.version }}-beta
           # body: See [Version History](https://ve3nea.github.io/SkyRoof/download.html).
           body: This is an experimental build, please ignore.
-          files:  install\Output\SkyRoofSetup-v.${{ steps.get_version.outputs.version }}-beta.zip
+          files:  install\SkyRoofSetup-v.${{ steps.get_version.outputs.version }}-beta.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
