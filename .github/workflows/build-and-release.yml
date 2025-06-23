@@ -94,7 +94,7 @@ jobs:
 
           Copy-Item install\Output\SkyRoofSetup.exe -Destination "install\Output\$versionedName.exe"
           Compress-Archive -Path install\Output\$versionedName.exe -DestinationPath install\Output\$versionedName.zip
-          Get-ChildItem -Path .\install\*.* -Recurse -Force
+          # Get-ChildItem -Path .\install\*.* -Recurse -Force
         shell: pwsh
 
       - name: Create GitHub Release
