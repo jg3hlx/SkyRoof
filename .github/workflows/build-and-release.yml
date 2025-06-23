@@ -87,9 +87,6 @@ jobs:
           wait-for-completion: true
           output-artifact-directory: 'Signed'
 
-
-
-
       - name: Copy and zip installer
         run: |
           $version = "${{ steps.get_version.outputs.version }}"
@@ -104,8 +101,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: SkyRoof v.${{ steps.get_version.outputs.version }}
-          tag_name: v.${{ steps.get_version.outputs.version }}
+          name: SkyRoof v.${{ steps.get_version.outputs.version }} Beta
+          tag_name: v.${{ steps.get_version.outputs.version }}-beta
           # body: See [Version History](https://ve3nea.github.io/SkyRoof/download.html).
           body: This is an experimental build, please ignore.
           files: Install/SkyRoofSetup-v.${{ steps.get_version.outputs.version }}-beta.zip
