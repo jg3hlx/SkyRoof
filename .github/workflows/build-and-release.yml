@@ -70,6 +70,7 @@ jobs:
         shell: cmd
 
       - name: Upload Unsigned Artifact
+        id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
         with: 
           path: 'Install\Output\SkyRoofSetup.exe'
