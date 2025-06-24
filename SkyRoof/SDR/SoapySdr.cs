@@ -42,10 +42,10 @@ namespace VE3NEA
       Log.Information($"SoapySDRDevice_enumerateStrArgs returned:{JsonConvert.SerializeObject(kwargs)}");
 
       var result = kwargs.Select(args => new SoapySdrDeviceInfo(args)).Where(dev => dev.Present).ToArray();
-      foreach (var dev in result)
+      foreach (var info in result)
       {
-        dev.Present = true;
-        Log.Information($"Found SoapySDR device: {dev.Name} ({JsonConvert.SerializeObject(dev.KwArgs)})");
+        info.Present = true;
+        Log.Information($"Found SoapySDR device: '{info.Name}' {JsonConvert.SerializeObject(info)}");
       }
       return result;
     }

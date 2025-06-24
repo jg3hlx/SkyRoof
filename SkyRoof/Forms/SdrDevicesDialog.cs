@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using Serilog;
 using VE3NEA;
 
 namespace SkyRoof
@@ -57,6 +51,7 @@ namespace SkyRoof
       if (ctx.Settings.SoapyRemote.Enabled)      
       {
         string host = $"{ctx.Settings.SoapyRemote.Host}:{ctx.Settings.SoapyRemote.Port}";
+        Log.Information("Listing remote SDR devices...");
         remoteDevices = SoapySdr.EnumerateDevices($"remote={host}, driver=remote").Where(dev => dev.KwArgs["remote:driver"] != "audio");
         foreach (var device in remoteDevices) device.KwArgs["label"] = $"Remote: {device.Name}";
       }

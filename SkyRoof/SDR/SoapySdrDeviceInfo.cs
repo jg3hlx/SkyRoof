@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using Serilog;
 using SkyRoof;
 using static VE3NEA.NativeSoapySdr;
-using static VE3NEA.Utils;
 
 namespace VE3NEA
 {
@@ -15,20 +14,17 @@ namespace VE3NEA
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Name { get => KwArgs.GetValueOrDefault("label") ?? "<no label>"; }
     public SoapySDRKwargs KwArgs;
+    public SdrProperties Properties = new();
+
     public SoapySDRRange[] FrequencyRange, SampleRateRange, BandwidthRange;
     public SoapySDRRange GainRange;
 
     public double SampleRate;
     public double MaxBandwidth;
-
     public double HardwareBandwidth;
     public double Frequency;
     public double Gain;
-
-    // PPM calibration: https://www.youtube.com/watch?v=mJIU04PHKTo
     public double Ppm => GetPpm();
-
-    public SdrProperties Properties = new();
 
     public SoapySdrDeviceInfo() { }
 
@@ -63,7 +59,6 @@ namespace VE3NEA
       HardwareBandwidth = Math.Max(HardwareBandwidth, 1.1 * MaxBandwidth);
       HardwareBandwidth = GetBestMatch(BandwidthRange, HardwareBandwidth);
     }
-
 
 
 

@@ -63,9 +63,7 @@ namespace VE3NEA
 
     private void TryStart(bool logErrors)
     {
-      if (logErrors) Log.Information($"Starting SDR: {Info.Name}");
-      if (logErrors) Log.Information($"with SDR KwArgs: {JsonConvert.SerializeObject(Info.KwArgs)}");
-      if (logErrors) Log.Information($"with SDR Properties: {JsonConvert.SerializeObject(Info.Properties)}");
+      if (logErrors) Log.Information($"Starting SDR: '{Info.Name}' {JsonConvert.SerializeObject(Info)}");
 
       try
       {
