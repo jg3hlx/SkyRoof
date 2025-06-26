@@ -16,10 +16,23 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 
 ### Release Notes
 
+#### v.1.11 Beta
+
+- added support of HackRF SDR and AirspyHF+;
+- reduced toolbar width to fit smaller screens;
+- added vertical scale to the Timeline panel;
+- fixed null pointer error;
+- added more sdr-related logging;
+- updated documentation.
+
+#### v.1.10 Beta
+
+- experimental version for debugging SDR interface.
+
 #### v.1.9 Beta
 
 - added command to reset window layout;
-- missing dll files added to the installer.
+- missing DLL files added to the installer.
 
 #### v.1.8 Beta
 

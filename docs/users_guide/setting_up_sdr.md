@@ -6,16 +6,25 @@ SkyRoof uses the
 [Soapy SDR](https://github.com/pothosware/SoapySDR)
 engine to interface with the SDR radios. Currently it supports:
 
-- Airspy Mini;
+- Airspy;
 - SDRplay;
-- RTL-SDR.
+- RTL-SDR;
+- HackRF.
 
 > [!NOTE]
 > It may be possible to add support of other SDR devices to SkyRoof. Contact me if you have an unsupported SDR
 > and are willing to do extensive testing.
 
-If you plan on using one of the SDRplay radios with SkyRoof, download the latest SDRplay API from their
-[web site](https://www.sdrplay.com/api/) and install it on your system before starting the program.
+## Installing The Drivers
+
+Most of the SDR devices require the driver to be installed before you can start using them. Check the manufacturer's web site,
+or search on Google, for the driver installation instructions. At the time of this writing, the following instructions were available on the Web:
+[Airspy](https://airspy.com/quickstart/),
+[RTL-SDR](https://www.rtl-sdr.com/rtl-sdr-quick-start-guide/),
+[SDRplay](https://www.sdrplay.com/api/),
+[HackRF](https://hackrf.readthedocs.io/en/latest/installing_hackrf_software.html).
+
+Once you install the drivers and make your radio work with its native software, proceed to the next step.
 
 ## Selecting an SDR device
 
@@ -42,19 +51,19 @@ The two settings, common to all radios, are:
   This is the recommended setting. When it is set to false, the settings in the **Stage Gains** are applied to the
   individual stages of the SDR, and the gain slider is disabled.
 
-  ## Using Remote SDR
+## Using Remote SDR
 
-  SkyRoof can use SDR devices connected to a remote computer via the
-  [SoapyRemote](https://github.com/pothosware/SoapyRemote) driver. To enable remote access to SDR:
-  
-  - **On the remote computer:**
-    - install the **SoapySDRServer** that comes with
-    [SoapySDR](https://github.com/pothosware/SoapySDR/wiki)
-    and run it.
-  - **In SkyRoof:**
-    - enable **SoapyRemote** in the **Settings** dialog;
-    - enter the **host** and **port number** of the remote computer.
+SkyRoof can use SDR devices connected to a remote computer via the
+[SoapyRemote](https://github.com/pothosware/SoapyRemote) driver. To enable remote access to SDR:
 
-      ![SoapyRemote Settings](../images/soapyremote_settings.png)
+- **On the remote computer:**
+  - install the **SoapySDRServer** that comes with
+  [SoapySDR](https://github.com/pothosware/SoapySDR/wiki)
+  and run it.
+- **In SkyRoof:**
+  - enable **SoapyRemote** in the **Settings** dialog;
+  - enter the **host** and **port number** of the remote computer.
 
-    - Open the **SDR Devices** dialog and select one of the remote SDR devices from the list.
+    ![SoapyRemote Settings](../images/soapyremote_settings.png)
+
+  - Open the **SDR Devices** dialog and select one of the remote SDR devices from the list.

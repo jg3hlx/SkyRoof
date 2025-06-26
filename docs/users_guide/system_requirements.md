@@ -7,9 +7,10 @@
 - **Monitor**: screen resolution 1900x1280 or higher, 4K recommended;
 - **Internet**: required, to download satellite data;
 - **SDR**: optional, but highly recommended. Supported models:
-  - Airspy Mini, Airspy R2;
+  - Airspy;
   - SDRplay;
-  - RTL-SDR.
+  - RTL-SDR;
+  - HackRF.
 
   Contact me for other models;
 - **Transceiver**: optional. The beta version was tested with IC-9700, IC-705, IC-910H and IC-7100. 
