@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof.zip v.1.9 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.9-beta/SkyRoofSetup-v.1.9-beta.zip)
+[SkyRoof.zip v.1.11 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.11-beta/SkyRoofSetup-v.1.11-beta.zip)
 
 <br>
 
