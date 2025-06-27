@@ -71,8 +71,8 @@ namespace SkyRoof
 
       if (cust.DownlinkDopplerCorrectionEnabled)
       {
-        var point = pass.GetTrackPointAt(time);
-        freq *= 1 - point.Observation.RangeRate / 3e5;
+        var obs = pass.GetObservationAt(time);
+        if (obs != null) freq *= 1 - obs.RangeRate / 3e5;
       }
       if (cust.DownlinkManualCorrectionEnabled) freq += cust.DownlinkManualCorrection;
 
@@ -86,8 +86,8 @@ namespace SkyRoof
       var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(pass.Satellite.sat_id);
       if (cust.DownlinkDopplerCorrectionEnabled)
       {
-        var point = pass.GetTrackPointAt(time);
-        freq /= 1 - point.Observation.RangeRate / 3e5;
+        var obs = pass.GetObservationAt(time);
+        if (obs != null) freq /= 1 - obs.RangeRate / 3e5;
       }
       if (cust.DownlinkManualCorrectionEnabled) freq -= cust.DownlinkManualCorrection;
       return freq;

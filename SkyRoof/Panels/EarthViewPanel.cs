@@ -95,7 +95,10 @@ namespace SkyRoof
 
     private void ComputeSatLocation()
     {
-      if (Satellite.Tle == null)
+      var p = Satellite.Tracker.Predict();
+      var nextP = Satellite.Tracker.Predict(DateTime.UtcNow.AddSeconds(10));
+
+      if (p == null || nextP == null)
       {
         Center = Home;
         Footprint = Math.PI;
@@ -104,16 +107,14 @@ namespace SkyRoof
       }
       else
       {
-        var p = Satellite.Tracker.Predict().ToGeodetic();
-        var nextP = Satellite.Tracker.Predict(DateTime.UtcNow.AddSeconds(10)).ToGeodetic();
-        var nextCenter = new GeoPoint(nextP.Latitude.Degrees, nextP.Longitude.Degrees);
-
         Center = new(p.Latitude.Degrees, p.Longitude.Degrees);
+        var nextCenter = new GeoPoint(nextP.Latitude.Degrees, nextP.Longitude.Degrees);
         Footprint = p.GetFootprintAngle().Radians;
         Azimuth = (nextCenter - Center).AzimuthRad;
         SatelliteSprite.Enabled = true;
       }
     }
+    
 
 
 

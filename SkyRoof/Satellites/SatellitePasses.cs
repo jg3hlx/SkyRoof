@@ -206,51 +206,15 @@ namespace SkyRoof
 
     public IEnumerable<SatellitePass> ComputePassesFor(SatnogsDbSatellite satellite, DateTime startTime, DateTime endTime)
     {
-      IEnumerable<SatellitePass> result = new List<SatellitePass>();
-      if (satellite.Tle == null) return result;
-      Satellite tracker;
+      if (!satellite.Tracker.Enabled) return new List<SatellitePass>();
 
-      try
-      {
-        tracker = new Satellite(satellite.Tle.tle0, satellite.Tle.tle1, satellite.Tle.tle2);
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex, $"Error creating tracker from TLE: |{satellite.Tle.tle0}|{satellite.Tle.tle1}|{satellite.Tle.tle2}|.");
-        return result;
-      }
+      List<SatelliteVisibilityPeriod> passes;
+      if (satellite.Tracker.IsGeoStationary())
+        passes = satellite.Tracker.ComputeGeostationaryPasses(GroundStation);
+      else
+        passes = satellite.Tracker.ComputePasses(GroundStation, startTime, endTime);
 
-      try
-      {
-        List<SatelliteVisibilityPeriod> passes;
-        if (SatellitePass.IsGeoStationary(tracker)) passes = ComputeGeostationaryPasses(tracker);
-        else passes = GroundStation.Observe(tracker, startTime, endTime, TimeSpan.FromSeconds(15), clipToStartTime: false);
-        result = passes.Select(p => new SatellitePass(GroundStation, satellite, tracker, p));
-      }
-      catch (Exception e)
-      {
-        // no need to log all prediction exceptions
-        //Log.Error(e, $"Pass computation failed for {satellite.name}: {e.Message}");
-      }
-
-      return result;
-    }
-
-    private List<SatelliteVisibilityPeriod> ComputeGeostationaryPasses(Satellite tracker)
-    {
-      var elevation = GroundStation.Observe(tracker, DateTime.UtcNow).Elevation;
-      if (elevation < 0) return new();
-
-      return new ()
-      {
-        new SatelliteVisibilityPeriod(
-          tracker,
-          DateTime.UtcNow,
-          DateTime.UtcNow + TimeSpan.FromDays(1),
-          elevation,
-          DateTime.UtcNow + TimeSpan.FromHours(12)
-          )
-      };
+      return passes.Select(p => new SatellitePass(GroundStation, satellite, p));
     }
 
     protected abstract IEnumerable<SatnogsDbSatellite> ListSatellites();
@@ -262,11 +226,9 @@ namespace SkyRoof
       GroundStation = new GroundStation(myLocation);
     }
 
-    internal TopocentricObservation? ObserveSatellite(SatnogsDbSatellite satellite, DateTime utcNow)
+    internal TopocentricObservation? ObserveSatellite(SatnogsDbSatellite? satellite, DateTime utcNow)
     {
-      var tracker = satellite.Tracker;
-      if (tracker == null || tracker.Tle == null) return null;
-      return GroundStation.Observe(tracker, utcNow);
+      return satellite?.Tracker.Observe(GroundStation, utcNow);
     }
 
     internal SatellitePass? GetNextPass(SatnogsDbSatellite satellite)

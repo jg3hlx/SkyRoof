@@ -235,7 +235,10 @@ namespace SkyRoof
     private void DrawSat(Graphics g, SatellitePass pass)
     {
       var now = DateTime.UtcNow;
-      var location = ObservationToXY(pass.GetObservationAt(now));
+      var obs = pass.GetObservationAt(now);
+      if (obs == null) return;
+
+      var location = ObservationToXY(obs);
       float angle = ComputeDirection(pass, now);
       float scale = Math.Min(1, 0.5f + 0.0013f * Radius);
 
@@ -267,8 +270,14 @@ namespace SkyRoof
     {
       if (pass.Geostationary) return 0;
 
-      var p1 = ObservationToXY(pass.GetObservationAt(utc.AddSeconds(-10)));
-      var p2 = ObservationToXY(pass.GetObservationAt(utc.AddSeconds(10)));
+      var obs1 = pass.GetObservationAt(utc.AddSeconds(-10));
+      if (obs1 == null) return 0;
+
+      var obs2 = pass.GetObservationAt(utc.AddSeconds(10));
+      if (obs2 == null) return 0;
+
+      var p1 = ObservationToXY(obs1);
+      var p2 = ObservationToXY(obs2);
       return (float)(Math.Atan2(p2.Y - p1.Y, p2.X - p1.X) * 180 / Math.PI);
     }
 
@@ -426,6 +435,7 @@ namespace SkyRoof
         var tooltip = passes[i].GetTooltipText();
         bool selected = passes[i].Satellite == ctx.SatelliteSelector.SelectedSatellite;
         var observation = passes[i].GetObservationAt(now);
+        if (observation == null) continue;
 
         FlowPanel.Controls[i * 3].Font = selected ? BoldFont : RegularFont;
         FlowPanel.Controls[i * 3].Text = passes[i].Satellite.name;

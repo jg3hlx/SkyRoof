@@ -193,29 +193,9 @@ namespace SkyRoof
     private List<string>? transmittersHint;
 
     [Browsable(false)]
-    internal Satellite Tracker { get => tracker ??= CreateTracker();  }
+    internal SatelliteTracker Tracker { get => tracker ??= new SatelliteTracker(Tle); }
+    private SatelliteTracker? tracker;
 
-
-
-
-    private Satellite? CreateTracker()
-    {
-      if (Tle == null) return null;
-
-      try
-      {
-        return new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex, $"Error creating TLE object: |{Tle.tle0}|{Tle.tle1}|{Tle.tle2}|.");
-        return null;
-      }
-
-      //return Tle == null ? null : new Satellite(Tle.tle0, Tle.tle1, Tle.tle2);
-    }
-
-    private Satellite? tracker;
 
     private List<string> FormatTransmitters()
     {
@@ -306,7 +286,9 @@ namespace SkyRoof
 
       try
       {
-        var prediction = Tracker.Predict().ToGeodetic();
+        var prediction = Tracker.Predict();
+        if (prediction == null) return;
+
         Footprint = (int)(2 * prediction.GetFootprint()); // diameter in km
         Altitude = (int)prediction.Altitude;
       }

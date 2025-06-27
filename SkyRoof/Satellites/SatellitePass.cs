@@ -1,7 +1,9 @@
 ﻿using System.Drawing.Printing;
 using SGPdotNET.Observation;
+using SGPdotNET.TLE;
 using SGPdotNET.Util;
 using VE3NEA;
+using static SkyRoof.SatellitePass;
 
 namespace SkyRoof
 {
@@ -10,7 +12,7 @@ namespace SkyRoof
     public class TrackPoint
     {
       public DateTime Utc;
-      public TopocentricObservation Observation;
+      public TopocentricObservation? Observation;
     }
 
     private const double TwoPi = 2 * Math.PI;
@@ -32,7 +34,7 @@ namespace SkyRoof
 
 
 
-    public SatellitePass(GroundStation groundStation, SatnogsDbSatellite satellite, Satellite tracker, SatelliteVisibilityPeriod visibilityPeriod)
+    public SatellitePass(GroundStation groundStation, SatnogsDbSatellite satellite, SatelliteVisibilityPeriod visibilityPeriod)
     {
       GroundStation = groundStation;
       Satellite = satellite;
@@ -42,7 +44,7 @@ namespace SkyRoof
       EndTime = visibilityPeriod.End;
       MaxElevation = visibilityPeriod.MaxElevation.Degrees;
       OrbitNumber = ComputeOrbitNumber();
-      Geostationary = IsGeoStationary(tracker);
+      Geostationary = satellite.Tracker.IsGeoStationary();
     }
 
 
@@ -53,36 +55,10 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                         get
     //----------------------------------------------------------------------------------------------
-    public static bool IsGeoStationary(Satellite tracker)
+
+    internal TopocentricObservation? GetObservationAt(DateTime utc)
     {
-      return Math.Abs(tracker.Tle.MeanMotionRevPerDay - 1) < 0.1f;
-    }
-
-    public TrackPoint GetTrackPointAt(DateTime utc)
-    {
-      if (utc >= Track.First().Utc && utc <= Track.Last().Utc)
-        for (int i = 1; i < Track.Count; i++)
-          if (Track[i - 1].Utc <= utc && Track[i].Utc > utc)
-          {
-            var r = (utc - Track[i - 1].Utc).TotalSeconds / (Track[i].Utc - Track[i - 1].Utc).TotalSeconds;
-            var rangeRate = Track[i - 1].Observation.RangeRate * (1 - r) + Track[i].Observation.RangeRate * r;
-            var elevation = Track[i - 1].Observation.Elevation.Radians * (1 - r) + Track[i].Observation.Elevation.Radians * r;
-
-            var point = new TrackPoint();
-            point.Utc = utc;
-            point.Observation = new(0, Angle.FromRadians(elevation), 0, rangeRate);
-            return point;
-          }
-
-      var trackPoint = new TrackPoint();
-      trackPoint.Utc = utc;
-      trackPoint.Observation = GroundStation.Observe(Satellite.Tracker, trackPoint.Utc);
-      return trackPoint;
-    }
-
-    internal TopocentricObservation GetObservationAt(DateTime utc)
-    {
-      return GroundStation.Observe(Satellite.Tracker, utc);
+      return Satellite.Tracker.Observe(GroundStation, utc);
     }
 
     internal bool IsActive()
@@ -94,9 +70,12 @@ namespace SkyRoof
     {
       if (Geostationary) return [$"Geostationary   orbit #{OrbitNumber}", "", "", "", "", ""];
 
-      var elevation = GetTrackPointAt(DateTime.UtcNow).Observation.Elevation.Degrees;
-      var nextElevation = GetTrackPointAt(DateTime.UtcNow.AddMinutes(1)).Observation.Elevation.Degrees;
-      string upDpwn = nextElevation > elevation ? "↑" : "↓";
+      var now = DateTime.UtcNow;
+      var obs1 = GetObservationAt(now);
+      var obs2 = GetObservationAt(now.AddMinutes(1));
+
+      bool down = obs1 == null || obs2 == null || obs1.Elevation > obs2.Elevation;
+      string upDpwn = down ? "↓" : "↑";
   
       string[] tooltip = new string[6];
 
@@ -109,7 +88,7 @@ namespace SkyRoof
       tooltip[1] = $"{StartTime.ToLocalTime():yyyy-MM-dd}";
       tooltip[2] = $"{StartTime.ToLocalTime():HH:mm:ss} to {EndTime.ToLocalTime():HH:mm:ss}";
       tooltip[3] = $"Duration: {Utils.TimespanToString(EndTime - StartTime, false)}";
-      tooltip[4] = $"Elevation: {elevation:F0}º {upDpwn}  (Max {MaxElevation:F0}º)";
+      tooltip[4] = $"Elevation: {obs1?.Elevation.Degrees:F0}º {upDpwn}  (Max {MaxElevation:F0}º)";
       tooltip[5] = $"Orbit: #{OrbitNumber}";
 
       return tooltip;
@@ -123,13 +102,15 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     private int ComputeOrbitNumber()
     {
-      var utc = SatelliteVisibilityPeriod.MaxElevationTime;
-      uint revNum = Satellite.Tracker.Tle.OrbitNumber;
-      var timeSinceOrbit = (utc - Satellite.Tracker.Tle.Epoch).TotalDays;
-      var revPerDay = Satellite.Tracker.Tle.MeanMotionRevPerDay;
-      var drag = Satellite.Tracker.Tle.BStarDragTerm;
-      var meanAnomaly = Satellite.Tracker.Tle.MeanAnomaly.Radians;
-      var argumentPerigee = Satellite.Tracker.Tle.ArgumentPerigee.Radians;
+      if (!Satellite.Tracker.Enabled) return 0;
+      Tle tle = Satellite.Tracker.Tle!;
+
+      uint revNum = tle.OrbitNumber;
+      var timeSinceOrbit = (SatelliteVisibilityPeriod.MaxElevationTime - tle.Epoch).TotalDays;
+      var revPerDay = tle.MeanMotionRevPerDay;
+      var drag = tle.BStarDragTerm;
+      var meanAnomaly = tle.MeanAnomaly.Radians;
+      var argumentPerigee = tle.ArgumentPerigee.Radians;
 
       return (int)(
         revNum +
@@ -165,13 +146,13 @@ namespace SkyRoof
         {
           var trackPoint = new TrackPoint();
           trackPoint.Utc = StartTime + i * step;
-          trackPoint.Observation = GroundStation.Observe(Satellite.Tracker, trackPoint.Utc);
+          trackPoint.Observation = GetObservationAt(trackPoint.Utc);
           track.Add(trackPoint);
         }
 
       hump = new PointF[track.Count];
 
-      return track;
+      return track.Where(p => p != null).ToList();
     }
 
 
@@ -187,7 +168,8 @@ namespace SkyRoof
       for (int i = 0; i <= StepCount; i++)
       {
         var utc = StartTime + step * i;
-        var observation = GroundStation.Observe(Satellite.Tracker, utc);
+        var observation = Satellite.Tracker.Observe(GroundStation, utc);
+        if (observation == null) continue;
 
         double ro = 1 - observation.Elevation.Radians / Utils.HalfPi;
         double phi = Utils.HalfPi - observation.Azimuth.Radians;
@@ -205,7 +187,8 @@ namespace SkyRoof
       var leftPoints = new List<GeoPoint>();
       var rightPoints = new List<GeoPoint>();
 
-      var predictions = Track.Select(t => Satellite.Tracker.Predict(t.Utc).ToGeodetic()).ToArray();
+      var predictions = Track.Select(t => Satellite.Tracker.Predict(t.Utc)).Where(p=>p != null).ToArray();
+      if (predictions.Length < 3) return new List<GeoPath>();
 
       for (int i = 0; i < predictions.Length; i++)
       {

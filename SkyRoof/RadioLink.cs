@@ -77,26 +77,20 @@ namespace SkyRoof
       (SatnogsDbTransmitter.IsVhfFrequency(UplinkFrequency) != SatnogsDbTransmitter.IsVhfFrequency(DownlinkFrequency)));
 
 
-
     public void ObserveSatellite(SatellitePasses engine)
     {
-      if (Sat?.Tle == null)
-      {
-        DopplerFactor = 0;
-        IsAboveHorizon = false;
-        return;
-      }
+      var observation = engine.ObserveSatellite(Sat, DateTime.UtcNow);
 
-      var observation = engine.ObserveSatellite(Sat!, DateTime.UtcNow);
       if (observation == null)
       {
         DopplerFactor = 0;
         IsAboveHorizon = false;
-        return;
       }
-
-      DopplerFactor = observation.RangeRate / 3e5;
-      IsAboveHorizon = observation.Elevation > 0;
+      else
+      {
+        DopplerFactor = observation.RangeRate / 3e5;
+        IsAboveHorizon = observation.Elevation > 0;
+      }
     }
 
     internal void ComputeFrequencies()
