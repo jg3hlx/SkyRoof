@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof.zip v.1.11 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.11-beta/SkyRoofSetup-v.1.11-beta.zip)
+[SkyRoof.zip v.1.12 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.12-beta/SkyRoofSetup-v.1.12-beta.zip)
 
 <br>
 
@@ -15,6 +15,11 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.12 Beta
+
+- fixed the error caused by the decayed satellites;
+- installer is signed with an Open Source SignPath certificate.
 
 #### v.1.11 Beta
 

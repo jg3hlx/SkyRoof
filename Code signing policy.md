@@ -1,6 +1,6 @@
 # Code Signing Policy
 
-Free code signing is [*going to be*] provided by 
+Free code signing is provided by
 [SignPath.io](https://signpath.io/), certificate by
 [SignPath Foundation](https://signpath.org/).
 
