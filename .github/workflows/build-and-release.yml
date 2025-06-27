@@ -82,12 +82,12 @@ jobs:
           github-token: '${{ secrets.GITHUB_TOKEN }}'
           organization-id: '3bf60771-cf88-4c93-81c6-6cc8896015c3'
           project-slug: 'SkyRoof'
-          signing-policy-slug: 'test-signing'
+          signing-policy-slug: 'release-signing'
           github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: install
 
-      - name: Copy and zip installer
+      - name: Copy and Zip Installer
         run: |
           $version = "${{ steps.get_version.outputs.version }}"
           $versionedName = "SkyRoofSetup-v.$version-beta"
@@ -102,8 +102,8 @@ jobs:
         with:
           name: SkyRoof v.${{ steps.get_version.outputs.version }} beta
           tag_name: v.${{ steps.get_version.outputs.version }}-beta
-          # body: See [Version History](https://ve3nea.github.io/SkyRoof/download.html).
-          body: This is an experimental build, please ignore.
+          body: See [Version History](https://ve3nea.github.io/SkyRoof/download.html).
+          # body: This is an experimental build, please ignore.
           files:  install/SkyRoofSetup-v.${{ steps.get_version.outputs.version }}-beta.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
