@@ -9,5 +9,5 @@ assignees: ''
 
 If you are a developer, please report issues with the published code here. 
 
-Otherwise, please post your support requests and suggestions in the
-[SkyRoof discussion group](https://groups.google.com/g/skyroof).
+Otherwise, please post your support requests and suggestions in the SkyRoof discussion group:
+https://groups.google.com/g/skyroof
