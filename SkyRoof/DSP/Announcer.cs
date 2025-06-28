@@ -1,5 +1,6 @@
 ﻿using System.Speech.Synthesis;
 using System.Text.RegularExpressions;
+using VE3NEA;
 
 namespace SkyRoof
 {
@@ -18,6 +19,7 @@ namespace SkyRoof
     public readonly InstalledVoice[] Voices;
     private List<SatellitePass> Queue1 = new();
     private List<SatellitePass> Queue2 = new();
+    private Bearing LastBearing = new(0,0);
 
     public Announcer() {
       Synth = new SpeechSynthesizer();
@@ -82,19 +84,38 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                       announce
     //----------------------------------------------------------------------------------------------
+    public void AnnouncePosition(Bearing bearing)
+    {
+      if (!ctx!.Settings.Announcements.PositionAnnouncement.Enabled) return;
+      if (bearing.Elevation < 0) return;
+      if (Bearing.AngleBetween(bearing, LastBearing) < ctx.Settings.Announcements.PositionAnnouncement.Degrees) return;
+      LastBearing = bearing;
 
-    // this does not work for all voices
+      string message = ctx.Settings.Announcements.PositionAnnouncement.Message
+        .Replace("{azimuth}", bearing.Azimuth.ToString("F0"))
+        .Replace("{elevation}", bearing.Elevation.ToString("F0"));
+
+      Say(message);
+    }
+
+
+    // this does not work for some voices:
     //private const string MinutesFormat = @"<say-as interpret-as=""duration"" format=""m"">{0}</say-as>";
 
-    public void Announce(string name, Announcement announcement)
+    public void Announce(string name, AosAnnouncement announcement)
     {
       name = FormatSatName(name);
       string minutes = announcement.Minutes.ToString();
-      string culture = "en-US";
-
       string message = announcement.Message.Replace("{name}", name).Replace("{minutes}", minutes);
 
+      Say(message);
+    }
+
+    private void Say(string message)
+    {
       var voice = Voices.FirstOrDefault(v => GetVoiceName(v) == ctx!.Settings.Announcements.Voice)?.VoiceInfo;
+      string culture = "en-US";
+      
       if (voice != null)
       {
         Synth.SelectVoice(voice.Name);

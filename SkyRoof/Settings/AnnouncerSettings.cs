@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VE3NEA;
+using static SkyRoof.AosAnnouncement;
 
 namespace SkyRoof
 {
@@ -15,35 +16,59 @@ namespace SkyRoof
     [TypeConverter(typeof(VoiceNameConverter))]
     public string? Voice { get; set; }
 
+    [DefaultValue(50)]
     public int Volume { get; set; } = 50;
 
-    [DisplayName("Announcement #1")]
+    [DisplayName("AOS Announcement #1")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public Announcement Announcement1 { get; set; } = new(2, "Satellite {name} is rising in {minutes} minutes");
+    public AosAnnouncement Announcement1 { get; set; } = new(2, "Satellite {name} is rising in {minutes} minutes");
 
-    [DisplayName("Announcement #2")]
+    [DisplayName("AOS Announcement #2")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public Announcement Announcement2 { get; set; } = new(0, "Satellite {name} is rising now");
+    public AosAnnouncement Announcement2 { get; set; } = new(0, "Satellite {name} is rising now");
+
+    [DisplayName("Position Announcement")]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public PositionAnnouncement PositionAnnouncement { get; set; } = new();
 
     public override string ToString() { return ""; }
   }
 
-  public class Announcement
+
+  public class AosAnnouncement
   {
+    [DefaultValue(true)]
     public bool Enabled { get; set; } = true;
 
     [DisplayName("Minutes before AOS")]
     public int Minutes { get; set; }
 
     public string Message { get; set; }
-    
-    
+
+
     public override string ToString() { return ""; }
 
-    public Announcement(int minutes, string message)
+    public AosAnnouncement(int minutes, string message)
     {
       Minutes = minutes;
       Message = message;
     }
+  }
+
+
+  public class PositionAnnouncement
+  {
+    [DefaultValue(false)]
+    public bool Enabled { get; set; } = false;
+
+    [DisplayName("Degrees Between Announcements")]
+    [Description("The angle between the previously announced and current satellite positions")]
+    [DefaultValue(10)]
+    public int Degrees { get; set; } = 10;
+
+    public string Message { get; set; } = "Azimuth {azimuth} degrees, elevation {elevation} degrees";
+
+
+    public override string ToString() { return ""; }
   }
 }

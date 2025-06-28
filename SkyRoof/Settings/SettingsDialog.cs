@@ -85,8 +85,12 @@ namespace SkyRoof
           ValidateInt(e, 100);
           break;
 
-        case "SkyRoof.Announcement.Minutes":
+        case "SkyRoof.AosAnnouncement.Minutes":
           ValidateInt(e, 5);
+          break;
+
+        case "SkyRoof.PositionAnnouncement.Degrees":
+          ValidateInt(e, 30, 1);
           break;
       }
 
@@ -109,9 +113,9 @@ namespace SkyRoof
       return true;
     }
 
-    private void ValidateInt(PropertyValueChangedEventArgs e, int max)
+    private void ValidateInt(PropertyValueChangedEventArgs e, int max, int min = 0)
     {
-      int cleanValue = Math.Max(0, Math.Min(max, (int)e.ChangedItem.Value));
+      int cleanValue = Math.Max(min, Math.Min(max, (int)e.ChangedItem.Value));
       e.ChangedItem.PropertyDescriptor.SetValue(e.ChangedItem.Parent.Value, cleanValue);
     }
 

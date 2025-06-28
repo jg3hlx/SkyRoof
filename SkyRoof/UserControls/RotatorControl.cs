@@ -190,6 +190,8 @@ namespace SkyRoof
       }
 
       BearingToUi();
+
+      ctx.Announcer.AnnouncePosition(SatBearing);
     }
 
 
