@@ -6,6 +6,9 @@
 
 [SkyRoof v.1.13 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.13-beta/SkyRoofSetup-v.1.13-beta.zip)
 
+To scan the SkyRoof download for viruses,
+[click here](https://www.virustotal.com/gui/url/f8897bbf9bfe84981c42e3606b25897752004b0be7da7351653fd0d339ceac68)
+
 <br>
 
 ### Previous Versions
