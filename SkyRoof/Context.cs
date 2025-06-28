@@ -44,6 +44,7 @@ namespace SkyRoof
     public readonly Soundcard<float> AudioVacSoundcard = new();
     public readonly Soundcard<Complex32> IqVacSoundcard = new();
     public readonly Announcer Announcer = new();
+    public UdpStreamSender UdpStreamSender = new();
 
     public void ClosePanels()
     {
