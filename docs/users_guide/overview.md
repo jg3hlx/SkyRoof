@@ -22,7 +22,7 @@ The main features of SkyRoof are:
   - Pass List - the details of the predicted passes;
 - SDR-based waterfall display that covers the whole satellite segments on the VHF and UHF bands, with zoom and pan;
 - SDR-based SSB/CW/FM receiver with RIT and Doppler tracking;
-- audio and I/Q output to external programs via VAC;
+- audio and I/Q output to external programs via VAC or UDP;
 - frequency scale with satellite names and transponder segments, Doppler-corrected;
 - CAT control of an external transceiver;
 - antenna rotator control.

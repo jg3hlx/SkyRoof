@@ -19,6 +19,8 @@ items:
       href: calibrating_ppm_correction.md
     - name: Setting Up Audio
       href: setting_up_audio.md
+    - name: Setting Up Output Stream
+      href: setting_up_output_stream.md
     - name: Setting Up Voice Announcements
       href: setting_up_voice_announcements.md
     - name: Setting Up CAT Control
