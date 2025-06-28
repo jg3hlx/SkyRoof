@@ -23,6 +23,9 @@ namespace SkyRoof
     public AudioSettings Audio { get; set; } = new();
 
     [TypeConverter(typeof(ExpandableObjectConverter))]
+    public OutputStreamSettings OutputStream { get; set; } = new();
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public AnnouncerSettings Announcements { get; set; } = new();
 
 

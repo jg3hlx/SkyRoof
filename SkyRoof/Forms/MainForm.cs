@@ -207,9 +207,9 @@ namespace SkyRoof
 
     private void Slicer_IqDataAvailable(object? sender, DataEventArgs<Complex32> e)
     {
-      if (ctx.Settings.Audio.DataStreamType == DataStreamType.IqToVac)
+      if (ctx.Settings.OutputStream.Type == DataStreamType.IqToVac)
         ctx.IqVacSoundcard.AddSamples(e.Data);
-      else if (ctx.Settings.Audio.DataStreamType == DataStreamType.IqToUdp)
+      else if (ctx.Settings.OutputStream.Type == DataStreamType.IqToUdp)
         ctx.UdpStreamSender.Send(e.Data);
     }
 
@@ -217,9 +217,9 @@ namespace SkyRoof
     {
       ctx.SpeakerSoundcard.AddSamples(e.Data);
 
-      if (ctx.Settings.Audio.DataStreamType == DataStreamType.AudioToVac)
+      if (ctx.Settings.OutputStream.Type == DataStreamType.AudioToVac)
         ctx.AudioVacSoundcard.AddSamples(e.Data);
-      else if (ctx.Settings.Audio.DataStreamType == DataStreamType.AudioToUdp)
+      else if (ctx.Settings.OutputStream.Type == DataStreamType.AudioToUdp)
         ctx.UdpStreamSender.Send(e.Data);
     }
 
@@ -323,18 +323,18 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     internal void ApplyAudioSettings()
     {
-      var sett = ctx.Settings.Audio;
-
-      ctx.SpeakerSoundcard.SetDeviceId(sett.SpeakerSoundcard);
+      ctx.SpeakerSoundcard.SetDeviceId(ctx.Settings.Audio.SpeakerSoundcard);
       GainControl.ApplyAfGain();
+      ctx.SpeakerSoundcard.Enabled = ctx.Settings.Audio.SpeakerEnabled;
+
+      var sett = ctx.Settings.OutputStream;
 
       ctx.AudioVacSoundcard.SetDeviceId(sett.Vac);
-      ctx.AudioVacSoundcard.Volume = Dsp.FromDb2(sett.StreamGain - 30); // -30 dB from speaker level
+      ctx.AudioVacSoundcard.Volume = Dsp.FromDb2(sett.Gain - 30); // -30 dB from speaker level
 
       ctx.IqVacSoundcard.SetDeviceId(sett.Vac);
-      ctx.IqVacSoundcard.Volume = Dsp.FromDb2(sett.StreamGain);
+      ctx.IqVacSoundcard.Volume = Dsp.FromDb2(sett.Gain);
 
-      ctx.SpeakerSoundcard.Enabled = sett.SpeakerEnabled;
       EnableDisableVac();
 
       //ctx.Slicer.Enabled = ctx.Settings.Audio.SpeakerEnabled || ctx.Settings.Audio.VacEnabled;
@@ -342,10 +342,10 @@ namespace SkyRoof
 
     private void EnableDisableVac()
     {
-      var sett = ctx.Settings.Audio;
+      var sett = ctx.Settings.OutputStream;
       ctx.AudioVacSoundcard.Enabled = false;
-      ctx.IqVacSoundcard.Enabled = sett.StreamEnabled && sett.DataStreamType == DataStreamType.IqToVac;
-      ctx.AudioVacSoundcard.Enabled = sett.StreamEnabled && sett.DataStreamType == DataStreamType.AudioToVac;
+      ctx.IqVacSoundcard.Enabled = sett.Enabled && sett.Type == DataStreamType.IqToVac;
+      ctx.AudioVacSoundcard.Enabled = sett.Enabled && sett.Type == DataStreamType.AudioToVac;
     }
 
     private void Soundcard_StateChanged(object? sender, EventArgs e)
@@ -362,11 +362,11 @@ namespace SkyRoof
       else
         SoundcardLedLabel.ForeColor = Color.Lime;
 
-      if (!ctx.Settings.Audio.StreamEnabled)
+      if (!ctx.Settings.OutputStream.Enabled)
         VacLedLabel.ForeColor = Color.Gray;
-      else if (ctx.Settings.Audio.DataStreamType == DataStreamType.AudioToVac && !ctx.AudioVacSoundcard.IsPlaying())
+      else if (ctx.Settings.OutputStream.Type == DataStreamType.AudioToVac && !ctx.AudioVacSoundcard.IsPlaying())
         VacLedLabel.ForeColor = Color.Red;
-      else if (ctx.Settings.Audio.DataStreamType == DataStreamType.IqToVac && !ctx.IqVacSoundcard.IsPlaying())
+      else if (ctx.Settings.OutputStream.Type == DataStreamType.IqToVac && !ctx.IqVacSoundcard.IsPlaying())
         VacLedLabel.ForeColor = Color.Red;
       else
         VacLedLabel.ForeColor = Color.Lime;
@@ -668,7 +668,7 @@ namespace SkyRoof
 
     private void VacLabel_Click(object sender, EventArgs e)
     {
-      ctx.Settings.Audio.StreamEnabled = !ctx.Settings.Audio.StreamEnabled;
+      ctx.Settings.OutputStream.Enabled = !ctx.Settings.OutputStream.Enabled;
       EnableDisableVac();
       ShowSoundcardLabels();
     }

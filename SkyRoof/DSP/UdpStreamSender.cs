@@ -18,9 +18,9 @@ namespace SkyRoof
 
     public void Send(float[] data)
     {
-      if (!ctx.Settings.Audio.StreamEnabled) return;
+      if (!ctx.Settings.OutputStream.Enabled) return;
 
-      float gain = Dsp.FromDb2(ctx.Settings.Audio.StreamGain);
+      float gain = Dsp.FromDb2(ctx.Settings.OutputStream.Gain);
 
       for (int i = 0; i < data.Length; i++)
       {
@@ -30,7 +30,7 @@ namespace SkyRoof
         byteCount += FloatSize;
         if (byteCount == PacketSize)
         {
-          UdpClient.Send(bytes, bytes.Length, new IPEndPoint(IPAddress.Loopback, ctx.Settings.Audio.UdpPort));
+          UdpClient.Send(bytes, bytes.Length, new IPEndPoint(IPAddress.Loopback, ctx.Settings.OutputStream.UdpPort));
           byteCount = 0;
         }
       }
@@ -38,9 +38,9 @@ namespace SkyRoof
 
     public void Send(Complex32[] data)
     {
-      if (!ctx.Settings.Audio.StreamEnabled) return;
+      if (!ctx.Settings.OutputStream.Enabled) return;
 
-      float gain = Dsp.FromDb2(ctx.Settings.Audio.StreamGain);
+      float gain = Dsp.FromDb2(ctx.Settings.OutputStream.Gain);
 
       for (int i = 0; i < data.Length; i++)
       {
@@ -51,7 +51,7 @@ namespace SkyRoof
         byteCount += ComplexSize;
         if (byteCount == PacketSize)
         {
-          UdpClient.Send(bytes, bytes.Length, new IPEndPoint(IPAddress.Loopback, ctx.Settings.Audio.UdpPort));
+          UdpClient.Send(bytes, bytes.Length, new IPEndPoint(IPAddress.Loopback, ctx.Settings.OutputStream.UdpPort));
           byteCount = 0;
         }
       }
