@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.12 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.12-beta/SkyRoofSetup-v.1.12-beta.zip)
+[SkyRoof v.1.13 Beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.13-beta/SkyRoofSetup-v.1.13-beta.zip)
 
 <br>
 
@@ -15,6 +15,11 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.13 Beta
+
+- added I/Q and audio streaming via UDP;
+- added satellite position announcement.
 
 #### v.1.12 Beta
 
