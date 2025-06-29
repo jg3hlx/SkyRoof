@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 using Serilog;
 using SkyRoof;
 using static VE3NEA.NativeSoapySdr;
@@ -43,7 +44,7 @@ namespace VE3NEA
       }
       catch (Exception ex)
       {
-        Log.Error(ex, $"Failed to create SoapySdr device for {kwArgs}");
+        Log.Error(ex, $"Failed to create SoapySdr device for {JsonConvert.SerializeObject(kwArgs)}");
       }
     }
 
