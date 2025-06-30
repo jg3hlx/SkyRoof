@@ -23,6 +23,7 @@ namespace SkyRoof
     [TypeConverter(typeof(EnumDescriptionConverter))]
     public DataStreamType Type { get; set; } = DataStreamType.IqToVac;
 
+    [DisplayName("Gain, dB")]
     [Description(" Amplify stream data by Gain, dB")]
     [DefaultValue(0)]
     public int Gain { get; set; } = 0;

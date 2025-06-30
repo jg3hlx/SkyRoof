@@ -20,12 +20,9 @@ namespace SkyRoof
     {
       if (!ctx.Settings.OutputStream.Enabled) return;
 
-      float gain = Dsp.FromDb2(ctx.Settings.OutputStream.Gain);
-
       for (int i = 0; i < data.Length; i++)
       {
-        var sample = data[i] * gain;
-        BitConverter.GetBytes(sample).CopyTo(bytes, byteCount);
+        BitConverter.GetBytes(data[i]).CopyTo(bytes, byteCount);
 
         byteCount += FloatSize;
         if (byteCount == PacketSize)
@@ -40,13 +37,10 @@ namespace SkyRoof
     {
       if (!ctx.Settings.OutputStream.Enabled) return;
 
-      float gain = Dsp.FromDb2(ctx.Settings.OutputStream.Gain);
-
       for (int i = 0; i < data.Length; i++)
       {
-        var sample = data[i] * gain;
-        BitConverter.GetBytes(sample.Real).CopyTo(bytes, byteCount);
-        BitConverter.GetBytes(sample.Imaginary).CopyTo(bytes, byteCount + FloatSize);
+        BitConverter.GetBytes(data[i].Real).CopyTo(bytes, byteCount);
+        BitConverter.GetBytes(data[i].Imaginary).CopyTo(bytes, byteCount + FloatSize);
 
         byteCount += ComplexSize;
         if (byteCount == PacketSize)

@@ -92,6 +92,10 @@ namespace SkyRoof
         case "SkyRoof.PositionAnnouncement.Degrees":
           ValidateInt(e, 30, 1);
           break;
+
+        case "SkyRoof.OutputStreamSettings.Gain":
+          ValidateInt(e, 60, -60);
+          break;
       }
 
       if (canChange) ChangedFields.Add(label);
@@ -130,6 +134,9 @@ namespace SkyRoof
       if (ChangedFields.Contains("SkyRoof.UserSettings.Square") ||
           ChangedFields.Contains("SkyRoof.UserSettings.Altitude"))
         ctx.MainForm.SetLocation();
+
+      if (ChangedFields.Exists(s => s.StartsWith("SkyRoof.OutputStreamSettings.")))
+        ctx.MainForm.ApplyOutputStreamSettings();
 
       if (ChangedFields.Exists(s => s.StartsWith("SkyRoof.AudioSettings.")))
         ctx.MainForm.ApplyAudioSettings();
