@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <Compile Include="..\Vendor\fa2cs\FontAwesomeIcons.cs" Link="ControlsEx\FontAwesomeIcons.cs" />
+    <Compile Include="..\Vendor\FlagEditor\STUP.ComponentModel.Design\FlagsEditor.cs" Link="FlagsEditor.cs" />
   </ItemGroup>
 
   <ItemGroup>

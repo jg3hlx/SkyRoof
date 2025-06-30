@@ -59,6 +59,7 @@
       EarthViewMNU = new ToolStripMenuItem();
       toolStripMenuItem4 = new ToolStripSeparator();
       ResetWindowLayoutMNU = new ToolStripMenuItem();
+      QsoEntryMNU = new ToolStripMenuItem();
       toolsToolStripMenuItem = new ToolStripMenuItem();
       SatelliteGroupsMNU = new ToolStripMenuItem();
       SdrDevicesMNU = new ToolStripMenuItem();
@@ -275,7 +276,7 @@
       // 
       // GroupViewPanelMNU
       // 
-      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, TransmittersMNU, SatellitePassesMNU, WaterfallMNU, TimelineMNU, SkyViewMNU, EarthViewMNU, toolStripMenuItem4, ResetWindowLayoutMNU });
+      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, TransmittersMNU, SatellitePassesMNU, WaterfallMNU, TimelineMNU, SkyViewMNU, EarthViewMNU, QsoEntryMNU, toolStripMenuItem4, ResetWindowLayoutMNU });
       GroupViewPanelMNU.Name = "GroupViewPanelMNU";
       GroupViewPanelMNU.Size = new Size(44, 20);
       GroupViewPanelMNU.Text = "View";
@@ -347,6 +348,13 @@
       ResetWindowLayoutMNU.Size = new Size(194, 22);
       ResetWindowLayoutMNU.Text = "Reset Window Layaout";
       ResetWindowLayoutMNU.Click += ResetWindowLayoutMNU_Click;
+      // 
+      // QsoEntryMNU
+      // 
+      QsoEntryMNU.Name = "QsoEntryMNU";
+      QsoEntryMNU.Size = new Size(194, 22);
+      QsoEntryMNU.Text = "QSO Entry";
+      QsoEntryMNU.Click += QsoEntryMNU_Click;
       // 
       // toolsToolStripMenuItem
       // 
@@ -795,5 +803,6 @@
     private ToolStripSeparator toolStripMenuItem3;
     private ToolStripSeparator toolStripMenuItem4;
     private ToolStripMenuItem ResetWindowLayoutMNU;
+    public ToolStripMenuItem QsoEntryMNU;
   }
 }

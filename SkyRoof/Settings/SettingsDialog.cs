@@ -96,6 +96,9 @@ namespace SkyRoof
         case "SkyRoof.OutputStreamSettings.Gain":
           ValidateInt(e, 60, -60);
           break;
+
+        //case "SkyRoof.QsoEntrySettings...":
+        //  break;          
       }
 
       if (canChange) ChangedFields.Add(label);
@@ -160,6 +163,9 @@ namespace SkyRoof
           ctx.AmsatStatusLoader.GetStatusesAsync();
         else
           ctx.GroupViewPanel?.ShowAmsatStatuses();
+
+      if (ChangedFields.Exists(s => s.StartsWith("SkyRoof.QsoEntrySettings.")))
+        ctx.QsoEntryPanel?.ApplySettings();
 
           ChangedFields.Clear();
     }

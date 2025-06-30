@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing.Design;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SkyRoof
+{
+  [Flags]
+  [Editor(typeof(STUP.ComponentModel.Design.FlagsEditor), typeof(UITypeEditor))]
+  public enum QsoFields {
+    UTC = 1, 
+    BAND = 2,
+    MODE = 4,
+    SAT = 8,
+    CALL = 16,
+    GRID = 32,
+    STATE = 64,
+    SENT = 128,
+    RECV = 256,
+    NAME = 512, 
+  }
+
+  public class QsoEntrySettings
+  {
+    private const QsoFields AllFields = 
+      QsoFields.UTC | QsoFields.BAND | QsoFields.MODE | QsoFields.SAT | QsoFields.CALL | 
+      QsoFields.GRID | QsoFields.SENT | QsoFields.RECV | QsoFields.NAME;
+
+    [DisplayName("Visible Fields")]
+    [DefaultValue(AllFields)]
+    public QsoFields Fields { get; set; } = AllFields;
+
+
+    public override string ToString() { return string.Empty; }
+  }
+}

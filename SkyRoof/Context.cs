@@ -33,6 +33,7 @@ namespace SkyRoof
     public EarthViewPanel? EarthViewPanel;
     public TransmittersPanel? TransmittersPanel;
     public WaterfallPanel? WaterfallPanel;
+    public QsoEntryPanel? QsoEntryPanel;
 
     // devices
     public SoapySdrDevice? Sdr;
@@ -56,6 +57,7 @@ namespace SkyRoof
       EarthViewPanel?.Close();
       TransmittersPanel?.Close();
       WaterfallPanel?.Close();
+      QsoEntryPanel?.Close();
     }
   }
 }

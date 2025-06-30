@@ -35,7 +35,7 @@ namespace SkyRoof
       ctx.CatControl.ctx = ctx;
       ctx.RotatorControl.ctx = ctx;
       ctx.AmsatStatusLoader.ctx = ctx;
-      ctx.UdpStreamSender.ctx = ctx; 
+      ctx.UdpStreamSender.ctx = ctx;
 
       ctx.Settings.LoadFromFile();
 
@@ -573,6 +573,14 @@ namespace SkyRoof
         ctx.WaterfallPanel.Close();
     }
 
+    private void QsoEntryMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.QsoEntryPanel == null)
+        ShowFloatingPanel(new QsoEntryPanel(ctx));
+      else
+        ctx.QsoEntryPanel.Close();
+    }
+
     private void SettingsMNU_Click(object sender, EventArgs e)
     {
       new SettingsDialog(ctx).ShowDialog();
@@ -783,6 +791,8 @@ namespace SkyRoof
         case "SkyRoof.SkyViewPanel": return new SkyViewPanel(ctx);
         case "SkyRoof.EarthViewPanel": return new EarthViewPanel(ctx);
         case "SkyRoof.WaterfallPanel": return new WaterfallPanel(ctx);
+        case "SkyRoof.QsoEntryPanel": return new QsoEntryPanel(ctx);
+
         default: return null;
       }
     }
