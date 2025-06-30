@@ -33,35 +33,35 @@
       UtcPicker = new DateTimePicker();
       label9 = new Label();
       panel2 = new Panel();
-      comboBox1 = new ComboBox();
+      BandComboBox = new ComboBox();
       label10 = new Label();
       panel3 = new Panel();
-      comboBox2 = new ComboBox();
+      ModeComboBox = new ComboBox();
       label11 = new Label();
       panel4 = new Panel();
-      comboBox3 = new ComboBox();
+      SatComboBox = new ComboBox();
       label12 = new Label();
       panel5 = new Panel();
       label13 = new Label();
-      textBox13 = new TextBox();
+      CallEdit = new TextBox();
       panel6 = new Panel();
       label14 = new Label();
-      textBox14 = new TextBox();
+      GridEdit = new TextBox();
       panel11 = new Panel();
-      comboBox4 = new ComboBox();
+      StateComboBox = new ComboBox();
       label1 = new Label();
       panel7 = new Panel();
       label15 = new Label();
-      textBox15 = new TextBox();
+      SentEdit = new TextBox();
       panel8 = new Panel();
       label16 = new Label();
-      textBox16 = new TextBox();
+      RecvEdit = new TextBox();
       panel9 = new Panel();
       label17 = new Label();
-      textBox17 = new TextBox();
+      NameEdit = new TextBox();
       ButtonsPanel = new Panel();
-      button2 = new Button();
-      button1 = new Button();
+      ClearBtn = new Button();
+      LogBtn = new Button();
       flowLayoutPanel1.SuspendLayout();
       panel1.SuspendLayout();
       panel2.SuspendLayout();
@@ -93,7 +93,7 @@
       flowLayoutPanel1.Dock = DockStyle.Fill;
       flowLayoutPanel1.Location = new Point(0, 0);
       flowLayoutPanel1.Name = "flowLayoutPanel1";
-      flowLayoutPanel1.Size = new Size(1171, 287);
+      flowLayoutPanel1.Size = new Size(766, 150);
       flowLayoutPanel1.TabIndex = 0;
       // 
       // panel1
@@ -129,21 +129,22 @@
       // panel2
       // 
       panel2.BackColor = Color.LightSkyBlue;
-      panel2.Controls.Add(comboBox1);
+      panel2.Controls.Add(BandComboBox);
       panel2.Controls.Add(label10);
       panel2.Location = new Point(186, 3);
       panel2.Name = "panel2";
       panel2.Size = new Size(177, 36);
       panel2.TabIndex = 1;
       // 
-      // comboBox1
+      // BandComboBox
       // 
-      comboBox1.Font = new Font("Courier New", 12F);
-      comboBox1.FormattingEnabled = true;
-      comboBox1.Location = new Point(45, 5);
-      comboBox1.Name = "comboBox1";
-      comboBox1.Size = new Size(128, 26);
-      comboBox1.TabIndex = 22;
+      BandComboBox.AutoCompleteCustomSource.AddRange(new string[] { "2M", "70CM" });
+      BandComboBox.Font = new Font("Courier New", 12F);
+      BandComboBox.FormattingEnabled = true;
+      BandComboBox.Location = new Point(45, 5);
+      BandComboBox.Name = "BandComboBox";
+      BandComboBox.Size = new Size(128, 26);
+      BandComboBox.TabIndex = 22;
       // 
       // label10
       // 
@@ -158,21 +159,22 @@
       // panel3
       // 
       panel3.BackColor = Color.LightSkyBlue;
-      panel3.Controls.Add(comboBox2);
+      panel3.Controls.Add(ModeComboBox);
       panel3.Controls.Add(label11);
       panel3.Location = new Point(369, 3);
       panel3.Name = "panel3";
       panel3.Size = new Size(177, 36);
       panel3.TabIndex = 2;
       // 
-      // comboBox2
+      // ModeComboBox
       // 
-      comboBox2.Font = new Font("Courier New", 12F);
-      comboBox2.FormattingEnabled = true;
-      comboBox2.Location = new Point(45, 5);
-      comboBox2.Name = "comboBox2";
-      comboBox2.Size = new Size(128, 26);
-      comboBox2.TabIndex = 23;
+      ModeComboBox.AutoCompleteCustomSource.AddRange(new string[] { "SSB", "CW", "FM", "FT4" });
+      ModeComboBox.Font = new Font("Courier New", 12F);
+      ModeComboBox.FormattingEnabled = true;
+      ModeComboBox.Location = new Point(45, 5);
+      ModeComboBox.Name = "ModeComboBox";
+      ModeComboBox.Size = new Size(128, 26);
+      ModeComboBox.TabIndex = 23;
       // 
       // label11
       // 
@@ -187,21 +189,23 @@
       // panel4
       // 
       panel4.BackColor = Color.LightSkyBlue;
-      panel4.Controls.Add(comboBox3);
+      panel4.Controls.Add(SatComboBox);
       panel4.Controls.Add(label12);
       panel4.Location = new Point(552, 3);
       panel4.Name = "panel4";
       panel4.Size = new Size(177, 36);
       panel4.TabIndex = 3;
       // 
-      // comboBox3
+      // SatComboBox
       // 
-      comboBox3.Font = new Font("Courier New", 12F);
-      comboBox3.FormattingEnabled = true;
-      comboBox3.Location = new Point(45, 5);
-      comboBox3.Name = "comboBox3";
-      comboBox3.Size = new Size(128, 26);
-      comboBox3.TabIndex = 23;
+      SatComboBox.AutoCompleteMode = AutoCompleteMode.Suggest;
+      SatComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+      SatComboBox.Font = new Font("Courier New", 12F);
+      SatComboBox.FormattingEnabled = true;
+      SatComboBox.Location = new Point(45, 5);
+      SatComboBox.Name = "SatComboBox";
+      SatComboBox.Size = new Size(128, 26);
+      SatComboBox.TabIndex = 23;
       // 
       // label12
       // 
@@ -217,8 +221,8 @@
       // 
       panel5.BackColor = Color.LightSkyBlue;
       panel5.Controls.Add(label13);
-      panel5.Controls.Add(textBox13);
-      panel5.Location = new Point(735, 3);
+      panel5.Controls.Add(CallEdit);
+      panel5.Location = new Point(3, 45);
       panel5.Name = "panel5";
       panel5.Size = new Size(177, 36);
       panel5.TabIndex = 4;
@@ -234,22 +238,22 @@
       label13.Text = "CALL";
       label13.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // textBox13
+      // CallEdit
       // 
-      textBox13.CharacterCasing = CharacterCasing.Upper;
-      textBox13.Font = new Font("Courier New", 12F);
-      textBox13.Location = new Point(45, 5);
-      textBox13.Margin = new Padding(13);
-      textBox13.Name = "textBox13";
-      textBox13.Size = new Size(128, 26);
-      textBox13.TabIndex = 22;
+      CallEdit.CharacterCasing = CharacterCasing.Upper;
+      CallEdit.Font = new Font("Courier New", 12F);
+      CallEdit.Location = new Point(45, 5);
+      CallEdit.Margin = new Padding(13);
+      CallEdit.Name = "CallEdit";
+      CallEdit.Size = new Size(128, 26);
+      CallEdit.TabIndex = 22;
       // 
       // panel6
       // 
       panel6.BackColor = Color.LightSkyBlue;
       panel6.Controls.Add(label14);
-      panel6.Controls.Add(textBox14);
-      panel6.Location = new Point(918, 3);
+      panel6.Controls.Add(GridEdit);
+      panel6.Location = new Point(186, 45);
       panel6.Name = "panel6";
       panel6.Size = new Size(177, 36);
       panel6.TabIndex = 5;
@@ -264,34 +268,35 @@
       label14.Text = "GRID";
       label14.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // textBox14
+      // GridEdit
       // 
-      textBox14.CharacterCasing = CharacterCasing.Upper;
-      textBox14.Font = new Font("Courier New", 12F);
-      textBox14.Location = new Point(45, 5);
-      textBox14.Margin = new Padding(13);
-      textBox14.Name = "textBox14";
-      textBox14.Size = new Size(128, 26);
-      textBox14.TabIndex = 22;
+      GridEdit.CharacterCasing = CharacterCasing.Upper;
+      GridEdit.Font = new Font("Courier New", 12F);
+      GridEdit.Location = new Point(45, 5);
+      GridEdit.Margin = new Padding(13);
+      GridEdit.Name = "GridEdit";
+      GridEdit.Size = new Size(128, 26);
+      GridEdit.TabIndex = 22;
       // 
       // panel11
       // 
       panel11.BackColor = Color.LightSkyBlue;
-      panel11.Controls.Add(comboBox4);
+      panel11.Controls.Add(StateComboBox);
       panel11.Controls.Add(label1);
-      panel11.Location = new Point(3, 45);
+      panel11.Location = new Point(369, 45);
       panel11.Name = "panel11";
       panel11.Size = new Size(177, 36);
       panel11.TabIndex = 6;
       // 
-      // comboBox4
+      // StateComboBox
       // 
-      comboBox4.Font = new Font("Courier New", 12F);
-      comboBox4.FormattingEnabled = true;
-      comboBox4.Location = new Point(45, 5);
-      comboBox4.Name = "comboBox4";
-      comboBox4.Size = new Size(128, 26);
-      comboBox4.TabIndex = 23;
+      StateComboBox.AutoCompleteCustomSource.AddRange(new string[] { "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY" });
+      StateComboBox.Font = new Font("Courier New", 12F);
+      StateComboBox.FormattingEnabled = true;
+      StateComboBox.Location = new Point(45, 5);
+      StateComboBox.Name = "StateComboBox";
+      StateComboBox.Size = new Size(128, 26);
+      StateComboBox.TabIndex = 23;
       // 
       // label1
       // 
@@ -307,8 +312,8 @@
       // 
       panel7.BackColor = Color.LightSkyBlue;
       panel7.Controls.Add(label15);
-      panel7.Controls.Add(textBox15);
-      panel7.Location = new Point(186, 45);
+      panel7.Controls.Add(SentEdit);
+      panel7.Location = new Point(552, 45);
       panel7.Name = "panel7";
       panel7.Size = new Size(177, 36);
       panel7.TabIndex = 7;
@@ -323,22 +328,22 @@
       label15.Text = "SENT";
       label15.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // textBox15
+      // SentEdit
       // 
-      textBox15.CharacterCasing = CharacterCasing.Upper;
-      textBox15.Font = new Font("Courier New", 12F);
-      textBox15.Location = new Point(45, 5);
-      textBox15.Margin = new Padding(13);
-      textBox15.Name = "textBox15";
-      textBox15.Size = new Size(128, 26);
-      textBox15.TabIndex = 22;
+      SentEdit.CharacterCasing = CharacterCasing.Upper;
+      SentEdit.Font = new Font("Courier New", 12F);
+      SentEdit.Location = new Point(45, 5);
+      SentEdit.Margin = new Padding(13);
+      SentEdit.Name = "SentEdit";
+      SentEdit.Size = new Size(128, 26);
+      SentEdit.TabIndex = 22;
       // 
       // panel8
       // 
       panel8.BackColor = Color.LightSkyBlue;
       panel8.Controls.Add(label16);
-      panel8.Controls.Add(textBox16);
-      panel8.Location = new Point(369, 45);
+      panel8.Controls.Add(RecvEdit);
+      panel8.Location = new Point(3, 87);
       panel8.Name = "panel8";
       panel8.Size = new Size(177, 36);
       panel8.TabIndex = 8;
@@ -353,22 +358,22 @@
       label16.Text = "RECV";
       label16.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // textBox16
+      // RecvEdit
       // 
-      textBox16.CharacterCasing = CharacterCasing.Upper;
-      textBox16.Font = new Font("Courier New", 12F);
-      textBox16.Location = new Point(45, 5);
-      textBox16.Margin = new Padding(13);
-      textBox16.Name = "textBox16";
-      textBox16.Size = new Size(128, 26);
-      textBox16.TabIndex = 22;
+      RecvEdit.CharacterCasing = CharacterCasing.Upper;
+      RecvEdit.Font = new Font("Courier New", 12F);
+      RecvEdit.Location = new Point(45, 5);
+      RecvEdit.Margin = new Padding(13);
+      RecvEdit.Name = "RecvEdit";
+      RecvEdit.Size = new Size(128, 26);
+      RecvEdit.TabIndex = 22;
       // 
       // panel9
       // 
       panel9.BackColor = Color.LightSkyBlue;
       panel9.Controls.Add(label17);
-      panel9.Controls.Add(textBox17);
-      panel9.Location = new Point(552, 45);
+      panel9.Controls.Add(NameEdit);
+      panel9.Location = new Point(186, 87);
       panel9.Name = "panel9";
       panel9.Size = new Size(177, 36);
       panel9.TabIndex = 9;
@@ -383,49 +388,49 @@
       label17.Text = "NAME";
       label17.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // textBox17
+      // NameEdit
       // 
-      textBox17.Font = new Font("Courier New", 12F);
-      textBox17.Location = new Point(45, 5);
-      textBox17.Margin = new Padding(13);
-      textBox17.Name = "textBox17";
-      textBox17.Size = new Size(128, 26);
-      textBox17.TabIndex = 22;
+      NameEdit.Font = new Font("Courier New", 12F);
+      NameEdit.Location = new Point(45, 5);
+      NameEdit.Margin = new Padding(13);
+      NameEdit.Name = "NameEdit";
+      NameEdit.Size = new Size(128, 26);
+      NameEdit.TabIndex = 22;
       // 
       // ButtonsPanel
       // 
       ButtonsPanel.BackColor = Color.LightSkyBlue;
-      ButtonsPanel.Controls.Add(button2);
-      ButtonsPanel.Controls.Add(button1);
-      ButtonsPanel.Location = new Point(735, 45);
+      ButtonsPanel.Controls.Add(ClearBtn);
+      ButtonsPanel.Controls.Add(LogBtn);
+      ButtonsPanel.Location = new Point(369, 87);
       ButtonsPanel.Name = "ButtonsPanel";
       ButtonsPanel.Size = new Size(177, 36);
       ButtonsPanel.TabIndex = 10;
       // 
-      // button2
+      // ClearBtn
       // 
-      button2.Location = new Point(94, 6);
-      button2.Margin = new Padding(13);
-      button2.Name = "button2";
-      button2.Size = new Size(72, 23);
-      button2.TabIndex = 24;
-      button2.Text = "Clear";
-      button2.UseVisualStyleBackColor = true;
+      ClearBtn.Location = new Point(94, 6);
+      ClearBtn.Margin = new Padding(13);
+      ClearBtn.Name = "ClearBtn";
+      ClearBtn.Size = new Size(72, 23);
+      ClearBtn.TabIndex = 24;
+      ClearBtn.Text = "Clear";
+      ClearBtn.UseVisualStyleBackColor = true;
       // 
-      // button1
+      // LogBtn
       // 
-      button1.Location = new Point(11, 7);
-      button1.Name = "button1";
-      button1.Size = new Size(72, 23);
-      button1.TabIndex = 23;
-      button1.Text = "Log";
-      button1.UseVisualStyleBackColor = true;
+      LogBtn.Location = new Point(11, 7);
+      LogBtn.Name = "LogBtn";
+      LogBtn.Size = new Size(72, 23);
+      LogBtn.TabIndex = 23;
+      LogBtn.Text = "Log";
+      LogBtn.UseVisualStyleBackColor = true;
       // 
       // QsoEntryPanel
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(1171, 287);
+      ClientSize = new Size(766, 150);
       Controls.Add(flowLayoutPanel1);
       Name = "QsoEntryPanel";
       Text = "QSO Entry";
@@ -470,28 +475,28 @@
     private Label label12;
     private Panel panel5;
     private Label label13;
-    private TextBox textBox13;
+    private TextBox CallEdit;
     private Panel panel6;
     private Label label14;
-    private TextBox textBox14;
+    private TextBox GridEdit;
     private Panel panel7;
     private Label label15;
-    private TextBox textBox15;
+    private TextBox SentEdit;
     private Panel panel8;
     private Label label16;
-    private TextBox textBox16;
+    private TextBox RecvEdit;
     private Panel panel9;
     private Label label17;
-    private TextBox textBox17;
+    private TextBox NameEdit;
     private Panel ButtonsPanel;
-    private Button button1;
-    private Button button2;
+    private Button LogBtn;
+    private Button ClearBtn;
     private DateTimePicker UtcPicker;
-    private ComboBox comboBox1;
-    private ComboBox comboBox2;
-    private ComboBox comboBox3;
+    private ComboBox BandComboBox;
+    private ComboBox ModeComboBox;
+    private ComboBox SatComboBox;
     private Panel panel11;
-    private ComboBox comboBox4;
+    private ComboBox StateComboBox;
     private Label label1;
   }
 }
