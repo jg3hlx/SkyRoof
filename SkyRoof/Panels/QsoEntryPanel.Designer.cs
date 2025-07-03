@@ -28,51 +28,73 @@
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
       flowLayoutPanel1 = new FlowLayoutPanel();
       panel1 = new Panel();
+      UtcFrame = new Panel();
       UtcPicker = new DateTimePicker();
       label9 = new Label();
       panel2 = new Panel();
+      BandFrame = new Panel();
       BandComboBox = new ComboBox();
       label10 = new Label();
       panel3 = new Panel();
+      ModeFrame = new Panel();
       ModeComboBox = new ComboBox();
       label11 = new Label();
       panel4 = new Panel();
+      SatFrame = new Panel();
       SatComboBox = new ComboBox();
       label12 = new Label();
       panel5 = new Panel();
-      label13 = new Label();
+      CallFrame = new Panel();
       CallEdit = new TextBox();
+      label13 = new Label();
       panel6 = new Panel();
-      label14 = new Label();
+      GridFrame = new Panel();
       GridEdit = new TextBox();
+      label14 = new Label();
       panel11 = new Panel();
+      StateFrame = new Panel();
       StateComboBox = new ComboBox();
       label1 = new Label();
       panel7 = new Panel();
-      label15 = new Label();
+      SentFrame = new Panel();
       SentEdit = new TextBox();
+      label15 = new Label();
       panel8 = new Panel();
-      label16 = new Label();
+      RecvFrame = new Panel();
       RecvEdit = new TextBox();
+      label16 = new Label();
       panel9 = new Panel();
-      label17 = new Label();
+      NameFrame = new Panel();
       NameEdit = new TextBox();
+      label17 = new Label();
       ButtonsPanel = new Panel();
       ClearBtn = new Button();
-      LogBtn = new Button();
+      SaveBtn = new Button();
+      toolTip1 = new ToolTip(components);
       flowLayoutPanel1.SuspendLayout();
       panel1.SuspendLayout();
+      UtcFrame.SuspendLayout();
       panel2.SuspendLayout();
+      BandFrame.SuspendLayout();
       panel3.SuspendLayout();
+      ModeFrame.SuspendLayout();
       panel4.SuspendLayout();
+      SatFrame.SuspendLayout();
       panel5.SuspendLayout();
+      CallFrame.SuspendLayout();
       panel6.SuspendLayout();
+      GridFrame.SuspendLayout();
       panel11.SuspendLayout();
+      StateFrame.SuspendLayout();
       panel7.SuspendLayout();
+      SentFrame.SuspendLayout();
       panel8.SuspendLayout();
+      RecvFrame.SuspendLayout();
       panel9.SuspendLayout();
+      NameFrame.SuspendLayout();
       ButtonsPanel.SuspendLayout();
       SuspendLayout();
       // 
@@ -99,22 +121,33 @@
       // panel1
       // 
       panel1.BackColor = Color.LightSkyBlue;
-      panel1.Controls.Add(UtcPicker);
+      panel1.Controls.Add(UtcFrame);
       panel1.Controls.Add(label9);
       panel1.Location = new Point(3, 3);
       panel1.Name = "panel1";
       panel1.Size = new Size(177, 36);
       panel1.TabIndex = 0;
       // 
+      // UtcFrame
+      // 
+      UtcFrame.BackColor = Color.Blue;
+      UtcFrame.Controls.Add(UtcPicker);
+      UtcFrame.Location = new Point(43, 6);
+      UtcFrame.Name = "UtcFrame";
+      UtcFrame.Size = new Size(130, 25);
+      UtcFrame.TabIndex = 24;
+      // 
       // UtcPicker
       // 
       UtcPicker.CustomFormat = "MM/dd HH:mm";
       UtcPicker.Font = new Font("Courier New", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
       UtcPicker.Format = DateTimePickerFormat.Custom;
-      UtcPicker.Location = new Point(45, 7);
+      UtcPicker.Location = new Point(1, 1);
       UtcPicker.Name = "UtcPicker";
       UtcPicker.Size = new Size(128, 23);
-      UtcPicker.TabIndex = 0;
+      UtcPicker.TabIndex = 1;
+      UtcPicker.ValueChanged += Field_Changed;
+      UtcPicker.MouseDown += UtcPicker_MouseDown;
       // 
       // label9
       // 
@@ -129,22 +162,32 @@
       // panel2
       // 
       panel2.BackColor = Color.LightSkyBlue;
-      panel2.Controls.Add(BandComboBox);
+      panel2.Controls.Add(BandFrame);
       panel2.Controls.Add(label10);
       panel2.Location = new Point(186, 3);
       panel2.Name = "panel2";
       panel2.Size = new Size(177, 36);
       panel2.TabIndex = 1;
       // 
+      // BandFrame
+      // 
+      BandFrame.BackColor = Color.Blue;
+      BandFrame.Controls.Add(BandComboBox);
+      BandFrame.Location = new Point(43, 4);
+      BandFrame.Name = "BandFrame";
+      BandFrame.Size = new Size(130, 28);
+      BandFrame.TabIndex = 24;
+      // 
       // BandComboBox
       // 
       BandComboBox.AutoCompleteCustomSource.AddRange(new string[] { "2M", "70CM" });
       BandComboBox.Font = new Font("Courier New", 12F);
       BandComboBox.FormattingEnabled = true;
-      BandComboBox.Location = new Point(45, 5);
+      BandComboBox.Location = new Point(1, 1);
       BandComboBox.Name = "BandComboBox";
       BandComboBox.Size = new Size(128, 26);
-      BandComboBox.TabIndex = 22;
+      BandComboBox.TabIndex = 23;
+      BandComboBox.TextChanged += Field_Changed;
       // 
       // label10
       // 
@@ -159,22 +202,32 @@
       // panel3
       // 
       panel3.BackColor = Color.LightSkyBlue;
-      panel3.Controls.Add(ModeComboBox);
+      panel3.Controls.Add(ModeFrame);
       panel3.Controls.Add(label11);
       panel3.Location = new Point(369, 3);
       panel3.Name = "panel3";
       panel3.Size = new Size(177, 36);
       panel3.TabIndex = 2;
       // 
+      // ModeFrame
+      // 
+      ModeFrame.BackColor = Color.Blue;
+      ModeFrame.Controls.Add(ModeComboBox);
+      ModeFrame.Location = new Point(43, 4);
+      ModeFrame.Name = "ModeFrame";
+      ModeFrame.Size = new Size(130, 28);
+      ModeFrame.TabIndex = 24;
+      // 
       // ModeComboBox
       // 
-      ModeComboBox.AutoCompleteCustomSource.AddRange(new string[] { "SSB", "CW", "FM", "FT4" });
+      ModeComboBox.AutoCompleteCustomSource.AddRange(new string[] { "2M", "70CM" });
       ModeComboBox.Font = new Font("Courier New", 12F);
       ModeComboBox.FormattingEnabled = true;
-      ModeComboBox.Location = new Point(45, 5);
+      ModeComboBox.Location = new Point(1, 1);
       ModeComboBox.Name = "ModeComboBox";
       ModeComboBox.Size = new Size(128, 26);
       ModeComboBox.TabIndex = 23;
+      ModeComboBox.TextChanged += Field_Changed;
       // 
       // label11
       // 
@@ -189,23 +242,32 @@
       // panel4
       // 
       panel4.BackColor = Color.LightSkyBlue;
-      panel4.Controls.Add(SatComboBox);
+      panel4.Controls.Add(SatFrame);
       panel4.Controls.Add(label12);
       panel4.Location = new Point(552, 3);
       panel4.Name = "panel4";
       panel4.Size = new Size(177, 36);
       panel4.TabIndex = 3;
       // 
+      // SatFrame
+      // 
+      SatFrame.BackColor = Color.Blue;
+      SatFrame.Controls.Add(SatComboBox);
+      SatFrame.Location = new Point(43, 4);
+      SatFrame.Name = "SatFrame";
+      SatFrame.Size = new Size(130, 28);
+      SatFrame.TabIndex = 24;
+      // 
       // SatComboBox
       // 
-      SatComboBox.AutoCompleteMode = AutoCompleteMode.Suggest;
-      SatComboBox.AutoCompleteSource = AutoCompleteSource.ListItems;
+      SatComboBox.AutoCompleteCustomSource.AddRange(new string[] { "2M", "70CM" });
       SatComboBox.Font = new Font("Courier New", 12F);
       SatComboBox.FormattingEnabled = true;
-      SatComboBox.Location = new Point(45, 5);
+      SatComboBox.Location = new Point(1, 1);
       SatComboBox.Name = "SatComboBox";
       SatComboBox.Size = new Size(128, 26);
       SatComboBox.TabIndex = 23;
+      SatComboBox.TextChanged += Field_Changed;
       // 
       // label12
       // 
@@ -220,12 +282,32 @@
       // panel5
       // 
       panel5.BackColor = Color.LightSkyBlue;
+      panel5.Controls.Add(CallFrame);
       panel5.Controls.Add(label13);
-      panel5.Controls.Add(CallEdit);
       panel5.Location = new Point(3, 45);
       panel5.Name = "panel5";
       panel5.Size = new Size(177, 36);
       panel5.TabIndex = 4;
+      // 
+      // CallFrame
+      // 
+      CallFrame.BackColor = Color.Blue;
+      CallFrame.Controls.Add(CallEdit);
+      CallFrame.Location = new Point(43, 4);
+      CallFrame.Name = "CallFrame";
+      CallFrame.Size = new Size(130, 28);
+      CallFrame.TabIndex = 25;
+      // 
+      // CallEdit
+      // 
+      CallEdit.CharacterCasing = CharacterCasing.Upper;
+      CallEdit.Font = new Font("Courier New", 12F);
+      CallEdit.Location = new Point(1, 1);
+      CallEdit.Margin = new Padding(13);
+      CallEdit.Name = "CallEdit";
+      CallEdit.Size = new Size(128, 26);
+      CallEdit.TabIndex = 23;
+      CallEdit.TextChanged += Field_Changed;
       // 
       // label13
       // 
@@ -238,25 +320,35 @@
       label13.Text = "CALL";
       label13.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // CallEdit
-      // 
-      CallEdit.CharacterCasing = CharacterCasing.Upper;
-      CallEdit.Font = new Font("Courier New", 12F);
-      CallEdit.Location = new Point(45, 5);
-      CallEdit.Margin = new Padding(13);
-      CallEdit.Name = "CallEdit";
-      CallEdit.Size = new Size(128, 26);
-      CallEdit.TabIndex = 22;
-      // 
       // panel6
       // 
       panel6.BackColor = Color.LightSkyBlue;
+      panel6.Controls.Add(GridFrame);
       panel6.Controls.Add(label14);
-      panel6.Controls.Add(GridEdit);
       panel6.Location = new Point(186, 45);
       panel6.Name = "panel6";
       panel6.Size = new Size(177, 36);
       panel6.TabIndex = 5;
+      // 
+      // GridFrame
+      // 
+      GridFrame.BackColor = Color.Blue;
+      GridFrame.Controls.Add(GridEdit);
+      GridFrame.Location = new Point(43, 4);
+      GridFrame.Name = "GridFrame";
+      GridFrame.Size = new Size(130, 28);
+      GridFrame.TabIndex = 25;
+      // 
+      // GridEdit
+      // 
+      GridEdit.CharacterCasing = CharacterCasing.Upper;
+      GridEdit.Font = new Font("Courier New", 12F);
+      GridEdit.Location = new Point(1, 1);
+      GridEdit.Margin = new Padding(13);
+      GridEdit.Name = "GridEdit";
+      GridEdit.Size = new Size(128, 26);
+      GridEdit.TabIndex = 23;
+      GridEdit.TextChanged += Field_Changed;
       // 
       // label14
       // 
@@ -268,35 +360,35 @@
       label14.Text = "GRID";
       label14.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // GridEdit
-      // 
-      GridEdit.CharacterCasing = CharacterCasing.Upper;
-      GridEdit.Font = new Font("Courier New", 12F);
-      GridEdit.Location = new Point(45, 5);
-      GridEdit.Margin = new Padding(13);
-      GridEdit.Name = "GridEdit";
-      GridEdit.Size = new Size(128, 26);
-      GridEdit.TabIndex = 22;
-      // 
       // panel11
       // 
       panel11.BackColor = Color.LightSkyBlue;
-      panel11.Controls.Add(StateComboBox);
+      panel11.Controls.Add(StateFrame);
       panel11.Controls.Add(label1);
       panel11.Location = new Point(369, 45);
       panel11.Name = "panel11";
       panel11.Size = new Size(177, 36);
       panel11.TabIndex = 6;
       // 
+      // StateFrame
+      // 
+      StateFrame.BackColor = Color.Blue;
+      StateFrame.Controls.Add(StateComboBox);
+      StateFrame.Location = new Point(43, 4);
+      StateFrame.Name = "StateFrame";
+      StateFrame.Size = new Size(130, 28);
+      StateFrame.TabIndex = 24;
+      // 
       // StateComboBox
       // 
-      StateComboBox.AutoCompleteCustomSource.AddRange(new string[] { "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY" });
+      StateComboBox.AutoCompleteCustomSource.AddRange(new string[] { "2M", "70CM" });
       StateComboBox.Font = new Font("Courier New", 12F);
       StateComboBox.FormattingEnabled = true;
-      StateComboBox.Location = new Point(45, 5);
+      StateComboBox.Location = new Point(1, 1);
       StateComboBox.Name = "StateComboBox";
       StateComboBox.Size = new Size(128, 26);
       StateComboBox.TabIndex = 23;
+      StateComboBox.TextChanged += Field_Changed;
       // 
       // label1
       // 
@@ -311,12 +403,32 @@
       // panel7
       // 
       panel7.BackColor = Color.LightSkyBlue;
+      panel7.Controls.Add(SentFrame);
       panel7.Controls.Add(label15);
-      panel7.Controls.Add(SentEdit);
       panel7.Location = new Point(552, 45);
       panel7.Name = "panel7";
       panel7.Size = new Size(177, 36);
       panel7.TabIndex = 7;
+      // 
+      // SentFrame
+      // 
+      SentFrame.BackColor = Color.Blue;
+      SentFrame.Controls.Add(SentEdit);
+      SentFrame.Location = new Point(43, 4);
+      SentFrame.Name = "SentFrame";
+      SentFrame.Size = new Size(130, 28);
+      SentFrame.TabIndex = 24;
+      // 
+      // SentEdit
+      // 
+      SentEdit.CharacterCasing = CharacterCasing.Upper;
+      SentEdit.Font = new Font("Courier New", 12F);
+      SentEdit.Location = new Point(1, 1);
+      SentEdit.Margin = new Padding(13);
+      SentEdit.Name = "SentEdit";
+      SentEdit.Size = new Size(128, 26);
+      SentEdit.TabIndex = 23;
+      SentEdit.TextChanged += Field_Changed;
       // 
       // label15
       // 
@@ -328,25 +440,35 @@
       label15.Text = "SENT";
       label15.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // SentEdit
-      // 
-      SentEdit.CharacterCasing = CharacterCasing.Upper;
-      SentEdit.Font = new Font("Courier New", 12F);
-      SentEdit.Location = new Point(45, 5);
-      SentEdit.Margin = new Padding(13);
-      SentEdit.Name = "SentEdit";
-      SentEdit.Size = new Size(128, 26);
-      SentEdit.TabIndex = 22;
-      // 
       // panel8
       // 
       panel8.BackColor = Color.LightSkyBlue;
+      panel8.Controls.Add(RecvFrame);
       panel8.Controls.Add(label16);
-      panel8.Controls.Add(RecvEdit);
       panel8.Location = new Point(3, 87);
       panel8.Name = "panel8";
       panel8.Size = new Size(177, 36);
       panel8.TabIndex = 8;
+      // 
+      // RecvFrame
+      // 
+      RecvFrame.BackColor = Color.Blue;
+      RecvFrame.Controls.Add(RecvEdit);
+      RecvFrame.Location = new Point(43, 4);
+      RecvFrame.Name = "RecvFrame";
+      RecvFrame.Size = new Size(130, 28);
+      RecvFrame.TabIndex = 25;
+      // 
+      // RecvEdit
+      // 
+      RecvEdit.CharacterCasing = CharacterCasing.Upper;
+      RecvEdit.Font = new Font("Courier New", 12F);
+      RecvEdit.Location = new Point(1, 1);
+      RecvEdit.Margin = new Padding(13);
+      RecvEdit.Name = "RecvEdit";
+      RecvEdit.Size = new Size(128, 26);
+      RecvEdit.TabIndex = 23;
+      RecvEdit.TextChanged += Field_Changed;
       // 
       // label16
       // 
@@ -358,25 +480,34 @@
       label16.Text = "RECV";
       label16.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // RecvEdit
-      // 
-      RecvEdit.CharacterCasing = CharacterCasing.Upper;
-      RecvEdit.Font = new Font("Courier New", 12F);
-      RecvEdit.Location = new Point(45, 5);
-      RecvEdit.Margin = new Padding(13);
-      RecvEdit.Name = "RecvEdit";
-      RecvEdit.Size = new Size(128, 26);
-      RecvEdit.TabIndex = 22;
-      // 
       // panel9
       // 
       panel9.BackColor = Color.LightSkyBlue;
+      panel9.Controls.Add(NameFrame);
       panel9.Controls.Add(label17);
-      panel9.Controls.Add(NameEdit);
       panel9.Location = new Point(186, 87);
       panel9.Name = "panel9";
       panel9.Size = new Size(177, 36);
       panel9.TabIndex = 9;
+      // 
+      // NameFrame
+      // 
+      NameFrame.BackColor = Color.Blue;
+      NameFrame.Controls.Add(NameEdit);
+      NameFrame.Location = new Point(43, 4);
+      NameFrame.Name = "NameFrame";
+      NameFrame.Size = new Size(130, 28);
+      NameFrame.TabIndex = 25;
+      // 
+      // NameEdit
+      // 
+      NameEdit.Font = new Font("Courier New", 12F);
+      NameEdit.Location = new Point(1, 1);
+      NameEdit.Margin = new Padding(13);
+      NameEdit.Name = "NameEdit";
+      NameEdit.Size = new Size(128, 26);
+      NameEdit.TabIndex = 23;
+      NameEdit.TextChanged += Field_Changed;
       // 
       // label17
       // 
@@ -388,20 +519,11 @@
       label17.Text = "NAME";
       label17.TextAlign = ContentAlignment.MiddleLeft;
       // 
-      // NameEdit
-      // 
-      NameEdit.Font = new Font("Courier New", 12F);
-      NameEdit.Location = new Point(45, 5);
-      NameEdit.Margin = new Padding(13);
-      NameEdit.Name = "NameEdit";
-      NameEdit.Size = new Size(128, 26);
-      NameEdit.TabIndex = 22;
-      // 
       // ButtonsPanel
       // 
       ButtonsPanel.BackColor = Color.LightSkyBlue;
       ButtonsPanel.Controls.Add(ClearBtn);
-      ButtonsPanel.Controls.Add(LogBtn);
+      ButtonsPanel.Controls.Add(SaveBtn);
       ButtonsPanel.Location = new Point(369, 87);
       ButtonsPanel.Name = "ButtonsPanel";
       ButtonsPanel.Size = new Size(177, 36);
@@ -416,18 +538,21 @@
       ClearBtn.TabIndex = 24;
       ClearBtn.Text = "Clear";
       ClearBtn.UseVisualStyleBackColor = true;
+      ClearBtn.Click += ClearBtn_Click;
       // 
-      // LogBtn
+      // SaveBtn
       // 
-      LogBtn.Location = new Point(11, 7);
-      LogBtn.Name = "LogBtn";
-      LogBtn.Size = new Size(72, 23);
-      LogBtn.TabIndex = 23;
-      LogBtn.Text = "Log";
-      LogBtn.UseVisualStyleBackColor = true;
+      SaveBtn.Location = new Point(11, 7);
+      SaveBtn.Name = "SaveBtn";
+      SaveBtn.Size = new Size(72, 23);
+      SaveBtn.TabIndex = 23;
+      SaveBtn.Text = "Save";
+      SaveBtn.UseVisualStyleBackColor = true;
+      SaveBtn.Click += LogBtn_Click;
       // 
       // QsoEntryPanel
       // 
+      AcceptButton = SaveBtn;
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       ClientSize = new Size(766, 150);
@@ -438,24 +563,39 @@
       flowLayoutPanel1.ResumeLayout(false);
       panel1.ResumeLayout(false);
       panel1.PerformLayout();
+      UtcFrame.ResumeLayout(false);
       panel2.ResumeLayout(false);
       panel2.PerformLayout();
+      BandFrame.ResumeLayout(false);
       panel3.ResumeLayout(false);
       panel3.PerformLayout();
+      ModeFrame.ResumeLayout(false);
       panel4.ResumeLayout(false);
       panel4.PerformLayout();
+      SatFrame.ResumeLayout(false);
       panel5.ResumeLayout(false);
       panel5.PerformLayout();
+      CallFrame.ResumeLayout(false);
+      CallFrame.PerformLayout();
       panel6.ResumeLayout(false);
       panel6.PerformLayout();
+      GridFrame.ResumeLayout(false);
+      GridFrame.PerformLayout();
       panel11.ResumeLayout(false);
       panel11.PerformLayout();
+      StateFrame.ResumeLayout(false);
       panel7.ResumeLayout(false);
       panel7.PerformLayout();
+      SentFrame.ResumeLayout(false);
+      SentFrame.PerformLayout();
       panel8.ResumeLayout(false);
       panel8.PerformLayout();
+      RecvFrame.ResumeLayout(false);
+      RecvFrame.PerformLayout();
       panel9.ResumeLayout(false);
       panel9.PerformLayout();
+      NameFrame.ResumeLayout(false);
+      NameFrame.PerformLayout();
       ButtonsPanel.ResumeLayout(false);
       ResumeLayout(false);
       PerformLayout();
@@ -466,7 +606,7 @@
     private FlowLayoutPanel flowLayoutPanel1;
     private Panel panel1;
     private Label label9;
-    private TextBox textBox9;
+    private TextBox SentEdit;
     private Panel panel2;
     private Label label10;
     private Panel panel3;
@@ -475,28 +615,42 @@
     private Label label12;
     private Panel panel5;
     private Label label13;
-    private TextBox CallEdit;
     private Panel panel6;
     private Label label14;
-    private TextBox GridEdit;
     private Panel panel7;
     private Label label15;
-    private TextBox SentEdit;
     private Panel panel8;
     private Label label16;
-    private TextBox RecvEdit;
     private Panel panel9;
     private Label label17;
-    private TextBox NameEdit;
     private Panel ButtonsPanel;
-    private Button LogBtn;
+    private Button SaveBtn;
     private Button ClearBtn;
-    private DateTimePicker UtcPicker;
-    private ComboBox BandComboBox;
-    private ComboBox ModeComboBox;
-    private ComboBox SatComboBox;
     private Panel panel11;
-    private ComboBox StateComboBox;
     private Label label1;
+    private Panel panel10;
+    private Panel BandFrame;
+    private ComboBox BandComboBox;
+    private Panel ModeFrame;
+    private ComboBox ModeComboBox;
+    private Panel SatFrame;
+    private ComboBox SatComboBox;
+    private Panel CallFrame;
+    private TextBox RecvEdit;
+    private Panel GridFrame;
+    private TextBox CallEdit;
+    private Panel StateFrame;
+    private ComboBox StateComboBox;
+    private Panel SentFrame;
+    private TextBox GridEdit;
+    private Panel RecvFrame;
+    private TextBox textBox4;
+    private Panel NameFrame;
+    private TextBox NameEdit;
+    private Panel UtcFrame;
+    private DateTimePicker UtcPicker;
+    private DateTimePicker dateTimePicker1;
+    private ComboBox comboBox1;
+    private ToolTip toolTip1;
   }
 }

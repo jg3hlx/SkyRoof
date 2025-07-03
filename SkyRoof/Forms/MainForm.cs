@@ -1,16 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Speech.Synthesis;
-using System.Windows.Forms;
 using CSCore.CoreAudioAPI;
 using MathNet.Numerics;
 using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SkyRoof
 {
@@ -24,6 +17,9 @@ namespace SkyRoof
 
       Text = Utils.GetVersionString();
       ctx.MainForm = this;
+
+      Rectangle? bounds = Screen.PrimaryScreen?.Bounds;
+      Log.Information($"Screen resolution: {bounds?.Width}x{bounds?.Height}");
 
       ctx.SatelliteSelector = SatelliteSelector;
       ctx.FrequencyControl = FrequencyControl;
@@ -843,6 +839,7 @@ namespace SkyRoof
       ctx.Announcer.AnnouncePasses();
       RotatorControl.Retry();
       RotatorControl.Advance();
+      ctx.QsoEntryPanel?.SetUtc();
 
       ShowCpuUsage();
     }
@@ -943,6 +940,7 @@ namespace SkyRoof
       ctx.SatelliteDetailsPanel?.SetSatellite();
       ctx.TransmittersPanel?.SetSatellite();
       ctx.PassesPanel?.ShowPasses();
+      ctx.QsoEntryPanel?.SetSatellite();
     }
 
     private void SatelliteSelector_SelectedTransmitterChanged(object sender, EventArgs e)
@@ -952,6 +950,8 @@ namespace SkyRoof
       ctx.WaterfallPanel?.BringInView(ctx.FrequencyControl.RadioLink.CorrectedDownlinkFrequency);
       ctx.SdrPasses.UpdateFrequencyRange();
       ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
+      ctx.QsoEntryPanel?.SetBand();
+      ctx.QsoEntryPanel?.SetMode();
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)

@@ -453,6 +453,8 @@ namespace SkyRoof
       RadioLink.ComputeFrequencies();
       RadioLinkToRadio();
       FrequenciesToUi();
+
+      ctx.QsoEntryPanel?.SetMode();
     }
 
     //----------------------------------------------------------------------------------------------

@@ -66,6 +66,7 @@ namespace VE3NEA
     );
 
     public static Regex GridSquare6Regex = new Regex(@"^(?!RR73)[A-R]{2}\d{2}([A-X]{2})$", RegexOptions.Compiled);
+    public static Regex GridSquare4Regex = new Regex(@"^[A-R]{2}\d{2}$", RegexOptions.Compiled);
 
 
     // from WsjtxUtils
@@ -81,12 +82,17 @@ namespace VE3NEA
       return false;
     }
 
-    internal static string GetVersionString()
+    internal static string GetVersionNumber()
     {
-      var version = typeof(Utils).Assembly.GetName().Version;
+      var version = typeof(Utils).Assembly.GetName().Version!;
 
       // {!} todo: remove 'Beta' after release
-      return $"{Application.ProductName} {version.Major}.{version.Minor} Beta";
+     return $"{version.Major}.{version.Minor} Beta";
+    }
+
+    internal static string GetVersionString()
+    {
+      return $"{Application.ProductName} {GetVersionNumber()}";
     }
 
     internal static string GetCopyrightString()
