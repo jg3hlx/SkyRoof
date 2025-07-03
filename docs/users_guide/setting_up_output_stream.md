@@ -32,13 +32,20 @@ its installation instructions are
 [here](https://gr-satellites.readthedocs.io/en/latest/installation_conda.html).
 
 ---
-The command below runs gr_satellites.exe v.5.7.0 to decode telemetry of the PEARL-1C satellite using the I/Q UDP stream from SkyRoof:
+
+This command runs gr_satellites.exe to decode telemetry of the PEARL-1C satellite using the I/Q UDP stream from SkyRoof:
 
 ```text
 (base) C:\Ham>gr_satellites 58342 --udp --udp_port 7355 --udp_raw --iq --samp_rate 48e3 --hexdump
 ```
 
-Example output from gr_satellites.exe:
+This command decodes the same satellite via I/Q output to VAC :
+
+```text
+(base) C:\Ham>gr_satellites 58342 --audio "CABLE Output (VB-Audio Virtual Cable)" --samp_rate 48000 --iq
+```
+
+Example output from gr_satellites.exe v.5.7.0:
 
 ```text
 pagesize :debug: Setting pagesize to 4096 B

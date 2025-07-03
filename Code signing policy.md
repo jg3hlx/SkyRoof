@@ -4,6 +4,8 @@ Free code signing is provided by
 [SignPath.io](https://signpath.io/), certificate by
 [SignPath Foundation](https://signpath.org/).
 
+SignPath has verified that the SkyRoof project meets the [Conditions for Open Source projects](https://signpath.org/terms).
+
 ## Automatic downloads
 
 The setup program automatically downloads and installs the following dependencies, provided by Microsoft,
