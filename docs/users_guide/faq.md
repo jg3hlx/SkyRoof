@@ -45,3 +45,11 @@ If you find an error in a satellite record (shown in the
 and
 [Satellite Transmitters](satellite_transmitters_panel.md)
  panels), click on the "SatNOGS" link in the Satellite Details panel  to open the SatNOGS web site, then click on Transmitters, and select Edit from the drop-down menu. You may need to create an account with them (free) in order to submit changes.
+
+---
+
+**Q:** My video card does not have an OpenGL 3.3 driver. Is there a way to use a software-only implementation of OpenGL?
+
+**A:** Some users have had success with the OpenGL 3.3 functionality implemented in the software, though this solution is very CPU-intensive. You can try
+[this](https://github.com/lightningterror/Mesa3D-Windows) or
+[this](https://github.com/pal1000/mesa-dist-win) solution. Download the 64-bit version of the library and extract all DLL's from the archive to the SkyRoof folder.

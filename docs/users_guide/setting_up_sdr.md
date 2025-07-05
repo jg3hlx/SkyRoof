@@ -53,17 +53,23 @@ The two settings, common to all radios, are:
 
 ## Using Remote SDR
 
-SkyRoof can use SDR devices connected to a remote computer via the
+SkyRoof can use SDR devices connected to a remote (or local) computer via the
 [SoapyRemote](https://github.com/pothosware/SoapyRemote) driver. To enable remote access to SDR:
 
 - **On the remote computer:**
-  - install the **SoapySDRServer** that comes with
-  [SoapySDR](https://github.com/pothosware/SoapySDR/wiki)
-  and run it.
+  - install SoapySDR which is available as part of [PothosSDR](https://downloads.myriadrf.org/builds/PothosSDR/);
+  - run the remote server that comes with SoapySDR:
+
+    ```text
+    SoapySDRServer.exe --bind
+    ```
+
 - **In SkyRoof:**
   - enable **SoapyRemote** in the **Settings** dialog;
-  - enter the **host** and **port number** of the remote computer.
+  - enter the **host** name of the remote computer, or leave "localhost" if the radio is on the same computer.
 
     ![SoapyRemote Settings](../images/soapyremote_settings.png)
 
-  - Open the **SDR Devices** dialog and select one of the remote SDR devices from the list.
+  - Open the **SDR Devices** dialog and select the remote SDR device from the list. If the device and remote server are on the localhost, you will have a choice between a direct connection to the radio and a connection via the server.
+
+    ![SoapyRemote Settings](../images/remote_device.png)
