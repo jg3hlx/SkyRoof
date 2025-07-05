@@ -53,3 +53,9 @@ and
 **A:** Some users have had success with the OpenGL 3.3 functionality implemented in the software, though this solution is very CPU-intensive. You can try
 [this](https://github.com/lightningterror/Mesa3D-Windows) or
 [this](https://github.com/pal1000/mesa-dist-win) solution. Download the 64-bit version of the library and extract all DLL's from the archive to the SkyRoof folder.
+
+---
+
+**Q:** How do I prevent CTCSS from turning off when using SkyRoof with FM satellites and an Icom radio?
+
+**A:** If you're experiencing an issue where the CTCSS tone turns off when transmitting or changing frequencies with SkyRoof and an Icom radio, the solution is to disable the "Auto Repeater" setting in the radio. This setting causes the radio to automatically disable repeater-related features like CTCSS when the frequency is changed, assuming you're no longer on a repeater. Disabling "Auto Repeater" prevents this behavior and keeps CTCSS enabled during frequency changes. This workaround was highlighted in a helpful [YouTube video](https://www.youtube.com/watch?v=6xO3LNsTidQ).
