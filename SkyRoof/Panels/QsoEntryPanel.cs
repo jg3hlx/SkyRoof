@@ -20,7 +20,7 @@ namespace SkyRoof
   {
     private const string States = "AL,AK,AZ,AR,CA,CO,CT,DE,FL,GA,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY";
     private Context ctx;
-    private LoggerInterface LoggerInterface = new();
+    private readonly LoggerInterface LoggerInterface;
     private bool Changing;
 
     public Slicer.Mode? LastSetMode = null;
@@ -35,6 +35,8 @@ namespace SkyRoof
       this.ctx = ctx;
       Log.Information("Creating QsoEntryPanel");
       InitializeComponent();
+
+      LoggerInterface = new(ctx);
 
       ApplySettings();
 
@@ -205,16 +207,23 @@ namespace SkyRoof
     private void Field_Changed(object sender, EventArgs e)
     {
       if (sender == ModeComboBox) SetReport();
-
       if (Changing) return;
 
+      // blue frame indicates that the value was entered manually
       var control = (Control)sender;
       control.Parent!.BackColor = control.Text == "" ? Color.LightSkyBlue : Color.Blue;
 
-      // todo: exclude sent, recv and name
-      var qso = FieldsToQsoInfo();
-      qso = LoggerInterface.Augment(qso);
-      QsoInfoToFields(qso);
+      var qso = FieldsToQsoInfo(true);
+
+      // call changed, look up grid and state
+      if (sender == CallEdit)
+      {
+        qso = LoggerInterface.Augment(qso);
+        QsoInfoToFields(qso);
+      }
+
+      // any field changed, update status
+      QsoInfoToStatus(qso);
     }
 
     private void LogBtn_Click(object sender, EventArgs e)
@@ -222,10 +231,10 @@ namespace SkyRoof
       var qso = FieldsToQsoInfo();
 
       if (!Utils.CallsignRegex.IsMatch(qso.Call)) { ErrBox("Invalid callsign"); return; }
-      if (!Utils.GridSquare4Regex.IsMatch(qso.Grid)) { ErrBox("Invalid grid square"); return; }
       if (qso.Band == string.Empty) { ErrBox("Invalid band"); return; }
       if (qso.Mode == string.Empty) { ErrBox("Invalid mode"); return; }
 
+      if (!Utils.GridSquare4Regex.IsMatch(qso.Grid) && !Ask("Invalid or empty grid square")) return; 
       if (qso.Sat == string.Empty && !Ask("Satellite not specified")) return;
       if (qso.Sent == string.Empty && !Ask("Sent report not specified")) return;
       if (qso.Recv == string.Empty && !Ask("Received report not specified")) return;
@@ -235,20 +244,36 @@ namespace SkyRoof
     }
 
 
-    private QsoInfo FieldsToQsoInfo()
+    private QsoInfo FieldsToQsoInfo(bool onlyEdited = false)
     {
       QsoInfo info = new();
 
-      info.Utc = UtcPicker.Value;
-      info.Band = BandComboBox.Text.Trim().ToUpperInvariant();
-      info.Mode = ModeComboBox.Text.Trim().ToUpperInvariant();
-      info.Sat = SatComboBox.Text.Trim();
-      info.Call = CallEdit.Text.Trim().ToUpperInvariant();
-      info.Grid = GridEdit.Text.Trim().ToUpperInvariant();
-      info.State = StateComboBox.Text.Trim().ToUpperInvariant();
-      info.Sent = SentEdit.Text.Trim().ToUpperInvariant();
-      info.Recv = RecvEdit.Text.Trim().ToUpperInvariant();
-      info.Name = NameEdit.Text.Trim();
+      if (onlyEdited)
+      {
+        if (UtcFrame.BackColor == Color.Blue) info.Utc = UtcPicker.Value;
+        if (BandFrame.BackColor == Color.Blue) info.Band = BandComboBox.Text.ToUpper();
+        if (ModeFrame.BackColor == Color.Blue) info.Mode = ModeComboBox.Text.ToUpper();
+        if (SatFrame.BackColor == Color.Blue) info.Sat = SatComboBox.Text.Trim();
+        if (CallFrame.BackColor == Color.Blue) info.Call = CallEdit.Text.ToUpper();
+        if (GridFrame.BackColor == Color.Blue) info.Grid = GridEdit.Text.ToUpper();
+        if (StateFrame.BackColor == Color.Blue) info.State = StateComboBox.Text.ToUpper();
+        if (SentFrame.BackColor == Color.Blue) info.Sent = SentEdit.Text;
+        if (RecvFrame.BackColor == Color.Blue) info.Recv = RecvEdit.Text;
+        if (NameFrame.BackColor == Color.Blue) info.Name = NameEdit.Text;
+      }
+      else
+      {
+        info.Utc = UtcPicker.Value;
+        info.Band = BandComboBox.Text.ToUpper();
+        info.Mode = ModeComboBox.Text.ToUpper();
+        info.Sat = SatComboBox.Text.Trim();
+        info.Call = CallEdit.Text.ToUpper();
+        info.Grid = GridEdit.Text.ToUpper();
+        info.State = StateComboBox.Text.ToUpper();
+        info.Sent = SentEdit.Text;
+        info.Recv = RecvEdit.Text;
+        info.Name = NameEdit.Text;
+      }
 
       return info;
     }
@@ -267,7 +292,10 @@ namespace SkyRoof
       }
 
       Changing = false;
+    }
 
+    public void QsoInfoToStatus(QsoInfo qso)
+    {
       CallEdit.BackColor = ColorTranslator.FromHtml(qso.BackColor);
       CallEdit.ForeColor = ColorTranslator.FromHtml(qso.ForeColor);
       toolTip1.SetToolTip(CallEdit, qso.StatusString);

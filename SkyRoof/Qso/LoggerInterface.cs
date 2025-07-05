@@ -1,30 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 using Serilog;
+using VE3NEA;
 
 namespace SkyRoof
 {
   public class QsoInfo
   {
     public DateTime Utc { get; set; } = DateTime.UtcNow;
+    public string Call { get; set; } = string.Empty;
     public string Band { get; set; } = string.Empty;
     public string Mode { get; set; } = string.Empty;
-    public string Sat { get; set; } = string.Empty;
-    public string Call { get; set; } = string.Empty;
+
     public string Grid { get; set; }= string.Empty;
     public string State { get; set; } = string.Empty;
     public string Sent { get; set; }= string.Empty;
     public string Recv { get; set; }= string.Empty;
     public string Name { get; set; } = string.Empty;
+    public string Sat { get; set; } = string.Empty;
 
     public string StatusString = string.Empty;
     public string BackColor = "#FFFFFF";
     public string ForeColor = "#000000";
+
+    internal AdifEntry ToAdifEntry()
+    {
+      AdifEntry entry = new() {
+        ["QSO_DATE"] = Utc.ToString("yyyyMMdd"),
+        ["TIME_ON"] = Utc.ToString("HHmmss"),
+        ["CALL"] = Call,
+        ["BAND"] = Band,
+        ["MODE"] = Mode,
+      };
+
+      if (Grid != "") entry["GRIDSQUARE"] = Grid;
+      if (State != "") entry["STATE"] = State;
+      if (Sent != "") entry["RST_SENT"] = Sent;
+      if (Recv != "") entry["RST_RCVD"] = Recv;
+      if (Name != "") entry["NAME"] = Name;
+      if (Sat != "") entry["SAT_NAME"] = Sat;
+      if (Sat != "") entry["PROP_MODE"] = "SAT";
+
+      return entry;
+    }
   }
 
   public static class LoggerInterfaceDll
@@ -39,6 +56,8 @@ namespace SkyRoof
 
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern string Augment(string json);
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    public static extern string GetStatus(string json);
   }
 
   public class LoggerInterface
@@ -46,7 +65,7 @@ namespace SkyRoof
     private bool DllAvailable;
     private AdifLogger? AdifLogger;
 
-    public LoggerInterface()
+    public LoggerInterface(Context ctx)
     {
       try
       {
@@ -58,7 +77,7 @@ namespace SkyRoof
       {
         Log.Warning(ex, "Unable to load LoggerInterface.dll. Using AdifLogger.");
         DllAvailable = false;
-        AdifLogger = new();
+        AdifLogger = new(ctx.Settings.QsoEntry.NewFileEvery);
       }
     }
 
@@ -94,6 +113,28 @@ namespace SkyRoof
       catch (Exception ex)
       {
         Log.Error(ex, $"Error augmenting QSO {json}.");
+        return qso;
+      }
+    }
+    public QsoInfo GetStatus(QsoInfo qso)
+    {
+      if (string.IsNullOrEmpty(qso.Call) || qso.Call.Trim().Length < 3) return qso;
+
+      string json = System.Text.Json.JsonSerializer.Serialize(qso);
+
+      try
+      {
+        if (DllAvailable)
+        {
+          json = LoggerInterfaceDll.GetStatus(json);
+          return System.Text.Json.JsonSerializer.Deserialize<QsoInfo>(json)!;
+        }
+        else
+          return AdifLogger!.GetStatus(qso);
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, $"Error getting QSO status {json}.");
         return qso;
       }
     }

@@ -119,12 +119,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="ADIFLib">
-      <HintPath>..\Vendor\AdifLib\ADIFLib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

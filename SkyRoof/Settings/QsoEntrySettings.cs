@@ -18,6 +18,8 @@ namespace SkyRoof
     NAME = 512, 
   }
 
+  public enum NewFileEvery { Day, Month, Year }
+
   public class QsoEntrySettings
   {
     private const QsoFields AllFields = 
@@ -27,6 +29,11 @@ namespace SkyRoof
     [DisplayName("Visible Fields")]
     [DefaultValue(AllFields)]
     public QsoFields Fields { get; set; } = AllFields;
+
+    [DisplayName("New file every")]
+    [Description("Create a new ADIF file every day, month, or year.")]
+    [DefaultValue(NewFileEvery.Year)]
+    public NewFileEvery NewFileEvery { get; set; } = NewFileEvery.Year;
 
 
     public override string ToString() { return string.Empty; }
