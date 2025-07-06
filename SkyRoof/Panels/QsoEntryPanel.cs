@@ -223,6 +223,7 @@ namespace SkyRoof
       }
 
       // any field changed, update status
+      qso = LoggerInterface.GetStatus(qso);
       QsoInfoToStatus(qso);
     }
 

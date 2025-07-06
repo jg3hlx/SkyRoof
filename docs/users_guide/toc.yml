@@ -67,6 +67,8 @@ items:
       href: sky_view_panel.md
     - name: Earth View
       href: earth_view_panel.md
+    - name: QSO Entry
+      href: qso_entry_panel.md
   - name: Miscellaneous
     items:
     - name: Satellite Data
