@@ -115,7 +115,7 @@
       flowLayoutPanel1.Dock = DockStyle.Fill;
       flowLayoutPanel1.Location = new Point(0, 0);
       flowLayoutPanel1.Name = "flowLayoutPanel1";
-      flowLayoutPanel1.Size = new Size(766, 150);
+      flowLayoutPanel1.Size = new Size(734, 128);
       flowLayoutPanel1.TabIndex = 0;
       // 
       // panel1
@@ -555,7 +555,7 @@
       AcceptButton = SaveBtn;
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(766, 150);
+      ClientSize = new Size(734, 128);
       Controls.Add(flowLayoutPanel1);
       Name = "QsoEntryPanel";
       Text = "QSO Entry";

@@ -45,7 +45,7 @@ When the program loads the adif files, it also builds the lists of worked callsi
 
 ![Callsign Status](../images/callsign_status.png)
 
-# Interfacing with Logging Software
+## Interfacing with Logging Software
 
 The QSO Entry panel can interface with logging software, using a simple plugin system, to enter the QSO directly to the log and to get the callsign status and lookup values. The plugin DLL has to export 4 functions:
 

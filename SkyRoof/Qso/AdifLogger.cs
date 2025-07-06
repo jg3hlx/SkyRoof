@@ -115,6 +115,7 @@ namespace SkyRoof
       adifFile.FieldsFilter = "CALL|GRIDSQUARE|NAME|STATE|PROP_MODE";
 
       string path = Path.Combine(Utils.GetUserDataFolder(), "Adif");
+      Directory.CreateDirectory(path);
       foreach (var filePath in Directory.GetFiles(path, "*.adi"))
       {
         adifFile.LoadFromFile(filePath);
