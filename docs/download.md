@@ -4,10 +4,10 @@
 
 ### Current Version
 
-[SkyRoof v.1.13 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.13-beta/SkyRoofSetup-v.1.13-beta.zip)
+[SkyRoof v.1.14 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.14-beta/SkyRoofSetup-v.1.14-beta.zip)
 
-Anti-virus scan of SkyRoof:
-[click here](https://www.virustotal.com/gui/url/f8897bbf9bfe84981c42e3606b25897752004b0be7da7351653fd0d339ceac68).
+Anti-virus scan of the file above:
+[click here](https://www.virustotal.com/gui/url/e472be78669cbf94eba5788a23bfb783ade89f0137f79c51c43e94b347db1e77).
 
 <br>
 
@@ -18,6 +18,12 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.14 Beta
+
+- QSO Entry panel added;
+- Output Stream settings are now applied correctly;
+- documentation updated.
 
 #### v.1.13 Beta
 
