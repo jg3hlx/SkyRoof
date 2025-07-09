@@ -7,7 +7,7 @@
 [SkyRoof v.1.15 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.15-beta/SkyRoofSetup-v.1.15-beta.zip)
 
 Anti-virus scan of the file above:
-[click here](https://www.virustotal.com/gui/url/e472be78669cbf94eba5788a23bfb783ade89f0137f79c51c43e94b347db1e77).
+[click here](https://www.virustotal.com/gui/url/e11ac210c03ba22d5bfaf2b33f8486f8e82c3fd2cb95c7add374c24245eeaeb1).
 
 <br>
 
