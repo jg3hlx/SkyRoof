@@ -44,7 +44,7 @@ namespace SkyRoof
       ctx.MainForm.QsoEntryMNU.Checked = true;
 
       Changing = true;
-      BandComboBox.DataSource = new string[] { "2M", "70CM" };
+      BandComboBox.DataSource = new string[] { "2M", "70CM", "23CM", "13CM" };
       ModeComboBox.DataSource = new string[] { "CW", "SSB", "FM", "FT4" };
       StateComboBox.DataSource = States.Split(',');
       SatComboBox.DataSource = new SatelliteNames().Lotw.Values.ToArray();
