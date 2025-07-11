@@ -16,6 +16,7 @@ namespace SkyRoof
     SENT = 128,
     RECV = 256,
     NAME = 512, 
+    NOTES = 1024,
   }
 
   public enum NewFileEvery { Day, Month, Year }
@@ -24,7 +25,7 @@ namespace SkyRoof
   {
     private const QsoFields AllFields = 
       QsoFields.UTC | QsoFields.BAND | QsoFields.MODE | QsoFields.SAT | QsoFields.CALL | 
-      QsoFields.GRID | QsoFields.SENT | QsoFields.RECV | QsoFields.NAME;
+      QsoFields.GRID | QsoFields.SENT | QsoFields.RECV | QsoFields.NAME | QsoFields.NOTES;
 
     [DisplayName("Visible Fields")]
     [DefaultValue(AllFields)]

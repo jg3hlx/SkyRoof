@@ -70,6 +70,10 @@
       NameFrame = new Panel();
       NameEdit = new TextBox();
       label17 = new Label();
+      panel12 = new Panel();
+      NotesFrame = new Panel();
+      NotesEdit = new TextBox();
+      label2 = new Label();
       ButtonsPanel = new Panel();
       ClearBtn = new Button();
       SaveBtn = new Button();
@@ -95,6 +99,8 @@
       RecvFrame.SuspendLayout();
       panel9.SuspendLayout();
       NameFrame.SuspendLayout();
+      panel12.SuspendLayout();
+      NotesFrame.SuspendLayout();
       ButtonsPanel.SuspendLayout();
       SuspendLayout();
       // 
@@ -111,6 +117,7 @@
       flowLayoutPanel1.Controls.Add(panel7);
       flowLayoutPanel1.Controls.Add(panel8);
       flowLayoutPanel1.Controls.Add(panel9);
+      flowLayoutPanel1.Controls.Add(panel12);
       flowLayoutPanel1.Controls.Add(ButtonsPanel);
       flowLayoutPanel1.Dock = DockStyle.Fill;
       flowLayoutPanel1.Location = new Point(0, 0);
@@ -519,15 +526,54 @@
       label17.Text = "NAME";
       label17.TextAlign = ContentAlignment.MiddleLeft;
       // 
+      // panel12
+      // 
+      panel12.BackColor = Color.LightSkyBlue;
+      panel12.Controls.Add(NotesFrame);
+      panel12.Controls.Add(label2);
+      panel12.Location = new Point(369, 87);
+      panel12.Name = "panel12";
+      panel12.Size = new Size(177, 36);
+      panel12.TabIndex = 10;
+      // 
+      // NotesFrame
+      // 
+      NotesFrame.BackColor = Color.Blue;
+      NotesFrame.Controls.Add(NotesEdit);
+      NotesFrame.Location = new Point(43, 4);
+      NotesFrame.Name = "NotesFrame";
+      NotesFrame.Size = new Size(130, 28);
+      NotesFrame.TabIndex = 25;
+      // 
+      // NotesEdit
+      // 
+      NotesEdit.Font = new Font("Courier New", 12F);
+      NotesEdit.Location = new Point(1, 1);
+      NotesEdit.Margin = new Padding(13);
+      NotesEdit.Name = "NotesEdit";
+      NotesEdit.Size = new Size(128, 26);
+      NotesEdit.TabIndex = 23;
+      NotesEdit.TextChanged += Field_Changed;
+      // 
+      // label2
+      // 
+      label2.AutoSize = true;
+      label2.Location = new Point(3, 11);
+      label2.Name = "label2";
+      label2.Size = new Size(42, 15);
+      label2.TabIndex = 21;
+      label2.Text = "NOTES";
+      label2.TextAlign = ContentAlignment.MiddleLeft;
+      // 
       // ButtonsPanel
       // 
       ButtonsPanel.BackColor = Color.LightSkyBlue;
       ButtonsPanel.Controls.Add(ClearBtn);
       ButtonsPanel.Controls.Add(SaveBtn);
-      ButtonsPanel.Location = new Point(369, 87);
+      ButtonsPanel.Location = new Point(552, 87);
       ButtonsPanel.Name = "ButtonsPanel";
       ButtonsPanel.Size = new Size(177, 36);
-      ButtonsPanel.TabIndex = 10;
+      ButtonsPanel.TabIndex = 11;
       // 
       // ClearBtn
       // 
@@ -596,6 +642,10 @@
       panel9.PerformLayout();
       NameFrame.ResumeLayout(false);
       NameFrame.PerformLayout();
+      panel12.ResumeLayout(false);
+      panel12.PerformLayout();
+      NotesFrame.ResumeLayout(false);
+      NotesFrame.PerformLayout();
       ButtonsPanel.ResumeLayout(false);
       ResumeLayout(false);
       PerformLayout();
@@ -652,5 +702,9 @@
     private DateTimePicker dateTimePicker1;
     private ComboBox comboBox1;
     private ToolTip toolTip1;
+    private Panel panel12;
+    private Panel NotesFrame;
+    private TextBox NotesEdit;
+    private Label label2;
   }
 }

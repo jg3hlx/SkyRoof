@@ -11,17 +11,19 @@ namespace SkyRoof
     public string Band { get; set; } = string.Empty;
     public string Mode { get; set; } = string.Empty;
 
+    public string Sat { get; set; } = string.Empty;
     public string Grid { get; set; }= string.Empty;
     public string State { get; set; } = string.Empty;
     public string Sent { get; set; }= string.Empty;
     public string Recv { get; set; }= string.Empty;
     public string Name { get; set; } = string.Empty;
-    public string Sat { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
+    
 
     public string StatusString = string.Empty;
     public string BackColor = "#FFFFFF";
     public string ForeColor = "#000000";
-
+    
     internal AdifEntry ToAdifEntry()
     {
       AdifEntry entry = new() {
@@ -37,6 +39,7 @@ namespace SkyRoof
       if (Sent != "") entry["RST_SENT"] = Sent;
       if (Recv != "") entry["RST_RCVD"] = Recv;
       if (Name != "") entry["NAME"] = Name;
+      if (Notes != "") entry["COMMENT"] = Notes;
       if (Sat != "") entry["SAT_NAME"] = Sat;
       if (Sat != "") entry["PROP_MODE"] = "SAT";
 

@@ -71,7 +71,7 @@ namespace SkyRoof
       SetBand();
       SetMode();
 
-      CallEdit.Text = GridEdit.Text = NameEdit.Text = string.Empty;
+      CallEdit.Text = GridEdit.Text = NameEdit.Text = NotesEdit.Text = string.Empty;
       CallEdit.BackColor = SystemColors.Window;
       CallEdit.ForeColor = SystemColors.WindowText;
       StateComboBox.SelectedIndex = -1;
@@ -91,6 +91,7 @@ namespace SkyRoof
       SentFrame.BackColor = Color.LightSkyBlue;
       RecvFrame.BackColor = Color.LightSkyBlue;
       NameFrame.BackColor = Color.LightSkyBlue;
+      NotesFrame.BackColor = Color.LightSkyBlue;
     }
 
     private void QsoEntryPanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -261,6 +262,7 @@ namespace SkyRoof
         if (SentFrame.BackColor == Color.Blue) info.Sent = SentEdit.Text;
         if (RecvFrame.BackColor == Color.Blue) info.Recv = RecvEdit.Text;
         if (NameFrame.BackColor == Color.Blue) info.Name = NameEdit.Text;
+        if (NotesFrame.BackColor == Color.Blue) info.Notes = NotesEdit.Text;
       }
       else
       {
@@ -274,6 +276,7 @@ namespace SkyRoof
         info.Sent = SentEdit.Text;
         info.Recv = RecvEdit.Text;
         info.Name = NameEdit.Text;
+        info.Notes = NotesEdit.Text;
       }
 
       return info;
