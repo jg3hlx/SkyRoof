@@ -54,6 +54,18 @@ and
 
 ---
 
+**Q:** How can I add a satellite that is currently not listed in SkyRoof?
+
+**A:** The only way to add a satellite to SkyRoof is to add it to the SatNOGS database. Here is how you can do this:
+
+- navigate to the [SatNOGS DB web site](https://db.satnogs.org/);
+- click on **Sign Up / Log In** in the top right corner of the page;
+- create a free account, or log in to an existing one;
+- click on **All Satellites**;
+- in the **Actions** drop-down list select **Suggest New Satellite*.
+
+---
+
 **Q:** My video card does not have an OpenGL 3.3 driver. Is there a way to use a software-only implementation of OpenGL?
 
 **A:** Some users have had success with the OpenGL 3.3 functionality implemented in the software, though this solution is very CPU-intensive. You can try
