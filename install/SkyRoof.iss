@@ -60,6 +60,9 @@ Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\air
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\airspyhfSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\hackrf.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\HackRFSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\PlutoSDRSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\libad9361.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
+Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\lib\SoapySDR\modules0.8\libiio.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll; DestDir: {app}\runtimes\win\lib\net9.0; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\runtimes\win\lib\net9.0\System.Speech.dll; DestDir: {app}\runtimes\win\lib\net9.0; Flags: overwritereadonly ignoreversion replacesameversion
 Source: ..\SkyRoof\bin\x64\Release\net9.0-windows7.0\CSCore.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion replacesameversion
