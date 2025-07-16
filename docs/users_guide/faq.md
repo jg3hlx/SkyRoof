@@ -21,7 +21,7 @@ To prevent such problems in the future, please submit the file to Microsoft for 
 
 <br><br>
 
-![Virusyotal](../images/virus_total.png)
+![VirusTotal](../images/virus_total.png)
 
 ---
 
@@ -63,6 +63,8 @@ and
 - create a free account, or log in to an existing one;
 - click on **All Satellites**;
 - in the **Actions** drop-down list select **Suggest New Satellite*.
+
+See this [Wiki page](https://wiki.satnogs.org/SatNOGS_DB) for details.
 
 ---
 

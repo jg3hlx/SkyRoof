@@ -4,10 +4,10 @@
 
 ### Current Version
 
-[SkyRoof v.1.15 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.15-beta/SkyRoofSetup-v.1.15-beta.zip)
+[SkyRoof v.1.16 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.16-beta/SkyRoofSetup-v.1.16-beta.zip)
 
 Anti-virus scan of the file above:
-[click here](https://www.virustotal.com/gui/url/e11ac210c03ba22d5bfaf2b33f8486f8e82c3fd2cb95c7add374c24245eeaeb1).
+[click here](https://www.virustotal.com/gui/url/49fb37a2d132bf653c4df7960597657c6ab2bc4112c43f26ada340b2e488409c).
 
 <br>
 
@@ -18,6 +18,12 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.16 Beta
+
+- Added support of PlutoSDR;
+- added Notes to the QSO Entry panel;
+- documentation updated.
 
 #### v.1.15 Beta
 
