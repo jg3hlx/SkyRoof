@@ -4,10 +4,10 @@
 
 ### Current Version
 
-[SkyRoof v.1.16 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.16-beta/SkyRoofSetup-v.1.16-beta.zip)
+[SkyRoof v.1.17 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.17-beta/SkyRoofSetup-v.1.17-beta.zip)
 
 Anti-virus scan of the file above:
-[click here](https://www.virustotal.com/gui/url/49fb37a2d132bf653c4df7960597657c6ab2bc4112c43f26ada340b2e488409c).
+[click here](https://www.virustotal.com/gui/url/acbe0090d0291ff3d5bdbe8a1b7c23426ca529a0aa65708214d5b9b3d18cec3b).
 
 <br>
 
@@ -18,6 +18,11 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.17 Beta
+
+- FM_D mode added for external decoders;
+- documentation updated.
 
 #### v.1.16 Beta
 
