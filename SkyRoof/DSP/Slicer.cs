@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using MathNet.Numerics;
 using VE3NEA;
 
@@ -7,10 +9,10 @@ namespace SkyRoof
 {
   public unsafe class Slicer : ThreadedProcessor<Complex32>
   {
-    public enum Mode { USB, LSB, USB_D, LSB_D, CW, FM }
+    public enum Mode { USB, LSB, USB_D, LSB_D, CW, FM, FM_D }
     //300..3000, 100..4000, 350..850, -8000..8000 Hz
-    private static readonly int[] Bandwidths = [2800, 2800, 3900, 3900, 500, 16000];
-    private static readonly int[] ModeOffsets = [1600, -1600, 2050, -2050, 600, 0];
+    private static readonly int[] Bandwidths = [2800, 2800, 3900, 3900, 500, 16000, 48000];
+    private static readonly int[] ModeOffsets = [1600, -1600, 2050, -2050, 600, 0, 0];
 
     private const int STOPBAND_REJECTION_DB = 80;
     private const double USEFUL_BANDWIDTH = 0.9 * SdrConst.AUDIO_SAMPLING_RATE / 2; // 22 kHz useful at 48 KHz sampling rate
@@ -117,9 +119,10 @@ namespace SkyRoof
         );
 
       // debug: filter coefficients to string
-      //byte[] coeffBytes = new byte[filterLength * sizeof(float)];
-      //Marshal.Copy((nint)coeffPointer, coeffBytes, 0, coeffBytes.Length);
-      //string base64filt = Convert.ToBase64String(coeffBytes);
+      float[] coeffs = new float[filterLength];
+      Marshal.Copy((nint)coeffPointer, coeffs, 0, coeffs.Length);
+      int n = 0;
+      string str = string.Join("\n", coeffs.Select(c => $"{n++:D4}  {c:F6}"));
 
       // the filter itself is no longer needed
       NativeLiquidDsp.firfilt_crcf_destroy(filter);
@@ -127,8 +130,10 @@ namespace SkyRoof
 
     private void CreateFilter()
     {
-      float fc = Bandwidths[(int)CurrentMode] / 2f / SdrConst.AUDIO_SAMPLING_RATE;
+      int bandwidth = Bandwidths[(int)CurrentMode];
+      if (bandwidth == SdrConst.AUDIO_SAMPLING_RATE) { firfilt = null; return; }
 
+      float fc = bandwidth / 2f / SdrConst.AUDIO_SAMPLING_RATE;
       uint FILTER_LENGTH = 601;
       firfilt = NativeLiquidDsp.firfilt_crcf_create_kaiser(FILTER_LENGTH, fc, STOPBAND_REJECTION_DB, 0);
     }
@@ -139,6 +144,8 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                        process
     //----------------------------------------------------------------------------------------------
+    Random random = new Random(5);
+
     protected override void Process(DataEventArgs<Complex32> args)
     {
       if (NewMode != CurrentMode) SetMode(NewMode);
@@ -171,16 +178,17 @@ namespace SkyRoof
       IqDataAvailable?.Invoke(this, iqArgs);
 
       // lowpass filter
-      fixed (Complex32* pData = RationalResamplerOutputBuffer.Data)
-      {
-        for (int i = 0; i < outputCount; i++)
+      if (firfilt != null)
+        fixed (Complex32* pData = RationalResamplerOutputBuffer.Data)
         {
-          NativeLiquidDsp.firfilt_crcf_push(firfilt, pData[i]);
-          NativeLiquidDsp.firfilt_crcf_execute(firfilt, pData + i);
+          for (int i = 0; i < outputCount; i++)
+          {
+            NativeLiquidDsp.firfilt_crcf_push(firfilt, pData[i]);
+            NativeLiquidDsp.firfilt_crcf_execute(firfilt, pData + i);
+          }
         }
-      }
 
-      if (CurrentMode == Mode.FM)
+      if (CurrentMode == Mode.FM || CurrentMode == Mode.FM_D)
       {
         // demodulate FM
         fixed (Complex32* pIqData = RationalResamplerOutputBuffer.Data)
@@ -190,9 +198,8 @@ namespace SkyRoof
         }
 
         // apply soft squelching
-        SoftSquelch.Process(audioArgs.Data);
+        if (CurrentMode == Mode.FM) SoftSquelch.Process(audioArgs.Data);
       }
-
       else
       {
         // mix up to mode-dependent pitch

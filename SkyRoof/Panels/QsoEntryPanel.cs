@@ -172,7 +172,7 @@ namespace SkyRoof
         newMode = "SSB";
       else if (mode == Slicer.Mode.CW)
         newMode = "CW";
-      else if (mode == Slicer.Mode.FM)
+      else if (mode == Slicer.Mode.FM || mode == Slicer.Mode.FM_D)
         newMode = "FM";
       else if (mode == Slicer.Mode.USB_D || mode == Slicer.Mode.LSB_D)
         newMode = "FT4";

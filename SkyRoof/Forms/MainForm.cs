@@ -379,7 +379,24 @@ namespace SkyRoof
         VacLedLabel.ForeColor = Color.Lime;
 
       SoundcardStatusLabel.ToolTipText = ctx.SpeakerSoundcard.GetDisplayName();
-      VacStatusLabel.ToolTipText = ctx.AudioVacSoundcard.GetDisplayName();
+      VacStatusLabel.ToolTipText = OutputStreamTooltip();
+    }
+
+    private string OutputStreamTooltip()
+    {
+      switch(ctx.Settings.OutputStream.Type)
+      {
+        case DataStreamType.IqToVac:
+          return $"I/Q to { ctx.IqVacSoundcard.GetDisplayName()}";
+        case DataStreamType.AudioToVac:
+          return $"Audio to {ctx.AudioVacSoundcard.GetDisplayName()}";
+        case DataStreamType.IqToUdp:
+          return $"I/Q to UDP port {ctx.Settings.OutputStream.UdpPort}";
+        case DataStreamType.AudioToUdp:
+          return $"Audio to UDP port {ctx.Settings.OutputStream.UdpPort}";
+        default:
+          return "No output stream";
+      }
     }
 
 
