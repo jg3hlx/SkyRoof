@@ -69,6 +69,12 @@ items:
       href: earth_view_panel.md
     - name: QSO Entry
       href: qso_entry_panel.md
+  - name: How To
+    items:
+    - name: Decode Telemetry from PEARL-1C
+      href: decode_telemetry.md
+    - name: Recevie Images from NOAA-15
+      href: recevie_images.md
   - name: Miscellaneous
     items:
     - name: Satellite Data
