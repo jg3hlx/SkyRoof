@@ -9,7 +9,8 @@ engine to interface with the SDR radios. Currently it supports:
 - Airspy;
 - SDRplay;
 - RTL-SDR;
-- HackRF.
+- HackRF;
+- PlutoSDR.
 
 > [!NOTE]
 > It may be possible to add support of other SDR devices to SkyRoof. Contact me if you have an unsupported SDR

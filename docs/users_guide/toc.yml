@@ -73,8 +73,10 @@ items:
     items:
     - name: Decode Telemetry from PEARL-1C
       href: decode_telemetry.md
-    - name: Recevie Images from NOAA-15
+    - name: Recevie Images from NOAA-15 and NOAA-19
       href: recevie_images.md
+    - name: Recevie SSTV from ISS
+      href: recevie_sstv.md
   - name: Miscellaneous
     items:
     - name: Satellite Data

@@ -1,10 +1,5 @@
 # Setting Up CAT Control
 
-> [!WARNING]
-> The initial release of the beta version was tested only with an IC-9700 radio.
-> The code for other radio models is present but has not been tested. If you have a different radio
-> and are willing to do extensive testing, please send me an email.
-
 ## rigctld.exe
 
 SkyRoof uses **rigctld.exe**, a HamLib-based CAT control daemon, to control the radio.

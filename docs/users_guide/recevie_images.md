@@ -1,4 +1,4 @@
-# Receive Images from NOAA-15
+# How to Receive Images from NOAA-15 and NOAA-19
 
 An external program is needed to decode and display the weather images transmitted by the NOAA-15 and NOAA-19 satellites. In this tutorial we will use [WXtoIMG](https://wxtoimgrestored.xyz/downloads/). 
 
@@ -29,7 +29,7 @@ file manually and save it to the WXtoIMG data folder. Type this in File Explorer
 
 ## Configuring SkyRoof
 
-In the SkyRoof:
+In SkyRoof:
 
 - select the NOAA-15 or NOAA-19 satellite. If it is not in the current group, add it using the
 [Satellites and Groups](satellites_and_groups_window.md) dialog;

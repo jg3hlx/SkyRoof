@@ -1,5 +1,5 @@
 
-# Decode Telemetry from PEARL-1C
+# How to Decode Telemetry from PEARL-1C
 
 I/Q or Audio data, streamed via VAC or UDP, may be used to decode telemetry transmitted by the satellites.
 There is a number of telemetry decoders to choose from. One such decoder is
