@@ -77,6 +77,8 @@ items:
       href: recevie_images.md
     - name: Recevie SSTV from ISS
       href: recevie_sstv.md
+    - name: FSK & AFSK Telemetry
+      href: fsk_afsk_telemetry.md
   - name: Miscellaneous
     items:
     - name: Satellite Data
