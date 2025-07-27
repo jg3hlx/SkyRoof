@@ -77,7 +77,7 @@ items:
       href: recevie_images.md
     - name: Recevie SSTV from ISS
       href: recevie_sstv.md
-    - name: FSK & AFSK Telemetry
+    - name: Receive FSK & AFSK Telemetry
       href: fsk_afsk_telemetry.md
   - name: Miscellaneous
     items:
