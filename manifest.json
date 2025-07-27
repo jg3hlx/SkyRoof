@@ -292,6 +292,16 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "images/iss_sstv.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/iss_sstv.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "images/letter-s-svgrepo-com.svg",
       "output": {
         "resource": {
@@ -346,6 +356,46 @@
       "output": {
         "resource": {
           "relative_path": "images/mouse.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/noaa_15_satdump.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/noaa_15_satdump.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/noaa_19_image_1.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/noaa_19_image_1.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/noaa_19_image_2.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/noaa_19_image_2.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/output_stream_label.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/output_stream_label.png"
         }
       },
       "version": ""
@@ -712,6 +762,46 @@
     },
     {
       "type": "Resource",
+      "source_relative_path": "images/uz7ho_lasarsat.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/uz7ho_lasarsat.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/uz7ho_setup.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/uz7ho_setup.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/uz7ho_tigrisat.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/uz7ho_tigrisat.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/uz7ho_veronica.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/uz7ho_veronica.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
       "source_relative_path": "images/virus_total.png",
       "output": {
         "resource": {
@@ -855,6 +945,16 @@
     },
     {
       "type": "Conceptual",
+      "source_relative_path": "users_guide/decode_telemetry.md",
+      "output": {
+        ".html": {
+          "relative_path": "users_guide/decode_telemetry.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
       "source_relative_path": "users_guide/doppler_tracking.md",
       "output": {
         ".html": {
@@ -905,6 +1005,16 @@
     },
     {
       "type": "Conceptual",
+      "source_relative_path": "users_guide/fsk_afsk_telemetry.md",
+      "output": {
+        ".html": {
+          "relative_path": "users_guide/fsk_afsk_telemetry.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
       "source_relative_path": "users_guide/gain_control.md",
       "output": {
         ".html": {
@@ -949,6 +1059,26 @@
       "output": {
         ".html": {
           "relative_path": "users_guide/quick_start.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "users_guide/recevie_images.md",
+      "output": {
+        ".html": {
+          "relative_path": "users_guide/recevie_images.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "users_guide/recevie_sstv.md",
+      "output": {
+        ".html": {
+          "relative_path": "users_guide/recevie_sstv.html"
         }
       },
       "version": ""
