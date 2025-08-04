@@ -60,7 +60,7 @@ Groups](satellites_and_groups_window.html) dialog;
 
 ## Receiving Data
 
-When the selected satellite raises above the horizon, the UZ7HO FSK Modem will start decoding and produce an image like this:
+When the selected satellite raises above the horizon, the UZ7HO FSK Modem will start decoding and produce output like this:
 
 ![uz7ho setup](../images/uz7ho_veronica.png)
 
