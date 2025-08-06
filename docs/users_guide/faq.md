@@ -96,18 +96,19 @@ See this [Wiki page](https://wiki.satnogs.org/SatNOGS_DB) for details.
 
 - **Doppler correction:** this correction is computed and applied automatically, it keeps your RX and TX signals in sync when you tune through the transponder segment.
 
-**Q: How to troubleshoot rotator control?**
+**Q: How to troubleshoot the rotator control?**
 
-**A:**
-
+**A:** 
 1. Set up and enable rotator control as described in
 [Setting Up Rotator Control](setting_up_rotator_control.md).
 
     - if the Rotator light on the status bar is red, the problem is with the SkyRoof to rotctld.exe connection;
-    - if the Rotator light is green, then the SkyRoof to rotcltd.exe connection is fine, the problem is with the rotctld.exe to rotor connection.
+    - if the light is green, then the SkyRoof to rotcltd.exe connection is fine, the problem is with the rotctld.exe to rotor connection.
 
 2. Add the `-vvvvv` option to the command line that starts rotctld.exe, and restart it. This option tells rotctld.exe to print detailed information to the console window (the black window that opens when rotctld.exe is started).
+
 3. Read the [rotctld.exe documentation](https://hamlib.sourceforge.net/html/rotctl.1.html) that will help you to understand information in the console window.
+
 4. Possible causes of SkyRoof to rotctld.exe connection problems:
     - rotctld.exe failed to start;
     - SkyRoof is configured to use a port number different from the rotctld.exe listening port.
@@ -116,3 +117,5 @@ See this [Wiki page](https://wiki.satnogs.org/SatNOGS_DB) for details.
     - the rotator is not connected to the computer or not powered on;
     - the COM port number or Baud rate specified on the command line is wrong - then the COM port fails to open;
     - the rotator model specified on the command line is wrong - then the commands sent to the rotor are rejected or have no effect.
+
+6. Make rotator control work without SkyRoof first: use **rotctl.exe**, an interactive version of rotctld.exe, and send commands to the rotator manually, by typing them in the console window. Rotator control uses three commands, "P", "p" and "S" (set position, read position, stop rotation). Once you make rotctl.exe work with the rotator, run rotctld.exe with the same command line parameters.
