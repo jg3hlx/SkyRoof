@@ -511,7 +511,6 @@ namespace SkyRoof
     }
     private void ShowHideTxButton()
     {
-      //TxBtn.Visible = ctx.CatControl.Tx != null && ctx.CatControl.Tx.CatMode != CatMode.RxOnly;
       TxBtn.Visible = ctx.CatControl.Tx != null && ctx.CatControl.Tx.IsRunning;
       Ptt = false;
       TxBtn.Text = "Transmit";
