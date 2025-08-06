@@ -73,7 +73,7 @@ namespace SkyRoof
         while (!stopping)
           try
           {
-            ReadWrite();
+            Cycle();
             Thread.Sleep(Delay);
           }
           catch (SocketException ex)
@@ -94,7 +94,7 @@ namespace SkyRoof
     }
 
     protected abstract bool Setup();
-    protected abstract void ReadWrite();
+    protected abstract void Cycle();
 
 
 

@@ -99,6 +99,7 @@ See this [Wiki page](https://wiki.satnogs.org/SatNOGS_DB) for details.
 **Q: How to troubleshoot the rotator control?**
 
 **A:** 
+
 1. Set up and enable rotator control as described in
 [Setting Up Rotator Control](setting_up_rotator_control.md).
 

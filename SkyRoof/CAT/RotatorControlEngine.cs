@@ -46,7 +46,7 @@ namespace SkyRoof
       SendWriteCommand("S");
     }
 
-    protected override void ReadWrite()
+    protected override void Cycle()
     {
       if (TcpClient == null || !TcpClient.Connected) return;
       WriteBearing();
