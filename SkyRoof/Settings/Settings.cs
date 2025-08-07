@@ -45,7 +45,7 @@ namespace SkyRoof
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public AmsatSettings Amsat { get; set; } = new();
 
-    [DisplayName("QSO ENtry")]
+    [DisplayName("QSO Entry")]
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public QsoEntrySettings QsoEntry { get; set; } = new();
 

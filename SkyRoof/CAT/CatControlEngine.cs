@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Speech.Recognition;
 using Newtonsoft.Json;
 using Serilog;
 using SkyRoof.Properties;
@@ -6,7 +7,7 @@ using VE3NEA;
 
 namespace SkyRoof
 {
-  public enum CatMode { RxOnly, TxOnly, Simplex, Split, Duplex }
+  public enum OperatingMode { RxOnly, TxOnly, Simplex, Split, Duplex }
 
   public class CatControlEngine : ControlEngine
   {
@@ -14,7 +15,7 @@ namespace SkyRoof
     private Capabilities Caps => RadioInfo.capabilities;
     private Commands Cmds => RadioInfo.commands;
 
-    public CatMode CatMode;
+    public OperatingMode CatMode;
     private readonly bool IgnoreDialKnob;
 
     public bool? Ptt { get; private set; } = null;
@@ -70,11 +71,11 @@ namespace SkyRoof
     public virtual void Start(bool rx, bool tx, bool crossband)
     {
       // determmine required cat control mode
-      if (rx && !tx) CatMode = CatMode.RxOnly;
-      else if (!rx && tx) CatMode = CatMode.TxOnly;
-      else if (crossband && Cmds.setup_duplex != null) CatMode = CatMode.Duplex;
-      else if (Cmds.setup_split != null) CatMode = CatMode.Split;
-      else CatMode = CatMode.Simplex;
+      if (rx && !tx) CatMode = OperatingMode.RxOnly;
+      else if (!rx && tx) CatMode = OperatingMode.TxOnly;
+      else if (crossband && Cmds.setup_duplex != null) CatMode = OperatingMode.Duplex;
+      else if (Cmds.setup_split != null) CatMode = OperatingMode.Split;
+      else CatMode = OperatingMode.Simplex;
 
       StartThread();
     }
@@ -137,11 +138,11 @@ namespace SkyRoof
       {
         switch (CatMode)
         {
-          case CatMode.RxOnly:
-          case CatMode.TxOnly:
-          case CatMode.Simplex: return SendWriteCommands(Cmds.setup_simplex); 
-          case CatMode.Split:   return SendWriteCommands(Cmds.setup_split); 
-          case CatMode.Duplex:  return SendWriteCommands(Cmds.setup_duplex); 
+          case OperatingMode.RxOnly:
+          case OperatingMode.TxOnly:
+          case OperatingMode.Simplex: return SendWriteCommands(Cmds.setup_simplex); 
+          case OperatingMode.Split:   return SendWriteCommands(Cmds.setup_split); 
+          case OperatingMode.Duplex:  return SendWriteCommands(Cmds.setup_duplex); 
         }
       }
       catch (Exception ex)
@@ -192,7 +193,7 @@ namespace SkyRoof
 
     private string GetReadRxFrequencyCommand()
     {
-      if (!HasCapability(Caps.read_main_frequency)) return Cmds.read_main_frequency!;
+      if (HasCapability(Caps.read_main_frequency)) return Cmds.read_main_frequency!;
       return string.Empty;
     }
 
@@ -244,19 +245,25 @@ namespace SkyRoof
 
     private string GetWriteRxFrequencyCommand(long frequency)
     {
-      if (CatMode == CatMode.TxOnly) return string.Empty;
+      if (CatMode == OperatingMode.TxOnly) return string.Empty;
 
-      if (!HasCapability(Caps.set_main_frequency))
+      if (HasCapability(Caps.set_main_frequency))
         return Cmds.set_main_frequency!.Replace("{frequency}", $"{frequency}");
+
       return string.Empty;
     }
 
     private string GetWriteTxFrequencyCommand(long frequency)
     {
-      if (CatMode == CatMode.RxOnly) return string.Empty;
+      if (CatMode == OperatingMode.RxOnly) return string.Empty;
 
       if (HasCapability(Caps.set_split_frequency))
-          return Cmds.set_split_frequency!.Replace("{frequency}", $"{frequency}");
+        return Cmds.set_split_frequency!.Replace("{frequency}", $"{frequency}");
+
+      // normally simplex radio should not set tx frequency when receiving,
+      // but if receiving is disabled, it is OK
+      if (CatMode == OperatingMode.TxOnly && HasCapability(Caps.set_main_frequency))
+        return Cmds.set_main_frequency!.Replace("{frequency}", $"{frequency}");
 
       return string.Empty;
     }
@@ -282,8 +289,16 @@ namespace SkyRoof
       string command = GetWriteRxModeCommand();
       if (command == string.Empty) return;
 
-      SendWriteCommand(command);
-      LastWrittenRxMode = RequestedRxMode;
+      var mode = RequestedRxMode;
+      bool ok = SendWriteCommand(command);
+
+      if (!ok)
+      {
+        RemoveDataFromMode(ref RequestedRxMode);
+        SendWriteCommand(command);
+      }
+
+      LastWrittenRxMode = mode;
     }
 
     private void TryWriteTxMode()
@@ -291,28 +306,47 @@ namespace SkyRoof
       string command = GetWriteTxModeCommand();
       if (command == string.Empty) return;
 
-      SendWriteCommand(command);
-      LastWrittenTxMode = RequestedTxMode;
+      var mode = RequestedTxMode;
+      bool ok = SendWriteCommand(command);
+
+      if (!ok)
+      {
+        RemoveDataFromMode(ref RequestedTxMode);
+        SendWriteCommand(command);
+      }
+
+      LastWrittenTxMode = mode;
     }
 
     private string GetWriteRxModeCommand()
     {
-      if (CatMode == CatMode.TxOnly) return string.Empty;
+      if (CatMode == OperatingMode.TxOnly) return string.Empty;
 
       if (HasCapability(Caps.set_main_mode))
-        return Cmds.set_main_mode!.Replace("{mode}", $"{RequestedTxMode}");
+        return Cmds.set_main_mode!.Replace("{mode}", $"{RequestedRxMode}");
 
       return string.Empty;
     }
 
     private string GetWriteTxModeCommand()
     {
-      if (CatMode == CatMode.RxOnly) return string.Empty;
+      if (CatMode == OperatingMode.RxOnly) return string.Empty;
 
       if (HasCapability(Caps.set_split_mode))
         return Cmds.set_split_mode!.Replace("{mode}", $"{RequestedTxMode}");
 
       return string.Empty;
+    }
+
+    private void RemoveDataFromMode(ref Slicer.Mode? mode)
+    {
+      mode = mode!.Value switch
+      {
+        Slicer.Mode.USB_D => Slicer.Mode.USB,
+        Slicer.Mode.LSB_D => Slicer.Mode.LSB,
+        Slicer.Mode.FM_D => Slicer.Mode.FM,
+        _ => mode.Value
+      };
     }
 
 
@@ -323,7 +357,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     internal bool CanPtt()
     {
-      return CatMode != CatMode.RxOnly &&
+      return CatMode != OperatingMode.RxOnly &&
              Cmds.set_ptt_on != null &&
              Cmds.set_ptt_off != null;
     }
@@ -347,7 +381,7 @@ namespace SkyRoof
 
     private void TryWritePtt()
     {
-      if (CatMode == CatMode.RxOnly) return;
+      if (CatMode == OperatingMode.RxOnly) return;
       if (!RequestedPtt.HasValue) return;
       if (RequestedPtt == Ptt) return;
 
@@ -377,7 +411,7 @@ namespace SkyRoof
     private bool NeddToWriteTxFreqModeBeforePtt()
     {
       // not simplex
-      if (CatMode != CatMode.Simplex) return false;
+      if (CatMode != OperatingMode.Simplex) return false;
 
       // not swsitching to tx
       if (RequestedPtt != true) return false;
@@ -405,33 +439,33 @@ namespace SkyRoof
 
     private bool NeedToWriteRxFrequency()
     {
-      if (CatMode == CatMode.TxOnly) return false;
+      if (CatMode == OperatingMode.TxOnly) return false;
       if (RequestedRxFrequency == 0) return false; // never assigned
-      if (CatMode == CatMode.Simplex && PttChanged) return true;
+      if (CatMode == OperatingMode.Simplex && PttChanged) return true;
       return IsDiff(RequestedRxFrequency, LastWrittenRxFrequency);
     }
 
     private bool NeedToWriteTxFrequency()
     {
-      if (CatMode == CatMode.RxOnly) return false;
+      if (CatMode == OperatingMode.RxOnly) return false;
       if (RequestedTxFrequency == 0) return false;
-      if (CatMode == CatMode.Simplex && PttChanged) return true;
+      if (CatMode == OperatingMode.Simplex && PttChanged) return true;
       return IsDiff(RequestedTxFrequency, LastWrittenTxFrequency);
     }
 
     private bool NeedToWriteRxMode()
     {
-      if (CatMode == CatMode.TxOnly) return false;
+      if (CatMode == OperatingMode.TxOnly) return false;
       if (!RequestedRxMode.HasValue) return false;
-      if (CatMode == CatMode.Simplex && PttChanged) return true;
+      if (CatMode == OperatingMode.Simplex && PttChanged) return true;
       return RequestedRxMode != LastWrittenRxMode;
     }
 
     private bool NeedToWriteTxMode()
     {
-      if (CatMode == CatMode.RxOnly) return false;
+      if (CatMode == OperatingMode.RxOnly) return false;
       if (!RequestedTxMode.HasValue) return false;
-      if (CatMode == CatMode.Simplex && PttChanged) return true;
+      if (CatMode == OperatingMode.Simplex && PttChanged) return true;
       return RequestedTxMode != LastWrittenTxMode;
     }
 
