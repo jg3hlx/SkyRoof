@@ -282,6 +282,8 @@ namespace SkyRoof
       string command = GetWriteRxModeCommand();
       if (command == string.Empty) return;
 
+      string mode = $"{RequestedRxMode}".Replace("_D", "");
+      string command = RadioInfo.commands.set_main_mode!.Replace("{mode}", mode);
       SendWriteCommand(command);
       LastWrittenRxMode = RequestedRxMode;
     }
