@@ -52,7 +52,7 @@ namespace SkyRoof
 
     private void LogFreqs(string msg)
     {
-      if (log) Log.Information($"{msg}  (RxReq={RequestedRxFrequency:N0}  RxWr={LastWrittenRxFrequency:N0}  RxRd={LastReadRxFrequency:N0})");
+      if (log) Log.Information($"{msg}  (RxReq={RequestedRxFrequency}  RxWr={LastWrittenRxFrequency}  RxRd={LastReadRxFrequency})");
     }
 
     // some radios use 10 Hz steps and some don't, handle them all the same way
@@ -84,14 +84,28 @@ namespace SkyRoof
     {
       frequency = RoundTo10(frequency);
       LogFreqs($"SetRxFrequency {frequency}");
-      RequestedRxFrequency = (long)frequency;
+
+      if (RequestedRxFrequency == -1)
+      {
+        if (log) Log.Information("Ignoring RX frequency change due to manual change");
+        RequestedRxFrequency = 0;
+      }
+      else
+        RequestedRxFrequency = (long)frequency;
     }
 
     public void SetTxFrequency(double frequency)
     {
       frequency = RoundTo10(frequency);
       LogFreqs($"SetTxFrequency {frequency}");
-      RequestedTxFrequency = (long)frequency;
+
+      if (RequestedTxFrequency == -1)
+      {
+        if (log) Log.Information("Ignoring TX frequency change while RX frequency is being changed manually");
+        RequestedTxFrequency = 0;
+      }
+      else
+        RequestedTxFrequency = (long)frequency;
     }
 
     public void SetRxMode(Slicer.Mode mode)
@@ -172,8 +186,18 @@ namespace SkyRoof
           IsDiff(frequency, LastWrittenTxFrequency); // tx freq read by accident, ignore
 
       LastReadRxFrequency = frequency;
-      if (changed) OnRxFrequencyChanged();
-    }    
+
+      if (changed)
+      {
+          if (RequestedRxFrequency > 0 && IsDiff(RequestedRxFrequency, frequency))
+            LogFreqs($"Canceling pending RX frequency change ({RequestedRxFrequency}) due to manual change ({frequency})");
+
+          RequestedRxFrequency = -1;
+          RequestedTxFrequency = -1;
+        
+        OnRxFrequencyChanged();
+      }
+    }
 
     private void TryReadTxFrequency()
     {
@@ -417,7 +441,7 @@ namespace SkyRoof
       if (RequestedPtt != true) return false;
 
       // nothing to write
-      if (RequestedTxFrequency == 0 && !RequestedTxMode.HasValue) return false;
+      if (RequestedTxFrequency <= 0 && !RequestedTxMode.HasValue) return false;
 
       // can write when transmitting
       if (Caps.set_main_frequency.Contains("when_transmitting") && Caps.set_main_mode.Contains("when_transmitting"))
@@ -440,7 +464,7 @@ namespace SkyRoof
     private bool NeedToWriteRxFrequency()
     {
       if (CatMode == OperatingMode.TxOnly) return false;
-      if (RequestedRxFrequency == 0) return false; // never assigned
+      if (RequestedRxFrequency <= 0) return false; // never assigned
       if (CatMode == OperatingMode.Simplex && PttChanged) return true;
       return IsDiff(RequestedRxFrequency, LastWrittenRxFrequency);
     }
@@ -448,7 +472,7 @@ namespace SkyRoof
     private bool NeedToWriteTxFrequency()
     {
       if (CatMode == OperatingMode.RxOnly) return false;
-      if (RequestedTxFrequency == 0) return false;
+      if (RequestedTxFrequency <= 0) return false;
       if (CatMode == OperatingMode.Simplex && PttChanged) return true;
       return IsDiff(RequestedTxFrequency, LastWrittenTxFrequency);
     }

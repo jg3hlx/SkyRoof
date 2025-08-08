@@ -2,8 +2,6 @@
 using System.Runtime.InteropServices;
 using Serilog;
 using SharpGL;
-using SkyRoof;
-using VE3NEA;
 
 namespace VE3NEA
 {
@@ -11,7 +9,6 @@ namespace VE3NEA
   {
     private static NativeSoapySdr.SoapySDRLogHandlerDelegate LogHandlerDelegate = new(SoapySdrLogHandler);
 
-    // private static StderrInterceptor StderrInterceptor = new();
     public static void Initialize()
     {
       string fileName = Path.Combine(Utils.GetUserDataFolder(), "Logs", "log_.txt");

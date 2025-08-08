@@ -108,7 +108,7 @@ namespace SkyRoof
       int delta = (int)(ctx.CatControl.Rx!.LastReadRxFrequency - RadioLink.CorrectedDownlinkFrequency);
       RadioLink.IncrementDownlinkFrequency(delta);
       RadioLinkToRadio();
-      Invoke(RadioLinkToUi);
+      BeginInvoke(RadioLinkToUi);
     }
 
     internal void TxTuned()
@@ -116,7 +116,7 @@ namespace SkyRoof
       int delta = (int)(ctx.CatControl.Tx!.LastReadTxFrequency - RadioLink.CorrectedUplinkFrequency);
       RadioLink.IncrementUplinkFrequency(delta);
       RadioLinkToRadio();
-      Invoke(RadioLinkToUi);
+      BeginInvoke(RadioLinkToUi);
     }
 
     internal void ToggleRit()
