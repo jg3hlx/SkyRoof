@@ -11,6 +11,8 @@ namespace SkyRoof
 
   public class CatControlEngine : ControlEngine
   {
+    const long NOT_ASSIGNED = 0;
+
     private readonly RadioInfo RadioInfo;
     private Capabilities Caps => RadioInfo.capabilities;
     private Commands Cmds => RadioInfo.commands;
@@ -45,7 +47,7 @@ namespace SkyRoof
     }
 
 
-    private void LogPtt(string msg)
+    private void LogInfo(string msg)
     {
       if (log) Log.Information(msg);
     }
@@ -55,7 +57,7 @@ namespace SkyRoof
       if (log) Log.Information($"{msg}  (RxReq={RequestedRxFrequency}  RxWr={LastWrittenRxFrequency}  RxRd={LastReadRxFrequency})");
     }
 
-    // some radios use 10 Hz steps and some don't, handle them all the same way
+    // some radios use 10 Hz steps and some don't, round frequency to the tuning step
     private long RoundTo10(double freq)
     {
       int step = RadioInfo.tuning_step_hz;
@@ -80,16 +82,15 @@ namespace SkyRoof
       StartThread();
     }
 
+    private bool DialKnobSpinning = false;
+
     public void SetRxFrequency(double frequency)
     {
       frequency = RoundTo10(frequency);
       LogFreqs($"SetRxFrequency {frequency}");
 
-      if (RequestedRxFrequency == -1)
-      {
-        if (log) Log.Information("Ignoring RX frequency change due to manual change");
-        RequestedRxFrequency = 0;
-      }
+      if (DialKnobSpinning)
+        LogInfo("Ignoring RX frequency change while dial knob is spinning");
       else
         RequestedRxFrequency = (long)frequency;
     }
@@ -99,11 +100,8 @@ namespace SkyRoof
       frequency = RoundTo10(frequency);
       LogFreqs($"SetTxFrequency {frequency}");
 
-      if (RequestedTxFrequency == -1)
-      {
-        if (log) Log.Information("Ignoring TX frequency change while RX frequency is being changed manually");
-        RequestedTxFrequency = 0;
-      }
+      if (DialKnobSpinning)
+        LogInfo("Ignoring TX frequency change while dial knob is spinning");
       else
         RequestedTxFrequency = (long)frequency;
     }
@@ -120,7 +118,7 @@ namespace SkyRoof
 
     public void SetPtt(bool ptt)
     {
-      LogPtt($"SetPtt {ptt}");
+      LogInfo($"SetPtt {ptt}");
       RequestedPtt = ptt;
     }
 
@@ -180,21 +178,20 @@ namespace SkyRoof
 
       long frequency = ReadFrequency(command);
 
-      bool changed = LastReadRxFrequency != 0 &&     // first read - ignore, no previous value
+      DialKnobSpinning = LastReadRxFrequency != 0 &&     // first read - ignore, no previous value
         IsDiff(frequency, LastReadRxFrequency) &&    // same freq as before, no change
         IsDiff(frequency, LastWrittenRxFrequency) && // new freq was written, ingnore
           IsDiff(frequency, LastWrittenTxFrequency); // tx freq read by accident, ignore
 
       LastReadRxFrequency = frequency;
-
-      if (changed)
+      
+      if (DialKnobSpinning)
       {
-          if (RequestedRxFrequency > 0 && IsDiff(RequestedRxFrequency, frequency))
-            LogFreqs($"Canceling pending RX frequency change ({RequestedRxFrequency}) due to manual change ({frequency})");
+        if (RequestedRxFrequency > 0 && IsDiff(RequestedRxFrequency, frequency))
+          LogInfo($"Canceling pending RX frequency change ({RequestedRxFrequency}) due to manual change ({frequency})");
 
-          RequestedRxFrequency = -1;
-          RequestedTxFrequency = -1;
-        
+        RequestedRxFrequency = 0;
+        RequestedTxFrequency = 0;
         OnRxFrequencyChanged();
       }
     }
@@ -297,7 +294,7 @@ namespace SkyRoof
     // set it immediately before switching to transmit mode
     private void TryWriteTxFreqModeBeforePtt()
     {
-      LogPtt("Writing TX frequency and mode before PTT ON");
+      LogInfo("Writing TX frequency and mode before PTT ON");
       TryWriteTxFrequency();
       TryWriteTxMode();
     }
@@ -400,7 +397,7 @@ namespace SkyRoof
       if (PttChanged)
         if (Ptt == true) LastWrittenTxFrequency = 0; else LastWrittenRxFrequency = 0;
 
-      LogPtt($"ReadPtt: {Ptt} (changed={PttChanged})");
+      LogInfo($"ReadPtt: {Ptt} (changed={PttChanged})");
     }
 
     private void TryWritePtt()
@@ -441,7 +438,7 @@ namespace SkyRoof
       if (RequestedPtt != true) return false;
 
       // nothing to write
-      if (RequestedTxFrequency <= 0 && !RequestedTxMode.HasValue) return false;
+      if (RequestedTxFrequency == NOT_ASSIGNED && !RequestedTxMode.HasValue) return false;
 
       // can write when transmitting
       if (Caps.set_main_frequency.Contains("when_transmitting") && Caps.set_main_mode.Contains("when_transmitting"))
@@ -464,7 +461,7 @@ namespace SkyRoof
     private bool NeedToWriteRxFrequency()
     {
       if (CatMode == OperatingMode.TxOnly) return false;
-      if (RequestedRxFrequency <= 0) return false; // never assigned
+      if (RequestedRxFrequency == NOT_ASSIGNED) return false; // never assigned
       if (CatMode == OperatingMode.Simplex && PttChanged) return true;
       return IsDiff(RequestedRxFrequency, LastWrittenRxFrequency);
     }
@@ -472,7 +469,7 @@ namespace SkyRoof
     private bool NeedToWriteTxFrequency()
     {
       if (CatMode == OperatingMode.RxOnly) return false;
-      if (RequestedTxFrequency <= 0) return false;
+      if (RequestedTxFrequency == NOT_ASSIGNED) return false;
       if (CatMode == OperatingMode.Simplex && PttChanged) return true;
       return IsDiff(RequestedTxFrequency, LastWrittenTxFrequency);
     }
