@@ -57,9 +57,9 @@
       TimelineMNU = new ToolStripMenuItem();
       SkyViewMNU = new ToolStripMenuItem();
       EarthViewMNU = new ToolStripMenuItem();
+      QsoEntryMNU = new ToolStripMenuItem();
       toolStripMenuItem4 = new ToolStripSeparator();
       ResetWindowLayoutMNU = new ToolStripMenuItem();
-      QsoEntryMNU = new ToolStripMenuItem();
       toolsToolStripMenuItem = new ToolStripMenuItem();
       SatelliteGroupsMNU = new ToolStripMenuItem();
       SdrDevicesMNU = new ToolStripMenuItem();
@@ -96,11 +96,14 @@
       IqOutputStatusLabel = new ToolStripStatusLabel();
       RotatorLedLabel = new ToolStripStatusLabel();
       RotatorStatusLabel = new ToolStripStatusLabel();
+      RotatorDropdownBtn = new ToolStripDropDownButton();
       NoiseFloorLabel = new ToolStripStatusLabel();
       CpuLoadlabel = new ToolStripStatusLabel();
       UpdateLabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       panel4 = new Panel();
+      EnableRotatorMNU = new ToolStripMenuItem();
+      TrackRotatorMNU = new ToolStripMenuItem();
       Toolbar.SuspendLayout();
       panel3.SuspendLayout();
       ClockPanel.SuspendLayout();
@@ -337,6 +340,13 @@
       EarthViewMNU.Text = "Earth View";
       EarthViewMNU.Click += EarthViewMNU_Click;
       // 
+      // QsoEntryMNU
+      // 
+      QsoEntryMNU.Name = "QsoEntryMNU";
+      QsoEntryMNU.Size = new Size(194, 22);
+      QsoEntryMNU.Text = "QSO Entry";
+      QsoEntryMNU.Click += QsoEntryMNU_Click;
+      // 
       // toolStripMenuItem4
       // 
       toolStripMenuItem4.Name = "toolStripMenuItem4";
@@ -348,13 +358,6 @@
       ResetWindowLayoutMNU.Size = new Size(194, 22);
       ResetWindowLayoutMNU.Text = "Reset Window Layaout";
       ResetWindowLayoutMNU.Click += ResetWindowLayoutMNU_Click;
-      // 
-      // QsoEntryMNU
-      // 
-      QsoEntryMNU.Name = "QsoEntryMNU";
-      QsoEntryMNU.Size = new Size(194, 22);
-      QsoEntryMNU.Text = "QSO Entry";
-      QsoEntryMNU.Click += QsoEntryMNU_Click;
       // 
       // toolsToolStripMenuItem
       // 
@@ -471,7 +474,7 @@
       // StatusStrip
       // 
       StatusStrip.ImageScalingSize = new Size(24, 24);
-      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SatDataLedLabel, SatDataStatusLabel, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, SoundcardDropdownBtn, VacLedLabel, VacStatusLabel, RxCatLedLabel, RxCatStatusLabel, TxCatLedLabel, TxCatStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, RotatorLedLabel, RotatorStatusLabel, NoiseFloorLabel, CpuLoadlabel, UpdateLabel });
+      StatusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel2, SatDataLedLabel, SatDataStatusLabel, SdrLedLabel, SdrStatusLabel, SoundcardLedLabel, SoundcardStatusLabel, SoundcardDropdownBtn, VacLedLabel, VacStatusLabel, RxCatLedLabel, RxCatStatusLabel, TxCatLedLabel, TxCatStatusLabel, IqOutputLedLabel, IqOutputStatusLabel, RotatorLedLabel, RotatorStatusLabel, RotatorDropdownBtn, NoiseFloorLabel, CpuLoadlabel, UpdateLabel });
       StatusStrip.Location = new Point(0, 926);
       StatusStrip.Name = "StatusStrip";
       StatusStrip.ShowItemToolTips = true;
@@ -665,6 +668,17 @@
       RotatorStatusLabel.MouseEnter += StatusLabel_MouseEnter;
       RotatorStatusLabel.MouseLeave += StatusLabel_MouseLeave;
       // 
+      // RotatorDropdownBtn
+      // 
+      RotatorDropdownBtn.AutoSize = false;
+      RotatorDropdownBtn.DisplayStyle = ToolStripItemDisplayStyle.Image;
+      RotatorDropdownBtn.DropDownItems.AddRange(new ToolStripItem[] { EnableRotatorMNU, TrackRotatorMNU });
+      RotatorDropdownBtn.Font = new Font("Segoe UI", 9F);
+      RotatorDropdownBtn.ImageTransparentColor = Color.Magenta;
+      RotatorDropdownBtn.Name = "RotatorDropdownBtn";
+      RotatorDropdownBtn.Size = new Size(13, 33);
+      RotatorDropdownBtn.Text = "toolStripDropDownButton1";
+      // 
       // NoiseFloorLabel
       // 
       NoiseFloorLabel.Name = "NoiseFloorLabel";
@@ -703,6 +717,21 @@
       panel4.Name = "panel4";
       panel4.Size = new Size(4, 824);
       panel4.TabIndex = 7;
+      // 
+      // EnableRotatorMNU
+      // 
+      EnableRotatorMNU.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+      EnableRotatorMNU.Name = "EnableRotatorMNU";
+      EnableRotatorMNU.Size = new Size(180, 22);
+      EnableRotatorMNU.Text = "Enable";
+      EnableRotatorMNU.Click += RotLedLabel_Click;
+      // 
+      // TrackRotatorMNU
+      // 
+      TrackRotatorMNU.Name = "TrackRotatorMNU";
+      TrackRotatorMNU.Size = new Size(180, 22);
+      TrackRotatorMNU.Text = "Track";
+      TrackRotatorMNU.Click += RotatorTrackMNU_CheckedChanged;
       // 
       // MainForm
       // 
@@ -804,5 +833,8 @@
     private ToolStripSeparator toolStripMenuItem4;
     private ToolStripMenuItem ResetWindowLayoutMNU;
     public ToolStripMenuItem QsoEntryMNU;
+    private ToolStripDropDownButton RotatorDropdownBtn;
+    private ToolStripMenuItem EnableRotatorMNU;
+    private ToolStripMenuItem TrackRotatorMNU;
   }
 }

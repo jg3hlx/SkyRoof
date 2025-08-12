@@ -27,6 +27,8 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     public void ApplySettings(bool restoreTracking = false)
     {
+      if (engine != null) StopRotation();
+
       engine?.Dispose();
       engine = null;
       bool track = restoreTracking && TrackCheckbox.Checked;
@@ -40,6 +42,7 @@ namespace SkyRoof
 
       ResetUi();
       TrackCheckbox.Checked = track;
+
       Advance();
       ctx.MainForm.ShowRotatorStatus();
     }
@@ -94,7 +97,7 @@ namespace SkyRoof
 
       sanitizedBearing.Azimuth = Math.Max(sett.MinAzimuth, Math.Min(sanitizedBearing.Azimuth, sett.MaxAzimuth));
       sanitizedBearing.Elevation = Math.Max(sett.MinElevation, Math.Min(sanitizedBearing.Elevation, sett.MaxElevation));
-      
+
       return sanitizedBearing;
     }
 
@@ -124,7 +127,7 @@ namespace SkyRoof
       Dialog.Open(ctx);
     }
 
-    private void TrackCheckbox_CheckedChanged(object sender, EventArgs e)
+    public void TrackCheckbox_CheckedChanged(object sender, EventArgs e)
     {
       if (TrackCheckbox.Checked)
         RotateTo(SatBearing);
@@ -133,6 +136,8 @@ namespace SkyRoof
 
       // update color
       BearingToUi();
+
+      ctx.MainForm.ShowRotatorStatus();
     }
 
     private void StopBtn_Click(object sender, EventArgs e)
@@ -142,14 +147,14 @@ namespace SkyRoof
 
     internal string? GetStatusString()
     {
-      if (!ctx.Settings.Rotator.Enabled) 
+      if (!ctx.Settings.Rotator.Enabled)
         return "Rotator control disabled";
-      else if (!IsRunning()) 
+      else if (!IsRunning())
         return "No connection";
       else if (!TrackCheckbox.Checked)
         return "Connected, tracking disabled";
-      else 
-        return "Connected and tracking";      
+      else
+        return "Connected and tracking";
     }
 
     private void ResetUi()
@@ -178,7 +183,7 @@ namespace SkyRoof
       }
 
       SatBearing = new Bearing(obs.Azimuth.Degrees, obs.Elevation.Degrees);
-      
+
       WasAboveHorizon = WasAboveHorizon || SatBearing.Elevation > 0;
       if (WasAboveHorizon && SatBearing.Elevation < -3) StopRotation();
 
@@ -198,7 +203,7 @@ namespace SkyRoof
     private void BearingToUi()
     {
       if (SatBearing == null) { ResetUi(); return; }
-        
+
       Color satColor = TrackCheckbox.Checked ? Color.Aqua : Color.Teal;
 
       bool trackError = TrackCheckbox.Checked && (!IsRunning() || AntBearing == null || AngleBetween(SatBearing, AntBearing!) > 1.5 * ctx.Settings.Rotator.StepSize);
@@ -231,6 +236,13 @@ namespace SkyRoof
         return Bearing.AzimuthDifference(bearing1, bearing2);
       else
         return Bearing.AngleBetween(bearing1, bearing2);
+    }
+
+    public void ToggleTracking()
+    {
+      if (!TrackCheckbox.Enabled) return;
+      TrackCheckbox.Checked = !TrackCheckbox.Checked;
+      TrackCheckbox_CheckedChanged(StopBtn, EventArgs.Empty);
     }
   }
 }

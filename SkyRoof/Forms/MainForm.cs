@@ -384,10 +384,10 @@ namespace SkyRoof
 
     private string OutputStreamTooltip()
     {
-      switch(ctx.Settings.OutputStream.Type)
+      switch (ctx.Settings.OutputStream.Type)
       {
         case DataStreamType.IqToVac:
-          return $"I/Q to { ctx.IqVacSoundcard.GetDisplayName()}";
+          return $"I/Q to {ctx.IqVacSoundcard.GetDisplayName()}";
         case DataStreamType.AudioToVac:
           return $"Audio to {ctx.AudioVacSoundcard.GetDisplayName()}";
         case DataStreamType.IqToUdp:
@@ -771,6 +771,9 @@ namespace SkyRoof
       else if (ctx.RotatorControl.IsRunning()) RotatorLedLabel.ForeColor = Color.Lime;
       else RotatorLedLabel.ForeColor = Color.Red;
 
+      EnableRotatorMNU.Checked = ctx.Settings.Rotator.Enabled;
+      TrackRotatorMNU.Checked = ctx.RotatorControl.TrackCheckbox.Checked;
+
       RotatorStatusLabel.ToolTipText = ctx.RotatorControl.GetStatusString();
     }
 
@@ -980,6 +983,11 @@ namespace SkyRoof
     private void UpdateLabel_Click(object sender, EventArgs e)
     {
       Process.Start(new ProcessStartInfo(ctx.Settings.LatestVersion.Url!) { UseShellExecute = true });
+    }
+
+    private void RotatorTrackMNU_CheckedChanged(object sender, EventArgs e)
+    {
+      RotatorControl.ToggleTracking();
     }
   }
 }
