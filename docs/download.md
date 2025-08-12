@@ -22,7 +22,7 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 #### v.1.18 Beta
 
 - fixed the Transmit button;
-- improved stability if CAT control;
+- improved stability of CAT control;
 - added a drop-down menu to Rotator on the status bar.
 
 #### v.1.17 Beta
