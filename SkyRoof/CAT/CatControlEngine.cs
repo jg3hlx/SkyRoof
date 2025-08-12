@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Serilog;
 using SkyRoof.Properties;
 using VE3NEA;
+using static SkyRoof.Slicer;
 
 namespace SkyRoof
 {
@@ -36,6 +37,8 @@ namespace SkyRoof
     public static RadioInfoList BuildRadioInfoList()
     {
       string path = Path.Combine(Utils.GetUserDataFolder(), "cat_info.json");
+
+      // temporary. default file changed, force overwrite
       //if (!File.Exists(path)) 
         File.WriteAllBytes(path, Resources.cat_info);
 
@@ -138,7 +141,7 @@ namespace SkyRoof
       if (NeedToReadRxFrequency()) TryReadRxFrequency();
       if (NeedToReadTxFrequency()) TryReadTxFrequency();
 
-      if (NeedToWriteRxFrequency()) TryWriteRxFrequency();
+      if (NeedToWriteRxFrequency()) TryWriteRxFrequency(RequestedRxFrequency);
       if (NeedToWriteTxFrequency()) TryWriteTxFrequency();
 
       if (NeedToWriteRxMode()) TryWriteRxMode();
@@ -188,11 +191,12 @@ namespace SkyRoof
       
       if (DialKnobSpinning)
       {
-        if (RequestedRxFrequency > 0 && IsDiff(RequestedRxFrequency, frequency))
+        // cancel previously requested frequency changes, they would undo the dial knob change
+        if (RequestedRxFrequency != NOT_ASSIGNED && IsDiff(RequestedRxFrequency, frequency))
           LogInfo($"Canceling pending RX frequency change ({RequestedRxFrequency}) due to manual change ({frequency})");
-
         RequestedRxFrequency = NOT_ASSIGNED;
         RequestedTxFrequency = NOT_ASSIGNED;
+
         OnRxFrequencyChanged();
       }
     }
@@ -221,9 +225,12 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.RxOnly:
-        case OperatingMode.Simplex:
           if (Ptt == false && HasCapability(Caps.read_main_frequency)) return Cmds.read_main_frequency!;
           if (Ptt == true && HasCapability(Caps.read_split_frequency)) return Cmds.read_split_frequency!;
+          break;
+
+        case OperatingMode.Simplex:
+          if (Ptt == false && HasCapability(Caps.read_main_frequency)) return Cmds.read_main_frequency!;
           break;
 
         // split or duplex
@@ -243,8 +250,11 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.TxOnly:
-        case OperatingMode.Simplex:
           if (Ptt == false && HasCapability(Caps.read_main_frequency)) return Cmds.read_main_frequency!;
+          if (Ptt == true && HasCapability(Caps.read_split_frequency)) return Cmds.read_split_frequency!;
+          break;
+
+        case OperatingMode.Simplex:
           if (Ptt == true && HasCapability(Caps.read_split_frequency)) return Cmds.read_split_frequency!;
           break;
 
@@ -271,10 +281,10 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                 write frequencies
     //----------------------------------------------------------------------------------------------
-    private void TryWriteRxFrequency()
+    private void TryWriteRxFrequency(long frequency)
     {
-      // another thread may change RequestedRxFrequency while we are writing, use a local copy
-      long frequency = RequestedRxFrequency;
+      if (frequency == NOT_ASSIGNED) return;
+
       string command = GetWriteRxFrequencyCommand(frequency);
       if (command == string.Empty) return;
 
@@ -304,9 +314,12 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.RxOnly:
-        case OperatingMode.Simplex:
           if (Ptt == false && HasCapability(Caps.set_main_frequency)) return Cmds.set_main_frequency!.Replace("{frequency}", $"{frequency}");
           if (Ptt == true && HasCapability(Caps.set_split_frequency)) return Cmds.set_split_frequency!.Replace("{frequency}", $"{frequency}");
+          break;
+
+        case OperatingMode.Simplex:
+          if (Ptt == false && HasCapability(Caps.set_main_frequency)) return Cmds.set_main_frequency!.Replace("{frequency}", $"{frequency}");
           break;
 
         default:
@@ -325,8 +338,11 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.TxOnly:
-        case OperatingMode.Simplex:
           if (Ptt == false && HasCapability(Caps.set_main_frequency)) return Cmds.set_main_frequency!.Replace("{frequency}", $"{frequency}");
+          if (Ptt == true && HasCapability(Caps.set_split_frequency)) return Cmds.set_split_frequency!.Replace("{frequency}", $"{frequency}");
+          break;
+
+        case OperatingMode.Simplex:
           if (Ptt == true && HasCapability(Caps.set_split_frequency)) return Cmds.set_split_frequency!.Replace("{frequency}", $"{frequency}");
           break;
 
@@ -344,8 +360,10 @@ namespace SkyRoof
     private void TryWriteTxFreqModeBeforePtt()
     {
       LogInfo("Writing TX frequency and mode before PTT ON");
-      TryWriteTxFrequency();
-      TryWriteTxMode();
+
+      // simplex mode: setting RX frequency, then switching to TX, and it becomes TX frequency
+      TryWriteRxFrequency(RequestedTxFrequency); 
+      TryWriteRxMode(RequestedTxMode);
     }
 
 
@@ -354,43 +372,45 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                       mode
     //----------------------------------------------------------------------------------------------
-    private void TryWriteRxMode()
+    private void TryWriteRxMode(Slicer.Mode? mode = null)
     {
-      string command = GetWriteRxModeCommand();
+      Mode newMode = (mode ?? RequestedRxMode!).Value;
+
+      string command = GetWriteRxModeCommand(newMode);
       if (command == string.Empty) return;
 
-      var mode = RequestedRxMode;
       bool ok = SendWriteCommand(command);
 
       if (!ok)
       {
-        RemoveDataFromMode(ref RequestedRxMode);
-        command = GetWriteRxModeCommand();
+        RemoveDataFromMode(ref newMode);
+        command = GetWriteRxModeCommand(newMode);
         SendWriteCommand(command);
       }
 
-      LastWrittenRxMode = mode;
+      LastWrittenRxMode = RequestedRxMode;
     }
 
     private void TryWriteTxMode()
     {
-      string command = GetWriteTxModeCommand();
+      Mode mode = RequestedTxMode!.Value;
+
+      string command = GetWriteTxModeCommand(mode);
       if (command == string.Empty) return;
 
-      var mode = RequestedTxMode;
       bool ok = SendWriteCommand(command);
 
       if (!ok)
       {
-        RemoveDataFromMode(ref RequestedTxMode);
-        command = GetWriteTxModeCommand();
+        RemoveDataFromMode(ref mode);
+        command = GetWriteTxModeCommand(mode);
         SendWriteCommand(command);
       }
 
       LastWrittenTxMode = mode;
     }
 
-    private string GetWriteRxModeCommand()
+    private string GetWriteRxModeCommand(Mode mode)
     {
       switch (CatMode)
       {
@@ -398,20 +418,23 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.RxOnly:
+          if (Ptt == false && HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{mode}");
+          if (Ptt == true && HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{mode}");
+          break;
+
         case OperatingMode.Simplex:
-          if (Ptt == false && HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{RequestedRxMode}");
-          if (Ptt == true && HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{RequestedRxMode}");
+          if (Ptt == false && HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{mode}");
           break;
 
         default:
-          if (HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{RequestedRxMode}");
+          if (HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{mode}");
           break;
       }
 
       return string.Empty;
     }
 
-    private string GetWriteTxModeCommand()
+    private string GetWriteTxModeCommand(Mode mode)
     {
       switch (CatMode)
       {
@@ -419,27 +442,30 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.TxOnly:
+          if (Ptt == false && HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{mode}");
+          if (Ptt == true && HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{mode}");
+          break;
+
         case OperatingMode.Simplex:
-          if (Ptt == false && HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{RequestedTxMode}");
-          if (Ptt == true && HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{RequestedTxMode}");
+          if (Ptt == true && HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{mode}");
           break;
 
         default:
-          if (HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{RequestedTxMode}");
+          if (HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{mode}");
           break;
       }
 
       return string.Empty;
     }
 
-    private void RemoveDataFromMode(ref Slicer.Mode? mode)
+    private void RemoveDataFromMode(ref Mode mode)
     {
-      mode = mode!.Value switch
+      mode = mode switch
       {
-        Slicer.Mode.USB_D => Slicer.Mode.USB,
-        Slicer.Mode.LSB_D => Slicer.Mode.LSB,
-        Slicer.Mode.FM_D => Slicer.Mode.FM,
-        _ => mode.Value
+        Mode.USB_D => Mode.USB,
+        Mode.LSB_D => Mode.LSB,
+        Mode.FM_D =>  Mode.FM,
+        _ => mode
       };
     }
 
@@ -482,6 +508,9 @@ namespace SkyRoof
       if (RequestedPtt == false && Cmds.set_ptt_off != null) SendWriteCommand(Cmds.set_ptt_off);
       else if (RequestedPtt == true && Cmds.set_ptt_on != null) SendWriteCommand(Cmds.set_ptt_on);
 
+      Ptt = RequestedPtt;
+      PttChanged = true;
+      if (Ptt == true) LastWrittenTxFrequency = NOT_ASSIGNED; else LastWrittenRxFrequency = NOT_ASSIGNED;
       RequestedPtt = null;
     }
 
@@ -514,8 +543,8 @@ namespace SkyRoof
       if (RequestedTxFrequency == NOT_ASSIGNED && !RequestedTxMode.HasValue) return false;
 
       // can write when transmitting
-      if (Caps.set_main_frequency.Contains("when_transmitting") && Caps.set_main_mode.Contains("when_transmitting"))
-        return false;
+      //if (Caps.set_main_frequency.Contains("when_transmitting") && Caps.set_main_mode.Contains("when_transmitting"))
+      //  return false;
 
       return true;
 
