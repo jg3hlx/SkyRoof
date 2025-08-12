@@ -4,10 +4,10 @@
 
 ### Current Version
 
-[SkyRoof v.1.17 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.17-beta/SkyRoofSetup-v.1.17-beta.zip)
+[SkyRoof v.1.18 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.18-beta/SkyRoofSetup-v.1.18-beta.zip)
 
 Anti-virus scan of the file above:
-[click here](https://www.virustotal.com/gui/url/acbe0090d0291ff3d5bdbe8a1b7c23426ca529a0aa65708214d5b9b3d18cec3b).
+[click here](https://www.virustotal.com/gui/url/9fd02a88ff41bea66ef893b8b50683d19442c4b5b4c45ee36e70c0d4717bc4a6).
 
 <br>
 
@@ -18,6 +18,12 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.18 Beta
+
+- fixed the Transmit button;
+- improved stability if CAT control;
+- added a drop-down menu to Rotator on the status bar.
 
 #### v.1.17 Beta
 
