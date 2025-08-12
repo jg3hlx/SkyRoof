@@ -75,8 +75,8 @@ namespace SkyRoof
       Satellites.Sanitize(true);
 
       var validRadioTypes = CatControlEngine.BuildRadioInfoList().Select(r => r.radio);
-      if (!validRadioTypes.Contains(Cat.RxCat.RadioType)) Cat.RxCat.RadioType = "Simplex transceiver";
-      if (!validRadioTypes.Contains(Cat.TxCat.RadioType)) Cat.TxCat.RadioType = "Simplex transceiver";
+      if (!validRadioTypes.Contains(Cat.RxCat.RadioType)) Cat.RxCat.RadioType = "Simplex";
+      if (!validRadioTypes.Contains(Cat.TxCat.RadioType)) Cat.TxCat.RadioType = "Simplex";
     }
   }
 }
