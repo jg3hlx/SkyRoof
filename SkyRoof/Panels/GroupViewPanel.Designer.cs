@@ -111,6 +111,7 @@
       imageList1.Images.SetKeyName(0, "checkmark.bmp");
       imageList1.Images.SetKeyName(1, "ok_small.png");
       imageList1.Images.SetKeyName(2, "xmark_small.png");
+      imageList1.Images.SetKeyName(3, "question_small.png");
       // 
       // GroupNameLabel
       // 
