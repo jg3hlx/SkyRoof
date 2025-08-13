@@ -18,7 +18,7 @@ namespace SkyRoof
   {
     [Description("Delay between the command cycles, ms")]
     [DefaultValue(100)]
-    public int Delay { get; set; } = 100;
+    public int Delay { get; set; } = 500;
 
     [DisplayName("Log Traffic")]
     [Description("Log command traffic for debugging")]
