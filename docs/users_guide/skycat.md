@@ -1,11 +1,11 @@
-# SkyCAT
+# SkyCAT  v.1.3
 
 > [!Note]
-> The documentation for SkyCAT is under development, these are just the notes for the beta testers.
+> The documentation for SkyCAT is under development, these are just some notes for the beta testers.
 
 ## Overview
 
-SkyCAT is a new CAT control engine, open source and multi-platform. It is available as a .NET assembly that developers can include in their software, and also as a command-line program that accepts commands, compatible with **rigctld.exe**, via a TCP connection.
+SkyCAT is a new CAT control engine, open source and multi-platform. It is available as a .NET assembly that developers can include in their software, and also as a command-line program that accepts TCP commands compatible with **rigctld.exe**.
 
 ## Supported Radios
 
@@ -19,9 +19,14 @@ This is the very first version of SkyCAT, it includes the command set files only
 
 Once the software is fully tested, the files for other radios will be added. Moreover, the users will be able to create their own files, just as in OmniRig.
 
+Quick tests have been performed by the beta testers with all radio models except FT-817. Please help me by testing SkyCAT with 817/818.
+
+Detailed tests, as described below in the **What to Test** section, still need to be performed with all radios. Again, I rely on you and other users for this since I do not have all those radios and cannot do the tests myself. Please help me with this if you can.
+
+
 ## Running skycatd.exe
 
-Download: [skycat.zip](http://www.dxatlas.com/other/skycat.zip)
+Download: [skycat.zip](http://www.dxatlas.com/other/skycat_1.3.zip)
 
 There is no installer, just unzip all files in some folder.
 
@@ -70,7 +75,7 @@ Please test SkyCAT with SkyRoof first. Later you can try it with other programs,
 In the Settings dialog of SkyRoof, under CAT Control:
 
 - **Ignore Dial Knob**: set to false;
-- **Delay**: initially set to 300-1000 ms: with the default value of 100 ms it writes too many entries to the log. When you proceed to testing the dial knob, set it back to 100 ms for faster response (or somewhat longer if your radio cannot keep the pace);
+- **Delay**: initially set to 300-1000 ms: with the default value of 100 ms it writes too many entries to the log. When you proceed to testing the dial knob, set it back to 100 ms for faster response (or longer than that if your radio cannot keep the pace);
 - **Radio Type**: set to Duplex for IC-9700 and FT-847, and to Simplex for all other radios - both in the  RX and TX sections;
 - **Host**: if you are running skycatd on another computer, enter the Host name or IP address of that computer.
 
@@ -82,11 +87,12 @@ Turn on the radio, run skycatd.exe, run SkyRoof - in any order.
   - RX CAT and TX CAT enabled;
   - only TX enabled;
   - only RX enabled.
+
 - test with different satellite transmitters:
   - SSB transponder;
   - FM repeater;
   - Digital (e.g., SONATE), where the uplink and downlink frequencies are on the same band;
-  - Telemetry or Beacon, with only a downlink frequency;
+  - Telemetry or Beacon that has only a downlink frequency;
   - switch between the V/U and U/V satellites to see if the band change works.
 
   Note that you do not have to wait for the satellite to rise, Doppler tracking works even if the satellite is not visible
@@ -105,14 +111,8 @@ Turn on the radio, run skycatd.exe, run SkyRoof - in any order.
 
 ### Limitations
 
-The command set file for IC-9700 was thoroughly tested and is supposed to work out of the box, but please test anyway.
-
-IC-705 and IC-905 were not tested but are likely to work since their commands are similar to those of 9700.
-
-FT-847 and FT-817 files may require some effort to make them work as expected.
-
 > [!Note]
-> Many radios cannot write or even read the frequency and mode, or at last change the band, when transmitting.  This poses a problem in the Simplex mode because in this mode the software is responsible for writing the RX and TX frequency/mode to the radio when it switches from RX to TX and back. However, once the radio is in the TX mode, it is too late to set any parameters. If you see that your transceiver does not switch to the TX frequency when you press PTT in the radio, see if it works when you switch PTT using the Transmit button in SkyRoof, in this case the program has a chance to  write the settings before the radio goes to the transmission mode.
+> Many radios cannot write or even read the frequency and mode, or at least change the band, when transmitting.  This poses a problem in the Simplex mode because in this mode the software is responsible for writing the RX and TX frequency/mode to the radio when it switches from RX to TX and back. However, once the radio is in the TX mode, it is too late to set any parameters. If you see that your transceiver does not switch to the TX frequency when you press PTT in the radio, see if it works when you switch PTT using the Transmit button in SkyRoof, in this case the program has a chance to  write the settings before the radio goes to the transmit mode.
 
 ## Reporting The Results
 
@@ -135,7 +135,7 @@ See the [rigctld documentation](https://hamlib.sourceforge.net/html/rigctld.1.ht
 
 ### Operating Modes
 
-Many radios have different CAT commands for the same operation, depending on the operating mode of the radio. An example is the Set Frequency command that is usually different in the SAT and VFO modes. Existing CAT software often uses wrong commands because it does not know the current operating mode. SatCAT sets this mode explicitly so it knows which commands to use. The **-U** command is used to set up the radio in one of its operating modes:
+Many radios have different CAT commands for the same operation, depending on the operating mode of the radio. An example is the Set Frequency command that is usually different in the SAT and VFO modes. Existing CAT software often uses wrong commands because it does not know the current operating mode. SatCAT sets this mode explicitly, so it knows which commands to use. The **-U** command is used to set up the radio in one of its operating modes:
 
 - -U Duplex
 - -U Split
