@@ -38,6 +38,8 @@ Right-click on a satellite name to open the popup menu with these commands:
 
 - **Satellite Details** - opens the [Satellite Details window](satellite_details_window.md)
 
+The frequency scale does not show all satellites at all times, only those that are currently available at your location. The satellite labels appear about 5 minutes before the AOS, and stay for a while after LOS, so that the existing signal traces could be identified, but then they disappear. This also applies to the linear satellites and their transponder segments. When the segment is not visible, you cannot tune within it using the mouse controls. The operator tunes in the transponder segment to tune to some station, or to find a clear space to send CQ. If the satellite is below the horizon, this, of course, cannot be done, and if you are still using the tuning commands, the program assumes that you are trying to do something else, e.g., tune to a terrestrial signal.
+
 ## SDR Receiver
 
 The passband of the SDR receiver is shown on the frequency scale as a green rectangle.
