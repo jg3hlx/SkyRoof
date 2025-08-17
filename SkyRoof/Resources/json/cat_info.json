@@ -101,6 +101,31 @@
     }
   },
   {
+    "radio": "IC-706MKIIG",
+    "capabilities": {
+      "read_main_frequency": [ "when_transmitting", "when_receiving" ],
+      "read_split_frequency": null,
+      "set_main_frequency": [ "when_transmitting", "when_receiving" ],
+      "set_split_frequency": null,
+      "set_main_mode": [ "when_transmitting", "when_receiving" ],
+      "set_split_mode": null
+    },
+    "commands": {
+      "setup_duplex": null,
+      "setup_split": null,,
+      "setup_simplex": [ "S 0 VFOA" ],
+      "read_main_frequency": "f",
+      "read_split_frequency": null,
+      "set_main_frequency": "F {frequency}",
+      "set_split_frequency": null,
+      "set_main_mode": "M {mode} 0",
+      "set_split_mode": null,
+      "read_ptt": null,
+      "set_ptt_on": null,
+      "set_ptt_off": null
+    }
+  },
+  {
     "radio": "Split",
     "capabilities": {
       "read_main_frequency": [ "when_transmitting", "when_receiving" ],
