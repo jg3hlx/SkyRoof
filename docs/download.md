@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.18 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.18-beta/SkyRoofSetup-v.1.18-beta.zip)
+[SkyRoof v.1.19 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.19-beta/SkyRoofSetup-v.1.19-beta.zip)
 
 Anti-virus scan of the file above:
 [click here](https://www.virustotal.com/gui/url/9fd02a88ff41bea66ef893b8b50683d19442c4b5b4c45ee36e70c0d4717bc4a6).
@@ -18,6 +18,10 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.19 Beta
+
+- fixed a number of glitches in the CAT control.
 
 #### v.1.18 Beta
 
