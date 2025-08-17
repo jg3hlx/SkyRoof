@@ -16,7 +16,8 @@ namespace SkyRoof
 
   public class CatSettings : IControlEngineSettings
   {
-    [Description("Delay between the command cycles, ms")]
+    [Description("Delay between the command cycles")]
+    [DisplayName("Delay (ms)")]
     [DefaultValue(100)]
     public int Delay { get; set; } = 500;
 
@@ -29,6 +30,11 @@ namespace SkyRoof
     [DisplayName("Ignore Dial Knob")]
     [Description("Tune only from the software")]
     public bool IgnoreDialKnob { get; set; } = false;
+
+    [DefaultValue(10)]
+    [DisplayName("Tuning Step (Hz)")]
+    [Description("The frequencies sent to the radio will be rounded to this step.")]
+    public int TuningStep { get; set; } = 10;
 
     [DisplayName("RX CAT")]
     [Description("RX CAT Control via rigctld.exe")]
@@ -60,8 +66,8 @@ namespace SkyRoof
     [TypeConverter(typeof(RadioModelConverter))]
     [DisplayName("Radio Type")]
     [Description("Defines the capabilities of the radio")]
-    [DefaultValue("Duplex transceiver")]
-    public string RadioType { get; set; } = "Duplex transceiver";
+    [DefaultValue("Simplex")]
+    public string RadioType { get; set; } = "Simplex";
 
     [DisplayName("Show Corrected Frequency")]
     [Description("Show the frequency with all corrections (True) or the nominal frequency (False)")]

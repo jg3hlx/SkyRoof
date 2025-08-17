@@ -16,6 +16,8 @@ namespace SkyRoof
     const long NOT_ASSIGNED = 0;
 
     private readonly RadioInfo RadioInfo;
+    private readonly int TuningStep;
+
     private Capabilities Caps => RadioInfo.capabilities;
     private Commands Cmds => RadioInfo.commands;
 
@@ -38,16 +40,26 @@ namespace SkyRoof
     {
       string path = Path.Combine(Utils.GetUserDataFolder(), "cat_info.json");
 
-      // temporary. default file changed, force overwrite
-      //if (!File.Exists(path)) 
-        File.WriteAllBytes(path, Resources.cat_info);
+      if (!File.Exists(path)) File.WriteAllBytes(path, Resources.cat_info);
+      var result = JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
 
-      return JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
+      // overwrite if outdated (does not have 847)
+      if (!result.Any(r => r.radio == "FT-847"))
+      {
+        File.WriteAllBytes(path, Resources.cat_info);
+        result = JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
+      }
+
+      return result;
     }
 
     public CatControlEngine(CatRadioSettings radioSettings, CatSettings catSettings) : base(radioSettings.Host, radioSettings.Port, catSettings)
     {
-      RadioInfo = BuildRadioInfoList().First(r => r.radio == radioSettings.RadioType);
+      RadioInfo = 
+        BuildRadioInfoList().FirstOrDefault(r => r.radio == radioSettings.RadioType) ??
+        BuildRadioInfoList().First(r => r.radio == "Simplex");
+
+      TuningStep = catSettings.TuningStep;
     }
 
 
@@ -64,7 +76,7 @@ namespace SkyRoof
     // some radios use 10 Hz steps and some don't, round frequency to the tuning step
     private long RoundTo10(double freq)
     {
-      int step = RadioInfo.tuning_step_hz;
+      int step = TuningStep;
       return step * (long)Math.Truncate(freq / step);
     }
 
@@ -80,7 +92,7 @@ namespace SkyRoof
       if (rx && !tx) CatMode = OperatingMode.RxOnly;
       else if (!rx && tx) CatMode = OperatingMode.TxOnly;
       else if (crossband && Cmds.setup_duplex != null) CatMode = OperatingMode.Duplex;
-      else if (Cmds.setup_split != null) CatMode = OperatingMode.Split;
+      else if (!crossband && Cmds.setup_split != null) CatMode = OperatingMode.Split;
       else CatMode = OperatingMode.Simplex;
 
       StartThread();
@@ -407,7 +419,7 @@ namespace SkyRoof
         SendWriteCommand(command);
       }
 
-      LastWrittenTxMode = mode;
+      LastWrittenTxMode = RequestedTxMode!;
     }
 
     private string GetWriteRxModeCommand(Mode mode)
@@ -541,10 +553,6 @@ namespace SkyRoof
 
       // nothing to write
       if (RequestedTxFrequency == NOT_ASSIGNED && !RequestedTxMode.HasValue) return false;
-
-      // can write when transmitting
-      //if (Caps.set_main_frequency.Contains("when_transmitting") && Caps.set_main_mode.Contains("when_transmitting"))
-      //  return false;
 
       return true;
 

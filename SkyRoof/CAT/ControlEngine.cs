@@ -110,7 +110,9 @@ namespace SkyRoof
 
       try
       {
+        Log.Information($"Connecting to {Host}:{Port}");
         TcpClient!.Connect(Host, Port);
+        Log.Information($"Connected to {Host}:{Port}");
         return true;
       }
       catch (SocketException ex)
@@ -126,9 +128,25 @@ namespace SkyRoof
 
     protected void Disconnect()
     {
-      TcpClient?.Close();
-      TcpClient?.Dispose();
-      TcpClient = null;
+      try
+      {
+        if (TcpClient != null)
+        {
+          Log.Information($"Disconnecting from {Host}:{Port}");
+          if (TcpClient.Connected) TcpClient.Client.Shutdown(SocketShutdown.Both);
+          TcpClient.Close();
+          Log.Information($"Disconnected from {Host}:{Port}");
+        }
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, $"Error while disconnecting from {Host}:{Port}");
+      }
+      finally
+      {
+        TcpClient?.Dispose(); // Ensure resources are released
+        TcpClient = null; // Reset the TcpClient reference
+      }
     }
 
 

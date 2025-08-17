@@ -238,14 +238,14 @@ namespace SkyRoof
       treeView1.Nodes.Remove(e.Node);
     }
 
-    // if right-clicked on an unselected node, select it
     private void treeView1_MouseDown(object sender, MouseEventArgs e)
     {
+      // if right-clicked on an unselected node, select it
       treeView1.SelectedNode = treeView1.HitTest(e.X, e.Y).Node;
-      
-      //{!} for debugging
-      if (treeView1.SelectedNode != null && treeView1.SelectedNode.Level > 0) 
-        Announcer.SaySatName(((SatnogsDbSatellite)treeView1.SelectedNode.Tag).name);
+
+      // announce sat name
+      //if (treeView1.SelectedNode != null && treeView1.SelectedNode.Level > 0)
+      //  Announcer.SaySatName(((SatnogsDbSatellite)treeView1.SelectedNode.Tag).name);
     }
 
     // sat or group rename finished

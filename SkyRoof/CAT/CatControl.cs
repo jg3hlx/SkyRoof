@@ -47,19 +47,22 @@
       ctx.MainForm.ShowCatStatus();
     }
 
-    private bool IsSameEngine(CatRadioSettings txCat, CatRadioSettings rxCat)
+    private static bool IsSameEngine(CatRadioSettings txCat, CatRadioSettings rxCat)
     {
       return rxCat.Enabled 
         && txCat.Enabled 
-        && IsSameHost(rxCat.Host, txCat.Host) 
-        && rxCat.Port == txCat.Port 
+        && IsSameHostPort(rxCat, txCat) 
         && rxCat.RadioType == txCat.RadioType;
     }
 
-    private bool IsSameHost(string host1, string host2)
+    public static bool IsSameHostPort(CatRadioSettings txCat, CatRadioSettings rxCat)
     {
-      if (string.IsNullOrEmpty(host1) || string.IsNullOrEmpty(host2))
+      if (rxCat.Port != txCat.Port) return false;
+      if (string.IsNullOrEmpty(rxCat.Host) || string.IsNullOrEmpty(txCat.Host))
         return false;
+
+      string host1 = rxCat.Host;
+      string host2 = txCat.Host;
 
       if (host1 == "127.0.0.1") host1 = "localhost";
       if (host2 == "127.0.0.1") host2 = "localhost";
