@@ -112,7 +112,7 @@
     },
     "commands": {
       "setup_duplex": null,
-      "setup_split": null,,
+      "setup_split": null,
       "setup_simplex": [ "S 0 VFOA" ],
       "read_main_frequency": "f",
       "read_split_frequency": null,
