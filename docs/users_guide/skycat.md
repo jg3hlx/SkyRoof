@@ -1,4 +1,4 @@
-# SkyCAT  v.1.3
+# SkyCAT  v.1.4
 
 > [!Note]
 > The documentation for SkyCAT is under development, these are just some notes for the beta testers.
@@ -14,8 +14,10 @@ This is the very first version of SkyCAT, it includes the command set files only
 - IC-9700
 - IC-705
 - IC-905
+- IC-706MKIIG
 - FT-847
 - FT-817
+- TS-2000
 
 Once the software is fully tested, the files for other radios will be added. Moreover, the users will be able to create their own files, just as in OmniRig.
 
@@ -23,10 +25,9 @@ Quick tests have been performed by the beta testers with all radio models except
 
 Detailed tests, as described below in the **What to Test** section, still need to be performed with all radios. Again, I rely on you and other users for this since I do not have all those radios and cannot do the tests myself. Please help me with this if you can.
 
-
 ## Running skycatd.exe
 
-Download: [skycat.zip](http://www.dxatlas.com/other/skycat_1.3.zip)
+Download: [skycat.zip](http://www.dxatlas.com/other/skycat_1.4.zip)
 
 There is no installer, just unzip all files in some folder.
 
