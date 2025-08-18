@@ -16,10 +16,6 @@ namespace SkyRoof
           ApplicationConfiguration.Initialize();
           Application.Run(new MainForm());
         }
-        catch (Exception ex)
-        {
-          Log.Fatal(ex, "Application terminated unexpectedly");
-        }
         finally
         {
           Log.Information("Stopping SkyRoof\r\n-----------------------\r\n");

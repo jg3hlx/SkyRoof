@@ -8,6 +8,7 @@ namespace VE3NEA
   public class ExceptionLogger
   {
     private static NativeSoapySdr.SoapySDRLogHandlerDelegate LogHandlerDelegate = new(SoapySdrLogHandler);
+    private static int MainThreadId;
 
     public static void Initialize()
     {
@@ -20,19 +21,32 @@ namespace VE3NEA
             shared: true
            ).CreateLogger();
 
+
+      // handle exceptions in UI thread
       Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-      AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 
-      Log.Information($"Starting {typeof(Utils).Assembly.GetName().FullName}");
+      // handle exceptions in non-UI threads
+      MainThreadId = Environment.CurrentManagedThreadId;
+      AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+      
+      // Handle exceptions in async/await code
+      TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
+      // handle exceptions in SoapySDR
       NativeSoapySdr.SoapySDR_registerLogHandler(LogHandlerDelegate);
+
+      Log.Information($"Starting {typeof(Utils).Assembly.GetName().FullName}");
     }
 
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
       var exception = e.ExceptionObject as Exception;
       Log.Error(exception, "Worker thread exception occurred:");
+
+      // show dialog if not in the message loop but still on the main UI thread,
+      // e.g., in the main form's constructor
+      if (Environment.CurrentManagedThreadId == MainThreadId) ShowDialog(exception, false);
     }
 
     private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
@@ -41,11 +55,22 @@ namespace VE3NEA
       if (ShowDialog(e.Exception) == DialogResult.Abort) Application.Exit();
     }
 
-    private static DialogResult ShowDialog(Exception e)
+    private static void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
     {
-      string errorMessage = $"Exception: {e.Message}\nModule: {e.Source} \nFunction: {e.TargetSite}";
-      return MessageBox.Show(errorMessage, AppDomain.CurrentDomain.FriendlyName, MessageBoxButtons.AbortRetryIgnore,
+        Log.Error(e.Exception, "Async task exception occurred:");
+        e.SetObserved(); // Prevents the process from terminating
+    }
+
+    private static DialogResult ShowDialog(Exception? e, bool allowContinue = true)
+    {
+      string errorMessage = $"Exception: {e?.Message ?? e?.ToString()}\nModule: {e.Source} \nFunction: {e.TargetSite}";
+
+      if (allowContinue)
+        return MessageBox.Show(errorMessage, AppDomain.CurrentDomain.FriendlyName, MessageBoxButtons.AbortRetryIgnore,
           MessageBoxIcon.Stop);
+
+      MessageBox.Show(errorMessage, AppDomain.CurrentDomain.FriendlyName, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+      return DialogResult.OK;
     }
 
     internal static void CheckOpenglError(OpenGL gl, bool log = true)
