@@ -1,5 +1,6 @@
 ﻿using System.Speech.Synthesis;
 using System.Text.RegularExpressions;
+using Serilog;
 using VE3NEA;
 
 namespace SkyRoof
@@ -24,7 +25,16 @@ namespace SkyRoof
     public Announcer() {
       Synth = new SpeechSynthesizer();
       Synth.SetOutputToDefaultAudioDevice();
-      SpeechApiReflectionHelper.InjectOneCoreVoices(Synth);
+
+      try
+      {
+        SpeechApiReflectionHelper.InjectOneCoreVoices(Synth);
+      }
+      catch (Exception ex)
+      {
+        Log.Warning(ex, "Failed to load extra voices for speech syntheizer");
+      }
+
       Voices = Synth.GetInstalledVoices().ToArray();
     }
 
