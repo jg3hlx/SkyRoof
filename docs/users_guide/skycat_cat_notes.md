@@ -20,3 +20,8 @@ The only way to learn the actual behavior of the CAT system is by experimentatio
 - **"F7"** - the TX status returned by this command has a PTT on/off flag in its 7-th bit. This is stated in the docs, but the values used for ON and OFF are not documented. It turns out that the logic is inverted here, 0 means ON and 1 means OFF;
 
 - this radio returns a 1-byte reply to the Set commands, but this is not documented. The returned values are different, but it is not clear what they mean.
+
+## IC-706MKIIG
+
+- supports split operation but the only way to change the TX frequency is by swapping the VFO's - useless for SAT work";
+- does not have commands to read or set PTT.
