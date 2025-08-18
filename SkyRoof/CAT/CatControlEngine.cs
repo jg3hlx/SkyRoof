@@ -24,7 +24,7 @@ namespace SkyRoof
     public OperatingMode CatMode;
     private readonly bool IgnoreDialKnob;
 
-    public bool? Ptt { get; private set; } = null;
+    public bool? Ptt { get; private set; } = false;
     private bool PttChanged = false;
 
     public long RequestedRxFrequency, LastWrittenRxFrequency, LastReadRxFrequency;
@@ -39,12 +39,18 @@ namespace SkyRoof
     public static RadioInfoList BuildRadioInfoList()
     {
       string path = Path.Combine(Utils.GetUserDataFolder(), "cat_info.json");
-
       if (!File.Exists(path)) File.WriteAllBytes(path, Resources.cat_info);
-      var result = JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
 
-      // overwrite if outdated (does not have 847)
-      if (!result.Any(r => r.radio == "FT-847"))
+      RadioInfoList result = [];
+      try
+      {
+        result = JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
+      }
+      catch { }
+
+      // if cat_info file is corrupt, or "Simplex" radio is present, or version is outdated
+      var version = result.FirstOrDefault(r => r.radio == "Simplex")?.version;
+      if (version == null || version < 1)
       {
         File.WriteAllBytes(path, Resources.cat_info);
         result = JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;

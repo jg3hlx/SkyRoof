@@ -133,11 +133,18 @@ namespace SkyRoof
     private void VadidateCat(PropertyValueChangedEventArgs e)
     {
       var cat = (grid.SelectedObject as Settings)!.Cat;
-      if (CatControl.IsSameHostPort(cat.RxCat, cat.TxCat) && cat.RxCat.RadioType != cat.TxCat.RadioType)
+      if (!CatControl.IsSameHostPort(cat.RxCat, cat.TxCat)) return;
+
+      if (cat.RxCat.RadioType != cat.TxCat.RadioType)
       {
-        e.ChangedItem!.PropertyDescriptor!.SetValue(e.ChangedItem.Parent!.Value, e.OldValue);
-        MessageBox.Show("RX CAT and TX CAT cannot have the same host and port but different RadioType.",
-          "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        if (e.ChangedItem?.Value?.ToString() == cat.TxCat.RadioType) 
+          cat.RxCat.RadioType = cat.TxCat.RadioType;
+        else 
+          cat.TxCat.RadioType = cat.RxCat.RadioType;
+
+        MessageBox.Show("RX CAT and TX CAT have the same host and port number. Making RadioTypes the same as well.",
+          "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
         return;
       }
     }

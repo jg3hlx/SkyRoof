@@ -28,6 +28,7 @@
   
   public class RadioInfo
   {
+    public int version { get; set; } = 0;
     public string radio { get; set; } = "";
     public Capabilities capabilities { get; set; } = new();
     public Commands commands { get; set; } = new();
