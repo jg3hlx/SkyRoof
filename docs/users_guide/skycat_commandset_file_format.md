@@ -93,7 +93,7 @@ The commands in the command set are represented with objects of the following st
 
 - **messages** - an array of messages to send to the radio. A single command may require multiple messages to be sent. For example, the Split mode in FT-991 is enabled by sending two messages, `FR0;` and `FT1;`.
 
-- **alt_messages** - an alternative array of messages that should be used if the **messages** return an error. For example, IC-9700 in the SAT mode returns an error if the frequency of the Main receiver is set to the same band as the Sub receiver. When this happens, the solution is to swap the Main and Sub VFO's and set the frequency again;
+- **alt_messages** - an alternative array of messages that will be used if the **messages** return an error. For example, IC-9700 in the SAT mode returns an error if the frequency of the Main receiver is set to the same band as the Sub receiver. When this happens, the solution is to swap the Main and Sub VFO's and set the frequency again;
 
 - **restriction** - optional. Include this field if the radio accepts the given command only in one of the modes:
   - **when_receiving**;
@@ -115,7 +115,7 @@ The messages in the **messages** and **alt_messages** arrays are the objects wit
 }
 ```
 
-- **comment** - optional, a short command description that will appear in the log for convenience;
+- **comment** - optional, a short description that will appear in the log for convenience;
 - **command** - required. The sequence of bytes that will be sent to the radio;
 - **command_param** - only for the Write commands;
 - **reply** - the sequence of bytes expected from the radio in reply to the command message. May be null if the radio does not reply to the given message;
@@ -128,7 +128,7 @@ The sequence of bytes is represented with  an array of strings, were each string
 [hex code](https://learn.sparkfun.com/tutorials/hexadecimal/all)
 of the byte. Some bytes may have `null` values:
 
-- in the Write commands the nulls indicate the bytes that will be replaced with the value of the parameter being written. For example, the Set Mode command, "MDn;", in TS-2000 is stored as
+- in the Write commands the nulls indicate the bytes that will be replaced with the value of the parameter being written. For example, the Set Mode command of TS-2000,"MDn;", is stored as
 
   ```json
   "command": ["4D", "44", null, "3B"],
@@ -167,16 +167,16 @@ The **command_param** and **reply_param** objects describe the parameter that is
 
   - **text** - numerical value as a sequence of [ASCII](https://www.ascii-code.com/) character codes. Example: frequency in the TS-2000 commands;
 
-  - **enum** - a parameter that can take only one of the pre-defined values, such as mode or ON/OFF setting.
+  - **enum** - a parameter that can take only one of several pre-defined values, such as mode or ON/OFF setting.
 
 - **step** - optional, defaults to 1. The steps in which a numerical value is expressed. Example: if step = 10, the frequency is specified in 10-Hz steps, so that 43000001 represents 430,000,010 Hz;
 
 - **start** and **length** - optional. If the reply field contains more nulls than needed to represent the parameter, these settings are used to specify which bytes contain the parameter value;
 
-- **mask** - only in the reply params, optional. The bitwise AND operation is performed on the mask and the bytes that contain the parameter, to remove the bits that may take any value. Example: the Read PTT command of FT-817 returns one byte. The 7-th bit of the byte contains the TX/RX flag, the rest of the bits contain some other parameters. `"Mask": [ "80 ]` clears irrelevant bits and leaves only the one of interest;
+- **mask** - only in the reply params, optional. The bitwise AND operation is performed on the mask and the bytes that contain the parameter, to remove the bits that may take any value. Example: the Read PTT command of FT-817 returns one byte. The 7-th bit of the byte contains the TX/RX flag, the rest of the bits contain some other parameters. `"Mask": [ "80" ]` clears irrelevant bits and leaves only the one of interest;
 
 - **values** - is present if, and only if, the parameter format is **enum**. It contains the list of pre-defined values and the byte sequences that represent them. Example:
 
   ```
-  "values": { "LSB": [ "00" ], "USB": [ "01" ], "CW": [ "03" ] }
+  "values": { "LSB": [ "00" ], "USB": [ "01" ], "CW": [ "03" ], "FM": [ "04" ] }
   ```
