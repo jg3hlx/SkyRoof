@@ -249,6 +249,7 @@ namespace SkyRoof
     private QsoInfo FieldsToQsoInfo(bool onlyEdited = false)
     {
       QsoInfo info = new();
+      info.StationCallsign = ctx.Settings.User.Call;
 
       if (onlyEdited)
       {

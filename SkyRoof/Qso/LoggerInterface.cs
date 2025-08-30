@@ -6,6 +6,7 @@ namespace SkyRoof
 {
   public class QsoInfo
   {
+    public string StationCallsign { get; set; } = string.Empty;
     public DateTime Utc { get; set; } = DateTime.UtcNow;
     public string Call { get; set; } = string.Empty;
     public string Band { get; set; } = string.Empty;
@@ -27,6 +28,7 @@ namespace SkyRoof
     internal AdifEntry ToAdifEntry()
     {
       AdifEntry entry = new() {
+        ["STATION_CALLSIGN"] = StationCallsign,
         ["QSO_DATE"] = Utc.ToString("yyyyMMdd"),
         ["TIME_ON"] = Utc.ToString("HHmmss"),
         ["CALL"] = Call,
