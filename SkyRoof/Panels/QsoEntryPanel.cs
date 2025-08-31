@@ -250,6 +250,7 @@ namespace SkyRoof
     {
       QsoInfo info = new();
       info.StationCallsign = ctx.Settings.User.Call;
+      info.MyuGridSquare = ctx.Settings.User.Square;
 
       if (onlyEdited)
       {
