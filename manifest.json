@@ -884,11 +884,11 @@
       "type": "Toc",
       "source_relative_path": "toc.yml",
       "output": {
-        ".html": {
-          "relative_path": "toc.html"
-        },
         ".json": {
           "relative_path": "toc.json"
+        },
+        ".html": {
+          "relative_path": "toc.html"
         }
       },
       "version": ""
@@ -1275,6 +1275,16 @@
     },
     {
       "type": "Conceptual",
+      "source_relative_path": "users_guide/skycat_commandset_file_format.md",
+      "output": {
+        ".html": {
+          "relative_path": "users_guide/skycat_commandset_file_format.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
       "source_relative_path": "users_guide/system_requirements.md",
       "output": {
         ".html": {
@@ -1297,11 +1307,11 @@
       "type": "Toc",
       "source_relative_path": "users_guide/toc.yml",
       "output": {
-        ".html": {
-          "relative_path": "users_guide/toc.html"
-        },
         ".json": {
           "relative_path": "users_guide/toc.json"
+        },
+        ".html": {
+          "relative_path": "users_guide/toc.html"
         }
       },
       "version": ""
