@@ -12,7 +12,8 @@ namespace VE3NEA
 
     public static void Initialize()
     {
-      string fileName = Path.Combine(Utils.GetUserDataFolder(), "Logs", "log_.txt");
+      string appName = AppDomain.CurrentDomain.FriendlyName ?? "log";
+      string fileName = Path.Combine(Utils.GetUserDataFolder(), "Logs", $"{appName}_.txt");
       Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
           .WriteTo.File(fileName, 
             rollingInterval: RollingInterval.Day, 

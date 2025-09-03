@@ -70,7 +70,7 @@ namespace SkyRoof
 
   public class SatelliteDetailsFormSettings
   {
-  public Size Size { get; set; }
+    public Size Size { get; set; }
     public int SplitterDistance { get; set; } = -1;
   }
 

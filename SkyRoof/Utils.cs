@@ -148,5 +148,25 @@ namespace VE3NEA
       s = HttpUtility.HtmlDecode(s);
       return s;
     }
+
+    public static void EnsureFormVisible(Form form)
+    {
+      Rectangle formBounds = form.Bounds;
+
+      // check if the form is visible on any connected screen
+      bool isVisible = Screen.AllScreens.Any(s => s.WorkingArea.IntersectsWith(formBounds));
+      if (isVisible) return;
+
+      var primaryArea = Screen.PrimaryScreen!.WorkingArea;
+
+      int newWidth = Math.Min(form.Width, primaryArea.Width);
+      int newHeight = Math.Min(form.Height, primaryArea.Height);
+
+      int newX = primaryArea.Left + (primaryArea.Width - newWidth) / 2;
+      int newY = primaryArea.Top + (primaryArea.Height - newHeight) / 2;
+
+      form.StartPosition = FormStartPosition.Manual;
+      form.SetBounds(newX, newY, newWidth, newHeight);
+    }
   }
 }

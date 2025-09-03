@@ -20,7 +20,7 @@ namespace SkyRoof
 
     protected void ListRadioModels()
     {
-      RadioModels ??= CatControlEngine.BuildRadioInfoList().Select(e => e.radio).ToArray();
+      RadioModels ??= CatControlEngine.BuildRadioCapabilitiesList().Select(e => e.model).ToArray();
     }
 
     // to object

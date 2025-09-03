@@ -1,11 +1,7 @@
-﻿using System.Diagnostics.Eventing.Reader;
-using System.Globalization;
-using System.Speech.Recognition;
-using Newtonsoft.Json;
+﻿using System.Globalization;
 using Serilog;
 using SkyRoof.Properties;
 using VE3NEA;
-using static SkyRoof.Slicer;
 
 namespace SkyRoof
 {
@@ -15,18 +11,17 @@ namespace SkyRoof
   {
     const long NOT_ASSIGNED = 0;
 
-    private readonly RadioInfo RadioInfo;
+    private string RadioType;
+    private bool rx, tx, crossband;
+    private OperatingMode CatMode;
+    private RadioCapabilities RadioCapabilities;
+    private AvailableCommands Caps;
     private readonly int TuningStep;
-
-    private Capabilities Caps => RadioInfo.capabilities;
-    private Commands Cmds => RadioInfo.commands;
-
-    public OperatingMode CatMode;
     private readonly bool IgnoreDialKnob;
 
-    public bool? Ptt { get; private set; } = false;
+    public bool Ptt { get; private set; } = false;
     private bool PttChanged = false;
-
+    private bool DialKnobSpinning = false;
     public long RequestedRxFrequency, LastWrittenRxFrequency, LastReadRxFrequency;
     public long RequestedTxFrequency, LastWrittenTxFrequency, LastReadTxFrequency;
     private Slicer.Mode? RequestedRxMode, LastWrittenRxMode;      
@@ -36,38 +31,29 @@ namespace SkyRoof
     public event EventHandler? RxTuned;
     public event EventHandler? TxTuned;
 
-    public static RadioInfoList BuildRadioInfoList()
-    {
-      string path = Path.Combine(Utils.GetUserDataFolder(), "cat_info.json");
-      if (!File.Exists(path)) File.WriteAllBytes(path, Resources.cat_info);
-
-      RadioInfoList result = [];
-      try
-      {
-        result = JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
-      }
-      catch { }
-
-      // if cat_info file is corrupt, or "Simplex" radio is present, or version is outdated
-      var version = result.FirstOrDefault(r => r.radio == "Simplex")?.version;
-      if (version == null || version < 1)
-      {
-        File.WriteAllBytes(path, Resources.cat_info);
-        result = JsonConvert.DeserializeObject<RadioInfoList>(File.ReadAllText(path))!;
-      }
-
-      return result;
-    }
-
     public CatControlEngine(CatRadioSettings radioSettings, CatSettings catSettings) : base(radioSettings.Host, radioSettings.Port, catSettings)
     {
-      RadioInfo = 
-        BuildRadioInfoList().FirstOrDefault(r => r.radio == radioSettings.RadioType) ??
-        BuildRadioInfoList().First(r => r.radio == "Simplex");
-
+      RadioType = radioSettings.RadioType;
       TuningStep = catSettings.TuningStep;
+      IgnoreDialKnob = catSettings.IgnoreDialKnob;
     }
 
+    public static List<RadioCapabilities> BuildRadioCapabilitiesList()
+    {
+      // try to read the cad_info file
+      string path = Path.Combine(Utils.GetUserDataFolder(), "cat_info.json");
+      RadioCapabilitiesList? list = null;
+      try { list = RadioCapabilitiesList.Load(path); } catch { }
+
+      // overwrite if cat_info is missing or corrupt, or outdated, or contains no radios
+      if (list == null || list.version < 1 || list.radios.Count == 0)
+      {
+        File.WriteAllBytes(path, Resources.cat_info);
+        list = RadioCapabilitiesList.Load(path);
+      }
+
+      return list.radios;
+    }
 
     private void LogInfo(string msg)
     {
@@ -76,11 +62,11 @@ namespace SkyRoof
 
     private void LogFreqs(string msg)
     {
-      if (log) Log.Information($"{msg}  (RxReq={RequestedRxFrequency}  RxWr={LastWrittenRxFrequency}  RxRd={LastReadRxFrequency})");
+      LogInfo($"{msg}  (RxReq={RequestedRxFrequency}  RxWr={LastWrittenRxFrequency}  RxRd={LastReadRxFrequency})");
     }
 
     // some radios use 10 Hz steps and some don't, round frequency to the tuning step
-    private long RoundTo10(double freq)
+    private long RoundToStep(double freq)
     {
       int step = TuningStep;
       return step * (long)Math.Truncate(freq / step);
@@ -92,23 +78,18 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                      public methods
     //----------------------------------------------------------------------------------------------
-    public virtual void Start(bool rx, bool tx, bool crossband)
+    public void Start(bool rx, bool tx, bool crossband)
     {
-      // determmine required cat control mode
-      if (rx && !tx) CatMode = OperatingMode.RxOnly;
-      else if (!rx && tx) CatMode = OperatingMode.TxOnly;
-      else if (crossband && Cmds.setup_duplex != null) CatMode = OperatingMode.Duplex;
-      else if (!crossband && Cmds.setup_split != null) CatMode = OperatingMode.Split;
-      else CatMode = OperatingMode.Simplex;
+      this.rx = rx;
+      this.tx = tx;
+      this.crossband = crossband;
 
       StartThread();
     }
 
-    private bool DialKnobSpinning = false;
-
     public void SetRxFrequency(double frequency)
     {
-      frequency = RoundTo10(frequency);
+      frequency = RoundToStep(frequency);
       LogFreqs($"SetRxFrequency {frequency}");
 
       if (DialKnobSpinning)
@@ -119,7 +100,7 @@ namespace SkyRoof
 
     public void SetTxFrequency(double frequency)
     {
-      frequency = RoundTo10(frequency);
+      frequency = RoundToStep(frequency);
       LogFreqs($"SetTxFrequency {frequency}");
 
       if (DialKnobSpinning)
@@ -170,22 +151,74 @@ namespace SkyRoof
     {
       try
       {
+        SelectOperatingMode();
+
         switch (CatMode)
         {
           case OperatingMode.RxOnly:
           case OperatingMode.TxOnly:
-          case OperatingMode.Simplex: return SendWriteCommands(Cmds.setup_simplex); 
-          case OperatingMode.Split:   return SendWriteCommands(Cmds.setup_split); 
-          case OperatingMode.Duplex:  return SendWriteCommands(Cmds.setup_duplex); 
+          case OperatingMode.Simplex: return SendWriteCommands(RigCtldCommands.setup_simplex); 
+          case OperatingMode.Split:   return SendWriteCommands(RigCtldCommands.setup_split); 
+          case OperatingMode.Duplex:  return SendWriteCommands(RigCtldCommands.setup_duplex); 
         }
       }
       catch (Exception ex)
       {
-        Log.Error(ex, $"Failed to set up radio {RadioInfo.radio}");
+        Log.Error(ex, $"Failed to set up radio ({RadioType})");
       }
 
         return false;
       }
+
+    private void SelectOperatingMode()
+    {
+      // get radio capabilities, either from SkyCAT for from a file
+      if (RadioType == "SkyCAT")
+        RadioCapabilities = ReadCapabilitiesFromSkyCat();
+      else
+        RadioCapabilities =
+          BuildRadioCapabilitiesList().FirstOrDefault(r => r.model == RadioType) ??
+          BuildRadioCapabilitiesList().First();
+      Log.Information($"Selected radio type: {RadioCapabilities.model}");
+
+      // determmine CatMode, get radio Caps in that mode
+      if (rx && !tx)
+      {
+        CatMode = OperatingMode.RxOnly;
+        Caps = RadioCapabilities.simplex!;
+      }
+      else if (!rx && tx)
+      {
+        CatMode = OperatingMode.TxOnly;
+        Caps = RadioCapabilities.simplex!;
+      }
+      else if (crossband && RadioCapabilities.duplex != null)
+      {
+        CatMode = OperatingMode.Duplex;
+        Caps = RadioCapabilities.duplex!;
+      }
+      else if (RadioCapabilities.CanSplitTune(crossband))
+      {
+        CatMode = OperatingMode.Split;
+        Caps = RadioCapabilities.split!;
+      }
+      else
+      {
+        CatMode = OperatingMode.Simplex;
+        Caps = RadioCapabilities.simplex!;
+      }
+    }
+
+    private RadioCapabilities ReadCapabilitiesFromSkyCat()
+    {
+      string json = SendReadCommand("a") ?? string.Empty;
+
+      if (json == string.Empty) 
+        throw new Exception("Failed to read radio capabilities from SkyCAT");
+
+      return Newtonsoft.Json.JsonConvert.DeserializeObject<RadioCapabilities>(json) ??
+        throw new Exception("Failed to parse radio capabilities from SkyCAT");
+    }
 
 
 
@@ -243,17 +276,17 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.RxOnly:
-          if (Ptt == false && HasCapability(Caps.read_main_frequency)) return Cmds.read_main_frequency!;
-          if (Ptt == true && HasCapability(Caps.read_split_frequency)) return Cmds.read_split_frequency!;
+          if (Ptt == false && Caps.Can(CatAction.read_rx_frequency, Ptt)) return RigCtldCommands.read_rx_frequency!;
+          if (Ptt == true && Caps.Can(CatAction.read_tx_frequency, Ptt)) return RigCtldCommands.read_tx_frequency!;
           break;
 
         case OperatingMode.Simplex:
-          if (Ptt == false && HasCapability(Caps.read_main_frequency)) return Cmds.read_main_frequency!;
+          if (Ptt == false && Caps.Can(CatAction.read_rx_frequency, Ptt)) return RigCtldCommands.read_rx_frequency!;
           break;
 
         // split or duplex
         default:
-          if (HasCapability(Caps.read_main_frequency)) return Cmds.read_main_frequency!;
+          if (Caps.Can(CatAction.read_rx_frequency, Ptt)) return RigCtldCommands.read_rx_frequency!;
           break;
       }
 
@@ -268,17 +301,17 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.TxOnly:
-          if (Ptt == false && HasCapability(Caps.read_main_frequency)) return Cmds.read_main_frequency!;
-          if (Ptt == true && HasCapability(Caps.read_split_frequency)) return Cmds.read_split_frequency!;
+          if (Ptt == false && Caps.Can(CatAction.read_rx_frequency, Ptt)) return RigCtldCommands.read_rx_frequency!;
+          if (Ptt == true && Caps.Can(CatAction.read_tx_frequency, Ptt)) return RigCtldCommands.read_tx_frequency!;
           break;
 
         case OperatingMode.Simplex:
-          if (Ptt == true && HasCapability(Caps.read_split_frequency)) return Cmds.read_split_frequency!;
+          if (Ptt == true && Caps.Can(CatAction.read_tx_frequency, Ptt)) return RigCtldCommands.read_tx_frequency!;
           break;
 
         // split or duplex
         default:
-          if (HasCapability(Caps.read_split_frequency)) return Cmds.read_split_frequency!;
+          if (Caps.Can(CatAction.read_tx_frequency, Ptt)) return RigCtldCommands.read_tx_frequency!;
           break;
       }
 
@@ -290,7 +323,7 @@ namespace SkyRoof
       var reply = SendReadCommand(command);
       if (reply == null) return 0;
       if (!long.TryParse(reply, CultureInfo.InvariantCulture, out long frequency)) BadReply(reply);
-      return RoundTo10(frequency);
+      return RoundToStep(frequency);
     }
 
 
@@ -332,16 +365,16 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.RxOnly:
-          if (Ptt == false && HasCapability(Caps.set_main_frequency)) return Cmds.set_main_frequency!.Replace("{frequency}", $"{frequency}");
-          if (Ptt == true && HasCapability(Caps.set_split_frequency)) return Cmds.set_split_frequency!.Replace("{frequency}", $"{frequency}");
+          if (Ptt == false && Caps.Can(CatAction.write_rx_frequency, Ptt)) return RigCtldCommands.write_rx_frequency.Replace("{frequency}", $"{frequency}");
+          else if (Ptt == true && Caps.Can(CatAction.write_tx_frequency, Ptt)) return RigCtldCommands.write_tx_frequency.Replace("{frequency}", $"{frequency}");
           break;
 
         case OperatingMode.Simplex:
-          if (Ptt == false && HasCapability(Caps.set_main_frequency)) return Cmds.set_main_frequency!.Replace("{frequency}", $"{frequency}");
+          if (Ptt == false && Caps.Can(CatAction.write_rx_frequency, Ptt)) return RigCtldCommands.write_rx_frequency.Replace("{frequency}", $"{frequency}");
           break;
 
         default:
-          if (HasCapability(Caps.set_main_frequency)) return Cmds.set_main_frequency!.Replace("{frequency}", $"{frequency}");
+          if (Caps.Can(CatAction.write_rx_frequency, Ptt)) return RigCtldCommands.write_rx_frequency.Replace("{frequency}", $"{frequency}");
           break;
       }
 
@@ -356,16 +389,16 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.TxOnly:
-          if (Ptt == false && HasCapability(Caps.set_main_frequency)) return Cmds.set_main_frequency!.Replace("{frequency}", $"{frequency}");
-          if (Ptt == true && HasCapability(Caps.set_split_frequency)) return Cmds.set_split_frequency!.Replace("{frequency}", $"{frequency}");
+          if (Ptt == false && Caps.Can(CatAction.write_rx_frequency, Ptt)) return RigCtldCommands.write_rx_frequency!.Replace("{frequency}", $"{frequency}");
+          if (Ptt == true && Caps.Can(CatAction.write_tx_frequency, Ptt)) return RigCtldCommands.write_tx_frequency!.Replace("{frequency}", $"{frequency}");
           break;
 
         case OperatingMode.Simplex:
-          if (Ptt == true && HasCapability(Caps.set_split_frequency)) return Cmds.set_split_frequency!.Replace("{frequency}", $"{frequency}");
+          if (Ptt == true && Caps.CanSetup(CatAction.write_tx_frequency, Ptt)) return RigCtldCommands.write_tx_frequency!.Replace("{frequency}", $"{frequency}");
           break;
 
         default:
-          if (HasCapability(Caps.set_split_frequency)) return Cmds.set_split_frequency!.Replace("{frequency}", $"{frequency}");
+          if (Caps.CanSetup(CatAction.write_tx_frequency, Ptt)) return RigCtldCommands.write_tx_frequency!.Replace("{frequency}", $"{frequency}");
           break;
       }
 
@@ -392,7 +425,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     private void TryWriteRxMode(Slicer.Mode? mode = null)
     {
-      Mode newMode = (mode ?? RequestedRxMode!).Value;
+      Slicer.Mode newMode = (mode ?? RequestedRxMode!).Value;
 
       string command = GetWriteRxModeCommand(newMode);
       if (command == string.Empty) return;
@@ -411,7 +444,7 @@ namespace SkyRoof
 
     private void TryWriteTxMode()
     {
-      Mode mode = RequestedTxMode!.Value;
+      Slicer.Mode mode = RequestedTxMode!.Value;
 
       string command = GetWriteTxModeCommand(mode);
       if (command == string.Empty) return;
@@ -428,7 +461,7 @@ namespace SkyRoof
       LastWrittenTxMode = RequestedTxMode!;
     }
 
-    private string GetWriteRxModeCommand(Mode mode)
+    private string GetWriteRxModeCommand(Slicer.Mode mode)
     {
       switch (CatMode)
       {
@@ -436,23 +469,23 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.RxOnly:
-          if (Ptt == false && HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{mode}");
-          if (Ptt == true && HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{mode}");
+          if (Ptt == false && Caps.CanSetup(CatAction.write_rx_mode, Ptt)) return RigCtldCommands.write_rx_mode!.Replace("{mode}", $"{mode}");
+          if (Ptt == true && Caps.CanSetup(CatAction.write_tx_mode, Ptt)) return RigCtldCommands.write_tx_mode!.Replace("{mode}", $"{mode}");
           break;
 
         case OperatingMode.Simplex:
-          if (Ptt == false && HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{mode}");
+          if (Ptt == false && Caps.CanSetup(CatAction.write_rx_mode, Ptt)) return RigCtldCommands.write_rx_mode!.Replace("{mode}", $"{mode}");
           break;
 
         default:
-          if (HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{mode}");
+          if (Caps.CanSetup(CatAction.write_rx_mode, Ptt)) return RigCtldCommands.write_rx_mode!.Replace("{mode}", $"{mode}");
           break;
       }
 
       return string.Empty;
     }
 
-    private string GetWriteTxModeCommand(Mode mode)
+    private string GetWriteTxModeCommand(Slicer.Mode mode)
     {
       switch (CatMode)
       {
@@ -460,29 +493,29 @@ namespace SkyRoof
           return string.Empty;
 
         case OperatingMode.TxOnly:
-          if (Ptt == false && HasCapability(Caps.set_main_mode)) return Cmds.set_main_mode!.Replace("{mode}", $"{mode}");
-          if (Ptt == true && HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{mode}");
+          if (Ptt == false && Caps.CanSetup(CatAction.write_rx_mode, Ptt)) return RigCtldCommands.write_rx_mode!.Replace("{mode}", $"{mode}");
+          if (Ptt == true && Caps.CanSetup(CatAction.write_tx_mode, Ptt)) return RigCtldCommands.write_tx_mode!.Replace("{mode}", $"{mode}");
           break;
 
         case OperatingMode.Simplex:
-          if (Ptt == true && HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{mode}");
+          if (Ptt == true && Caps.CanSetup(CatAction.write_tx_mode, Ptt)) return RigCtldCommands.write_tx_mode!.Replace("{mode}", $"{mode}");
           break;
 
         default:
-          if (HasCapability(Caps.set_split_mode)) return Cmds.set_split_mode!.Replace("{mode}", $"{mode}");
+          if (Caps.CanSetup(CatAction.write_tx_mode, Ptt)) return RigCtldCommands.write_tx_mode!.Replace("{mode}", $"{mode}");
           break;
       }
 
       return string.Empty;
     }
 
-    private void RemoveDataFromMode(ref Mode mode)
+    private void RemoveDataFromMode(ref Slicer.Mode mode)
     {
       mode = mode switch
       {
-        Mode.USB_D => Mode.USB,
-        Mode.LSB_D => Mode.LSB,
-        Mode.FM_D =>  Mode.FM,
+        Slicer.Mode.USB_D => Slicer.Mode.USB,
+        Slicer.Mode.LSB_D => Slicer.Mode.LSB,
+        Slicer.Mode.FM_D =>  Slicer.Mode.FM,
         _ => mode
       };
     }
@@ -496,16 +529,16 @@ namespace SkyRoof
     internal bool CanPtt()
     {
       return CatMode != OperatingMode.RxOnly &&
-             Cmds.set_ptt_on != null &&
-             Cmds.set_ptt_off != null;
+             RigCtldCommands.set_ptt_on != null &&
+             RigCtldCommands.set_ptt_off != null;
     }
 
     private void ReadPtt()
     {
       PttChanged = false;
-      if (Cmds.read_ptt == null) return;
+      if (RigCtldCommands.read_ptt == null) return;
 
-      var reply = SendReadCommand(Cmds.read_ptt!);
+      var reply = SendReadCommand(RigCtldCommands.read_ptt!);
       bool newPtt = reply == "1";
 
       PttChanged = newPtt != Ptt;
@@ -523,10 +556,10 @@ namespace SkyRoof
       if (!RequestedPtt.HasValue) return;
       if (RequestedPtt == Ptt) return;
 
-      if (RequestedPtt == false && Cmds.set_ptt_off != null) SendWriteCommand(Cmds.set_ptt_off);
-      else if (RequestedPtt == true && Cmds.set_ptt_on != null) SendWriteCommand(Cmds.set_ptt_on);
+      if (RequestedPtt == false && RigCtldCommands.set_ptt_off != null) SendWriteCommand(RigCtldCommands.set_ptt_off);
+      else if (RequestedPtt == true && RigCtldCommands.set_ptt_on != null) SendWriteCommand(RigCtldCommands.set_ptt_on);
 
-      Ptt = RequestedPtt;
+      Ptt = RequestedPtt.Value;
       PttChanged = true;
       if (Ptt == true) LastWrittenTxFrequency = NOT_ASSIGNED; else LastWrittenRxFrequency = NOT_ASSIGNED;
       RequestedPtt = null;
@@ -538,17 +571,6 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                  check conditions
     //----------------------------------------------------------------------------------------------
-    private bool HasCapability(string[] capability)
-    {
-      return
-        (capability.Contains("when_receiving") && capability.Contains("when_transmitting"))
-        ||
-        (capability.Contains("when_receiving") && Ptt == false)
-        ||
-        (capability.Contains("when_transmitting") && Ptt == true);
-    }
-
-
     private bool NeedToWriteTxFreqModeBeforePtt()
     {
       // not simplex
@@ -561,7 +583,6 @@ namespace SkyRoof
       if (RequestedTxFrequency == NOT_ASSIGNED && !RequestedTxMode.HasValue) return false;
 
       return true;
-
     }
 
     private bool NeedToReadRxFrequency()

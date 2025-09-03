@@ -1,204 +1,156 @@
-[
-  {
-    "radio": "IC-9700, TS-2000",
-    "capabilities": {
-      "read_main_frequency": [ "when_transmitting", "when_receiving" ],
-      "read_split_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_main_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_split_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_main_mode": [ "when_transmitting", "when_receiving" ],
-      "set_split_mode": [ "when_transmitting", "when_receiving" ]
+{
+  "version": 1,
+
+  "radios": [
+    {
+      "model": "SkyCAT"
     },
-    "commands": {
-      "setup_duplex": [ "U SATMODE 1" ],
-      "setup_split": [ "U SATMODE 0", "U DUAL_WATCH 0", "V VFOA", "S 1 VFOB", "V VFOA" ],
-      "setup_simplex": [ "U SATMODE 0", "U DUAL_WATCH 0", "V VFOA", "S 0 VFOB", "V VFOA" ],
-      "read_main_frequency": "f",
-      "read_split_frequency": "i",
-      "set_main_frequency": "F {frequency}",
-      "set_split_frequency": "I {frequency}",
-      "set_main_mode": "M {mode} 0",
-      "set_split_mode": "X {mode} 0",
-      "read_ptt": "t",
-      "set_ptt_on": "T 1",
-      "set_ptt_off": "T 0"
-    }
-  },
-  {
-    "radio": "IC-705, IC-905",
-    "capabilities": {
-      "read_main_frequency": [ "when_transmitting", "when_receiving" ],
-      "read_split_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_main_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_split_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_main_mode": [ "when_transmitting", "when_receiving" ],
-      "set_split_mode": [ "when_transmitting", "when_receiving" ]
+    {
+      "model": "FT-817",
+      "cross_band_split": true,
+      "simplex": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_ptt", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "split": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_ptt", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "duplex": null
     },
-    "commands": {
-      "setup_duplex": null,
-      "setup_split": [ "S 1 VFOB" ],
-      "setup_simplex": [ "S 0 VFOB" ],
-      "read_main_frequency": "f",
-      "read_split_frequency": "i",
-      "set_main_frequency": "F {frequency}",
-      "set_split_frequency": "I {frequency}",
-      "set_main_mode": "M {mode} 0",
-      "set_split_mode": "X {mode} 0",
-      "read_ptt": "t",
-      "set_ptt_on": "T 1",
-      "set_ptt_off": "T 0"
-    }
-  },
-  {
-    "radio": "FT-847",
-    "capabilities": {
-      "read_main_frequency": [ "when_transmitting", "when_receiving" ],
-      "read_split_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_main_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_split_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_main_mode": [ "when_transmitting", "when_receiving" ],
-      "set_split_mode": [ "when_transmitting", "when_receiving" ]
+    {
+      "model": "FT-847",
+      "cross_band_split": true,
+      "simplex": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_tx_frequency", "read_tx_mode", "read_ptt", "write_tx_frequency", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "split": null,
+      "duplex": {
+        "when_receiving": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      }
     },
-    "commands": {
-      "setup_duplex": [ "S 1 Sub" ],
-      "setup_split": null,
-      "setup_simplex": [ "S 0 VFOB" ],
-      "read_main_frequency": "f",
-      "read_split_frequency": "i",
-      "set_main_frequency": "F {frequency}",
-      "set_split_frequency": "I {frequency}",
-      "set_main_mode": "M {mode} 0",
-      "set_split_mode": "X {mode} 0",
-      "read_ptt": "t",
-      "set_ptt_on": "T 1",
-      "set_ptt_off": "T 0"
-    }
-  },
-  {
-    "radio": "FT-817",
-    "comment": "not tested",
-    "capabilities": {
-      "read_main_frequency": [ "when_receiving" ],
-      "read_split_frequency": null,
-      "set_main_frequency": [ "when_receiving" ],
-      "set_split_frequency": null,
-      "set_main_mode": [ "when_receiving" ],
-      "set_split_mode": null
+    {
+      "model": "FT-991A",
+      "cross_band_split": true,
+      "simplex": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_tx_frequency", "read_tx_mode", "read_ptt", "write_tx_frequency", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "split": {
+        "when_receiving": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "duplex": null
     },
-    "commands": {
-      "setup_duplex": null,
-      "setup_split": null,
-      "setup_simplex": [ "V VFOA", "S 0 VFOB" ],
-      "read_main_frequency": "f",
-      "read_split_frequency": null,
-      "set_main_frequency": "F {frequency}",
-      "set_split_frequency": null,
-      "set_main_mode": "M {mode} 0",
-      "set_split_mode": null,
-      "read_ptt": "t",
-      "set_ptt_on": "T 1",
-      "set_ptt_off": "T 0"
-    }
-  },
-  {
-    "radio": "IC-706MKIIG",
-    "capabilities": {
-      "read_main_frequency": [ "when_transmitting", "when_receiving" ],
-      "read_split_frequency": null,
-      "set_main_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_split_frequency": null,
-      "set_main_mode": [ "when_transmitting", "when_receiving" ],
-      "set_split_mode": null
+    {
+      "model": "IC-705",
+      "cross_band_split": false,
+      "simplex": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_tx_frequency", "read_tx_mode", "read_ptt", "write_tx_frequency", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "split": {
+        "when_receiving": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "duplex": null
     },
-    "commands": {
-      "setup_duplex": null,
-      "setup_split": null,
-      "setup_simplex": [ "S 0 VFOA" ],
-      "read_main_frequency": "f",
-      "read_split_frequency": null,
-      "set_main_frequency": "F {frequency}",
-      "set_split_frequency": null,
-      "set_main_mode": "M {mode} 0",
-      "set_split_mode": null,
-      "read_ptt": null,
-      "set_ptt_on": null,
-      "set_ptt_off": null
-    }
-  },
-  {
-    "radio": "Split",
-    "capabilities": {
-      "read_main_frequency": [ "when_transmitting", "when_receiving" ],
-      "read_split_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_main_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_split_frequency": [ "when_transmitting", "when_receiving" ],
-      "set_main_mode": [ "when_transmitting", "when_receiving" ],
-      "set_split_mode": [ "when_transmitting", "when_receiving" ]
+    {
+      "model": "IC-706MKIIG",
+      "cross_band_split": false,
+      "simplex": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "write_rx_frequency", "write_rx_mode" ],
+        "when_transmitting": [],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "write_rx_frequency", "write_rx_mode" ]
+      },
+      "split": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "write_rx_frequency", "write_rx_mode" ],
+        "when_transmitting": [],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode" ]
+      },
+      "duplex": null
     },
-    "commands": {
-      "setup_duplex": null,
-      "setup_split": [ "V VFOA", "S 1 VFOB" ],
-      "setup_simplex": [ "V VFOA", "S 0 VFOB" ],
-      "read_main_frequency": "f",
-      "read_split_frequency": "i",
-      "set_main_frequency": "F {frequency}",
-      "set_split_frequency": "I {frequency}",
-      "set_main_mode": "M {mode} 0",
-      "set_split_mode": "X {mode} 0",
-      "read_ptt": "t",
-      "set_ptt_on": "T 1",
-      "set_ptt_off": "T 0"
-    }
-  },
-  {
-    "radio": "Simplex",
-    "version": 1,
-    "capabilities": {
-      "read_main_frequency": [ "when_receiving" ],
-      "read_split_frequency": [ "when_transmitting" ],
-      "set_main_frequency": [ "when_receiving" ],
-      "set_split_frequency": [ "when_transmitting" ],
-      "set_main_mode": [ "when_receiving" ],
-      "set_split_mode": [ "when_transmitting" ]
+    {
+      "model": "IC-905",
+      "cross_band_split": false,
+      "simplex": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_tx_frequency", "read_tx_mode", "read_ptt", "write_tx_frequency", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "split": {
+        "when_receiving": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "duplex": null
     },
-    "commands": {
-      "setup_duplex": null,
-      "setup_split": null,
-      "setup_simplex": [ "V VFOA", "S 0 VFOB" ],
-      "read_main_frequency": "f",
-      "read_split_frequency": "i",
-      "set_main_frequency": "F {frequency}",
-      "set_split_frequency": "I {frequency}",
-      "set_main_mode": "M {mode} 0",
-      "set_split_mode": "X {mode} 0",
-      "read_ptt": "t",
-      "set_ptt_on": "T 1",
-      "set_ptt_off": "T 0"
-    }
-  },
-  {
-    "radio": "Receiver",
-    "capabilities": {
-      "read_main_frequency": [ "when_receiving" ],
-      "read_split_frequency": null,
-      "set_main_frequency": [ "when_receiving" ],
-      "set_split_frequency": null,
-      "set_main_mode": [ "when_receiving" ],
-      "set_split_mode": null
+    {
+      "model": "IC-910",
+      "cross_band_split": false,
+      "simplex": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_tx_frequency", "read_tx_mode", "read_ptt", "write_tx_frequency", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "split": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_tx_frequency", "read_tx_mode", "read_ptt", "write_tx_frequency", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "duplex": {
+        "when_receiving": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      }
     },
-    "commands": {
-      "setup_duplex": null,
-      "setup_split": null,
-      "setup_simplex": [],
-      "read_main_frequency": "f",
-      "read_split_frequency": null,
-      "set_main_frequency": "F {frequency}",
-      "set_split_frequency": null,
-      "set_main_mode": "M {mode} 0",
-      "set_split_mode": null,
-      "read_ptt": null,
-      "set_ptt_on": null,
-      "set_ptt_off": null
+    {
+      "model": "IC-9700",
+      "cross_band_split": false,
+      "simplex": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_tx_frequency", "read_tx_mode", "read_ptt", "write_tx_frequency", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "split": {
+        "when_receiving": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "duplex": {
+        "when_receiving": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      }
+    },
+    {
+      "model": "TS-2000",
+      "cross_band_split": false,
+      "simplex": {
+        "when_receiving": [ "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_tx_frequency", "read_tx_mode", "read_ptt", "write_tx_frequency", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "split": {
+        "when_receiving": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_rx_frequency", "read_tx_frequency", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      },
+      "duplex": {
+        "when_receiving": [ "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_transmitting": [ "read_rx_frequency", "read_tx_frequency", "read_tx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ],
+        "when_setting_up": [ "setup", "read_rx_frequency", "read_tx_frequency", "read_rx_mode", "read_ptt", "write_rx_frequency", "write_tx_frequency", "write_rx_mode", "write_tx_mode", "write_ptt_off", "write_ptt_on" ]
+      }
     }
-  }
-]
+  ]
+}

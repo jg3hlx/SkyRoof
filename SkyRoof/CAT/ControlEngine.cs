@@ -47,6 +47,8 @@ namespace SkyRoof
     
     protected void StartThread()
     {
+      if (processingThread != null) return;
+
       stopping = false;
       processingThread = new Thread(new ThreadStart(ThreadProcedure));
       processingThread.IsBackground = true;
@@ -59,6 +61,7 @@ namespace SkyRoof
       if (stopping) return;
       stopping = true;
       processingThread?.Join();
+      processingThread = null;
     }
 
     private void ThreadProcedure()
@@ -106,7 +109,7 @@ namespace SkyRoof
     {
       TcpClient = new();
       TcpClient.SendTimeout = 1000;
-      TcpClient.ReceiveTimeout = 1000;
+      TcpClient.ReceiveTimeout = 3000;
 
       try
       {
@@ -223,8 +226,8 @@ namespace SkyRoof
 
       try
       {
-        byte[] replyBytes = new byte[1024];
-        int replyByteCount = TcpClient.Client.Receive(replyBytes);
+        byte[] replyBytes = new byte[65536];
+        int replyByteCount = ReadLine(replyBytes);
         return Encoding.ASCII.GetString(replyBytes, 0, replyByteCount);
       }
       catch (Exception ex)
@@ -237,6 +240,23 @@ namespace SkyRoof
     protected void BadReply(string reply)
     {
       Log.Error($"Unexpected reply from {GetType().Name} ctld: {reply.Trim()}");
+    }
+
+    protected int ReadLine(byte[] buffer)
+    {
+      int totalRead = 0;
+      while (totalRead < buffer.Length)
+      {
+        int bytesRead = TcpClient!.Client.Receive(buffer, totalRead, buffer.Length - totalRead, SocketFlags.None);
+        if (bytesRead == 0) break; // connection closed
+
+        for (int i = totalRead; i < totalRead + bytesRead; i++)
+          if (buffer[i] == (byte)'\n')
+            return i + 1;
+
+        totalRead += bytesRead;
+      }
+      return totalRead;
     }
 
 

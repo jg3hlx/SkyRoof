@@ -1,6 +1,6 @@
 # Command Set File Format
 
-_Updated: 2021-08-23_.
+_Updated: 2021-08-26_.
 
 [SkyCAT](skycat.md) stores the CAT commands of each supported radio in a separate file of type **.json**. The file name is the model name of the radio, for example, _"IC-9700.json"_ contains the commands of ICOM IC-9700. Support of new radio models may be added to SkyCAT by creating the new command set files for those radios.
 
@@ -44,7 +44,7 @@ This value allows the users to specify the radio model in a format compatible wi
 
 - **default_baud_rate** - the highest Baud rate of the RS-232 interface supported by the radio;
 
-- **cross_band_split** - set it to true if the radio can work in the Split mode when the receive and transmit frequencies are on different bands. Surprisingly, many radios cannot do that. _This setting is currently not used_;
+- **cross_band_split** - set it to true if the radio can work in the Split mode when the receive and transmit frequencies are on different bands. Surprisingly, many radios cannot do that;
 
 - **bad reply** - if the radio sends a certain sequence of bytes in response to a failed command, enter that sequence here, otherwise set it to `null`. The description of the byte sequence format is provided below;
 
@@ -98,7 +98,7 @@ The commands in the command set are represented with objects of the following st
 - **restriction** - optional. Include this field if the radio accepts the given command only in one of the modes:
   - **when_receiving**;
   - **when_transmitting**;
-  - **when_setting_up** (_currently ignored_). Set this value if the command interrupts reception or transmission, e.g., swaps the VFO, and thus may be used only during the initial setup.
+  - **when_setting_up** - set this value if the command interrupts reception or transmission, e.g., swaps the VFO, and thus may be used only during the initial setup.
 
 ## Message Format
 
@@ -120,7 +120,7 @@ The messages in the **messages** and **alt_messages** arrays are the objects wit
 - **command_param** - only for the Write commands;
 - **reply** - the sequence of bytes expected from the radio in reply to the command message. May be null if the radio does not reply to the given message;
 - **reply_param** - only for the Read commands;
-- **ignore_error** - _currently not used._ Set it to `true` if the radio may return an error even if the command succeeds. For example, some radios reply with an error to the Set Split command if the Split mode is already enabled.
+- **ignore_error** -- set it to `true` if the radio may return an error even if the command succeeds. For example, some radios reply with an error to the Set Split command if the Split mode is already enabled.
 
 ## Byte Sequence Format
 

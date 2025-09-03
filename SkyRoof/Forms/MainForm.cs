@@ -59,6 +59,7 @@ namespace SkyRoof
 
       // apply settings
       ctx.Settings.Ui.RestoreWindowPosition(this);
+      Utils.EnsureFormVisible(this);
       ctx.Settings.Ui.RestoreDockingLayout(this);
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
 
