@@ -74,9 +74,9 @@ namespace SkyRoof
 
       Satellites.Sanitize(true);
 
-      var validRadioTypes = CatControlEngine.BuildRadioCapabilitiesList().Select(r => r.model);
-      if (!validRadioTypes.Contains(Cat.RxCat.RadioType)) Cat.RxCat.RadioType = "SkyCAT";
-      if (!validRadioTypes.Contains(Cat.TxCat.RadioType)) Cat.TxCat.RadioType = "SkyCAT";
+      //{!} var validRadioTypes = CatControlEngine.BuildRadioCapabilitiesList().Select(r => r.model);
+      //if (!validRadioTypes.Contains(Cat.RxCat.RadioType)) Cat.RxCat.RadioType = "SkyCAT";
+      //if (!validRadioTypes.Contains(Cat.TxCat.RadioType)) Cat.TxCat.RadioType = "SkyCAT";
     }
   }
 }

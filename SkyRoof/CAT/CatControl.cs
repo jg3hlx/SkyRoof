@@ -49,10 +49,10 @@
 
     private static bool IsSameEngine(CatRadioSettings txCat, CatRadioSettings rxCat)
     {
-      return rxCat.Enabled 
-        && txCat.Enabled 
-        && IsSameHostPort(rxCat, txCat) 
-        && rxCat.RadioType == txCat.RadioType;
+      return rxCat.Enabled
+        && txCat.Enabled
+        && IsSameHostPort(rxCat, txCat);
+        //&& rxCat.RadioType == txCat.RadioType;
     }
 
     public static bool IsSameHostPort(CatRadioSettings txCat, CatRadioSettings rxCat)

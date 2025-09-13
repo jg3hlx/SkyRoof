@@ -63,11 +63,11 @@ namespace SkyRoof
     [DefaultValue(false)]
     public bool Enabled { get; set; }
 
-    [TypeConverter(typeof(RadioModelConverter))]
-    [DisplayName("Radio Type")]
-    [Description("Defines the capabilities of the radio")]
-    [DefaultValue("Simplex")]
-    public string RadioType { get; set; } = "Simplex";
+    //{!} [TypeConverter(typeof(RadioModelConverter))]
+    //[DisplayName("Radio Type")]
+    //[Description("Defines the capabilities of the radio")]
+    //[DefaultValue("Simplex")]
+    //public string RadioType { get; set; } = "Simplex";
 
     [DisplayName("Show Corrected Frequency")]
     [Description("Show the frequency with all corrections (True) or the nominal frequency (False)")]

@@ -109,7 +109,7 @@ namespace SkyRoof
         if (norad_id != null && statuses.TryGetValue(norad_id.Value, out bool status))
           item.ImageIndex = status ? 1 : 2;
         else
-          item.ImageIndex = 3;
+          item.ImageIndex = -1;
       }
     }
 

@@ -1,5 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using SkyRoof.Properties;
+using System.IO;
+using VE3NEA;
 
 namespace SkyRoof
 {
@@ -19,23 +22,11 @@ namespace SkyRoof
     write_ptt_off
   }
 
-  public class RadioCapabilitiesList
-  {
-    public int version { get; set; } = 0;
-    public List<RadioCapabilities> radios { get; set; } = new();
-
-    public static RadioCapabilitiesList Load(string path)
-    {
-      string json = File.ReadAllText(path);
-      return JsonConvert.DeserializeObject<RadioCapabilitiesList>(json)!;
-    }
-  }
-
   public class RadioCapabilities
   {
+    public int version { get; set; } = 0;
     public string model { get; set; }
     public bool cross_band_split { get; set; }
-
     public AvailableCommands? simplex { get; set; }
     public AvailableCommands? split { get; set; }
     public AvailableCommands? duplex { get; set; }
@@ -48,6 +39,51 @@ namespace SkyRoof
       if (!split.when_transmitting.Contains(CatAction.write_tx_frequency)) return false;
 
       return true;
+    }
+
+    public static RadioCapabilities? LoadFromFile(string path)
+    {
+      try
+      {
+        if (!File.Exists(path)) return null;
+        string json = File.ReadAllText(path);
+        return LoadFromJson(json);
+      }
+      catch (Exception) { return null; }             
+    }
+
+    public static RadioCapabilities? LoadFromJson(string json)
+    {
+      return JsonConvert.DeserializeObject<RadioCapabilities>(json);
+    }
+
+    public static RadioCapabilities LoadDefaultCapabilities()
+    {
+        string path = Path.Combine(Utils.GetUserDataFolder(), "cat_info.json");
+        
+        // Get embedded resource version by directly deserializing
+        string resourceJson = System.Text.Encoding.UTF8.GetString(Resources.cat_info);
+        RadioCapabilities embeddedCaps = LoadFromJson(resourceJson)!;
+        
+        // Try to load from file
+        RadioCapabilities? caps = null;
+        try 
+        { 
+            caps = LoadFromFile(path);
+        } 
+        catch { }
+
+        // If file doesn't exist, is corrupt, or has older/equal version than resource
+        if (caps == null || caps.version <= embeddedCaps.version)
+        {
+            // Write resource to file
+            File.WriteAllBytes(path, Resources.cat_info);
+            
+            // Use the already deserialized embedded caps
+            return embeddedCaps;
+        }
+
+        return caps;
     }
   }
 
@@ -67,7 +103,7 @@ namespace SkyRoof
       return ptt ? when_transmitting.Contains(action) : when_receiving.Contains(action);
     }
 
-    internal bool CanSetup(CatAction action, bool ptt)
+    internal bool CanSetup(CatAction action)
     {
       return when_setting_up.Contains(action);
     }
