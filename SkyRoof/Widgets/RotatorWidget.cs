@@ -10,7 +10,7 @@ namespace SkyRoof
     private RotatorControlEngine? engine;
     private AzElEntryDialog Dialog = new();
     private SatnogsDbSatellite? Satellite;
-    private Bearing SatBearing, LastWrittenBearing;
+    private Bearing SatBearing;
     private bool WasAboveHorizon = false;
     public Bearing? AntBearing { get => engine?.LastReadBearing; }
 
@@ -23,7 +23,7 @@ namespace SkyRoof
 
 
     //----------------------------------------------------------------------------------------------
-    //                                        engine
+    //                               public interface
     //----------------------------------------------------------------------------------------------
     public void ApplySettings(bool restoreTracking = false)
     {
@@ -47,61 +47,7 @@ namespace SkyRoof
       ctx.MainForm.ShowRotatorStatus();
     }
 
-    internal void Retry()
-    {
-      engine?.Retry();
-    }
-
-    public bool IsRunning()
-    {
-      return engine != null && engine.IsRunning;
-    }
-
-    private void Engine_StatusChanged(object? sender, EventArgs e)
-    {
-      // ant bearing color
-      BearingToUi();
-
-      ctx.MainForm.ShowRotatorStatus();
-    }
-
-    private void Engine_BearingChanged(object? sender, EventArgs e)
-    {
-      BearingToUi();
-      ctx.SkyViewPanel?.Refresh();
-    }
-
-    public void RotateTo(Bearing bearing)
-    {
-      if (engine == null) return;
-
-      var sanitizedBearing = Sanitize(bearing);
-      engine.RotateTo(sanitizedBearing);
-      LastWrittenBearing = sanitizedBearing;
-    }
-
-    public void StopRotation()
-    {
-      TrackCheckbox.Checked = false;
-      WasAboveHorizon = false;
-      engine?.StopRotation();
-    }
-
-    private Bearing Sanitize(Bearing bearing)
-    {
-      var sett = ctx.Settings.Rotator;
-      var sanitizedBearing = new Bearing(bearing.Azimuth, bearing.Elevation);
-
-      sanitizedBearing.Azimuth += sett.AzimuthOffset;
-      sanitizedBearing.Elevation += sett.ElevationOffset;
-
-      // todo: normalize before clamping?
-      sanitizedBearing.Azimuth = Math.Max(sett.MinAzimuth, Math.Min(sanitizedBearing.Azimuth, sett.MaxAzimuth));
-      sanitizedBearing.Elevation = Math.Max(sett.MinElevation, Math.Min(sanitizedBearing.Elevation, sett.MaxElevation));
-
-      return sanitizedBearing;
-    }
-
+    // TODO: use path optimizer
     public void SetSatellite(SatnogsDbSatellite? sat)
     {
       if (sat == Satellite) return;
@@ -116,58 +62,17 @@ namespace SkyRoof
       ctx.MainForm.ShowRotatorStatus();
     }
 
-
-
-
-
-    //----------------------------------------------------------------------------------------------
-    //                                        UI
-    //----------------------------------------------------------------------------------------------
-    private void AzEl_Click(object sender, EventArgs e)
+    public void Retry()
     {
-      Dialog.Open(ctx);
+      engine?.Retry();
     }
 
-    public void TrackCheckbox_CheckedChanged(object sender, EventArgs e)
+    public bool IsRunning()
     {
-      if (TrackCheckbox.Checked)
-        RotateTo(SatBearing);
-      else
-        StopRotation();
-
-      // update color
-      BearingToUi();
-
-      ctx.MainForm.ShowRotatorStatus();
+      return engine != null && engine.IsRunning;
     }
 
-    private void StopBtn_Click(object sender, EventArgs e)
-    {
-      StopRotation();
-    }
-
-    internal string? GetStatusString()
-    {
-      if (!ctx.Settings.Rotator.Enabled) return "Rotator control disabled";
-      else if (!IsRunning()) return "No connection";
-      else if (!TrackCheckbox.Checked) return "Connected, tracking disabled";
-      else return "Connected and tracking";
-    }
-
-    private void ResetUi()
-    {
-      SatelliteAzimuthLabel.ForeColor = Color.Gray;
-      SatelliteElevationLabel.ForeColor = Color.Gray;
-
-      SatelliteAzimuthLabel.Text = "0°";
-      SatelliteElevationLabel.Text = "0°";
-      AntennaAzimuthLabel.Text = "---";
-      AntennaElevationLabel.Text = "---";
-
-      TrackCheckbox.Checked = false;
-      TrackCheckbox.Enabled = ctx.Settings.Rotator.Enabled && Satellite != null;
-    }
-
+    // TODO: use path optimizer
     internal void Advance()
     {
       if (Satellite == null) return;
@@ -187,7 +92,7 @@ namespace SkyRoof
       if (engine != null && TrackCheckbox.Checked)
       {
         var bearing = Sanitize(SatBearing);
-        var diff = AngleBetween(bearing, LastWrittenBearing);
+        var diff = AngleBetween(bearing, engine.RequestedBearing!);
         if (diff >= ctx.Settings.Rotator.StepSize) RotateTo(SatBearing);
       }
 
@@ -196,6 +101,78 @@ namespace SkyRoof
       ctx.Announcer.AnnouncePosition(SatBearing);
     }
 
+    public void RotateTo(Bearing bearing)
+    {
+      if (engine == null) return;
+
+      var sanitizedBearing = Sanitize(bearing);
+      engine.RotateTo(sanitizedBearing);
+    }
+
+    public void StopRotation()
+    {
+      TrackCheckbox.Checked = false;
+      WasAboveHorizon = false;
+      engine?.StopRotation();
+    }
+
+    public void ToggleTracking()
+    {
+      if (!TrackCheckbox.Enabled) return;
+      TrackCheckbox.Checked = !TrackCheckbox.Checked;
+      TrackCheckbox_CheckedChanged(StopBtn, EventArgs.Empty);
+    }
+
+    public string? GetStatusString()
+    {
+      if (!ctx.Settings.Rotator.Enabled) return "Rotator control disabled";
+      else if (!IsRunning()) return "No connection";
+      else if (!TrackCheckbox.Checked) return "Connected, tracking disabled";
+      else return "Connected and tracking";
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        UI
+    //----------------------------------------------------------------------------------------------
+    private void AzEl_Click(object sender, EventArgs e)
+    {
+      Dialog.Open(ctx);
+    }
+
+    private void TrackCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+      if (TrackCheckbox.Checked)
+        RotateTo(SatBearing);
+      else
+        StopRotation();
+
+      // update color
+      BearingToUi();
+
+      ctx.MainForm.ShowRotatorStatus();
+    }
+
+    private void StopBtn_Click(object sender, EventArgs e)
+    {
+      StopRotation();
+    }
+
+    private void ResetUi()
+    {
+      SatelliteAzimuthLabel.ForeColor = Color.Gray;
+      SatelliteElevationLabel.ForeColor = Color.Gray;
+
+      SatelliteAzimuthLabel.Text = "0°";
+      SatelliteElevationLabel.Text = "0°";
+      AntennaAzimuthLabel.Text = "---";
+      AntennaElevationLabel.Text = "---";
+
+      TrackCheckbox.Checked = false;
+      TrackCheckbox.Enabled = ctx.Settings.Rotator.Enabled && Satellite != null;
+    }
 
     private void BearingToUi()
     {
@@ -203,7 +180,10 @@ namespace SkyRoof
 
       Color satColor = TrackCheckbox.Checked ? Color.Aqua : Color.Teal;
 
-      bool trackError = TrackCheckbox.Checked && (!IsRunning() || AntBearing == null || AngleBetween(SatBearing, AntBearing!) > 1.5 * ctx.Settings.Rotator.StepSize);
+      bool trackError = TrackCheckbox.Checked && (!IsRunning() || 
+        AntBearing == null || 
+        AngleBetween(SatBearing, AntBearing!) > 1.5 * ctx.Settings.Rotator.StepSize);
+
       Color antColor = trackError ? Color.LightCoral : Color.Transparent;
 
       SatelliteAzimuthLabel.ForeColor = satColor;
@@ -226,6 +206,41 @@ namespace SkyRoof
       }
     }
 
+    private void Engine_StatusChanged(object? sender, EventArgs e)
+    {
+      // ant bearing color
+      BearingToUi();
+
+      ctx.MainForm.ShowRotatorStatus();
+    }
+
+    private void Engine_BearingChanged(object? sender, EventArgs e)
+    {
+      BearingToUi();
+      ctx.SkyViewPanel?.Refresh();
+    }
+
+
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                   helper functions
+    //----------------------------------------------------------------------------------------------
+    private Bearing Sanitize(Bearing bearing)
+    {
+      var sett = ctx.Settings.Rotator;
+      var sanitizedBearing = new Bearing(bearing.Azimuth, bearing.Elevation);
+
+      sanitizedBearing.Azimuth += sett.AzimuthOffset;
+      sanitizedBearing.Elevation += sett.ElevationOffset;
+
+      // todo: normalize before clamping?
+      sanitizedBearing.Azimuth = Math.Max(sett.MinAzimuth, Math.Min(sanitizedBearing.Azimuth, sett.MaxAzimuth));
+      sanitizedBearing.Elevation = Math.Max(sett.MinElevation, Math.Min(sanitizedBearing.Elevation, sett.MaxElevation));
+
+      return sanitizedBearing;
+    }
+
     private double AngleBetween(Bearing bearing1, Bearing bearing2)
     {
       if (ctx.Settings.Rotator.MinElevation == ctx.Settings.Rotator.MaxElevation)
@@ -233,13 +248,6 @@ namespace SkyRoof
         return Bearing.AzimuthDifference(bearing1, bearing2);
       else
         return Bearing.AngleBetween(bearing1, bearing2);
-    }
-
-    public void ToggleTracking()
-    {
-      if (!TrackCheckbox.Enabled) return;
-      TrackCheckbox.Checked = !TrackCheckbox.Checked;
-      TrackCheckbox_CheckedChanged(StopBtn, EventArgs.Empty);
     }
   }
 }
