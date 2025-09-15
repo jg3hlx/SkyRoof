@@ -13,11 +13,11 @@ using System.Windows.Forms;
 
 namespace SkyRoof
 {
-  public partial class SatelliteDetailsControl : UserControl
+  public partial class SatelliteDetailsWidget : UserControl
   {
     private SatnogsDbSatellite? Satellite;
 
-    public SatelliteDetailsControl()
+    public SatelliteDetailsWidget()
     {
       InitializeComponent();
     }

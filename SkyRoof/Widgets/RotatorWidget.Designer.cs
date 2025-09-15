@@ -1,7 +1,7 @@
 ﻿
 namespace SkyRoof
 {
-  partial class RotatorControl
+  partial class RotatorWidget
   {
     /// <summary> 
     /// Required designer variable.

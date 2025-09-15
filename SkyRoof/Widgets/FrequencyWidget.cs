@@ -13,7 +13,7 @@ using VE3NEA;
 
 namespace SkyRoof
 {
-  public partial class FrequencyControl : UserControl
+  public partial class FrequencyWidget : UserControl
   {
     public Context ctx;
     public RadioLink RadioLink = new();
@@ -21,7 +21,7 @@ namespace SkyRoof
     private readonly FrequencyEntryForm FrequencyDialog = new();
 
 
-    public FrequencyControl()
+    public FrequencyWidget()
     {
       InitializeComponent();
       Changing = true;

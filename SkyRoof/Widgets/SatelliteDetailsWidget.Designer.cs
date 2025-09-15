@@ -1,6 +1,6 @@
 ﻿namespace SkyRoof
 {
-  partial class SatelliteDetailsControl
+  partial class SatelliteDetailsWidget
   {
     /// <summary> 
     /// Required designer variable.

@@ -1,6 +1,6 @@
 ﻿namespace SkyRoof
 {
-  partial class GainControl
+  partial class GainWidget
   {
     /// <summary> 
     /// Required designer variable.

@@ -4,7 +4,7 @@ using VE3NEA;
 namespace SkyRoof
 {
 
-  public partial class RotatorControl : UserControl
+  public partial class RotatorWidget : UserControl
   {
     public Context ctx;
     private RotatorControlEngine? engine;
@@ -14,7 +14,7 @@ namespace SkyRoof
     private bool WasAboveHorizon = false;
     public Bearing? AntBearing { get => engine?.LastReadBearing; }
 
-    public RotatorControl()
+    public RotatorWidget()
     {
       InitializeComponent();
     }
@@ -95,6 +95,7 @@ namespace SkyRoof
       sanitizedBearing.Azimuth += sett.AzimuthOffset;
       sanitizedBearing.Elevation += sett.ElevationOffset;
 
+      // todo: normalize before clamping?
       sanitizedBearing.Azimuth = Math.Max(sett.MinAzimuth, Math.Min(sanitizedBearing.Azimuth, sett.MaxAzimuth));
       sanitizedBearing.Elevation = Math.Max(sett.MinElevation, Math.Min(sanitizedBearing.Elevation, sett.MaxElevation));
 
@@ -147,14 +148,10 @@ namespace SkyRoof
 
     internal string? GetStatusString()
     {
-      if (!ctx.Settings.Rotator.Enabled)
-        return "Rotator control disabled";
-      else if (!IsRunning())
-        return "No connection";
-      else if (!TrackCheckbox.Checked)
-        return "Connected, tracking disabled";
-      else
-        return "Connected and tracking";
+      if (!ctx.Settings.Rotator.Enabled) return "Rotator control disabled";
+      else if (!IsRunning()) return "No connection";
+      else if (!TrackCheckbox.Checked) return "Connected, tracking disabled";
+      else return "Connected and tracking";
     }
 
     private void ResetUi()

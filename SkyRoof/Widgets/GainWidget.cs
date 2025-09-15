@@ -11,11 +11,11 @@ using VE3NEA;
 
 namespace SkyRoof
 {
-  public partial class GainControl : UserControl
+  public partial class GainWidget : UserControl
   {
     public Context ctx;
 
-    public GainControl()
+    public GainWidget()
     {
       InitializeComponent();
 

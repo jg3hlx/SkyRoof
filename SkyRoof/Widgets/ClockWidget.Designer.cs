@@ -1,6 +1,6 @@
 ﻿namespace VE3NEA.Clock
 {
-  partial class Clock
+  partial class ClockWidget
   {
     /// <summary> 
     /// Required designer variable.

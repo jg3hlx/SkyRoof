@@ -1,6 +1,6 @@
 ﻿namespace SkyRoof
 {
-  partial class FrequencyControl
+  partial class FrequencyWidget
   {
     /// <summary> 
     /// Required designer variable.

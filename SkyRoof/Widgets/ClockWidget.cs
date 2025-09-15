@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace VE3NEA.Clock
 {
-  public partial class Clock : UserControl
+  public partial class ClockWidget : UserControl
   {
     bool utcMode;
 
@@ -18,7 +18,7 @@ namespace VE3NEA.Clock
     [DisplayName("UTC Mode")]
     public bool UtcMode { get => utcMode; set => SetUtcMode(value); }
 
-    public Clock()
+    public ClockWidget()
     {
       InitializeComponent();
     }

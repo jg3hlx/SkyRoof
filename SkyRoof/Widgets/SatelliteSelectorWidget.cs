@@ -6,7 +6,7 @@ using VE3NEA;
 
 namespace SkyRoof
 {
-  public partial class SatelliteSelector : UserControl
+  public partial class SatelliteSelectorWidget : UserControl
   {
     public Context ctx;
     private bool changing;
@@ -30,7 +30,7 @@ namespace SkyRoof
     public event EventHandler? SelectedPassChanged;
 
 
-    public SatelliteSelector()
+    public SatelliteSelectorWidget()
     {
       InitializeComponent();
     }

@@ -20,9 +20,9 @@ namespace SkyRoof
 
     // main form
     public MainForm MainForm;
-    public SatelliteSelector SatelliteSelector;
-    public FrequencyControl FrequencyControl;
-    public RotatorControl RotatorControl;
+    public SatelliteSelectorWidget SatelliteSelector;
+    public FrequencyWidget FrequencyControl;
+    public RotatorWidget RotatorControl;
 
     // panels
     public GroupViewPanel? GroupViewPanel;

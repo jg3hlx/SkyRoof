@@ -30,7 +30,7 @@
     {
       panel1 = new Panel();
       button1 = new Button();
-      satelliteDetailsControl1 = new SatelliteDetailsControl();
+      satelliteDetailsControl1 = new SatelliteDetailsWidget();
       panel1.SuspendLayout();
       SuspendLayout();
       // 
@@ -83,6 +83,6 @@
 
     private Panel panel1;
     private Button button1;
-    private SatelliteDetailsControl satelliteDetailsControl1;
+    private SatelliteDetailsWidget satelliteDetailsControl1;
   }
 }
