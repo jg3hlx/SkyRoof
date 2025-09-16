@@ -9,6 +9,7 @@ using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
 using Serilog;
+using SkyRoof;
 using VE3NEA;
 
 namespace SkyRoof
@@ -74,7 +75,7 @@ namespace SkyRoof
       if (!double.TryParse(parts[1], CultureInfo.InvariantCulture, out double elevation)) { BadReply(reply); return; }
 
       var bearing = new Bearing(azimuth, elevation);
-      if ( bearing == LastReadBearing) return;
+      if (bearing == LastReadBearing) return;
 
       LastReadBearing = bearing;
       OnBearingChanged();

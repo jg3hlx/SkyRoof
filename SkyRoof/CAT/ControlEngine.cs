@@ -250,7 +250,7 @@ namespace SkyRoof
         int bytesRead = TcpClient!.Client.Receive(buffer, totalRead, buffer.Length - totalRead, SocketFlags.None);
         if (bytesRead == 0) break; // connection closed
 
-        for (int i = totalRead; i < totalRead + bytesRead; i++)
+        for (int i = totalRead + bytesRead - 1; i >= totalRead; i--)
           if (buffer[i] == (byte)'\n')
             return i + 1;
 
