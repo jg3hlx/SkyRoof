@@ -58,7 +58,8 @@ namespace SkyRoof
     {
       if (RequestedBearing == LastWrittenBearing) return;
 
-      SendWriteCommand($"P {RequestedBearing!.Azimuth:F1} {RequestedBearing.Elevation:F1}");
+      // Use AzDeg and ElDeg to get degrees for the protocol
+      SendWriteCommand($"P {RequestedBearing!.AzDeg:F1} {RequestedBearing.ElDeg:F1}");
       LastWrittenBearing = RequestedBearing;
     }
 
@@ -74,7 +75,12 @@ namespace SkyRoof
       if (!double.TryParse(parts[0], CultureInfo.InvariantCulture, out double azimuth)) { BadReply(reply); return; }
       if (!double.TryParse(parts[1], CultureInfo.InvariantCulture, out double elevation)) { BadReply(reply); return; }
 
-      var bearing = new Bearing(azimuth, elevation);
+      // Convert degrees from the protocol to radians for our Bearing class
+      var bearing = new Bearing(
+        azimuth * Math.PI / 180.0, 
+        elevation * Math.PI / 180.0
+      );
+      
       if (bearing == LastReadBearing) return;
 
       LastReadBearing = bearing;

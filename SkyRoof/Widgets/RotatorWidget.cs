@@ -84,20 +84,23 @@ namespace SkyRoof
         return;
       }
 
-      SatBearing = new Bearing(obs.Azimuth.Degrees, obs.Elevation.Degrees);
+      // Convert observation degrees to radians for Bearing
+      double azRad = obs.Azimuth.Degrees * Math.PI / 180.0;
+      double elRad = obs.Elevation.Degrees * Math.PI / 180.0;
+      SatBearing = new Bearing(azRad, elRad);
 
-      WasAboveHorizon = WasAboveHorizon || SatBearing.Elevation > 0;
-      if (WasAboveHorizon && SatBearing.Elevation < -3) StopRotation();
+      WasAboveHorizon = WasAboveHorizon || SatBearing.ElDeg > 0;
+      if (WasAboveHorizon && SatBearing.ElDeg < -3) StopRotation();
 
       if (engine != null && TrackCheckbox.Checked)
       {
         var bearing = Sanitize(SatBearing);
         var diff = AngleBetween(bearing, engine.RequestedBearing!);
-        if (diff >= ctx.Settings.Rotator.StepSize) RotateTo(SatBearing);
+        // Convert step size from degrees to radians for comparison
+        if (diff >= ctx.Settings.Rotator.StepSize * Math.PI / 180.0) RotateTo(SatBearing);
       }
 
       BearingToUi();
-
       ctx.Announcer.AnnouncePosition(SatBearing);
     }
 
@@ -182,22 +185,22 @@ namespace SkyRoof
 
       bool trackError = TrackCheckbox.Checked && (!IsRunning() || 
         AntBearing == null || 
-        AngleBetween(SatBearing, AntBearing!) > 1.5 * ctx.Settings.Rotator.StepSize);
+        AngleBetween(SatBearing, AntBearing!) > 1.5 * ctx.Settings.Rotator.StepSize * Math.PI / 180.0);
 
       Color antColor = trackError ? Color.LightCoral : Color.Transparent;
 
       SatelliteAzimuthLabel.ForeColor = satColor;
       SatelliteElevationLabel.ForeColor = satColor;
-      SatelliteAzimuthLabel.Text = $"{SatBearing.Azimuth:F0}°";
-      SatelliteElevationLabel.Text = $"{SatBearing.Elevation:F0}°";
+      SatelliteAzimuthLabel.Text = $"{SatBearing.AzDeg:F0}°";
+      SatelliteElevationLabel.Text = $"{SatBearing.ElDeg:F0}°";
 
       AntennaAzimuthLabel.BackColor = antColor;
       AntennaElevationLabel.BackColor = antColor;
 
       if (IsRunning() && AntBearing != null)
       {
-        AntennaAzimuthLabel.Text = $"{AntBearing.Azimuth:F1}°";
-        AntennaElevationLabel.Text = $"{AntBearing.Elevation:F1}°";
+        AntennaAzimuthLabel.Text = $"{AntBearing.AzDeg:F1}°";
+        AntennaElevationLabel.Text = $"{AntBearing.ElDeg:F1}°";
       }
       else
       {
@@ -229,14 +232,24 @@ namespace SkyRoof
     private Bearing Sanitize(Bearing bearing)
     {
       var sett = ctx.Settings.Rotator;
-      var sanitizedBearing = new Bearing(bearing.Azimuth, bearing.Elevation);
+      
+      // Create new bearing with the same values
+      var sanitizedBearing = new Bearing(bearing.Az, bearing.El);
 
-      sanitizedBearing.Azimuth += sett.AzimuthOffset;
-      sanitizedBearing.Elevation += sett.ElevationOffset;
+      // Apply offsets (converting degrees to radians)
+      double azOffsetRad = sett.AzimuthOffset * Math.PI / 180.0;
+      double elOffsetRad = sett.ElevationOffset * Math.PI / 180.0;
+      sanitizedBearing.Az += azOffsetRad;
+      sanitizedBearing.El += elOffsetRad;
 
-      // todo: normalize before clamping?
-      sanitizedBearing.Azimuth = Math.Max(sett.MinAzimuth, Math.Min(sanitizedBearing.Azimuth, sett.MaxAzimuth));
-      sanitizedBearing.Elevation = Math.Max(sett.MinElevation, Math.Min(sanitizedBearing.Elevation, sett.MaxElevation));
+      // Clamp values (converting min/max from degrees to radians)
+      double minAzRad = sett.MinAzimuth * Math.PI / 180.0;
+      double maxAzRad = sett.MaxAzimuth * Math.PI / 180.0;
+      double minElRad = sett.MinElevation * Math.PI / 180.0;
+      double maxElRad = sett.MaxElevation * Math.PI / 180.0;
+      
+      sanitizedBearing.Az = Math.Max(minAzRad, Math.Min(sanitizedBearing.Az, maxAzRad));
+      sanitizedBearing.El = Math.Max(minElRad, Math.Min(sanitizedBearing.El, maxElRad));
 
       return sanitizedBearing;
     }

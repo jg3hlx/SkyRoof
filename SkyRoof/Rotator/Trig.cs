@@ -8,8 +8,11 @@ namespace VE3NEA
 {
   public static class Trig
   {
-    public const double HalfPi = Math.PI / 2;
-    public const double TwoPi = 2 * Math.PI;
+    public const float Pi = (float)Math.PI;
+    public const float HalfPi = Pi / 2;
+    public const float TwoPi = 2 * Pi;
+    public const float DinR = 180 / Pi;
+    public const float RinD = Pi / 180;
 
     public static double NormalizeTwoPi(double angle)
     {

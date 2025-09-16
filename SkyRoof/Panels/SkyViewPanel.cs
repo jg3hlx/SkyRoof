@@ -135,7 +135,8 @@ namespace SkyRoof
       if (!ctx.RotatorControl.IsRunning()) return;
       if (ctx.RotatorControl.AntBearing == null) return; 
 
-      var center = AzElToXY(ctx.RotatorControl.AntBearing.Azimuth * Geo.RinD, ctx.RotatorControl.AntBearing.Elevation * Geo.RinD);
+      // Use Az/El (radians) for coordinate calculations
+      var center = AzElToXY(ctx.RotatorControl.AntBearing.Az, ctx.RotatorControl.AntBearing.El);
       float size = 4 * Math.Min(16, 0.04f * Radius + 5);
 
       RectangleF rect = new(center.X - size / 2, center.Y - size / 2, size, size);

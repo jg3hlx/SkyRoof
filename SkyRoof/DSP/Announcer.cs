@@ -97,13 +97,18 @@ namespace SkyRoof
     public void AnnouncePosition(Bearing bearing)
     {
       if (!ctx!.Settings.Announcements.PositionAnnouncement.Enabled) return;
-      if (bearing.Elevation < 0) return;
-      if (Bearing.AngleBetween(bearing, LastBearing) < ctx.Settings.Announcements.PositionAnnouncement.Degrees) return;
+      if (bearing.ElDeg < 0) return;  // Use ElDeg since we're comparing with 0 degrees
+      
+      // Convert degrees threshold to radians for comparison with AngleBetween (which returns radians)
+      double thresholdRad = ctx.Settings.Announcements.PositionAnnouncement.Degrees * Math.PI / 180.0;
+      if (Bearing.AngleBetween(bearing, LastBearing) < thresholdRad) return;
+      
       LastBearing = bearing;
 
+      // Use AzDeg/ElDeg for string formatting since we want degrees in the message
       string message = ctx.Settings.Announcements.PositionAnnouncement.Message
-        .Replace("{azimuth}", bearing.Azimuth.ToString("F0"))
-        .Replace("{elevation}", bearing.Elevation.ToString("F0"));
+        .Replace("{azimuth}", bearing.AzDeg.ToString("F0"))
+        .Replace("{elevation}", bearing.ElDeg.ToString("F0"));
 
       Say(message);
     }
