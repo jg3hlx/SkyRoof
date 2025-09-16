@@ -53,7 +53,7 @@ namespace SkyRoof
             clampedCandidates.Add(newNode);
         }
 
-      var minAngle = allCandidates.Min(originalNode.Angle);
+      var minAngle = allCandidates.Min(cand => originalNode.Angle(cand));
       clampedCandidates = clampedCandidates.Where(n => originalNode.Angle(n) - minAngle < ANGLE_TOLERANCE).ToList();
 
       candidates.AddRange(clampedCandidates);

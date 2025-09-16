@@ -101,7 +101,7 @@ namespace SkyRoof
       
       // Convert degrees threshold to radians for comparison with AngleBetween (which returns radians)
       double thresholdRad = ctx.Settings.Announcements.PositionAnnouncement.Degrees * Math.PI / 180.0;
-      if (Bearing.AngleBetween(bearing, LastBearing) < thresholdRad) return;
+      if (bearing.Angle(LastBearing) < thresholdRad) return;
       
       LastBearing = bearing;
 

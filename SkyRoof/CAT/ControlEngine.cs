@@ -226,9 +226,7 @@ namespace SkyRoof
 
       try
       {
-        byte[] replyBytes = new byte[65536];
-        int replyByteCount = ReadLine(replyBytes);
-        return Encoding.ASCII.GetString(replyBytes, 0, replyByteCount);
+        return ReadLine();
       }
       catch (Exception ex)
       {
@@ -242,21 +240,24 @@ namespace SkyRoof
       Log.Error($"Unexpected reply from {GetType().Name} ctld: {reply.Trim()}");
     }
 
-    protected int ReadLine(byte[] buffer)
+    protected string ReadLine()
     {
+      byte[] buffer = new byte[65536];
       int totalRead = 0;
+
       while (totalRead < buffer.Length)
       {
         int bytesRead = TcpClient!.Client.Receive(buffer, totalRead, buffer.Length - totalRead, SocketFlags.None);
         if (bytesRead == 0) break; // connection closed
-
-        for (int i = totalRead + bytesRead - 1; i >= totalRead; i--)
-          if (buffer[i] == (byte)'\n')
-            return i + 1;
-
         totalRead += bytesRead;
+
+        for (int i = totalRead - 1; i >= totalRead - bytesRead; i--)
+          if (buffer[i] == (byte)'\n')
+            return Encoding.ASCII.GetString(buffer, 0, i + 1);
       }
-      return totalRead;
+
+      // If no newline found, return all read bytes
+      return Encoding.ASCII.GetString(buffer, 0, totalRead);
     }
 
 

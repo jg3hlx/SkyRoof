@@ -34,9 +34,19 @@ namespace SkyRoof
       return Math.Max(cost3, cost4);
     }
 
-    public double Angle(Bearing other)
+    public double Angle(Bearing other, bool azOnly = false)
     {
       if (other == null) throw new ArgumentNullException(nameof(other));
+
+      // rotator is not elevation capable, check only azimuth
+      if (azOnly) 
+      {
+        double az1 = Trig.NormalizeTwoPi(Az);
+        double az2 = Trig.NormalizeTwoPi(other.Az);
+        double azDiff = Math.Abs(az1 - az2);
+        if (azDiff > Math.PI) azDiff = Geo.TwoPi - azDiff;
+        return azDiff;
+      }
 
       double cosAngle = Math.Sin(El) * Math.Sin(other.El) +
         Math.Cos(El) * Math.Cos(other.El) * Math.Cos(Az - other.Az);
@@ -53,28 +63,26 @@ namespace SkyRoof
       );
     }
 
-    // Static methods from original Bearing class
-    public static double AngleBetween(Bearing b1, Bearing b2)
-    {
-      if (b1 == null || b2 == null) throw new ArgumentNullException();
-      
-      // Haversine formula (using radians directly)
-      double se = Math.Sin((b2.El - b1.El) / 2);
-      double ce = Math.Cos(b1.El) * Math.Cos(b2.El);
-      double sa = Math.Sin((b2.Az - b1.Az) / 2);
-      double a = se * se + ce * sa * sa;
-      return Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)) * 2;
-    }
+    //public double AngleBetween(Bearing b1, Bearing b2)
+    //{
+    //  if (b1 == null || b2 == null) throw new ArgumentNullException();
 
-    public static double AzimuthDifference(Bearing b1, Bearing b2)
-    {
-      // Use NormalizeTwoPi to handle wraparound correctly
-      double az1 = Trig.NormalizeTwoPi(b1.Az);
-      double az2 = Trig.NormalizeTwoPi(b2.Az);
-      double diff = Math.Abs(az1 - az2);
-      if (diff > Math.PI) diff = Trig.TwoPi - diff;
-      return diff;
-    }
+    //  // Haversine formula
+    //  double se = Math.Sin((b2.El - b1.El) / 2);
+    //  double ce = Math.Cos(b1.El) * Math.Cos(b2.El);
+    //  double sa = Math.Sin((b2.Az - b1.Az) / 2);
+    //  double a = se * se + ce * sa * sa;
+    //  return Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)) * 2;
+    //}
+    //public double AzimuthDifference(Bearing other)
+    //{
+    //  // Use NormalizeTwoPi to handle wraparound correctly
+    //  double az1 = Trig.NormalizeTwoPi(Az);
+    //  double az2 = Trig.NormalizeTwoPi(other.Az);
+    //  double azDiff = Math.Abs(az1 - az2);
+    //  if (azDiff > Math.PI) azDiff = Trig.TwoPi - azDiff;
+    //  return azDiff;
+    //}
 
     // Equality operators
     public static bool operator ==(Bearing? b1, Bearing? b2)
@@ -87,18 +95,6 @@ namespace SkyRoof
     public static bool operator !=(Bearing? b1, Bearing? b2)
     {
       return !(b1 == b2);
-    }
-
-    // Object overrides
-    public override bool Equals(object? obj)
-    {
-      if (obj is not Bearing other) return false;
-      return Az == other.Az && El == other.El;
-    }
-
-    public override int GetHashCode()
-    {
-      return HashCode.Combine(Az, El);
     }
 
     public override string ToString()

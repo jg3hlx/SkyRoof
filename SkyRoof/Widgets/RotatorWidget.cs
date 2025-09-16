@@ -85,8 +85,8 @@ namespace SkyRoof
       }
 
       // Convert observation degrees to radians for Bearing
-      double azRad = obs.Azimuth.Degrees * Math.PI / 180.0;
-      double elRad = obs.Elevation.Degrees * Math.PI / 180.0;
+      double azRad = obs.Azimuth.Degrees * Geo.RinD;
+      double elRad = obs.Elevation.Degrees * Geo.RinD;
       SatBearing = new Bearing(azRad, elRad);
 
       WasAboveHorizon = WasAboveHorizon || SatBearing.ElDeg > 0;
@@ -97,7 +97,7 @@ namespace SkyRoof
         var bearing = Sanitize(SatBearing);
         var diff = AngleBetween(bearing, engine.RequestedBearing!);
         // Convert step size from degrees to radians for comparison
-        if (diff >= ctx.Settings.Rotator.StepSize * Math.PI / 180.0) RotateTo(SatBearing);
+        if (diff >= ctx.Settings.Rotator.StepSize * Geo.RinD) RotateTo(SatBearing);
       }
 
       BearingToUi();
@@ -183,9 +183,9 @@ namespace SkyRoof
 
       Color satColor = TrackCheckbox.Checked ? Color.Aqua : Color.Teal;
 
-      bool trackError = TrackCheckbox.Checked && (!IsRunning() || 
-        AntBearing == null || 
-        AngleBetween(SatBearing, AntBearing!) > 1.5 * ctx.Settings.Rotator.StepSize * Math.PI / 180.0);
+      bool trackError = TrackCheckbox.Checked && (!IsRunning() ||
+        AntBearing == null ||
+        AngleBetween(SatBearing, AntBearing!) > 1.5 * ctx.Settings.Rotator.StepSize * Geo.RinD);
 
       Color antColor = trackError ? Color.LightCoral : Color.Transparent;
 
@@ -232,35 +232,26 @@ namespace SkyRoof
     private Bearing Sanitize(Bearing bearing)
     {
       var sett = ctx.Settings.Rotator;
-      
-      // Create new bearing with the same values
+
       var sanitizedBearing = new Bearing(bearing.Az, bearing.El);
+      sanitizedBearing.Az += sett.AzimuthOffset * Trig.RinD;
+      sanitizedBearing.El += sett.ElevationOffset * Trig.RinD;
 
-      // Apply offsets (converting degrees to radians)
-      double azOffsetRad = sett.AzimuthOffset * Math.PI / 180.0;
-      double elOffsetRad = sett.ElevationOffset * Math.PI / 180.0;
-      sanitizedBearing.Az += azOffsetRad;
-      sanitizedBearing.El += elOffsetRad;
-
-      // Clamp values (converting min/max from degrees to radians)
-      double minAzRad = sett.MinAzimuth * Math.PI / 180.0;
-      double maxAzRad = sett.MaxAzimuth * Math.PI / 180.0;
-      double minElRad = sett.MinElevation * Math.PI / 180.0;
-      double maxElRad = sett.MaxElevation * Math.PI / 180.0;
-      
-      sanitizedBearing.Az = Math.Max(minAzRad, Math.Min(sanitizedBearing.Az, maxAzRad));
-      sanitizedBearing.El = Math.Max(minElRad, Math.Min(sanitizedBearing.El, maxElRad));
+      var bounds = new RectangleF(
+        sett.MinAzimuth * Trig.RinD,
+        sett.MinElevation * Trig.RinD,
+        (sett.MaxAzimuth - sett.MinAzimuth) * Trig.RinD,
+        (sett.MaxElevation - sett.MinElevation) * Trig.RinD
+      );
+      sanitizedBearing = sanitizedBearing.Clamp(bounds);
 
       return sanitizedBearing;
     }
 
     private double AngleBetween(Bearing bearing1, Bearing bearing2)
     {
-      if (ctx.Settings.Rotator.MinElevation == ctx.Settings.Rotator.MaxElevation)
-        // rotator is not elevation capable, so we only check azimuth
-        return Bearing.AzimuthDifference(bearing1, bearing2);
-      else
-        return Bearing.AngleBetween(bearing1, bearing2);
+      bool azOnly = ctx.Settings.Rotator.MinElevation == ctx.Settings.Rotator.MaxElevation;
+      return bearing1.Angle(bearing2, azOnly);
     }
   }
 }

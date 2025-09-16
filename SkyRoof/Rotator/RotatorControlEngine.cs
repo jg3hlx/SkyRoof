@@ -69,6 +69,8 @@ namespace SkyRoof
       if (reply == null) return;
 
       var parts = reply.Trim().Split('\n');
+      if(parts.Length == 1) 
+        parts = (reply + ReadLine()).Trim().Split('\n');
       if (log) Log.Information($"Rotator reply parsed: {string.Join('|', parts)}");
       if (parts.Length != 2) { BadReply(reply); return; }
 

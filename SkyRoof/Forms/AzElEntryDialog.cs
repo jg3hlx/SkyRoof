@@ -36,7 +36,7 @@ namespace SkyRoof
     private void StartRotation()
     {
       ctx.RotatorControl.TrackCheckbox.Checked = false;
-      var bearing = new Bearing((double)AzimuthSpinner.Value, (double)ElevationSpinner.Value);
+      var bearing = new Bearing((double)AzimuthSpinner.Value * Trig.RinD, (double)ElevationSpinner.Value * Trig.RinD);
       ctx.RotatorControl.RotateTo(bearing);
     }
   }
