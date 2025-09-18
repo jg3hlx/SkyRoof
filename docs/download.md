@@ -18,9 +18,10 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 
 #### v.1.21 RC
 
+- many improvements in the CAT control;
+- improved integration with SkyCAT;
 - STATION_CALLSIGN and GRIDSQUARE added to ADIF output;
-- improved CAT control;
-- improved integration with SkyCAT.
+- the Alt key increases the mouse-wheel tuning speed.
 
 #### v.1.20 Beta
 

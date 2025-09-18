@@ -49,7 +49,7 @@ To tune the receiver:
 - click within a blue transponder segment to select the transmitter and set the transponder offset;
 - click anywhere on the frequency scale to tune to a terrestrial signal;
 - drag the green rectangle to another frequency with a mouse;
-- spin the mouse wheel on or near the green rectangle.
+- spin the mouse wheel on or near the green rectangle. Hold the **Alt** key down to increase the tuning speed.
 
 The effect of tuning depends on the transmitter selection:
 
