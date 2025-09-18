@@ -87,7 +87,7 @@ namespace VE3NEA
       var version = typeof(Utils).Assembly.GetName().Version!;
 
       // {!} todo: remove 'Beta' after release
-     return $"{version.Major}.{version.Minor} Beta";
+     return $"{version.Major}.{version.Minor} RC";
     }
 
     internal static string GetVersionString()

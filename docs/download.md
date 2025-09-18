@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.20 beta](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.20-beta/SkyRoofSetup-v.1.20-beta.zip)
+[SkyRoof v.1.21 RC](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.20-RC/SkyRoofSetup-v.1.20-RC.zip)
 
 <br>
 
@@ -15,6 +15,12 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.21 RC
+
+- STATION_CALLSIGN and GRIDSQUARE added to ADIF output;
+- improved CAT control;
+- improved integration with SkyCAT.
 
 #### v.1.20 Beta
 

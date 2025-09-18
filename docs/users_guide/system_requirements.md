@@ -6,18 +6,33 @@
 - **Video Card**:  OpenGL 3.3 or higher, 512 Mb of texture memory;
 - **Monitor**: screen resolution 1900x1280 or higher, 4K recommended;
 - **Internet**: required, to download satellite data;
-- **SDR**: optional, but highly recommended. Supported models:
+- **SDR**: optional, but highly recommended. Currently plugins are available for:
   - Airspy;
+  - AirspyHF+;
   - SDRplay;
   - RTL-SDR;
-  - HackRF.
+  - HackRF;
+  - PlutoSDR;
+  
+- **Transceiver**: optional. Currently the command definition files are available for:
 
-  Contact me for other models;
-- **Transceiver**: optional. The beta version was tested with IC-9700, IC-705, IC-910H, IC-7100 and  FT-991a.
-  Please try it with other models;
-- **Antenna rotator** - optional, any rotator supported by HamLib. Please test with yours and let me know.
+  - FT-817;
+  - FT-818;
+  - FT-847;
+  - FT-991a;
+  - IC-705;
+  - IC-706MKIIG;
+  - IC-915;
+  - IC-910H;
+  - IC-9700;
+  - TS-2000;
+
+  Many other radios are supported via HamLib;
+
+- **Antenna rotator** - optional, any rotator supported by HamLib.
 
 ## Software
 
 - **OS**: Windows 10 or Windows 11, 64-bit only;
+- **SkyCAT**: optional, for CAT control;
 - **HamLib**: optional, for CAT and rotator control.

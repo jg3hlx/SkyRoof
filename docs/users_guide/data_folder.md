@@ -4,7 +4,10 @@ SkyRoof keeps all of its data in the **data folder**.
 
 - Click on **Help / Data Folder** in the main menu to open this folder in File Explorer.
 - To open the folder when the program is not running, type this in File Explorer:
-    `%appdata%\Afreet\Products\SkyRoof`
+
+    ```bash
+    %appdata%\Afreet\Products\SkyRoof`
+    ```
 
 ## Data Files
 
@@ -20,13 +23,14 @@ SkyRoof keeps all of its data in the **data folder**.
 
 - **Satellites.json** - the satellite database compiled from the downloaded data;
 
-- **cat_info.json** - information about the CAT capabilities of different radios;
+- **cat_info.json** - lists the CAT capabilities of a generic simplex radio;
 
 - **wsjtx_wisdom.dat** - optimal FFT transform settings found by automatic testing.
 
 ## Folders
 
 - **Logs** - contains the log files with error messages and other information;
+- **Adif** - QSO records stored in the ADIF format;
 - **Downloads** - a copy of the satellite data downloaded from various sources, kept for troubleshooting;
 - **Palettes** - definition of the color palettes used by the waterfall display. Add your own
     palette as a text file with "html" color codes. Pick the color codes at

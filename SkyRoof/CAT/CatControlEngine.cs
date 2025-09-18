@@ -33,28 +33,9 @@ namespace SkyRoof
 
     public CatControlEngine(CatRadioSettings radioSettings, CatSettings catSettings) : base(radioSettings.Host, radioSettings.Port, catSettings)
     {
-      //{!} RadioType = radioSettings.RadioType;
       TuningStep = catSettings.TuningStep;
       IgnoreDialKnob = catSettings.IgnoreDialKnob;
     }
-
-    //{!}  todo: remove this, make RadioCapabilities of rigctld.exe a constant
-    //public static List<RadioCapabilities> BuildRadioCapabilitiesListZ()
-    //{
-    //  // try to read the cad_info file
-    //  string path = Path.Combine(Utils.GetUserDataFolder(), "cat_info.json");
-    //  RadioCapabilitiesList? list = null;
-    //  try { list = RadioCapabilitiesList.Load(path); } catch { }
-
-    //  // overwrite if cat_info is missing or corrupt, or outdated, or contains no radios
-    //  if (list == null || list.version < 1 || list.radios.Count == 0)
-    //  {
-    //    File.WriteAllBytes(path, Resources.cat_info);
-    //    list = RadioCapabilitiesList.Load(path);
-    //  }
-
-    //  return list.radios;
-    //}
 
     private void LogInfo(string msg)
     {

@@ -14,7 +14,7 @@ Click on **Tools / Settings** in the main menu to open the [Settings window](set
   - Audio to VAC;
   - I/Q to UDP;
   - Audio to UDP.
-- **Gain** - gain or attenuation, in dB, that will be applied to the stream data;
+- **Gain** - gain or attenuation, in dB, that will be applied to the streamed data;
 
 - **VAC Device** - the Virtual Audio Cable device to use;
 - **UDP Port** - the UDP port number to use.

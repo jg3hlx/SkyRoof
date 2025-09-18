@@ -90,7 +90,7 @@ jobs:
       - name: Copy and Zip Installer
         run: |
           $version = "${{ steps.get_version.outputs.version }}"
-          $versionedName = "SkyRoofSetup-v.$version-beta"
+          $versionedName = "SkyRoofSetup-v.$version-RC"
 
           Copy-Item install\SkyRoofSetup.exe -Destination "install\$versionedName.exe"
           Compress-Archive -Path install\$versionedName.exe -DestinationPath install\$versionedName.zip
@@ -100,10 +100,10 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: SkyRoof v.${{ steps.get_version.outputs.version }} beta
-          tag_name: v.${{ steps.get_version.outputs.version }}-beta
+          name: SkyRoof v.${{ steps.get_version.outputs.version }} RC
+          tag_name: v.${{ steps.get_version.outputs.version }}-RC
           body: See [Version History](https://ve3nea.github.io/SkyRoof/download.html).
           # body: This is an experimental build, please ignore.
-          files:  install/SkyRoofSetup-v.${{ steps.get_version.outputs.version }}-beta.zip
+          files:  install/SkyRoofSetup-v.${{ steps.get_version.outputs.version }}-RC.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

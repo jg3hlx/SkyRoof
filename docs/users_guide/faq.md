@@ -70,7 +70,7 @@ See this [Wiki page](https://wiki.satnogs.org/SatNOGS_DB) for details.
 
 **Q: My video card does not have an OpenGL 3.3 driver. Is there a way to use a software-only implementation of OpenGL?**
 
-**A:** Some users have had success with the OpenGL 3.3 functionality implemented in the software, though this solution is very CPU-intensive. You can try
+**A:** Some users have had success with the OpenGL 3.3 functionality implemented in the software, though this approach is very CPU-intensive. You can try
 [this](https://github.com/lightningterror/Mesa3D-Windows) or
 [this](https://github.com/pal1000/mesa-dist-win) solution. Download the 64-bit version of the library and extract all DLL's from the archive to the SkyRoof folder.
 

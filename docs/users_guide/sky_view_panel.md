@@ -1,6 +1,6 @@
 # Sky View
 
-The Sky View panel shows the trajectory of the satellites in the sky, as visible at your location:
+The Sky View panel shows the trajectories of the satellites in the sky, as visible at your location:
 
 The radio buttons at the top switch the chart between the real-time display showing all satellites in the
 selected group that are currently above the horizon, and a specific pass of a specific satellite.

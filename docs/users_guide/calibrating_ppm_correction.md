@@ -8,7 +8,7 @@ which translates to a tuning error of 1-2 Khz on the 70 cm band. For accurate tr
 must be calibrated out. The calibration process is simple, we just find a signal of known frequency, check on what frequecy it
 appears on the waterfall, and compute the PPM correction factor from the difference between the two.
 
-There are plenty of signals on the air that may be used for calibration, if one knows what to look for. One of such
+There is plenty of signals on the air that may be used for calibration, if one knows what to look for. One of such
 signals is the
 [FCCH channel](https://en.wikipedia.org/wiki/FCCH)
 of a
@@ -42,7 +42,7 @@ panel on the toolbar to open the frequency entry dialog:
     ![waterfall](../images/ppm_calibration_1.png)
 
 5. Zoom in by spinning the mouse wheel over the waterfall display:
-6. Find the FCCH signal. On the screenshot below it is about 4 kHz above the expected frequency:
+6. Find the FCCH signal. In the screenshot below it is about 4 kHz above the expected frequency:
 
     ![waterfall](../images/ppm_calibration_2.png)
 

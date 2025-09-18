@@ -8,7 +8,7 @@ is the central piece of SkyRoof that integrates most of the functions available 
 
 ![Waterfall Display panel](../images/waterfall.png)
 
-The waterfall spans over 3 MHz of spectrum (depending on the SDR model) so that it covers the whole
+The waterfall spans over 3 MHz of spectrum (depending on the SDR model) and covers the whole
 satellite segment, 435-438 MHz, on the 70 cm band. On the 2 m band the satellite segment is
 only 200 kHz wide, 145.8-146 MHz, so it also fits completely in the waterfall.
 

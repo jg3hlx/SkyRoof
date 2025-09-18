@@ -3,7 +3,7 @@
 ## Installation
 
 To install SkyRoof, download the installer from the
-[Download](/download.html) page, run it, and follow the on-screen instructions.
+[Download](/SkyRoof/download.html) page, run it, and follow the on-screen instructions.
 
 ## First Run
 

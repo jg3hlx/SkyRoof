@@ -97,12 +97,6 @@ namespace SkyRoof
         case "SkyRoof.OutputStreamSettings.Gain":
           ValidateInt(e, 60, -60);
           break;
-
-          //{!} case "SkyRoof.CatRadioSettings.Host":
-          //case "SkyRoof.CatRadioSettings.Port":
-          //case "SkyRoof.CatRadioSettings.RadioType":
-          //  VadidateCat(e);
-          //  break;
       }
 
       if (canChange) ChangedFields.Add(label);
@@ -129,26 +123,6 @@ namespace SkyRoof
       int cleanValue = Math.Max(min, Math.Min(max, (int)e.ChangedItem.Value));
       e.ChangedItem.PropertyDescriptor.SetValue(e.ChangedItem.Parent.Value, cleanValue);
     }
-
-    //{!} private void VadidateCat(PropertyValueChangedEventArgs e)
-    //{
-    //  var cat = (grid.SelectedObject as Settings)!.Cat;
-    //  if (!CatControl.IsSameHostPort(cat.RxCat, cat.TxCat)) return;
-
-    //  if (cat.RxCat.RadioType != cat.TxCat.RadioType)
-    //  {
-    //    if (e.ChangedItem?.Value?.ToString() == cat.TxCat.RadioType) 
-    //      cat.RxCat.RadioType = cat.TxCat.RadioType;
-    //    else 
-    //      cat.TxCat.RadioType = cat.RxCat.RadioType;
-
-    //    MessageBox.Show("RX CAT and TX CAT have the same host and port number. Making RadioTypes the same as well.",
-    //      "Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-    //    return;
-    //  }
-    //}
-
 
 
 

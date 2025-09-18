@@ -6,6 +6,6 @@ The Earth View panel shows the view of the Earth from the satellite:
 
 The highlighted area is what the satellite can see from its current position.
 <br>
-The satellite is above the horizon for the observers in this area.
+The satellite is above the horizon for the observers located in this area.
 
 Use the mouse wheel to zoom the view in and out.

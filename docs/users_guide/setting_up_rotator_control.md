@@ -43,7 +43,7 @@ Click on **Tools / Settings** in the main menu to open the
     different address for remote control;
 - **TCP Port** - 4533 is the default port used by rotctld;
 - **Minimum Azimuth**, **Maximum Azimuth**, **Minimum Elevation**, **Maximum Elevation** -
-    specify the range of values your rotator accepts;
+    specify the range of azimuth and elevation values your rotator accepts;
 - **Azimuth Offset**, **Elevation Offset** - if your rotator is not perfectly calibrated, these settings
     allow you to apply a correction;
 - **Step Size** - to prevent the rotator from starting and stopping too often, change the bearing

@@ -77,9 +77,9 @@ is enabled, tuning the SDR receiver also tunes the external radio to the same fr
 The Manual Offset setting compensates for the transmitter frequency error, see
 [Frequency Control](frequency_control.md) and [Doppler Tracking](doppler_tracking.md) for details.
 
-The offset value is usually the same for all transmitters of a satellite, adjust it for some
+The offset value is usually the same for all transmitters of a satellite, so you can adjust it for some
 non-transponder transmitter before using the transponder. Most satellites with a transponder also
-carry a telemetry or beacon transmitter that you can use to set the manual offset:
+carry a telemetry or beacon transmitter that you can use to set the manual offset. The screenshot below shows the telemetry signal of the MO-122 satellite, and the green rectangle perfectly aligned with its frequency by adjusting the Downlink Manual Offset:
 
 ![MO-122](../images/mo-122.png)
 
@@ -88,8 +88,7 @@ carry a telemetry or beacon transmitter that you can use to set the manual offse
 The screenshot below shows how to set Manual Correction for the uplink and downlink for a linear transponder, such as RS-44.
 
 1. Select the beacon transmitter of the satellite and adjust the Downlink Manual Correction setting to align the transmitter label
-and its signal trace on the waterfall. For RS-44 the required correction is about -1900 Hz. If your offset is different, then yor SDR
-requires [PPM calibration](calibrating_ppm_correction.md).
+and its signal trace on the waterfall. For RS-44 the required correction is about -1900 Hz. If your offset is significantly different from this value, this means that your SDR requires [PPM calibration](calibrating_ppm_correction.md).
 
 2. Select the transponder transmitter and find a clear frequency within the transponder segment. Send a sequence of dots
 and adjust the Uplink Manual Correction to align the center of the green rectangle with the trace of your signals coming from the satellite.

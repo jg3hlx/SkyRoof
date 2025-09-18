@@ -7,10 +7,11 @@ SkyRoof uses the
 engine to interface with the SDR radios. Currently it supports:
 
 - Airspy;
+- AirspyHF+;
 - SDRplay;
 - RTL-SDR;
 - HackRF;
-- PlutoSDR.
+- PlutoSDR;
 
 > [!NOTE]
 > It may be possible to add support of other SDR devices to SkyRoof. Contact me if you have an unsupported SDR
@@ -23,7 +24,8 @@ or search on Google, for the driver installation instructions. At the time of th
 [Airspy](https://airspy.com/quickstart/),
 [RTL-SDR](https://www.rtl-sdr.com/rtl-sdr-quick-start-guide/),
 [SDRplay](https://www.sdrplay.com/api/),
-[HackRF](https://hackrf.readthedocs.io/en/latest/installing_hackrf_software.html).
+[HackRF](https://hackrf.readthedocs.io/en/latest/installing_hackrf_software.html),
+[PlutoSDR](https://wiki.analog.com/university/tools/pluto/users/quick_start).
 
 Once you install the drivers and make your radio work with its native software, proceed to the next step.
 

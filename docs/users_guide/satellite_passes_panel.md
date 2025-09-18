@@ -5,7 +5,7 @@ The Satellite Passes panel shows the list of predicted satellite passes over you
 ![Satellite Passes panel](../images/satellite_passes.png)
 
 The radio buttons at the top allow you to view either the passes of the selected satellite, of all satellites
-in the currently selected groups, or all satellites carrying a VHF or UHF downlink transmitter and thus
+in the currently selected group, or all satellites carrying a VHF or UHF downlink transmitter and thus
 visible on the [Frequency Scale](frequency_scale.md).
 
 Click on a pass to make the satellite selected and to view its trajectory on the
