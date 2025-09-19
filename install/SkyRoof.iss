@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "SkyRoof"
-#define MyAppVersion "1.9"
+#define MyAppVersion "1.0"
 #define MyAppPublisher "Alex VE3NEA"
 #define MyAppURL "https://ve3nea.github.io/SkyRoof"
 #define MyAppExeName "SkyRoof.exe"
@@ -12,7 +12,7 @@
 [Setup]
 AppId={{9411e0db-111f-43f3-8466-f53d93669847}
 AppName={#MyAppName}
-AppVersion={#MyAppVersion} Beta
+AppVersion={#MyAppVersion} RC
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
