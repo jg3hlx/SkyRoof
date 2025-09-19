@@ -11,7 +11,6 @@ namespace SkyRoof
   {
     const long NOT_ASSIGNED = 0;
 
-    //{!} private string RadioType;
     private bool rx, tx, crossband;
     private OperatingMode CatMode;
     private RadioCapabilities RadioCapabilities;
