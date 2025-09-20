@@ -40,7 +40,8 @@ namespace VE3NEA
 
     public static string HeaderToString(AdifEntry header)
     {
-      return string.Join("\n", header.Select(kv => $"<{kv.Key}:{kv.Value.Length}>{kv.Value}")) + "\n<EOH>\n";
+      string result = $"File generated {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}Z\n";
+      return result + string.Join("\n", header.Select(kv => $"<{kv.Key}:{kv.Value.Length}>{kv.Value}")) + "\n<EOH>\n";
     }
 
     public static string QsoToString(AdifEntry header)
