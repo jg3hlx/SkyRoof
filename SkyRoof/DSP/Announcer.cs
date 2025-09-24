@@ -94,14 +94,15 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                       announce
     //----------------------------------------------------------------------------------------------
-    public void AnnouncePosition(Bearing bearing)
+    public void AnnouncePosition(Bearing? bearing)
     {
+      if (bearing == null) return;  
       if (!ctx!.Settings.Announcements.PositionAnnouncement.Enabled) return;
       if (bearing.ElDeg < 0) return;  // Use ElDeg since we're comparing with 0 degrees
       
       // Convert degrees threshold to radians for comparison with AngleBetween (which returns radians)
       double thresholdRad = ctx.Settings.Announcements.PositionAnnouncement.Degrees * Math.PI / 180.0;
-      if (bearing.Angle(LastBearing) < thresholdRad) return;
+      if (bearing.AngleFrom(LastBearing) < thresholdRad) return;
       
       LastBearing = bearing;
 

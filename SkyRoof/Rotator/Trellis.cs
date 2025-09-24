@@ -14,18 +14,17 @@ namespace SkyRoof
     private readonly List<Bearing> rawPath;
     private readonly RectangleF feasibleRect;
     private readonly float maxErrorDeg;
-    private readonly List<List<Bearing>> states;
+    public readonly List<List<Bearing>> States;
 
-    public List<List<Bearing>> States => states;
-    public int Count => states.Count;
-    public List<Bearing> this[int index] => states[index];
+    public int Count => States.Count;
+    public List<Bearing> this[int index] => States[index];
 
     public Trellis(List<Bearing> rawPath, RectangleF feasibleRect, float maxErrorDeg)
     {
       this.rawPath = rawPath;
       this.feasibleRect = feasibleRect;
       this.maxErrorDeg = maxErrorDeg;
-      states = rawPath.Select(BuildFeasibleNodes).ToList();
+      States = rawPath.Select(BuildFeasibleNodes).ToList();
       InterpolateHighElevationSegments();
     }
 
@@ -53,8 +52,8 @@ namespace SkyRoof
             clampedCandidates.Add(newNode);
         }
 
-      var minAngle = allCandidates.Min(cand => originalNode.Angle(cand));
-      clampedCandidates = clampedCandidates.Where(n => originalNode.Angle(n) - minAngle < ANGLE_TOLERANCE).ToList();
+      var minAngle = allCandidates.Min(cand => originalNode.AngleFrom(cand));
+      clampedCandidates = clampedCandidates.Where(n => originalNode.AngleFrom(n) - minAngle < ANGLE_TOLERANCE).ToList();
 
       candidates.AddRange(clampedCandidates);
       return candidates;
@@ -70,10 +69,10 @@ namespace SkyRoof
 
       foreach (var (start, end) in highElevationSegments)
       {
-        if (end <= start || end >= states.Count) continue;
-      
-        var firstState = states[start];
-        var lastState = states[end];
+        if (end <= start || end >= States.Count) continue;
+
+        var firstState = States[start];
+        var lastState = States[end];
         double minRotationTime = double.MaxValue;
         var bestPairs = new List<(Bearing firstNode, Bearing lastNode)>();
 
@@ -84,11 +83,11 @@ namespace SkyRoof
             // Only consider pairs where one node has elevation < 90° and the other > 90°
             bool firstNodeLessThan90 = firstNode.El < ninetyDegrees;
             bool lastNodeLessThan90 = lastNode.El < ninetyDegrees;
-            
+
             // Skip if both nodes are on the same side of 90°
             if (firstNodeLessThan90 == lastNodeLessThan90)
               continue;
-              
+
             double rotationTime = firstNode.RotationTime(lastNode);
             if (rotationTime < minRotationTime)
             {
@@ -112,7 +111,7 @@ namespace SkyRoof
             double interpEl = bestFirstNode.El + factor * (bestLastNode.El - bestFirstNode.El);
             var interpNode = new Bearing(interpAz, interpEl);
             interpNode = interpNode.Clamp(feasibleRect);
-            states[i].Add(interpNode);
+            States[i].Add(interpNode);
           }
         }
       }

@@ -109,6 +109,7 @@
     <None Include="..\Vendor\SoapySDR\SoapySDR.dll" Link="SoapySDR.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="C:\Proj\DSP\SkyRoof\SkyRoof\.editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
@@ -158,6 +159,10 @@
     <None Update="SoapySDRCSharpSWIG.pdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Proj\DSP\SkyRoof\SkyRoof\.editorconfig" />
   </ItemGroup>
 
 </Project>

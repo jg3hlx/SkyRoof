@@ -9,29 +9,31 @@ namespace SkyRoof
     public Context ctx;
     private RotatorControlEngine? engine;
     private AzElEntryDialog Dialog = new();
-    private SatnogsDbSatellite? Satellite;
-    private Bearing SatBearing;
-    private bool WasAboveHorizon = false;
+    private OptimizedRotationPath? Path;
+    private Bearing? SatBearing;
     public Bearing? AntBearing { get => engine?.LastReadBearing; }
+
+    // PathOptimizerForm instance is created once and reused
+    private PathOptimizerForm pathOptimizerForm = new();
 
     public RotatorWidget()
     {
       InitializeComponent();
+
+      // Create the PathOptimizerForm on startup, but do not show it yet
+      pathOptimizerForm.FormClosing += (s, e) => { e.Cancel = true; pathOptimizerForm.Hide(); };
     }
-
-
-
 
     //----------------------------------------------------------------------------------------------
     //                               public interface
     //----------------------------------------------------------------------------------------------
     public void ApplySettings(bool restoreTracking = false)
     {
-      if (engine != null) StopRotation();
+      bool track = restoreTracking && TrackCheckbox.Checked;
 
+      if (engine != null) StopRotation();
       engine?.Dispose();
       engine = null;
-      bool track = restoreTracking && TrackCheckbox.Checked;
 
       if (ctx.Settings.Rotator.Enabled)
       {
@@ -41,25 +43,57 @@ namespace SkyRoof
       }
 
       ResetUi();
-      TrackCheckbox.Checked = track;
 
+      SetSatellite(ctx.SatelliteSelector.SelectedSatellite);
+
+      TrackCheckbox.Checked = track;
       Advance();
+
       ctx.MainForm.ShowRotatorStatus();
     }
 
-    // TODO: use path optimizer
     public void SetSatellite(SatnogsDbSatellite? sat)
     {
-      if (sat == Satellite) return;
+      if (sat == Path?.Satellite) return;
 
-      Satellite = sat;
       engine?.StopRotation();
+
+      if (sat == null)
+        Path = null;
+      else
+      {
+        var pass = ctx.HamPasses.GetNextPass(sat);
+        var sett = ctx.Settings.Rotator;
+        Path = new(pass, sett, AntBearing);
+
+        // Update PathOptimizerForm contents when a new path is created
+        UpdatePathOptimizerForm();
+      }
 
       ResetUi();
       Advance();
 
       // show black LED if no satellite
       ctx.MainForm.ShowRotatorStatus();
+    }
+
+    internal void Advance()
+    {
+      if (Path == null) return;
+
+      SatBearing = Path.GetSatelliteBearing()?.Normalize();
+      if (SatBearing == null) StopRotation();
+
+      BearingToUi();
+      ctx.Announcer.AnnouncePosition(SatBearing);
+
+      if (SatBearing != null && engine != null && TrackCheckbox.Checked)
+      {
+        var maxError = 0.5 * ctx.Settings.Rotator.StepSize * Geo.RinD;
+        var bearing = Sanitize(SatBearing);
+        if (AntBearing == null || AngleBetween(bearing, AntBearing) >= maxError)
+          RotateTo(Path.GetNextAntennaBearing());
+      }
     }
 
     public void Retry()
@@ -72,41 +106,9 @@ namespace SkyRoof
       return engine != null && engine.IsRunning;
     }
 
-    // TODO: use path optimizer
-    internal void Advance()
+    public void RotateTo(Bearing? bearing)
     {
-      if (Satellite == null) return;
-
-      var obs = ctx.SdrPasses.ObserveSatellite(Satellite, DateTime.UtcNow);
-      if (obs == null || obs?.Azimuth == null || obs?.Elevation == null)
-      {
-        ResetUi();
-        return;
-      }
-
-      // Convert observation degrees to radians for Bearing
-      double azRad = obs.Azimuth.Degrees * Geo.RinD;
-      double elRad = obs.Elevation.Degrees * Geo.RinD;
-      SatBearing = new Bearing(azRad, elRad);
-
-      WasAboveHorizon = WasAboveHorizon || SatBearing.ElDeg > 0;
-      if (WasAboveHorizon && SatBearing.ElDeg < -3) StopRotation();
-
-      if (engine != null && TrackCheckbox.Checked)
-      {
-        var bearing = Sanitize(SatBearing);
-        var diff = AngleBetween(bearing, engine.RequestedBearing!);
-        // Convert step size from degrees to radians for comparison
-        if (diff >= ctx.Settings.Rotator.StepSize * Geo.RinD) RotateTo(SatBearing);
-      }
-
-      BearingToUi();
-      ctx.Announcer.AnnouncePosition(SatBearing);
-    }
-
-    public void RotateTo(Bearing bearing)
-    {
-      if (engine == null) return;
+      if (engine == null || bearing == null) return;
 
       var sanitizedBearing = Sanitize(bearing);
       engine.RotateTo(sanitizedBearing);
@@ -115,7 +117,6 @@ namespace SkyRoof
     public void StopRotation()
     {
       TrackCheckbox.Checked = false;
-      WasAboveHorizon = false;
       engine?.StopRotation();
     }
 
@@ -134,21 +135,30 @@ namespace SkyRoof
       else return "Connected and tracking";
     }
 
-
-
-
     //----------------------------------------------------------------------------------------------
     //                                        UI
     //----------------------------------------------------------------------------------------------
     private void AzEl_Click(object sender, EventArgs e)
     {
-      Dialog.Open(ctx);
+      if (ModifierKeys == (Keys.Control | Keys.Shift))  ShowRotatorDebugInfo();
+      else Dialog.Open(ctx);
     }
 
     private void TrackCheckbox_CheckedChanged(object sender, EventArgs e)
     {
+
       if (TrackCheckbox.Checked)
-        RotateTo(SatBearing);
+      {
+        if (Path != null)
+        {
+          // re-compute path
+          var pass = ctx.HamPasses.GetNextPass(Path!.Satellite);
+          var sett = ctx.Settings.Rotator;
+          Path = new(pass, sett, AntBearing);
+          UpdatePathOptimizerForm();
+          RotateTo(Path?.GetNextAntennaBearing());
+        }
+      }
       else
         StopRotation();
 
@@ -174,11 +184,12 @@ namespace SkyRoof
       AntennaElevationLabel.Text = "---";
 
       TrackCheckbox.Checked = false;
-      TrackCheckbox.Enabled = ctx.Settings.Rotator.Enabled && Satellite != null;
+      TrackCheckbox.Enabled = ctx.Settings.Rotator.Enabled && Path != null;
     }
 
     private void BearingToUi()
     {
+      var SatBearing = Path?.GetRealSatelliteBearing();
       if (SatBearing == null) { ResetUi(); return; }
 
       Color satColor = TrackCheckbox.Checked ? Color.Aqua : Color.Teal;
@@ -223,9 +234,6 @@ namespace SkyRoof
       ctx.SkyViewPanel?.Refresh();
     }
 
-
-
-
     //----------------------------------------------------------------------------------------------
     //                                   helper functions
     //----------------------------------------------------------------------------------------------
@@ -251,7 +259,19 @@ namespace SkyRoof
     private double AngleBetween(Bearing bearing1, Bearing bearing2)
     {
       bool azOnly = ctx.Settings.Rotator.MinElevation == ctx.Settings.Rotator.MaxElevation;
-      return bearing1.Angle(bearing2, azOnly);
+      return bearing1.AngleFrom(bearing2, azOnly);
+    }
+
+    private void ShowRotatorDebugInfo()
+    {
+      UpdatePathOptimizerForm();
+
+      if (!pathOptimizerForm.Visible) pathOptimizerForm.Show();
+      else pathOptimizerForm.BringToFront();
+    }
+    private void UpdatePathOptimizerForm()
+    {
+      pathOptimizerForm.UpdateContents(Path);
     }
   }
 }
