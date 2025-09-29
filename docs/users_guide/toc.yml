@@ -87,5 +87,7 @@ items:
       href: doppler_tracking.md
     - name: Data Folder
       href: data_folder.md
+    - name: Smart Antenna Rotation
+      href: smart_antenna_rotation.md
     - name: F.A.Q.
       href: faq.md

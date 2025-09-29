@@ -22,7 +22,7 @@ When rotator control is enabled, the current antenna bearing is marked on the
 
 When rotator control is enabled but the **Track** checkbox is not ticked, the panel only displays the antenna
 bearing but does not attempt to change it. Tick the **Track** checkbox to start tracking. Note that
-the check box is cleared when a different satellite is selected.
+the check box is cleared when you switch to another satellite.
 
 In the satellite tracking mode, the antenna bearing turns pink if it differs from the satellite position
 by more than 1.5 the **Step Size** setting entered in the
@@ -37,3 +37,7 @@ Click on the satellite position display to open the **Manual Rotator Control** w
 ## Stopping
 
 To stop antenna rotation, either manual or due to the satellite tracking, click on the **Stop** button.
+
+## See Also
+
+- [Smart Antenna Rotation](smart_antenna_rotation.md)
