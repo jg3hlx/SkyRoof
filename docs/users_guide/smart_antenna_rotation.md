@@ -1,10 +1,10 @@
 # Smart Antenna Rotation
 
-SkyRoof uses a unique antenna rotation algorithm, based on dynamic programming, that globally optimizes the tracking of the satellite pass and ensures the minimum possible communication downtime. The algorithm makes full use of the extended range of azimuth and elevation available in the modern rotators.
+SkyRoof uses a new antenna rotation algorithm, based on dynamic programming, that globally optimizes the tracking of the satellite pass and ensures the minimum possible communication downtime. The algorithm makes full use of the extended range of azimuth and elevation available in the modern rotators.
 
 ## Limitations of the Simple Approach
 
-The satellite path prediction algorithm computes the satellite azimuth in the range of __0° to 360°__ and elevation in the range of __0° to 90°__. A simple antenna rotator just sends these azimuth and elevation values to the controller. This works most of the time, but there are cases when this requires the antenna to rotate by 180° or 360°. While the antenna is making this full circle, or half-circle, it does not point at the satellite, causing a significant downtime in the communication. The charts below show two such cases.
+The satellite pass prediction algorithm computes the satellite azimuth in the range of __0° to 360°__ and elevation in the range of __0° to 90°__. A simple antenna rotator just sends these azimuth and elevation values to the controller. This works most of the time, but there are cases when this requires the antenna to rotate by 180° or 360°. While the antenna is making this full circle, or half-circle, it does not point at the satellite, causing a significant downtime in the communication. The charts below show two such cases.
 
 In the first chart the path crosses the  360° azimuth line, and the antenna needs to make a full circle counter clockwise to get to 0°.
 
@@ -73,7 +73,7 @@ The path in the chart above crosses 360°, but it extends beyond the red line on
 
 ![5](../images/rotation/polar_path_flip.png)
 
-This path comes close to the zenith and, as we have seen before, requires the antenna to make a fast rotation by about 180° in azimuth. The rotators that support elevations of 0° to 180° can use elevation > 90° for the second half of the path, thus eliminating the 180° azimuth change. However, to switch from the elevation < 90° to > 90°, the antenna must deviate from the path a little bit and pass through the zenith (90°), as shown with the orange lines in the chart above. Dynamic programming plans this deviation in an optimal way.
+This is a high elevation pass. As we have seen before, it requires the antenna to make a fast rotation by about 180° in azimuth. The rotators that support elevations of 0° to 180° can use elevation > 90° for the second half of the path, thus eliminating the 180° azimuth change. However, to switch from the elevation < 90° to > 90°, the antenna must deviate from the path a little bit and pass through the zenith (90°), as shown with the orange lines in the chart above. Dynamic programming plans this deviation in an optimal way.
 
 ---
 
