@@ -8,7 +8,6 @@ namespace SkyRoof
 {
   public class Trellis
   {
-    private const double twoPi = 2 * Math.PI;
     private const double ANGLE_TOLERANCE = 0.1 * Geo.RinD;
 
     private readonly List<Bearing> rawPath;
@@ -40,16 +39,20 @@ namespace SkyRoof
       // generate alternative nodes by unwraping the azimuth and flipping the elevation
       List<Bearing> flippedCandidates = [originalNode, new Bearing(originalNode.Az + Math.PI, Math.PI - originalNode.El)];
       foreach (var node in flippedCandidates)
-        foreach (var k in new[] { -2, -1, 0, 1, 2 })
+        foreach (var k in new[] { -2, -1, 0, 1 })
         {
-          double azu = node.Az + twoPi * k;
+          double azu = node.Az + Geo.TwoPi * k;
           var newNode = new Bearing(azu, node.El).Clamp(feasibleRect);
           allCandidates.Add(newNode);
 
           if (toleranceRect.Contains((float)azu, (float)node.El))
-            candidates.Add(newNode);
+          {
+            if (!candidates.Contains(newNode)) candidates.Add(newNode);
+          }
           else
-            clampedCandidates.Add(newNode);
+          {
+            if (!clampedCandidates.Contains(newNode)) clampedCandidates.Add(newNode);
+          }
         }
 
       var minAngle = allCandidates.Min(cand => originalNode.AngleFrom(cand));
@@ -62,7 +65,6 @@ namespace SkyRoof
     private void InterpolateHighElevationSegments()
     {
       double highElevationThreshold = (90 - 2 * maxErrorDeg) * Geo.RinD;
-      double ninetyDegrees = 90 * Geo.RinD;
       double rotationTimeTolerance = 0.01; // Tolerance for considering rotation times as equal
 
       List<(int start, int end)> highElevationSegments = FindHighElevationSegments(highElevationThreshold);
@@ -73,47 +75,29 @@ namespace SkyRoof
 
         var firstState = States[start];
         var lastState = States[end];
-        double minRotationTime = double.MaxValue;
-        var bestPairs = new List<(Bearing firstNode, Bearing lastNode)>();
 
-        // First pass: find the minimum rotation time
+        // find the minimum rotation time for pairs with flipped elevation
+        double minRotationTime = double.MaxValue;
         foreach (var firstNode in firstState)
           foreach (var lastNode in lastState)
-          {
-            // Only consider pairs where one node has elevation < 90° and the other > 90°
-            bool firstNodeLessThan90 = firstNode.El < ninetyDegrees;
-            bool lastNodeLessThan90 = lastNode.El < ninetyDegrees;
+            if (firstNode.El < Trig.HalfPi != lastNode.El < Trig.HalfPi)
+              minRotationTime = Math.Min(minRotationTime, firstNode.RotationTime(lastNode));
 
-            // Skip if both nodes are on the same side of 90°
-            if (firstNodeLessThan90 == lastNodeLessThan90)
-              continue;
+        // interpolate pairs with minimum rotation time
+        foreach (var firstNode in firstState)
+          foreach (var lastNode in lastState)
+            if (firstNode.El < Trig.HalfPi != lastNode.El < Trig.HalfPi)
+              if (firstNode.RotationTime(lastNode) - minRotationTime < rotationTimeTolerance)
+                for (int i = start + 1; i < end; i++)
+                {
+                  double factor = (double)(i - start) / (end - start);
+                  double interpAz = firstNode.Az + factor * (lastNode.Az - firstNode.Az);
+                  double interpEl = firstNode.El + factor * (lastNode.El - firstNode.El);
 
-            double rotationTime = firstNode.RotationTime(lastNode);
-            if (rotationTime < minRotationTime)
-            {
-              minRotationTime = rotationTime;
-              bestPairs.Clear();
-              bestPairs.Add((firstNode, lastNode));
-            }
-            else if (Math.Abs(rotationTime - minRotationTime) <= rotationTimeTolerance)
-            {
-              bestPairs.Add((firstNode, lastNode));
-            }
-          }
-
-        // Second pass: interpolate using all the best pairs within tolerance
-        foreach (var (bestFirstNode, bestLastNode) in bestPairs)
-        {
-          for (int i = start + 1; i < end; i++)
-          {
-            double factor = (double)(i - start) / (end - start);
-            double interpAz = bestFirstNode.Az + factor * (bestLastNode.Az - bestFirstNode.Az);
-            double interpEl = bestFirstNode.El + factor * (bestLastNode.El - bestFirstNode.El);
-            var interpNode = new Bearing(interpAz, interpEl);
-            interpNode = interpNode.Clamp(feasibleRect);
-            States[i].Add(interpNode);
-          }
-        }
+                  var interpNode = new Bearing(interpAz, interpEl);
+                  interpNode = interpNode.Clamp(feasibleRect);
+                  States[i].Add(interpNode);
+                }
       }
     }
 

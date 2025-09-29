@@ -30,20 +30,33 @@ namespace SkyRoof
       EndTime = pass!.EndTime;
       StepSize = settings.StepSize; // Save step size
 
-      var bearings = GenerateBearings(pass);
+      var bearings = pass.Geostationary ? GenerateGeostationaryBearings(pass) : GenerateBearings(pass);
       if (bearings == null) return;
 
       var rect = ComputeFeasibleRect(settings);
       Optimizer = new PathOptimizer(rect, StepSize);
-
       OptimizedPath = Optimizer.OptimizePath(bearings, currentDirection);
     }
 
+    private List<Bearing>? GenerateGeostationaryBearings(SatellitePass pass)
+    {
+      var aos = pass.GetObservationAt(pass.StartTime);
+      var los = pass.GetObservationAt(pass.EndTime);
+      if (aos == null || los == null) return new();
+
+      return
+        [
+        new Bearing(aos.Azimuth.Radians, aos.Elevation.Radians),
+        new Bearing(los.Azimuth.Radians, los.Elevation.Radians)
+        ];
+    }
+
+
     private List<Bearing>? GenerateBearings(SatellitePass pass)
     {
-
       double totalSeconds = (EndTime - StartTime).TotalSeconds;
       int intervals = Math.Max(1, (int)Math.Round(totalSeconds / 5.0));
+
       TimeSpan step = TimeSpan.FromSeconds(totalSeconds / intervals);
       TimeSpan epsilon = TimeSpan.FromMilliseconds(1);
 

@@ -28,12 +28,12 @@ namespace SkyRoof
 
       Trellis = new Trellis(rawPath, FeasibleRect, MaxErrorDeg);
       DpTable = new(Trellis);
+      BestPaths = DpTable.FindBestPaths();
 
       // initial bearing is unknown, just return the best path
-      if (currentDirection == null) return DpTable.FindBestPaths()[0];
+      if (currentDirection == null) return BestPaths[0];
 
       // find all best paths with similar cost, choose the one with the least initial rotation time      
-      BestPaths = DpTable.FindBestPaths();
       return BestPaths.OrderBy(path => currentDirection.RotationTime(path[0])).First();
     }  
   }

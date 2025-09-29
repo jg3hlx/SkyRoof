@@ -31,7 +31,7 @@
       components = new System.ComponentModel.Container();
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       Toolbar = new Panel();
-      RotatorControl = new RotatorWidget();
+      RotatorWidget = new RotatorWidget();
       panel7 = new Panel();
       GainControl = new GainWidget();
       panel3 = new Panel();
@@ -97,13 +97,13 @@
       RotatorLedLabel = new ToolStripStatusLabel();
       RotatorStatusLabel = new ToolStripStatusLabel();
       RotatorDropdownBtn = new ToolStripDropDownButton();
+      EnableRotatorMNU = new ToolStripMenuItem();
+      TrackRotatorMNU = new ToolStripMenuItem();
       NoiseFloorLabel = new ToolStripStatusLabel();
       CpuLoadlabel = new ToolStripStatusLabel();
       UpdateLabel = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       panel4 = new Panel();
-      EnableRotatorMNU = new ToolStripMenuItem();
-      TrackRotatorMNU = new ToolStripMenuItem();
       Toolbar.SuspendLayout();
       panel3.SuspendLayout();
       ClockPanel.SuspendLayout();
@@ -113,7 +113,7 @@
       // 
       // Toolbar
       // 
-      Toolbar.Controls.Add(RotatorControl);
+      Toolbar.Controls.Add(RotatorWidget);
       Toolbar.Controls.Add(panel7);
       Toolbar.Controls.Add(GainControl);
       Toolbar.Controls.Add(panel3);
@@ -129,14 +129,14 @@
       Toolbar.Size = new Size(1834, 78);
       Toolbar.TabIndex = 0;
       // 
-      // RotatorControl
+      // RotatorWidget
       // 
-      RotatorControl.BorderStyle = BorderStyle.FixedSingle;
-      RotatorControl.Dock = DockStyle.Left;
-      RotatorControl.Location = new Point(1248, 0);
-      RotatorControl.Name = "RotatorControl";
-      RotatorControl.Size = new Size(210, 78);
-      RotatorControl.TabIndex = 8;
+      RotatorWidget.BorderStyle = BorderStyle.FixedSingle;
+      RotatorWidget.Dock = DockStyle.Left;
+      RotatorWidget.Location = new Point(1248, 0);
+      RotatorWidget.Name = "RotatorWidget";
+      RotatorWidget.Size = new Size(210, 78);
+      RotatorWidget.TabIndex = 8;
       // 
       // panel7
       // 
@@ -679,6 +679,21 @@
       RotatorDropdownBtn.Size = new Size(13, 33);
       RotatorDropdownBtn.Text = "toolStripDropDownButton1";
       // 
+      // EnableRotatorMNU
+      // 
+      EnableRotatorMNU.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+      EnableRotatorMNU.Name = "EnableRotatorMNU";
+      EnableRotatorMNU.Size = new Size(110, 22);
+      EnableRotatorMNU.Text = "Enable";
+      EnableRotatorMNU.Click += RotLedLabel_Click;
+      // 
+      // TrackRotatorMNU
+      // 
+      TrackRotatorMNU.Name = "TrackRotatorMNU";
+      TrackRotatorMNU.Size = new Size(110, 22);
+      TrackRotatorMNU.Text = "Track";
+      TrackRotatorMNU.Click += RotatorTrackMNU_CheckedChanged;
+      // 
       // NoiseFloorLabel
       // 
       NoiseFloorLabel.Name = "NoiseFloorLabel";
@@ -717,21 +732,6 @@
       panel4.Name = "panel4";
       panel4.Size = new Size(4, 824);
       panel4.TabIndex = 7;
-      // 
-      // EnableRotatorMNU
-      // 
-      EnableRotatorMNU.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-      EnableRotatorMNU.Name = "EnableRotatorMNU";
-      EnableRotatorMNU.Size = new Size(180, 22);
-      EnableRotatorMNU.Text = "Enable";
-      EnableRotatorMNU.Click += RotLedLabel_Click;
-      // 
-      // TrackRotatorMNU
-      // 
-      TrackRotatorMNU.Name = "TrackRotatorMNU";
-      TrackRotatorMNU.Size = new Size(180, 22);
-      TrackRotatorMNU.Text = "Track";
-      TrackRotatorMNU.Click += RotatorTrackMNU_CheckedChanged;
       // 
       // MainForm
       // 
@@ -819,7 +819,7 @@
     private GainWidget GainControl;
     private ToolStripStatusLabel RxCatLedLabel;
     private ToolStripStatusLabel RxCatStatusLabel;
-    private RotatorWidget RotatorControl;
+    private RotatorWidget RotatorWidget;
     private Panel panel5;
     private Panel panel4;
     private ToolStripStatusLabel RotatorLedLabel;

@@ -142,6 +142,8 @@ namespace SkyRoof
           item.SubItems[2].Text = $"{Utils.TimespanToString(data.Pass.StartTime - now)}";
           item.SubItems[3].Text = $"{Math.Round(data.Pass.MaxElevation)}°";
         }
+
+        item.ToolTipText = $"{data.Sat.GetTooltipText()}\n\n{string.Join("\n", data.Pass?.GetTooltipText(false) ?? [])}";
       }
 
       if (changed) SortItems();

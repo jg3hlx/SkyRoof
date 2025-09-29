@@ -12,7 +12,6 @@ namespace SkyRoof
   internal class DpTable : List<DpLayer>
   {
     private const double COST_TOLERANCE = 1e-2;
-
     private List<List<Bearing>> Results;
 
     public DpLayer Last => this[Count - 1];
@@ -66,9 +65,7 @@ namespace SkyRoof
       // Process each layer from end to start
       for (int layerIndex = Count - 1; layerIndex > 0; layerIndex--)
       {
-        // Store the best path for each unique first+last bearing object combination
-        // Use a dictionary where the key is a tuple of object references
-        var uniquePaths = new Dictionary<(int firstHashCode, int lastHashCode), (Bearing node, double cost, List<Bearing> path)>();
+        var uniquePaths = new Dictionary<(Bearing firstHashCode, Bearing lastHashCode), (Bearing node, double cost, List<Bearing> path)>();
 
         foreach (var (node, nodeCost, path) in pathsByLayer[layerIndex])
         {
@@ -80,14 +77,10 @@ namespace SkyRoof
               newPath.Insert(0, prev);
               double prevCost = cost - node.RotationTime(prev);
 
-              // Use object identity (reference) for comparison
-              // This will consider two paths the same if they start and end with the same Bearing instances
               var firstBearing = newPath[0];
               var lastBearing = newPath[^1];
               
-              // Create a tuple of reference hashcodes - uniquely identifies object instances
-              var key = (System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(firstBearing), 
-                          System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(lastBearing));
+              var key = (firstBearing, lastBearing);
 
               if (!uniquePaths.TryGetValue(key, out var existing) || prevCost < existing.cost)
                 uniquePaths[key] = (prev, prevCost, newPath);

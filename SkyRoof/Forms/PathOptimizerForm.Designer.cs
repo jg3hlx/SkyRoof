@@ -64,7 +64,7 @@ namespace SkyRoof
       // 
       // RotationTime
       // 
-      RotationTime.HeaderText = "Rotation Time";
+      RotationTime.HeaderText = "Initial Rotation";
       RotationTime.MinimumWidth = 6;
       RotationTime.Name = "RotationTime";
       RotationTime.ReadOnly = true;

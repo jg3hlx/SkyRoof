@@ -259,7 +259,8 @@ namespace SkyRoof
     private void listViewEx1_ItemMouseHover(object sender, ListViewItemMouseHoverEventArgs e)
     {
       if (e.Item == null) return;
-      e.Item.ToolTipText = ((SatellitePass)e.Item.Tag!).Satellite.GetTooltipText();      
+      var pass = (SatellitePass)e.Item.Tag!;
+      e.Item.ToolTipText = $"{pass.Satellite.GetTooltipText()}\n\n{string.Join("\n", pass.GetTooltipText(false))}";
     }
   }
 }

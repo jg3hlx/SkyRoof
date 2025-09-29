@@ -61,20 +61,19 @@ namespace SkyRoof
       if (sat == null)
         Path = null;
       else
-      {
-        var pass = ctx.HamPasses.GetNextPass(sat);
-        var sett = ctx.Settings.Rotator;
-        Path = new(pass, sett, AntBearing);
+        SetPass(ctx.HamPasses.GetNextPass(sat));
+    }
 
-        // Update PathOptimizerForm contents when a new path is created
-        UpdatePathOptimizerForm();
-      }
+    public void SetPass(SatellitePass? pass)
+    {
+      Path = pass == null ? null : Path = new(pass, ctx.Settings.Rotator, AntBearing);
 
       ResetUi();
       Advance();
-
       // show black LED if no satellite
       ctx.MainForm.ShowRotatorStatus();
+
+      UpdatePathOptimizerForm();
     }
 
     internal void Advance()
@@ -189,8 +188,8 @@ namespace SkyRoof
 
     private void BearingToUi()
     {
-      var SatBearing = Path?.GetRealSatelliteBearing();
-      if (SatBearing == null) { ResetUi(); return; }
+      var realSatBearing = Path?.GetRealSatelliteBearing();
+      if (realSatBearing == null || SatBearing == null) { ResetUi(); return; }
 
       Color satColor = TrackCheckbox.Checked ? Color.Aqua : Color.Teal;
 
@@ -202,8 +201,8 @@ namespace SkyRoof
 
       SatelliteAzimuthLabel.ForeColor = satColor;
       SatelliteElevationLabel.ForeColor = satColor;
-      SatelliteAzimuthLabel.Text = $"{SatBearing.AzDeg:F0}°";
-      SatelliteElevationLabel.Text = $"{SatBearing.ElDeg:F0}°";
+      SatelliteAzimuthLabel.Text = $"{realSatBearing.AzDeg:F0}°";
+      SatelliteElevationLabel.Text = $"{realSatBearing.ElDeg:F0}°";
 
       AntennaAzimuthLabel.BackColor = antColor;
       AntennaElevationLabel.BackColor = antColor;

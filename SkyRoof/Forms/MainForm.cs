@@ -23,7 +23,7 @@ namespace SkyRoof
 
       ctx.SatelliteSelector = SatelliteSelector;
       ctx.FrequencyControl = FrequencyControl;
-      ctx.RotatorControl = RotatorControl;
+      ctx.RotatorControl = RotatorWidget;
       SatelliteSelector.ctx = ctx;
       FrequencyControl.ctx = ctx;
       GainControl.ctx = ctx;
@@ -858,8 +858,8 @@ namespace SkyRoof
       ctx.CatControl.Rx?.Retry();
       ctx.CatControl.Tx?.Retry();
       ctx.Announcer.AnnouncePasses();
-      RotatorControl.Retry();
-      RotatorControl.Advance();
+      RotatorWidget.Retry();
+      RotatorWidget.Advance();
       ctx.QsoEntryPanel?.SetUtc();
 
       ShowCpuUsage();
@@ -979,6 +979,7 @@ namespace SkyRoof
     {
       SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
       ctx.SkyViewPanel?.SetPass(pass);
+      RotatorWidget.SetPass(pass);
     }
 
     private void UpdateLabel_Click(object sender, EventArgs e)
@@ -988,7 +989,7 @@ namespace SkyRoof
 
     private void RotatorTrackMNU_CheckedChanged(object sender, EventArgs e)
     {
-      RotatorControl.ToggleTracking();
+      RotatorWidget.ToggleTracking();
     }
   }
 }

@@ -144,6 +144,11 @@ namespace SkyRoof
       var sett = ctx.Settings.Satellites;
       sett.SelectedSatelliteId ??= SelectedGroup.SelectedSatId;
       SelectedSatellite = ctx.SatnogsDb.GetSatellite(sett.SelectedSatelliteId);
+      if (SelectedSatellite == null)
+      {
+        sett.SelectedSatelliteId = SelectedGroup.SatelliteIds[0];
+        SelectedSatellite = ctx.SatnogsDb.GetSatellite(sett.SelectedSatelliteId);
+      }
 
       SetSatelliteInCombobox();
 

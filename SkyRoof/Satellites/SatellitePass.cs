@@ -73,22 +73,22 @@ namespace SkyRoof
       var now = DateTime.UtcNow;
       var obs1 = GetObservationAt(now);
       var obs2 = GetObservationAt(now.AddMinutes(1));
-
       bool down = obs1 == null || obs2 == null || obs1.Elevation > obs2.Elevation;
       string upDpwn = down ? "↓" : "↑";
   
+      var aos = GetObservationAt(StartTime);
+      var los = GetObservationAt(EndTime);
+
       string[] tooltip = new string[6];
 
       if (EndTime < DateTime.UtcNow) tooltip[0] = "Ended.";
       else if (StartTime < DateTime.UtcNow) tooltip[0] = $"LOS ↓  in {Utils.TimespanToString(EndTime - DateTime.UtcNow, showSeconds)}";
       else tooltip[0] = $"AOS ↑  in {Utils.TimespanToString(StartTime - DateTime.UtcNow, showSeconds)}";
 
-
-
-      tooltip[1] = $"{StartTime.ToLocalTime():yyyy-MM-dd}";
-      tooltip[2] = $"{StartTime.ToLocalTime():HH:mm:ss} to {EndTime.ToLocalTime():HH:mm:ss}";
+      tooltip[1] = $"AOS azimuth {aos?.Azimuth.Degrees:F0}º at {StartTime:yyyy-MM-dd HH:mm:ss}";
+      tooltip[2] = $"LOS azimuth {los?.Azimuth.Degrees:F0}º at {EndTime:yyyy-MM-dd HH:mm:ss}";
       tooltip[3] = $"Duration: {Utils.TimespanToString(EndTime - StartTime, false)}";
-      tooltip[4] = $"Elevation: {obs1?.Elevation.Degrees:F0}º {upDpwn}  (Max {MaxElevation:F0}º)";
+      tooltip[4] = $"Elevation: {obs1?.Elevation.Degrees:F0}º {upDpwn}  (Max {MaxElevation:F0}º at {CulminationTime:HH:mm})";
       tooltip[5] = $"Orbit: #{OrbitNumber}";
 
       return tooltip;

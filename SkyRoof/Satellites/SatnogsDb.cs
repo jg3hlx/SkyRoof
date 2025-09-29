@@ -188,9 +188,16 @@ namespace SkyRoof
           sat.BuildAllNames();
           sat.SetFlags();
         }
+        
+        // remove satellites without transmitters
+        var satellitesWithoutTransmitters = SatelliteList.Where(kvp => kvp.Value.Transmitters.Count == 0).ToList();
+        foreach (var sat in satellitesWithoutTransmitters)
+        {
+          SatelliteList.Remove(sat.Key);
+          Log.Debug($"Removed satellite {sat.Value.name} (ID: {sat.Key}) because it has no transmitters");
+        }
 
         SaveToFile();
-
         loaded = SatelliteList.Count > 0;
       }
       catch (Exception ex)
