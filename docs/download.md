@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.21 RC](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.21-RC/SkyRoofSetup-v.1.21-RC.zip)
+[SkyRoof v.1.22](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.22/SkyRoofSetup-v.1.22.zip)
 
 <br>
 
@@ -15,6 +15,13 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.22 FINAL RELEASE
+
+- implemented the Smart Antenna Rotation algorithm;
+- satellite pass details added to the mouse tooltip;
+- satellites without transmitters removed from the dataset;
+- fixed ADIF generation error.
 
 #### v.1.21 RC
 
