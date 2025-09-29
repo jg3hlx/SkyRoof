@@ -85,9 +85,7 @@ namespace VE3NEA
     internal static string GetVersionNumber()
     {
       var version = typeof(Utils).Assembly.GetName().Version!;
-
-      // {!} todo: remove 'RC' after release
-     return $"{version.Major}.{version.Minor} RC";
+     return $"{version.Major}.{version.Minor}";
     }
 
     internal static string GetVersionString()
