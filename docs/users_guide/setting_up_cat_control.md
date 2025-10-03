@@ -78,3 +78,14 @@ The settings in the RX and TX sections are:
 
 - **Show Corrected Frequency** - The SkyRoof can display either the nominal frequency of the satellite transmitter, or the
     frequency with all corrections applied. Another way to toggle this setting is via the right-click menu on the frequency display widget on the toolbar.
+
+## Model-Specific Notes
+
+### IC-9700
+
+- set **CI-V USB Port** in the transceiver menu to **Unlink from REMOTE**;
+- note that the radio is used in the Dual Watch mode, not in the Sat mode, so the upper frequency on the transceiver screen is uplink, the lower one is downlink.
+
+## IC-991A
+
+- set **CAT RTS** in the transceiver menu to Disabled.
