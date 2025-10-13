@@ -56,6 +56,8 @@ The program can work without an SDR, or even without any radio at all, but many 
 
 - [Setting Up Remote Access to SDR](https://groups.google.com/g/skyroof/c/ru5Pc9mim0w) TNX Paolo IZ1MLL
 
+- [SkyRoof + QSSTV](https://github.com/Acuantico/QSSTV-over-SkyRoof) TNX Acuántico Power
+
 ## Discussion Group
 
 - [SkyRoof](https://groups.google.com/g/skyroof) at Google Groups
