@@ -58,14 +58,30 @@ namespace SkyRoof
     {
       if (RequestedBearing == LastWrittenBearing) return;
 
-      // Use AzDeg and ElDeg to get degrees for the protocol
-      SendWriteCommand($"P {RequestedBearing!.AzDeg:F1} {RequestedBearing.ElDeg:F1}");
+      try
+      {
+
+        SendWriteCommand($"P {RequestedBearing!.AzDeg:F1} {RequestedBearing.ElDeg:F1}");
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, $"Error sending rotator position command.");
+      }
+
       LastWrittenBearing = RequestedBearing;
     }
 
     private void ReadBearing()
     {
-      var reply = SendReadCommand("p");
+      string? reply = null;
+      try
+      {
+        reply = SendReadCommand("p");
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, $"Error sending rotator position read command.");
+      }
       if (reply == null) return;
 
       var parts = reply.Trim().Split('\n');
