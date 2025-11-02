@@ -295,7 +295,7 @@ namespace SkyRoof
       if (info.Name.ToLower().Contains("airspy"))
       {
         info.SampleRate = 6_000_000;
-        info.MaxBandwidth = 3_100_000;
+        info.MaxBandwidth = SdrConst.MAX_BANDWIDTH;
       }
       else if (info.Name.ToLower().Contains("rtl"))
       {
@@ -306,16 +306,16 @@ namespace SkyRoof
       {
         //info.SampleRate = 8_000_000;
         //info.HardwareBandwidth = 5_000_000;
-        //info.MaxBandwidth = 3_100_000;
+        //info.MaxBandwidth = SdrConst.MAX_BANDWIDTH;
 
         info.SampleRate = 4_000_000;
         info.HardwareBandwidth = 5_000_000;
-        info.MaxBandwidth = 3_100_000;
+        info.MaxBandwidth = SdrConst.MAX_BANDWIDTH;
       }
       else
       {
         info.SampleRate = 4_000_000;
-        info.MaxBandwidth = 3_100_000;
+        info.MaxBandwidth = SdrConst.MAX_BANDWIDTH;
       }
 
       info.ValidateRateAndBandwidth();

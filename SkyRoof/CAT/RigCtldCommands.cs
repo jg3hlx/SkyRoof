@@ -41,11 +41,7 @@
     // Standard RigCtld commands in the simplex mode. read/write rx and tx frequencies both map to the f/F commands
     public static readonly RigCtldCommands RigCtld = new RigCtldCommands
     {
-      //setup_duplex = [ "U SATMODE 1" ],
-      //setup_split = [ "U SATMODE 0", "U DUAL_WATCH 0", "V VFOA", "S 1 VFOB", "V VFOA" ],
-      //setup_simplex = [ "U SATMODE 0", "U DUAL_WATCH 0", "V VFOA", "S 0 VFOB", "V VFOA" ],
-
-      setup_simplex = ["U DUAL_WATCH 0", "V VFOA", "S 0 VFOB", "V VFOA"],
+      setup_simplex = ["V VFOA", "S 0 VFOB", "V VFOA"],
       
 
       read_rx_frequency = "f",
