@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.22](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.22/SkyRoofSetup-v.1.22.zip)
+[SkyRoof v.1.23](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.23/SkyRoofSetup-v.1.23.zip)
 
 <br>
 
@@ -15,6 +15,11 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.223 FINAL RELEASE
+
+- the DUAL_WATCH command is no longer sent to rigctld.exe;
+- improved error handling for antenna rotator.
 
 #### v.1.22 FINAL RELEASE
 
