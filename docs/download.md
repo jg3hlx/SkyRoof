@@ -16,7 +16,7 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 
 ### Release Notes
 
-#### v.1.223 FINAL RELEASE
+#### v.1.23
 
 - the DUAL_WATCH command is no longer sent to rigctld.exe;
 - improved error handling for antenna rotator.
