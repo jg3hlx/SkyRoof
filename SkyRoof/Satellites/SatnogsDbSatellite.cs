@@ -274,7 +274,7 @@ namespace SkyRoof
     {
       if (Tle == null) return;
 
-      TleInfo = $"{Tle.updated:yyyy-MM-dd HH:mm} ({ Tle.tle_source})";
+      TleInfo = $"{Tle.updated:yyyy-MM-dd HH:mm}Z ({ Tle.tle_source})";
 
       // inclination
       string s = Tle.tle2.Substring(8, 8);
