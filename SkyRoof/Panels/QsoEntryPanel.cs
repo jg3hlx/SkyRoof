@@ -44,7 +44,7 @@ namespace SkyRoof
       ctx.MainForm.QsoEntryMNU.Checked = true;
 
       Changing = true;
-      BandComboBox.DataSource = new string[] { "2M", "70CM", "23CM", "13CM" };
+      BandComboBox.DataSource = new string[] { "2m", "70cm", "23cm", "13cm" };
       ModeComboBox.DataSource = new string[] { "CW", "SSB", "FM", "FT4" };
       StateComboBox.DataSource = States.Split(',');
       SatComboBox.DataSource = new SatelliteNames().Lotw.Values.ToArray();
@@ -148,9 +148,9 @@ namespace SkyRoof
     {
       var freq = ctx.FrequencyControl.RadioLink.CorrectedUplinkFrequency;
       if (SatnogsDbTransmitter.IsUhfFrequency(freq))
-        BandComboBox.Text = "70CM";
+        BandComboBox.Text = "70cm";
       else if (SatnogsDbTransmitter.IsVhfFrequency(freq))
-        BandComboBox.Text = "2M";
+        BandComboBox.Text = "2m";
       else
       {
         BandComboBox.SelectedIndex = -1;
@@ -269,7 +269,7 @@ namespace SkyRoof
       else
       {
         info.Utc = UtcPicker.Value;
-        info.Band = BandComboBox.Text.ToUpper();
+        info.Band = BandComboBox.Text.ToLower();
         info.Mode = ModeComboBox.Text.ToUpper();
         info.Sat = SatComboBox.Text.Trim();
         info.Call = CallEdit.Text.ToUpper();

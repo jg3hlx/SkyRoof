@@ -187,7 +187,7 @@
       // 
       // BandComboBox
       // 
-      BandComboBox.AutoCompleteCustomSource.AddRange(new string[] { "2M", "70CM" });
+      BandComboBox.AutoCompleteCustomSource.AddRange(new string[] { "2m", "70cm", "23cm", "13cm" });
       BandComboBox.Font = new Font("Courier New", 12F);
       BandComboBox.FormattingEnabled = true;
       BandComboBox.Location = new Point(1, 1);
@@ -227,7 +227,6 @@
       // 
       // ModeComboBox
       // 
-      ModeComboBox.AutoCompleteCustomSource.AddRange(new string[] { "2M", "70CM" });
       ModeComboBox.Font = new Font("Courier New", 12F);
       ModeComboBox.FormattingEnabled = true;
       ModeComboBox.Location = new Point(1, 1);
@@ -267,7 +266,6 @@
       // 
       // SatComboBox
       // 
-      SatComboBox.AutoCompleteCustomSource.AddRange(new string[] { "2M", "70CM" });
       SatComboBox.Font = new Font("Courier New", 12F);
       SatComboBox.FormattingEnabled = true;
       SatComboBox.Location = new Point(1, 1);
@@ -388,7 +386,6 @@
       // 
       // StateComboBox
       // 
-      StateComboBox.AutoCompleteCustomSource.AddRange(new string[] { "2M", "70CM" });
       StateComboBox.Font = new Font("Courier New", 12F);
       StateComboBox.FormattingEnabled = true;
       StateComboBox.Location = new Point(1, 1);

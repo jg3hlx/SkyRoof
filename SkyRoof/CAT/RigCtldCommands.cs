@@ -42,8 +42,6 @@
     public static readonly RigCtldCommands RigCtld = new RigCtldCommands
     {
       setup_simplex = ["V VFOA", "S 0 VFOB", "V VFOA"],
-      
-
       read_rx_frequency = "f",
       read_tx_frequency = "f",
       read_ptt = "t",
