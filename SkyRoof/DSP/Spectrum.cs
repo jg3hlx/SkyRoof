@@ -39,7 +39,7 @@ namespace SkyRoof
       Buffer = new T[BufferLength];
       PowerSpectrum = new float[FftSize];
       AverageSpectrum = new float[FftSize];
-      MedianComputationBuffer = new float[FftSize];
+      MedianComputationBuffer = new float[FftSize / 2];
       Window = Dsp.BlackmanWindow(BufferLength);
       Dsp.Normalize(Window);
     }
@@ -138,7 +138,7 @@ namespace SkyRoof
 
     private float ComputeMedian(float[] data)
     {
-      Array.Copy(data, MedianComputationBuffer, FftSize);
+      Array.Copy(data, FftSize / 4, MedianComputationBuffer, 0, FftSize / 2);
       return ArrayStatistics.PercentileInplace(MedianComputationBuffer, 20);
     }
 
