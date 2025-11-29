@@ -86,6 +86,20 @@ namespace SkyRoof
       return ModeOffsets[(int)CurrentMode];
     }
 
+    public TimeSpan GetDelay()
+    {
+      double rationalDelaySamples = NativeLiquidDsp.rresamp_crcf_get_delay(rresamp);
+      double seconds = rationalDelaySamples / OUTPUT_SAMPLING_RATE;
+
+      if (OctaveDecimationFactor > 1)
+      {
+        double octaveDelaySamples = NativeLiquidDsp.msresamp2_crcf_get_delay(msresamp2);
+        seconds = + octaveDelaySamples / RationalResamplerInputRate;
+      }
+
+      return TimeSpan.FromSeconds(seconds);
+    }
+
 
 
 
@@ -184,11 +198,15 @@ namespace SkyRoof
         ApplyRationalResampler(RationalResamplerInputBuffer);
       }
 
-
-      // return IQ data
+      // get args for events
       int outputCount = RationalResamplerOutputBuffer.Count;
       var audioArgs = FloatArgsPool.Rent(outputCount);
       var iqArgs = ComplexArgsPool.Rent(outputCount);
+      audioArgs.Utc = args.Utc;
+      iqArgs.Utc = args.Utc;
+
+
+      // return IQ data
       for (int i = 0; i < outputCount; i++)
         iqArgs.Data[i] = RationalResamplerOutputBuffer.Data[i] * 0.3f;
       IqDataAvailable?.Invoke(this, iqArgs);
