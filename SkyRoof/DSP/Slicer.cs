@@ -39,7 +39,6 @@ namespace SkyRoof
 
     public double InputRate { get; private set; }
     public double Bandwidth { get => Bandwidths[(int)CurrentMode]; }
-    public double FrequencyOffset { get => offset; set => SetOffset(value); }
 
     public event EventHandler<DataEventArgs<float>>? AudioDataAvailable;
     public event EventHandler<DataEventArgs<Complex32>>? IqDataAvailable;
@@ -52,7 +51,7 @@ namespace SkyRoof
       FirstMixer = NativeLiquidDsp.nco_crcf_create(NativeLiquidDsp.LiquidNcoType.LIQUID_NCO);
       SecondMixer = NativeLiquidDsp.nco_crcf_create(NativeLiquidDsp.LiquidNcoType.LIQUID_NCO);
 
-      FrequencyOffset = frequencyOffset;
+      SetOffset(frequencyOffset);
 
       RationalResamplerInputRate = CreateOctaveResampler();
       CreateRationalResampler();
@@ -65,7 +64,26 @@ namespace SkyRoof
     public void SetOffset(double offset)
     {
       this.offset = offset;
+      if (CurrentMode != Mode.CW) offset += ModeOffsets[(int)CurrentMode];
       NativeLiquidDsp.nco_crcf_set_frequency(FirstMixer, (float)(Geo.TwoPi * offset / InputRate));
+    }
+
+    private void SetMode(Mode mode)
+    {
+      CurrentMode = mode;
+
+      CreateFilter();
+
+      float audioOffset = ModeOffsets[(int)CurrentMode];
+      NativeLiquidDsp.nco_crcf_set_frequency(SecondMixer, (float)(Geo.TwoPi * audioOffset / OUTPUT_SAMPLING_RATE));
+
+      SetOffset(offset);
+    }
+
+    public double GetModeoffset()
+    {
+      if (CurrentMode == Mode.CW) return 0;
+      return ModeOffsets[(int)CurrentMode];
     }
 
 
@@ -219,16 +237,6 @@ namespace SkyRoof
       ComplexArgsPool.Return(iqArgs);
       FloatArgsPool.Return(audioArgs);
       RationalResamplerOutputBuffer.Count = 0;
-    }
-
-    private void SetMode(Mode mode)
-    {
-      CurrentMode = mode;
-
-      CreateFilter();
-
-      float offset = ModeOffsets[(int)CurrentMode];
-      NativeLiquidDsp.nco_crcf_set_frequency(SecondMixer, (float)(Geo.TwoPi * offset / OUTPUT_SAMPLING_RATE));      
     }
 
     public void ApplyOctaveResampler(FifoBuffer<Complex32> buffer)
