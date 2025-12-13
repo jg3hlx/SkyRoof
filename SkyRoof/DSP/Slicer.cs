@@ -11,6 +11,7 @@ namespace SkyRoof
   {
     public enum Mode { USB, LSB, USB_D, LSB_D, CW, FM, FM_D }
 <<<<<<< HEAD
+<<<<<<< HEAD
     // filter bandwidth by mode SSB = 300..3000, SSB-D = 50..4050, CW = 350..850, FM = -8000..8000 Hz, FM-D = -24000..24000 Hz
     private static readonly int[] Bandwidths = [2800, 2800, 4000, 4000, 500, 16000, 48000];
     private static readonly int[] ModeOffsets = [1600, -1600, 2050, -2050, 600, 0, 0];
@@ -19,9 +20,14 @@ namespace SkyRoof
     private static readonly int[] Bandwidths = [2800, 2800, 5800, 5800, 500, 16000, 48000];
     private static readonly int[] ModeOffsets = [1600, -1600, 3000, -3000, 600, 0, 0];
 >>>>>>> configurable decoded bandwitdh
+=======
+    //300..3000, 100..4900, 350..850, -8000..8000 Hz
+    private static readonly int[] Bandwidths = [2800, 2800, 4800, 4800, 500, 16000, 48000];
+    private static readonly int[] ModeOffsets = [1600, -1600, 2500, -2500, 600, 0, 0];
+>>>>>>> limit decode BW to 5 kHz
 
     private const int STOPBAND_REJECTION_DB = 80;
-    private const double USEFUL_BANDWIDTH = 0.9 * SdrConst.AUDIO_SAMPLING_RATE / 2; // 22 kHz useful at 48 KHz sampling rate
+    private const double USEFUL_BANDWIDTH = 0.95 * SdrConst.AUDIO_SAMPLING_RATE / 2; // 22 kHz useful at 48 KHz sampling rate
     public const int OUTPUT_SAMPLING_RATE = 48000;
 
     private int OctaveDecimationFactor, RationalInterpolationFactor, RationalDecimationFactor;
