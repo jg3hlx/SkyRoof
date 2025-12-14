@@ -22,7 +22,7 @@ namespace SkyRoof
 >>>>>>> configurable decoded bandwitdh
 =======
     //300..3000, 100..4900, 350..850, -8000..8000 Hz
-    private static readonly int[] Bandwidths = [2800, 2800, 4800, 4800, 500, 16000, 48000];
+    private static readonly int[] Bandwidths = [2800, 2800, 5000, 5000, 500, 16000, 48000];
     private static readonly int[] ModeOffsets = [1600, -1600, 2500, -2500, 600, 0, 0];
 >>>>>>> limit decode BW to 5 kHz
 
@@ -149,7 +149,7 @@ namespace SkyRoof
       double filterRate = RationalResamplerInputRate * RationalInterpolationFactor;  // sampling rate after interpolation
       float fc = (float)(USEFUL_BANDWIDTH / filterRate);
 
-      int FILTER_DELAY = 25; // the default in LiquidDsp is 15
+      int FILTER_DELAY = 45; // the default in LiquidDsp is 15
       int filterLength = 2 * FILTER_DELAY * RationalInterpolationFactor + 1;
       var filter = NativeLiquidDsp.firfilt_crcf_create_kaiser((uint)filterLength, fc, STOPBAND_REJECTION_DB, 0);
       var coeffPointer = NativeLiquidDsp.firfilt_crcf_get_coefficients(filter);
