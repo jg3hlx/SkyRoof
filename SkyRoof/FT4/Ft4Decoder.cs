@@ -10,7 +10,8 @@ namespace SkyRoof
     private float[] Samples = [];
     private int SampleCount = 0;
     DateTime DataUtc;
-    private float[]? Slot;
+    private float[] Slot = new float[NativeFT4Coder.DECODE_SAMPLE_COUNT];
+    private readonly PinnedDecodedMessageBuffer MessagesBuffer = new(NativeFT4Coder.DECODE_MAX_CHARS);
 
     public const int FT4_SIGNAL_BANDWIDTH = 83; // Hz
     public int RxAudioFrequency = 1500;
@@ -28,31 +29,21 @@ namespace SkyRoof
     {
       AppendData(args);
 
-      var slot = GetSlotToDecode();
-      if (slot != null)
-      {
-        Slot = slot;
-        Decode(Slot);
-      }
+      if (GetSlotToDecode()) Decode(Slot);
     }
 
     private void AppendData(DataEventArgs<float> args)
     {
-
-      int neededLength = SampleCount + args.Data.Length;
+      int neededLength = SampleCount + args.Count;
       if (Samples.Length < neededLength) Array.Resize(ref Samples, neededLength);
 
-      Array.Copy(args.Data, 0, Samples, SampleCount, args.Data.Length);
-      SampleCount += args.Data.Length;
-
-      //var delay = (args.Utc - DataUtc).TotalMilliseconds;
-      //int expectedCount = (int)(delay * NativeFT4Coder.SAMPLING_RATE / 1000);
-      //Debug.WriteLine($"Ft4Decoder: Appended {args.Data.Length} samples, delay{delay:F1}, diff {args.Data.Length - expectedCount}");
+      Array.Copy(args.Data, 0, Samples, SampleCount, args.Count);
+      SampleCount += args.Count;
 
       DataUtc = args.Utc;
     }
 
-    private float[]? GetSlotToDecode()
+    private bool GetSlotToDecode()
     {
       // find slot boundaries
       double secondsSinceMidnight = (DataUtc - DataUtc.Date).TotalSeconds;
@@ -67,17 +58,22 @@ namespace SkyRoof
       // is new slot available?
       bool slotAvailable = slotStartIndex >= 0 && slotEndIndex <= SampleCount;
       bool slotDecoded = CurrentSlotNumber == DecodedSlotNumber;
-      if (!slotAvailable || slotDecoded) return null;
+      if (!slotAvailable || slotDecoded) return false;
 
       // extract slot
-      var slot = Samples.Skip(slotStartIndex).Take(NativeFT4Coder.DECODE_SAMPLE_COUNT).ToArray();
+      Array.Copy(Samples, slotStartIndex, Slot, 0, NativeFT4Coder.DECODE_SAMPLE_COUNT);
+
+      // DEBUG
+      int samplesDiff = slotEndIndex - (int)(7.5f * NativeFT4Coder.SAMPLING_RATE);
+      int msDiff = DateTime.UtcNow.Subtract(DataUtc).Milliseconds;
+      //Debug.WriteLine($"------------------------------------------------------------------------------------------- samplesDiff: {samplesDiff}, msDiff: {msDiff}");
 
       // dump used samples
       int samplesToKeep = SampleCount - slotEndIndex;
       Array.Copy(Samples, slotEndIndex, Samples, 0, samplesToKeep);
       SampleCount = samplesToKeep;
 
-      return slot;
+      return true;
     }
 
     private void Decode(float[] samples)
@@ -91,9 +87,10 @@ namespace SkyRoof
       decodedMessages.Append(' ', NativeFT4Coder.DECODE_MAX_CHARS);
       NativeFT4Coder.QsoStage stage = NativeFT4Coder.QsoStage.CALLING;
 
-      NativeFT4Coder.decode(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency, MyCall, TheirCall, decodedMessages);
+      NativeFT4Coder.decode(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency, MyCall, TheirCall, MessagesBuffer.Pointer);
 
-      string messagesStr = decodedMessages.ToString().Trim();
+
+      string messagesStr = MessagesBuffer.HasData() ? MessagesBuffer.ToStringAndClear() : string.Empty;
       string[] messages = messagesStr.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
 
       SlotDecoded?.Invoke(this, new DataEventArgs<string>(messages, DataUtc - TimeSpan.FromSeconds(NativeFT4Coder.DECODE_SECONDS)));
@@ -101,6 +98,12 @@ namespace SkyRoof
       DecodedSlotNumber = CurrentSlotNumber;
     }
 
+
+    public override void Dispose()
+    {
+      base.Dispose();
+      MessagesBuffer.Dispose();
+    }
 
 
     public void SaveSamples()

@@ -21,9 +21,9 @@ namespace VE3NEA
   //-----------------------------------------------------------------------------------------------
   //                                     base class
   //-----------------------------------------------------------------------------------------------
-  
+
   // <T> is float or Complex32
-  
+
   public abstract class Soundcard : IDisposable
   {
     protected const int DEFAULT_SAMPLING_RATE = 48_000;
@@ -107,7 +107,7 @@ namespace VE3NEA
       StateChanged?.Invoke(this, EventArgs.Empty);
 
       EnableRetry(Enabled && Retry && !running);
-    } 
+    }
 
     public static Entry[] ListDevices(DataFlow direction)
     {
@@ -169,7 +169,7 @@ namespace VE3NEA
         wasapiOut.Device = mmDevice;
         wasapiOut.Initialize(waveSource);
         wasapiOut.Volume = volume;
-        wasapiOut.Stopped += (s,a) => OnStateChanged(false);
+        wasapiOut.Stopped += (s, a) => OnStateChanged(false);
         wasapiOut.Play();
 
         OnStateChanged(true);
@@ -215,10 +215,140 @@ namespace VE3NEA
     private ISampleSource? SampleSource;
     private DataEventArgsPool<float> ArgsPool = new();
 
+    private Thread? ReaderThread;
+    private volatile bool ReaderRunning;
 
     public event EventHandler<DataEventArgs<float>>? SamplesAvailable;
 
-    public InputSoundcard(string? audioDeviceId = null, int? samplingRate = null) : base(audioDeviceId)
+    public InputSoundcard(string? audioDeviceId = null, int? samplingRate = null)
+      : base(audioDeviceId)
+    {
+    }
+
+    protected override void Start()
+    {
+      try
+      {
+        if (mmDevice?.DeviceState != DeviceState.Active)
+          throw new Exception("Audio device not active");
+
+        int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
+        WaveFormat format = new WaveFormat(
+          SamplingRate,
+          32,
+          channelCount,
+          AudioEncoding.IeeeFloat);
+
+        soundIn = new WasapiCapture(
+          false,
+          AudioClientShareMode.Shared,
+          20,
+          format);
+
+        soundIn.Device = mmDevice;
+        soundIn.Initialize();
+        soundIn.Stopped += (s, a) => OnStateChanged(false);
+
+        SampleSource = new SoundInSource(soundIn).ToSampleSource();
+        SampleSource = SampleSource.ChangeSampleRate(SamplingRate);
+
+        soundIn.Start();
+
+        StartReaderThread();
+
+        OnStateChanged(true);
+      }
+      catch (Exception e)
+      {
+        Log.Error(e, "Error starting InputSoundcard");
+        Stop();
+      }
+    }
+
+    protected override void Stop()
+    {
+      StopReaderThread();
+
+      if (IsRunning)
+        soundIn?.Stop();
+
+      soundIn?.Dispose();
+      soundIn = null;
+      SampleSource = null;
+
+      OnStateChanged(false);
+    }
+
+    //-----------------------------------------------------------------------------------------------
+    // Continuous pull loop
+    //-----------------------------------------------------------------------------------------------
+    private void StartReaderThread()
+    {
+      ReaderRunning = true;
+
+      ReaderThread = new Thread(ReaderLoop)
+      {
+        IsBackground = true,
+        Name = "InputSoundcardReader"
+      };
+
+      ReaderThread.Start();
+    }
+
+    private void StopReaderThread()
+    {
+      ReaderRunning = false;
+      ReaderThread?.Join();
+      ReaderThread = null;
+    }
+
+    private void ReaderLoop()
+    {
+      Debug.Assert(SampleSource != null);
+
+      int channels = typeof(T) == typeof(Complex32) ? 2 : 1;
+      int blockSize = 1024 * channels;
+
+      while (ReaderRunning)
+      {
+        if (SampleSource == null)
+          break;
+
+        var args = ArgsPool.Rent(blockSize);
+
+        int read = SampleSource.Read(args.Data, 0, blockSize);
+
+        if (read > 0)
+        {
+          args.Count = read;
+          SamplesAvailable?.Invoke(this, args);
+        }
+
+        ArgsPool.Return(args);
+
+        if (read == 0)
+          Thread.Sleep(1); // avoid busy spin if device starves
+      }
+    }
+  }
+
+
+
+
+
+  //-----------------------------------------------------------------------------------------------
+  //                                     input soundcard OLD
+  //-----------------------------------------------------------------------------------------------
+  public class InputSoundcardOld<T> : Soundcard
+  {
+    private WasapiCapture? soundIn;
+    private ISampleSource? SampleSource;
+    private DataEventArgsPool<float> ArgsPool = new();
+
+
+    public event EventHandler<DataEventArgs<float>>? SamplesAvailable;
+
+    public InputSoundcardOld(string? audioDeviceId = null, int? samplingRate = null) : base(audioDeviceId)
     {
     }
 
@@ -232,10 +362,10 @@ namespace VE3NEA
         int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
         WaveFormat format = new WaveFormat(SamplingRate, 32, channelCount, AudioEncoding.IeeeFloat);
 
-        soundIn = new WasapiCapture(false, AudioClientShareMode.Shared, 1000, format);
+        soundIn = new WasapiCapture(false, AudioClientShareMode.Shared, 20, format);
         soundIn.Device = mmDevice;
         soundIn.Initialize();
-        soundIn.Stopped += (s,a) => OnStateChanged(false);
+        soundIn.Stopped += (s, a) => OnStateChanged(false);
         soundIn.DataAvailable += SoundIn_DataAvailable;
 
         // create sample source wrapper
@@ -264,12 +394,12 @@ namespace VE3NEA
     }
 
     //{!}
-    public static long TotalSampleCount = 0;
+    //public static long TotalSampleCount = 0;
 
     private void SoundIn_DataAvailable(object? sender, DataAvailableEventArgs e)
     {
       //{!}
-      var sw = Stopwatch.StartNew();
+      //var sw = Stopwatch.StartNew();
 
       if (SampleSource == null) return;
 
@@ -278,11 +408,11 @@ namespace VE3NEA
 
       var args = ArgsPool.Rent(sampleCount);
       args.Count = SampleSource.Read(args.Data, 0, sampleCount);
-      TotalSampleCount += args.Count; //{!}
+      //TotalSampleCount += args.Count; //{!}
       SamplesAvailable?.Invoke(this, args);
       ArgsPool.Return(args);
 
-      sw.Stop();
+      //sw.Stop();
     }
   }
 }

@@ -36,7 +36,7 @@ namespace VE3NEA
 
 
     [DllImport("ft4_coder", EntryPoint = "decode_ft4_f_", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern void decode(float[] audio_samples, ref QsoStage QsoStage,
-      ref int rx_audio_frequency, ref int cutoff_frequency, string my_call, string his_call, StringBuilder decoded_messages);
+    public static extern void decode(float[] audio_samples, ref QsoStage QsoStage, ref int rx_audio_frequency, ref int cutoff_frequency,
+      [MarshalAs(UnmanagedType.LPStr)] string myCall, [MarshalAs(UnmanagedType.LPStr)] string theirCall, IntPtr decodedMessages);
   }
 }

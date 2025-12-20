@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Serilog;
+using SkyRoof;
 
 namespace VE3NEA
 {
@@ -58,7 +59,7 @@ namespace VE3NEA
         try
         {
           // safety valve
-          if (Queue.Count > 50)
+          if (Queue.Count > 150)
             while (Queue.TryDequeue(out DataEventArgs<T> args))
               ArgsPool.Return(args);
 

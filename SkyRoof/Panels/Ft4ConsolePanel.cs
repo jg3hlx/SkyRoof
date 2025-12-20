@@ -10,7 +10,7 @@ namespace SkyRoof
   public partial class Ft4ConsolePanel : DockContent
   {
     private readonly Context ctx;
-    private InputSoundcard<float> Soundcard = new();
+    private InputSoundcardOld<float> Soundcard = new();
     public Ft4Decoder Ft4Decoder = new();
     public WsjtxUdpSender WsjtxUdpSender;
 

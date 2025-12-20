@@ -292,8 +292,6 @@ namespace SkyRoof
     //--------------------------------------------------------------------------------------------------------------
     private void listBox_DrawItem(object sender, DrawItemEventArgs e)
     {
-      var underlinedFont = new Font(e.Font, FontStyle.Underline);
-
       if (e.Index < 0) return;
       var item = (DecodedItem)listBox.Items[e.Index];
       spaceWidth = e.Graphics.MeasureString("__", e.Font).Width - e.Graphics.MeasureString("_", e.Font).Width;
@@ -316,7 +314,7 @@ namespace SkyRoof
       foreach (var token in item.Tokens)
       {
         Font font = e.Font;
-        if (token.Underlined) font = underlinedFont;
+        if (token.Underlined) font = new Font(e.Font, FontStyle.Underline);
         else if (token.text == FontAwesomeIcons.Circle || token.text == FontAwesomeIcons.CircleQuestion) font = fontAwesome11;
 
         SizeF size = e.Graphics.MeasureString(token.text, font);
