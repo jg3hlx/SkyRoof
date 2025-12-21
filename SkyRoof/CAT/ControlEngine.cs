@@ -240,9 +240,9 @@ namespace SkyRoof
       Log.Error($"Unexpected reply from {GetType().Name} ctld: {reply.Trim()}");
     }
 
+    byte[] buffer = new byte[65536];
     protected string ReadLine()
     {
-      byte[] buffer = new byte[65536];
       int totalRead = 0;
 
       while (totalRead < buffer.Length)

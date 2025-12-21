@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime;
 using CSCore.CoreAudioAPI;
 using MathNet.Numerics;
 using Serilog;
@@ -17,6 +18,8 @@ namespace SkyRoof
 
       Text = Utils.GetVersionString();
       ctx.MainForm = this;
+
+      GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
 
       Rectangle? bounds = Screen.PrimaryScreen?.Bounds;
       Log.Information($"Screen resolution: {bounds?.Width}x{bounds?.Height}");

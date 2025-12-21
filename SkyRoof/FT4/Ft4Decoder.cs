@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Drawing.Imaging.Effects;
 using System.Text;
 using NAudio.Wave;
 using VE3NEA;
@@ -11,7 +12,7 @@ namespace SkyRoof
     private int SampleCount = 0;
     DateTime DataUtc;
     private float[] Slot = new float[NativeFT4Coder.DECODE_SAMPLE_COUNT];
-    private readonly PinnedDecodedMessageBuffer MessagesBuffer = new(NativeFT4Coder.DECODE_MAX_CHARS);
+    private readonly PinnedDecodedMessageBuffer PinnedDecodedMessageBuffer = new(NativeFT4Coder.DECODE_MAX_CHARS);
 
     public const int FT4_SIGNAL_BANDWIDTH = 83; // Hz
     public int RxAudioFrequency = 1500;
@@ -43,6 +44,8 @@ namespace SkyRoof
       DataUtc = args.Utc;
     }
 
+    //{!}
+    int balance = 0;
     private bool GetSlotToDecode()
     {
       // find slot boundaries
@@ -66,7 +69,8 @@ namespace SkyRoof
       // DEBUG
       int samplesDiff = slotEndIndex - (int)(7.5f * NativeFT4Coder.SAMPLING_RATE);
       int msDiff = DateTime.UtcNow.Subtract(DataUtc).Milliseconds;
-      //Debug.WriteLine($"------------------------------------------------------------------------------------------- samplesDiff: {samplesDiff}, msDiff: {msDiff}");
+      balance += samplesDiff;
+      Debug.WriteLine($"------------------------------------------------------------------------------------------- samplesDiff: {samplesDiff}, msDiff: {msDiff} balance: {balance}");
 
       // dump used samples
       int samplesToKeep = SampleCount - slotEndIndex;
@@ -87,10 +91,9 @@ namespace SkyRoof
       decodedMessages.Append(' ', NativeFT4Coder.DECODE_MAX_CHARS);
       NativeFT4Coder.QsoStage stage = NativeFT4Coder.QsoStage.CALLING;
 
-      NativeFT4Coder.decode(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency, MyCall, TheirCall, MessagesBuffer.Pointer);
+      NativeFT4Coder.decode(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency, MyCall, TheirCall, decodedMessages);
 
-
-      string messagesStr = MessagesBuffer.HasData() ? MessagesBuffer.ToStringAndClear() : string.Empty;
+      string messagesStr = decodedMessages.ToString().Trim();
       string[] messages = messagesStr.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
 
       SlotDecoded?.Invoke(this, new DataEventArgs<string>(messages, DataUtc - TimeSpan.FromSeconds(NativeFT4Coder.DECODE_SECONDS)));
@@ -102,7 +105,7 @@ namespace SkyRoof
     public override void Dispose()
     {
       base.Dispose();
-      MessagesBuffer.Dispose();
+      PinnedDecodedMessageBuffer.Dispose();
     }
 
 

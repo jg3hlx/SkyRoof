@@ -279,9 +279,6 @@ namespace VE3NEA
       OnStateChanged(false);
     }
 
-    //-----------------------------------------------------------------------------------------------
-    // Continuous pull loop
-    //-----------------------------------------------------------------------------------------------
     private void StartReaderThread()
     {
       ReaderRunning = true;
@@ -362,7 +359,7 @@ namespace VE3NEA
         int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
         WaveFormat format = new WaveFormat(SamplingRate, 32, channelCount, AudioEncoding.IeeeFloat);
 
-        soundIn = new WasapiCapture(false, AudioClientShareMode.Shared, 20, format);
+        soundIn = new WasapiCapture(false, AudioClientShareMode.Shared, 200, format);
         soundIn.Device = mmDevice;
         soundIn.Initialize();
         soundIn.Stopped += (s, a) => OnStateChanged(false);
