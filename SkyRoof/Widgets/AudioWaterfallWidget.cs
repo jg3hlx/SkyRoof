@@ -10,12 +10,12 @@ namespace SkyRoof
     public const int LEFT_BAR_WIDTH = 15;
     private const int SPECTRUM_SIZE = 8192;
     private const int SPECTRA_PER_SECOND = 4;
-    private const int BmpHeight = 1024;
+    private const int BMP_HEIGHT = 1024;
 
     private readonly Palette Palette = new Palette();
     private Bitmap WaterfallBmp;
-    private readonly Bitmap LeftBmp = new Bitmap(2, BmpHeight, PixelFormat.Format32bppRgb);
-    private readonly int[] leftBarSlots = new int[BmpHeight];
+    private readonly Bitmap LeftBmp = new Bitmap(2, BMP_HEIGHT, PixelFormat.Format32bppRgb);
+    private readonly int[] leftBarSlots = new int[BMP_HEIGHT];
     private DecodedItem? HotItem;
     private int BmpWidth;
     private int WriteRow;
@@ -49,12 +49,14 @@ namespace SkyRoof
     {
       if (Handle == IntPtr.Zero) return;
 
+      var newBmpWidth = SPECTRUM_SIZE * Bandwidth / (SdrConst.AUDIO_SAMPLING_RATE / 2);
+      if (newBmpWidth == BmpWidth) return;
+      BmpWidth = newBmpWidth;
+
       CanProcess = false;
 
-      BmpWidth = SPECTRUM_SIZE * Bandwidth / (SdrConst.AUDIO_SAMPLING_RATE / 2);
-
       WaterfallBmp?.Dispose();
-      WaterfallBmp = new Bitmap(BmpWidth, BmpHeight, PixelFormat.Format32bppRgb);
+      WaterfallBmp = new Bitmap(BmpWidth, BMP_HEIGHT, PixelFormat.Format32bppRgb);
 
       SpectrumAnalyzer?.Dispose();
       SpectrumAnalyzer = new SpectrumAnalyzer<float>(SPECTRUM_SIZE, SdrConst.AUDIO_SAMPLING_RATE / SPECTRA_PER_SECOND, BmpWidth);
@@ -281,7 +283,7 @@ namespace SkyRoof
     internal (int slotNumber, int audioFreq) GetSlotAndFreq(Point location)
     {
       int index = WriteRow + (location.Y - TOP_BAR_HEIGHT);
-      if (index >= BmpHeight) index -= BmpHeight;
+      if (index >= BMP_HEIGHT) index -= BMP_HEIGHT;
       int slot = leftBarSlots[index];
 
       int frequency = PixelToFrequency(location.X);

@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Drawing.Imaging.Effects;
-using System.Text;
 using NAudio.Wave;
 using VE3NEA;
 
@@ -12,7 +10,7 @@ namespace SkyRoof
     private int SampleCount = 0;
     DateTime DataUtc;
     private float[] Slot = new float[NativeFT4Coder.DECODE_SAMPLE_COUNT];
-    private readonly PinnedDecodedMessageBuffer PinnedDecodedMessageBuffer = new(NativeFT4Coder.DECODE_MAX_CHARS);
+    private Ft4DecodeBuffers? Buffers = new ();
 
     public const int FT4_SIGNAL_BANDWIDTH = 83; // Hz
     public int RxAudioFrequency = 1500;
@@ -82,21 +80,23 @@ namespace SkyRoof
 
     private void Decode(float[] samples)
     {
+      // scale to -1..1
       float max = samples.Max(Math.Abs);
       if (max > 0)
         for (int i = 0; i < samples.Length; i++)
           samples[i] /= max;
 
-      StringBuilder decodedMessages = new StringBuilder();
-      decodedMessages.Append(' ', NativeFT4Coder.DECODE_MAX_CHARS);
-      NativeFT4Coder.QsoStage stage = NativeFT4Coder.QsoStage.CALLING;
+      int stage = (int)NativeFT4Coder.QsoStage.CALLING;
+      Buffers.SetMyCall(MyCall);
+      Buffers.ClearDecoded();
 
-      NativeFT4Coder.decode(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency, MyCall, TheirCall, decodedMessages);
+      NativeFT4Coder.decode_ft4_f(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency, 
+        Buffers.MyCall, Buffers.HisCall, Buffers.DecodedChars);
 
-      string messagesStr = decodedMessages.ToString().Trim();
-      string[] messages = messagesStr.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
+      string[] messages = Buffers.GetDecodedMessages();
 
-      SlotDecoded?.Invoke(this, new DataEventArgs<string>(messages, DataUtc - TimeSpan.FromSeconds(NativeFT4Coder.DECODE_SECONDS)));
+      var messageUtc = DataUtc.AddSeconds(-((SampleCount + NativeFT4Coder.DECODE_SAMPLE_COUNT) / (double)NativeFT4Coder.SAMPLING_RATE));
+      SlotDecoded?.Invoke(this, new DataEventArgs<string>(messages, messageUtc));
 
       DecodedSlotNumber = CurrentSlotNumber;
     }
@@ -105,7 +105,8 @@ namespace SkyRoof
     public override void Dispose()
     {
       base.Dispose();
-      PinnedDecodedMessageBuffer.Dispose();
+      Buffers?.Dispose();
+      Buffers = null;
     }
 
 

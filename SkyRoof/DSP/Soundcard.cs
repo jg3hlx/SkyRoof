@@ -233,18 +233,9 @@ namespace VE3NEA
           throw new Exception("Audio device not active");
 
         int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
-        WaveFormat format = new WaveFormat(
-          SamplingRate,
-          32,
-          channelCount,
-          AudioEncoding.IeeeFloat);
+        WaveFormat format = new WaveFormat(SamplingRate, 32, channelCount, AudioEncoding.IeeeFloat);
 
-        soundIn = new WasapiCapture(
-          false,
-          AudioClientShareMode.Shared,
-          20,
-          format);
-
+        soundIn = new WasapiCapture(false,AudioClientShareMode.Shared, 200, format);
         soundIn.Device = mmDevice;
         soundIn.Initialize();
         soundIn.Stopped += (s, a) => OnStateChanged(false);
@@ -253,9 +244,7 @@ namespace VE3NEA
         SampleSource = SampleSource.ChangeSampleRate(SamplingRate);
 
         soundIn.Start();
-
         StartReaderThread();
-
         OnStateChanged(true);
       }
       catch (Exception e)
@@ -269,9 +258,7 @@ namespace VE3NEA
     {
       StopReaderThread();
 
-      if (IsRunning)
-        soundIn?.Stop();
-
+      if (IsRunning) soundIn?.Stop();
       soundIn?.Dispose();
       soundIn = null;
       SampleSource = null;
@@ -303,113 +290,23 @@ namespace VE3NEA
     {
       Debug.Assert(SampleSource != null);
 
-      int channels = typeof(T) == typeof(Complex32) ? 2 : 1;
-      int blockSize = 1024 * channels;
+      int blockSize = 4800;
 
       while (ReaderRunning)
       {
-        if (SampleSource == null)
-          break;
+        if (SampleSource == null) break;
 
         var args = ArgsPool.Rent(blockSize);
 
-        int read = SampleSource.Read(args.Data, 0, blockSize);
-
-        if (read > 0)
-        {
-          args.Count = read;
+        args.Count = SampleSource.Read(args.Data, 0, blockSize);
+        
+        if (args.Count > 0) 
           SamplesAvailable?.Invoke(this, args);
-        }
+        else 
+          Thread.Sleep(1); // avoid busy spin if device starves
 
         ArgsPool.Return(args);
-
-        if (read == 0)
-          Thread.Sleep(1); // avoid busy spin if device starves
       }
-    }
-  }
-
-
-
-
-
-  //-----------------------------------------------------------------------------------------------
-  //                                     input soundcard OLD
-  //-----------------------------------------------------------------------------------------------
-  public class InputSoundcardOld<T> : Soundcard
-  {
-    private WasapiCapture? soundIn;
-    private ISampleSource? SampleSource;
-    private DataEventArgsPool<float> ArgsPool = new();
-
-
-    public event EventHandler<DataEventArgs<float>>? SamplesAvailable;
-
-    public InputSoundcardOld(string? audioDeviceId = null, int? samplingRate = null) : base(audioDeviceId)
-    {
-    }
-
-    protected override void Start()
-    {
-      try
-      {
-        if (mmDevice?.DeviceState != DeviceState.Active) throw new Exception();
-
-        // init audio device
-        int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
-        WaveFormat format = new WaveFormat(SamplingRate, 32, channelCount, AudioEncoding.IeeeFloat);
-
-        soundIn = new WasapiCapture(false, AudioClientShareMode.Shared, 200, format);
-        soundIn.Device = mmDevice;
-        soundIn.Initialize();
-        soundIn.Stopped += (s, a) => OnStateChanged(false);
-        soundIn.DataAvailable += SoundIn_DataAvailable;
-
-        // create sample source wrapper
-        SampleSource = new SoundInSource(soundIn).ToSampleSource();
-        SampleSource = SampleSource.ChangeSampleRate(SamplingRate);
-
-        soundIn.Start();
-
-        OnStateChanged(true);
-      }
-      catch (Exception e)
-      {
-        Log.Error(e, "Error starting InputSoundcard");
-        Stop();
-      }
-    }
-
-    protected override void Stop()
-    {
-      if (IsRunning) soundIn!.Stop();
-      soundIn?.Dispose();
-      soundIn = null;
-      SampleSource = null;
-
-      OnStateChanged(false);
-    }
-
-    //{!}
-    //public static long TotalSampleCount = 0;
-
-    private void SoundIn_DataAvailable(object? sender, DataAvailableEventArgs e)
-    {
-      //{!}
-      //var sw = Stopwatch.StartNew();
-
-      if (SampleSource == null) return;
-
-      int bytesPerSample = sizeof(float) * (typeof(T) == typeof(Complex32) ? 2 : 1);
-      int sampleCount = e.ByteCount / bytesPerSample;
-
-      var args = ArgsPool.Rent(sampleCount);
-      args.Count = SampleSource.Read(args.Data, 0, sampleCount);
-      //TotalSampleCount += args.Count; //{!}
-      SamplesAvailable?.Invoke(this, args);
-      ArgsPool.Return(args);
-
-      //sw.Stop();
     }
   }
 }

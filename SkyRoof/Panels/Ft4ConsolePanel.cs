@@ -80,18 +80,17 @@ namespace SkyRoof
       Soundcard.Enabled = sett.AudioSource == Ft4AudioSource.Soundcard;
 
       Ft4Decoder.MyCall = ctx.Settings.User.Call;
+      Ft4Decoder.CutoffFrequency = sett.Waterfall.Bandwidth - 100;
 
       AudioWaterfall.Brightness = sett.Waterfall.Brightness;
       AudioWaterfall.Contrast = sett.Waterfall.Contrast;
+      AudioWaterfall.Bandwidth = sett.Waterfall.Bandwidth;
+      AudioWaterfall.SetBandwidth(); // {!} do not call in design mode
 
       MessageListWidget.ApplySettings(ctx.Settings.Ft4Console.Messages);
       foreach (DecodedItem item in MessageListWidget.listBox.Items)
         item.SetColors(ctx.Settings.Ft4Console.Messages);
       MessageListWidget.listBox.Refresh();
-
-      Ft4Decoder.CutoffFrequency = sett.Waterfall.Bandwidth - 100;
-      AudioWaterfall.Bandwidth = sett.Waterfall.Bandwidth;
-      AudioWaterfall.SetBandwidth(); // {!} do not call in design mode
 
       WsjtxUdpSender.Port = ctx.Settings.Ft4Console.UdpSender.Port;
       WsjtxUdpSender.Host = ctx.Settings.Ft4Console.UdpSender.Host;

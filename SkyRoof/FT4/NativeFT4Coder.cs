@@ -30,13 +30,15 @@ namespace VE3NEA
     public const double TIMESLOT_SECONDS = 7.5;
     public const double DECODE_SECONDS = DECODE_SAMPLE_COUNT / (double)SAMPLING_RATE;
 
+    public const int MAX_CALL_LENGTH = 12;
+
 
     [DllImport("ft4_coder", EntryPoint = "encode_ft4_f_", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern void encode(string message, ref float tx_audio_frequency, [Out] float[] audio_samples);
 
 
-    [DllImport("ft4_coder", EntryPoint = "decode_ft4_f_", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-    public static extern void decode(float[] audio_samples, ref QsoStage QsoStage,
-      ref int rx_audio_frequency, ref int cutoff_frequency, string my_call, string his_call, StringBuilder decoded_messages);
+    [DllImport("ft4_coder", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void decode_ft4_f(float[] audioSamples, ref int nQSOProgress, ref int nfqso,
+        ref int nfb, byte[] mycall, byte[] hiscall, byte[] decodedMessages);
   }
 }
