@@ -248,12 +248,17 @@ namespace SkyRoof
       Dictionary<int, List<JE9PELtransmitter>> dict = new();
 
       foreach (string line in File.ReadAllLines(Path.Combine(DownloadsFolder, "JE9PEL.csv")))
-      {
-        JE9PELtransmitter tx = new(line);
-        if (tx.NoradId == 0) continue;
-        dict.TryAdd(tx.NoradId, new());
-        dict[tx.NoradId].Add(tx);
-      }
+        try
+        {
+          JE9PELtransmitter tx = new(line);
+          if (tx.NoradId == 0) continue;
+          dict.TryAdd(tx.NoradId, new());
+          dict[tx.NoradId].Add(tx);
+        }
+        catch (Exception ex)
+        {
+          Log.Error($"Error in JE9PEL.csv: {ex.Message} Line: '{line}'");
+        }
 
       // insert in satnogs db
       foreach (var sat in Satellites)
