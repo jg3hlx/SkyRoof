@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-using MathNet.Numerics;
-using Serilog;
+﻿using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 using static SkyRoof.Ft4MessageListWidget;
@@ -112,8 +110,11 @@ namespace SkyRoof
       Ft4Decoder.MyCall = ctx.Settings.User.Call;
       Ft4Decoder.CutoffFrequency = sett.Waterfall.Bandwidth - 100;
 
+      //Ft4Sender.Mode oldMode = Ft4Sender.SenderMode;
+      //Ft4Sender.Stop();
       Ft4Sender.Soundcard.SetDeviceId(sett.TxSoundcard);
       Ft4Sender.Soundcard.Volume = Dsp.FromDb2(sett.TxGain);
+      //Ft4Sender.SetMode(oldMode);
       SetButtonColors();
     }
 
@@ -130,7 +131,7 @@ namespace SkyRoof
     {
       if (ctx.Settings.Ft4Console.AudioSource == Ft4AudioSource.Soundcard)
       {
-        Ft4Decoder.StartProcessing(e);
+        Ft4Decoder?.StartProcessing(e);
         if (AudioWaterfall.CanProcess) AudioWaterfall.SpectrumAnalyzer?.StartProcessing(e);
       }
     }
@@ -214,7 +215,7 @@ namespace SkyRoof
       AudioWaterfall.ShowCallsign(MessageListWidget.HotItem);
     }
 
-    private async void TuneBtn_Click(object sender, EventArgs e)
+    private void TuneBtn_Click(object sender, EventArgs e)
     {
       if (!CheckTxEnabled()) return;
 
@@ -238,7 +239,7 @@ namespace SkyRoof
       SetButtonColors();
     }
 
-    private async void HaltTxBtn_Click(object sender, EventArgs e)
+    private void HaltTxBtn_Click(object sender, EventArgs e)
     {
       Ft4Sender.Stop();
       SetButtonColors();

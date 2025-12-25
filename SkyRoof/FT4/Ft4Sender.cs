@@ -52,7 +52,7 @@ namespace SkyRoof
         Array.Copy(AudioSamples, Waveform, NativeFT4Coder.ENCODE_SAMPLE_COUNT);
     }
 
-    private void SetMode(Mode newMode)
+    public void SetMode(Mode newMode)
     {
       if (SenderMode == newMode) return;
 
@@ -112,18 +112,22 @@ namespace SkyRoof
       Thread.Sleep(PttOnMargin);
 
       int samplesNeeded = 0;
+      double phaseInc = 0;
 
       while (!Stopping)
       {
-        samplesNeeded = Math.Max(0, leadSampleCount - Soundcard.GetBufferedSampleCount());
-        double phaseInc = 2.0 * Math.PI * txAudioFrequency / NativeFT4Coder.SAMPLING_RATE;
+        lock (lockObj)
+        {
+          samplesNeeded = Math.Max(0, leadSampleCount - Soundcard.GetBufferedSampleCount());
+          phaseInc = 2.0 * Math.PI * txAudioFrequency / NativeFT4Coder.SAMPLING_RATE;
+        }
 
         for (int i = 0; i < samplesNeeded; i++)
-        {
-          txBuffer[i] = (float)Math.Sin(sinePhase);
-          sinePhase += phaseInc;
-          if (sinePhase > 2 * Math.PI) sinePhase -= 2 * Math.PI;
-        }
+          {
+            txBuffer[i] = (float)Math.Sin(sinePhase);
+            sinePhase += phaseInc;
+            if (sinePhase > 2 * Math.PI) sinePhase -= 2 * Math.PI;
+          }
 
         if (samplesNeeded > 0) Soundcard.AddSamples(txBuffer, 0, samplesNeeded);
         Thread.Sleep(50);

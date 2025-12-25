@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using CSCore;
+﻿using CSCore;
 using CSCore.CoreAudioAPI;
 using CSCore.SoundIn;
 using CSCore.SoundOut;
@@ -9,10 +8,10 @@ using Serilog;
 
 namespace VE3NEA
 {
-  public class Entry
+  public class AudioDeviceEntry
   {
     public string Id, Name;
-    public Entry(string id, string name) { Id = id; Name = name; }
+    public AudioDeviceEntry(string id, string name) { Id = id; Name = name; }
   }
 
 
@@ -26,17 +25,22 @@ namespace VE3NEA
 
   public abstract class Soundcard : IDisposable
   {
+    protected enum SoundcardState { Stopped, Starting, Running, Stopping }
+
+
     protected const int DEFAULT_SAMPLING_RATE = 48_000;
     protected readonly int SamplingRate;
     protected MMDevice? mmDevice;
     protected bool enabled;
     private System.Timers.Timer? Timer;
+    protected volatile SoundcardState State = SoundcardState.Stopped;
 
     public bool Retry;
     public bool Enabled { get => enabled; set => SetEnabled(value); }
-    public bool IsRunning { get; private set; }
-
+    public bool IsRunning => State == SoundcardState.Running;
+    
     public event EventHandler? StateChanged;
+   
 
     public Soundcard(string? audioDeviceId = null, int? samplingRate = null)
     {
@@ -44,43 +48,127 @@ namespace VE3NEA
       SamplingRate = samplingRate ?? DEFAULT_SAMPLING_RATE;
     }
 
+
+
+
+    //-----------------------------------------------------------------------------------------------
+    //                                     start / stop
+    //-----------------------------------------------------------------------------------------------
     private void SetEnabled(bool value)
     {
-      if (value == IsRunning) return;
+      if (value == Enabled) return;
       enabled = value;
 
-      // will call OnStateChanged
       if (value) Start(); else Stop();
+
+      OnStateChanged();
     }
 
+    protected void Start()
+    {
+      if (State != SoundcardState.Stopped) return;
+      State = SoundcardState.Starting;
+
+      try
+      {
+        if (mmDevice?.DeviceState != DeviceState.Active)
+          throw new Exception($"Audio device not active: {GetDisplayName()}");
+
+        DoStart();
+        State = SoundcardState.Running;
+      }
+      catch (Exception e)
+      {
+        Log.Error(e, $"Error starting {GetType().Name}");
+        Stop();
+      }
+    }
+
+    protected void Stop()
+    {
+      if (State == SoundcardState.Stopped) return;
+      State = SoundcardState.Stopping;
+
+      DoStop();
+      Cleanup();
+
+      State = SoundcardState.Stopped;
+    }
+
+    protected void OnStateChanged()
+    {
+      StateChanged?.Invoke(this, EventArgs.Empty);
+
+      EnableRetry(Retry && Enabled && !IsRunning);
+    }
+
+    protected void Soundcard_Stopped(object? sender, StoppedEventArgs e)
+    {
+      if (State != SoundcardState.Stopped) return;
+      if (!IsCurrentSoundcard(sender)) return;
+
+      Cleanup();
+      State = SoundcardState.Stopped;
+      OnStateChanged();
+    }
+
+
+
+
+    //-----------------------------------------------------------------------------------------------
+    //                                        retry
+    //-----------------------------------------------------------------------------------------------
     private void EnableRetry(bool value)
     {
-      Timer?.Stop();
-      Timer = null;
+      if (Timer != null)
+      {
+        Timer.Elapsed -= Timer_Elapsed;
+        Timer.Stop();
+        Timer = null;
+      }
 
       if (value)
       {
         Timer = new();
         Timer.Interval = 3000;
-        Timer.Elapsed += (s, a) => RunRetry();
+        Timer.Elapsed += Timer_Elapsed;
         Timer.Start();
       }
     }
 
-    private void RunRetry()
+    private void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
       Start();
       EnableRetry(!IsRunning);
     }
 
+
+
+
+    //-----------------------------------------------------------------------------------------------
+    //                                        get / set
+    //-----------------------------------------------------------------------------------------------
     public void SetDeviceId(string? deviceId)
     {
+      //if (deviceId == mmDevice?.DeviceID) return;
+
       bool wasEnabled = enabled;
       Enabled = false;
+
       if (deviceId == null) return;
 
       using (var deviceEnumerator = new MMDeviceEnumerator())
-        try { mmDevice = deviceEnumerator.GetDevice(deviceId); } catch { return; }
+      {
+        try 
+        { 
+          mmDevice = deviceEnumerator.GetDevice(deviceId); 
+        } 
+        catch (Exception ex)
+        {
+          Log.Error(ex, "Error setting soundcard device ID");
+          return; 
+        }
+      }
 
       Enabled = wasEnabled;
     }
@@ -94,26 +182,25 @@ namespace VE3NEA
       catch
       {
         // when the device is disconnected, we are not notified about this,
-        // but, but some internal variable in MMDevice becomes null
+        // but some internal variable in MMDevice becomes null
         // then a call to FriendlyName throws an exception
         return "Device Failed";
       }
     }
 
-    protected void OnStateChanged(bool running)
-    {
-      IsRunning = running;
 
-      StateChanged?.Invoke(this, EventArgs.Empty);
 
-      EnableRetry(Enabled && Retry && !running);
-    }
 
-    public static Entry[] ListDevices(DataFlow direction)
+    //-----------------------------------------------------------------------------------------------
+    //                                     device list
+    //-----------------------------------------------------------------------------------------------
+    
+    //TODO: return Dictionary instead of array
+    public static AudioDeviceEntry[] ListDevices(DataFlow direction)
     {
       using (var deviceEnumerator = new MMDeviceEnumerator())
       using (var deviceCollection = deviceEnumerator.EnumAudioEndpoints(direction, DeviceState.Active))
-        return deviceCollection.Select(s => new Entry(s.DeviceID, s.FriendlyName)).ToArray();
+        return deviceCollection.Select(s => new AudioDeviceEntry(s.DeviceID, s.FriendlyName)).ToArray();
     }
 
     public static string? GetDefaultSoundcardId(DataFlow direction)
@@ -129,13 +216,17 @@ namespace VE3NEA
         return deviceCollection.FirstOrDefault(d => d.FriendlyName.Contains("Virtual"))?.DeviceID;
     }
 
+
+
     public void Dispose()
     {
       Enabled = false;
     }
 
-    protected abstract void Start();
-    protected abstract void Stop();
+    protected abstract void DoStart();
+    protected abstract void DoStop();
+    protected abstract void Cleanup();
+    protected abstract bool IsCurrentSoundcard(object? sender);
   }
 
 
@@ -152,43 +243,44 @@ namespace VE3NEA
     public float Volume { get => volume; set => SetVolume(value); }
 
 
-    public OutputSoundcard(string? audioDeviceId = null, int? samplingRate = null) : base(audioDeviceId)
+    public OutputSoundcard(string? audioDeviceId = null, int? samplingRate = null) 
+      : base(audioDeviceId, samplingRate)
     {
       waveSource = new WaveSource<T>(SamplingRate);
     }
 
-    protected override void Start()
+    protected override bool IsCurrentSoundcard(object? sender)
     {
-      try
-      {
-        if (mmDevice?.DeviceState != DeviceState.Active) throw new Exception();
+      return ReferenceEquals(sender, wasapiOut);
+    }
 
+    protected override void DoStart()
+    {
         waveSource.ClearBuffer();
 
         wasapiOut = new WasapiOut(false, AudioClientShareMode.Shared, 200);
         wasapiOut.Device = mmDevice;
         wasapiOut.Initialize(waveSource);
         wasapiOut.Volume = volume;
-        wasapiOut.Stopped += (s, a) => OnStateChanged(false);
+        wasapiOut.Stopped += Soundcard_Stopped;
         wasapiOut.Play();
-
-        OnStateChanged(true);
-      }
-      catch (Exception e)
-      {
-        Log.Error(e, "Error starting OutputSoundcard");
-        Stop();
-      }
     }
 
-    protected override void Stop()
+    protected override void DoStop()
     {
       try { wasapiOut?.Stop(); } catch { }
-      waveSource.ClearBuffer();
-      wasapiOut?.Dispose();
-      wasapiOut = null;
+    }
 
-      OnStateChanged(false);
+    protected override void Cleanup()
+    {
+      if (wasapiOut != null)
+      {
+        wasapiOut.Stopped -= Soundcard_Stopped;
+        wasapiOut.Dispose();
+        wasapiOut = null;
+      }
+
+      waveSource.ClearBuffer();
     }
 
     private void SetVolume(float value)
@@ -226,7 +318,7 @@ namespace VE3NEA
     private DataEventArgsPool<float> ArgsPool = new();
 
     private Thread? ReaderThread;
-    private volatile bool ReaderRunning;
+    private volatile bool stopping;
 
     public event EventHandler<DataEventArgs<float>>? SamplesAvailable;
 
@@ -235,50 +327,51 @@ namespace VE3NEA
     {
     }
 
-    protected override void Start()
+    protected override bool IsCurrentSoundcard(object? sender)
     {
-      try
-      {
-        if (mmDevice?.DeviceState != DeviceState.Active)
-          throw new Exception("Audio device not active");
-
-        int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
-        WaveFormat format = new WaveFormat(SamplingRate, 32, channelCount, AudioEncoding.IeeeFloat);
-
-        soundIn = new WasapiCapture(false,AudioClientShareMode.Shared, 200, format);
-        soundIn.Device = mmDevice;
-        soundIn.Initialize();
-        soundIn.Stopped += (s, a) => OnStateChanged(false);
-
-        SampleSource = new SoundInSource(soundIn).ToSampleSource();
-        SampleSource = SampleSource.ChangeSampleRate(SamplingRate);
-
-        soundIn.Start();
-        StartReaderThread();
-        OnStateChanged(true);
-      }
-      catch (Exception e)
-      {
-        Log.Error(e, "Error starting InputSoundcard");
-        Stop();
-      }
+      return ReferenceEquals(sender, soundIn);
     }
 
-    protected override void Stop()
+    protected override void DoStart()
+    {
+      int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
+      WaveFormat format = new WaveFormat(SamplingRate, 32, channelCount, AudioEncoding.IeeeFloat);
+
+      soundIn = new WasapiCapture(false, AudioClientShareMode.Shared, 200, format);
+      soundIn.Device = mmDevice;
+      soundIn.Initialize();
+      soundIn.Stopped += Soundcard_Stopped;
+
+      SampleSource = new SoundInSource(soundIn).ToSampleSource();
+      SampleSource = SampleSource.ChangeSampleRate(SamplingRate);
+
+      soundIn.Start();
+      StartReaderThread();
+    }
+
+    protected override void Cleanup()
     {
       StopReaderThread();
 
-      if (IsRunning) soundIn?.Stop();
-      soundIn?.Dispose();
-      soundIn = null;
-      SampleSource = null;
+      if (soundIn != null)
+      {
+        soundIn.Stopped -= Soundcard_Stopped;
+        soundIn.Dispose();
+        soundIn = null;
+      }
 
-      OnStateChanged(false);
+      SampleSource = null;
+    }
+
+    protected override void DoStop()
+    {
+      StopReaderThread();
+      try { soundIn?.Stop(); } catch { }
     }
 
     private void StartReaderThread()
     {
-      ReaderRunning = true;
+      stopping = false;
 
       ReaderThread = new Thread(ReaderLoop)
       {
@@ -291,31 +384,27 @@ namespace VE3NEA
 
     private void StopReaderThread()
     {
-      ReaderRunning = false;
+      stopping = true;
       ReaderThread?.Join();
       ReaderThread = null;
     }
 
+    private const int blockSize = 4800;
+    DataEventArgs<float> args = new();
     private void ReaderLoop()
     {
-      Debug.Assert(SampleSource != null);
+      args.Data = new float[blockSize];
 
-      int blockSize = 4800;
-
-      while (ReaderRunning)
+      while (!stopping)
       {
         if (SampleSource == null) break;
 
-        var args = ArgsPool.Rent(blockSize);
-
         args.Count = SampleSource.Read(args.Data, 0, blockSize);
-        
+
         if (args.Count > 0) 
           SamplesAvailable?.Invoke(this, args);
-        else 
+        else
           Thread.Sleep(1); // avoid busy spin if device starves
-
-        ArgsPool.Return(args);
       }
     }
   }
