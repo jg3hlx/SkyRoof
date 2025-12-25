@@ -26,6 +26,11 @@ namespace VE3NEA
       ringBuffer.Clear(); 
     }
 
+    public int GetBufferedSampleCount()
+    {
+      return ringBuffer.Count;
+    }
+
 
 
 

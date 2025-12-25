@@ -32,8 +32,9 @@
       AudioWaterfall = new AudioWaterfallWidget();
       MessageListWidget = new Ft4MessageListWidget();
       panel1 = new Panel();
-      button2 = new Button();
-      button1 = new Button();
+      HaltTxBtn = new Button();
+      EnableTxBtn = new Button();
+      TuneBtn = new Button();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -79,38 +80,49 @@
       MessageListWidget.Margin = new Padding(4, 3, 4, 3);
       MessageListWidget.Name = "MessageListWidget";
       MessageListWidget.Padding = new Padding(1);
-      MessageListWidget.Size = new Size(549, 205);
+      MessageListWidget.Size = new Size(527, 205);
       MessageListWidget.TabIndex = 3;
       // 
       // panel1
       // 
-      panel1.Controls.Add(button2);
-      panel1.Controls.Add(button1);
+      panel1.Controls.Add(HaltTxBtn);
+      panel1.Controls.Add(EnableTxBtn);
+      panel1.Controls.Add(TuneBtn);
       panel1.Dock = DockStyle.Right;
-      panel1.Location = new Point(549, 0);
+      panel1.Location = new Point(527, 0);
       panel1.Name = "panel1";
-      panel1.Size = new Size(251, 205);
+      panel1.Size = new Size(273, 205);
       panel1.TabIndex = 4;
       // 
-      // button2
+      // HaltTxBtn
       // 
-      button2.Location = new Point(55, 60);
-      button2.Name = "button2";
-      button2.Size = new Size(75, 23);
-      button2.TabIndex = 1;
-      button2.Text = "Play Back";
-      button2.UseVisualStyleBackColor = true;
-      button2.Click += button2_Click;
+      HaltTxBtn.Location = new Point(100, 13);
+      HaltTxBtn.Name = "HaltTxBtn";
+      HaltTxBtn.Size = new Size(75, 23);
+      HaltTxBtn.TabIndex = 2;
+      HaltTxBtn.Text = "Halt TX";
+      HaltTxBtn.UseVisualStyleBackColor = true;
+      HaltTxBtn.Click += HaltTxBtn_Click;
       // 
-      // button1
+      // EnableTxBtn
       // 
-      button1.Location = new Point(55, 14);
-      button1.Name = "button1";
-      button1.Size = new Size(75, 23);
-      button1.TabIndex = 0;
-      button1.Text = "Save";
-      button1.UseVisualStyleBackColor = true;
-      button1.Click += button1_Click;
+      EnableTxBtn.Location = new Point(19, 13);
+      EnableTxBtn.Name = "EnableTxBtn";
+      EnableTxBtn.Size = new Size(75, 23);
+      EnableTxBtn.TabIndex = 1;
+      EnableTxBtn.Text = "Enable TX";
+      EnableTxBtn.UseVisualStyleBackColor = true;
+      EnableTxBtn.Click += EnableTxBtn_Click;
+      // 
+      // TuneBtn
+      // 
+      TuneBtn.Location = new Point(181, 13);
+      TuneBtn.Name = "TuneBtn";
+      TuneBtn.Size = new Size(75, 23);
+      TuneBtn.TabIndex = 0;
+      TuneBtn.Text = "Tune";
+      TuneBtn.UseVisualStyleBackColor = true;
+      TuneBtn.Click += TuneBtn_Click;
       // 
       // Ft4ConsolePanel
       // 
@@ -135,7 +147,8 @@
     private AudioWaterfallWidget AudioWaterfall;
     private Ft4MessageListWidget MessageListWidget;
     private Panel panel1;
-    private Button button2;
-    private Button button1;
+    private Button EnableTxBtn;
+    private Button TuneBtn;
+    private Button HaltTxBtn;
   }
 }

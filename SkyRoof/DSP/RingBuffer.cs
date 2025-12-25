@@ -72,7 +72,10 @@ namespace VE3NEA
 
     public void Clear()
     {
-      readPos = writePos = Count = 0;
+      lock (lockObject)
+      {
+        readPos = writePos = Count = 0;
+      }
     }
 
 

@@ -48,7 +48,7 @@ namespace SkyRoof
 
     public string? GetTooltip()
     {
-      return WkdStatus + " " + Parse.DECallsign;
+      return WkdStatus;
     }
 
     public void ParseMessage(string message, DateTime receivedAt)

@@ -46,7 +46,7 @@ namespace VE3NEA
 
     private void SetEnabled(bool value)
     {
-      if (value == Enabled) return;
+      if (value == IsRunning) return;
       enabled = value;
 
       // will call OnStateChanged
@@ -159,13 +159,13 @@ namespace VE3NEA
 
     protected override void Start()
     {
-      if (mmDevice?.DeviceState != DeviceState.Active) throw new Exception();
-
       try
       {
+        if (mmDevice?.DeviceState != DeviceState.Active) throw new Exception();
+
         waveSource.ClearBuffer();
 
-        wasapiOut = new WasapiOut(false, AudioClientShareMode.Shared, 100);
+        wasapiOut = new WasapiOut(false, AudioClientShareMode.Shared, 200);
         wasapiOut.Device = mmDevice;
         wasapiOut.Initialize(waveSource);
         wasapiOut.Volume = volume;
@@ -183,7 +183,8 @@ namespace VE3NEA
 
     protected override void Stop()
     {
-      wasapiOut?.Stop();
+      try { wasapiOut?.Stop(); } catch { }
+      waveSource.ClearBuffer();
       wasapiOut?.Dispose();
       wasapiOut = null;
 
@@ -196,11 +197,20 @@ namespace VE3NEA
       if (wasapiOut != null) wasapiOut.Volume = value;
     }
 
-    public void AddSamples(T[] samples)
+    public void AddSamples(T[] samples, int offset = 0, int? count = null)
     {
-      if (Enabled) waveSource.AddSamples(samples);
+      if (Enabled) waveSource.AddSamples(samples, offset, count);
     }
 
+    public void ClearBuffer()
+    {
+      waveSource.ClearBuffer();
+    }
+
+    public int GetBufferedSampleCount()
+    {
+      return waveSource.GetBufferedSampleCount();
+    }
   }
 
 

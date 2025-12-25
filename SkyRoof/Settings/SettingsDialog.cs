@@ -102,6 +102,10 @@ namespace SkyRoof
           // 4,990 Hz decoding BW limit is hardcoded in wsjtx
           ValidateInt(e, 5000, 2000);
           break;
+
+        case "SkyRoof.Ft4ConsoleSettings.TxGain":
+          ValidateInt(e, 0, -60);
+          break;
       }
 
       if (canChange) ChangedFields.Add(label);
@@ -174,9 +178,11 @@ namespace SkyRoof
         s.StartsWith("SkyRoof.Ft4ConsoleSettings") ||
         s.StartsWith("SkyRoof.Ft4WaterfallSettings.") ||
         s.StartsWith("SkyRoof.Ft4MessagesSettings.") ||
-        s.StartsWith("SkyRoof.Ft4BackgroundColors.") || 
-        s.Contains("SkyRoof.UserSettings.Call")))
-          ctx.Ft4ConsolePanel?.ApplySettings();
+        s.StartsWith("SkyRoof.Ft4BackgroundColors.") ||
+        s.StartsWith("SkyRoof.UserSettings.Call") ||
+        s.StartsWith("SkyRoof.UdpSenderSettings.")
+        ))
+        ctx.Ft4ConsolePanel?.ApplySettings();
 
       ChangedFields.Clear();
     }
