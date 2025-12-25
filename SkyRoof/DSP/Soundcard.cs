@@ -1,4 +1,5 @@
-﻿using CSCore;
+﻿using System.Runtime.InteropServices;
+using CSCore;
 using CSCore.CoreAudioAPI;
 using CSCore.SoundIn;
 using CSCore.SoundOut;
@@ -33,7 +34,7 @@ namespace VE3NEA
     protected MMDevice? mmDevice;
     protected bool enabled;
     private System.Timers.Timer? Timer;
-    protected volatile SoundcardState State = SoundcardState.Stopped;
+    protected SoundcardState State = SoundcardState.Stopped;
 
     public bool Retry;
     public bool Enabled { get => enabled; set => SetEnabled(value); }
@@ -44,8 +45,8 @@ namespace VE3NEA
 
     public Soundcard(string? audioDeviceId = null, int? samplingRate = null)
     {
-      SetDeviceId(audioDeviceId);
       SamplingRate = samplingRate ?? DEFAULT_SAMPLING_RATE;
+      SetDeviceId(audioDeviceId);
     }
 
 
@@ -60,8 +61,6 @@ namespace VE3NEA
       enabled = value;
 
       if (value) Start(); else Stop();
-
-      OnStateChanged();
     }
 
     protected void Start()
@@ -76,6 +75,7 @@ namespace VE3NEA
 
         DoStart();
         State = SoundcardState.Running;
+        OnStateChanged();
       }
       catch (Exception e)
       {
@@ -93,6 +93,7 @@ namespace VE3NEA
       Cleanup();
 
       State = SoundcardState.Stopped;
+      OnStateChanged();
     }
 
     protected void OnStateChanged()
@@ -104,8 +105,8 @@ namespace VE3NEA
 
     protected void Soundcard_Stopped(object? sender, StoppedEventArgs e)
     {
-      if (State != SoundcardState.Stopped) return;
       if (!IsCurrentSoundcard(sender)) return;
+      if (State == SoundcardState.Stopped || State == SoundcardState.Stopping) return;
 
       Cleanup();
       State = SoundcardState.Stopped;
@@ -349,6 +350,11 @@ namespace VE3NEA
       StartReaderThread();
     }
 
+    protected override void DoStop()
+    {
+      try { soundIn?.Stop(); } catch { }
+    }
+
     protected override void Cleanup()
     {
       StopReaderThread();
@@ -361,12 +367,6 @@ namespace VE3NEA
       }
 
       SampleSource = null;
-    }
-
-    protected override void DoStop()
-    {
-      StopReaderThread();
-      try { soundIn?.Stop(); } catch { }
     }
 
     private void StartReaderThread()
@@ -396,16 +396,22 @@ namespace VE3NEA
       args.Data = new float[blockSize];
 
       while (!stopping)
-      {
-        if (SampleSource == null) break;
+        try
+        {
+          if (SampleSource == null) break;
 
-        args.Count = SampleSource.Read(args.Data, 0, blockSize);
+          args.Count = SampleSource.Read(args.Data, 0, blockSize);
 
-        if (args.Count > 0) 
-          SamplesAvailable?.Invoke(this, args);
-        else
-          Thread.Sleep(1); // avoid busy spin if device starves
-      }
+          if (args.Count > 0)
+            // this event is always processed synchronously inThreadedProcessor#StartProcessing
+            SamplesAvailable?.Invoke(this, args);
+          else
+            Thread.Sleep(20); // avoid busy spin if device starves
+        }
+        // device stopped or was disconnected
+        catch (ObjectDisposedException) {}
+        catch (InvalidOperationException) {}
+        catch (COMException) {}
     }
   }
 }
