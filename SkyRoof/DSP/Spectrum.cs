@@ -24,6 +24,7 @@ namespace SkyRoof
     public double Step { get => step; set => SetStep(value); }
 
     public float FastMedian;
+    private DateTime DataUtc;
 
     public event EventHandler<DataEventArgs<float>>? SpectrumAvailable;
 
@@ -67,6 +68,7 @@ namespace SkyRoof
 
     public void Process(DataEventArgs<T> args)
     {
+      DataUtc = args.Utc;
 
       int readPos = 0;
 
@@ -122,7 +124,9 @@ namespace SkyRoof
       if (SamplesSinceStep >= Step)
       {
         NormalizeAverageSpectrum();
+        Args.Utc = DataUtc;
         Args.Data = AverageSpectrum;
+        Args.Count = AverageSpectrum.Length;
         SpectrumAvailable?.Invoke(this, Args);
 
         SpectraSinceStep = 0;

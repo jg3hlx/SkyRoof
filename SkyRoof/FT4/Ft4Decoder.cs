@@ -40,8 +40,12 @@ namespace SkyRoof
       DataUtc = args.Utc;
     }
 
-    //{!}
-    int balance = 0;
+    internal int SlotNumberAt(DateTime utc)
+    {
+      double secondsSinceMidnight = (utc - utc.Date).TotalSeconds;
+      return (int)Math.Truncate(secondsSinceMidnight / NativeFT4Coder.TIMESLOT_SECONDS);
+    }
+
     private bool GetSlotToDecode()
     {
       // find slot boundaries
@@ -65,9 +69,7 @@ namespace SkyRoof
       // DEBUG
       int samplesDiff = slotEndIndex - (int)(7.5f * NativeFT4Coder.SAMPLING_RATE);
       int msDiff = DateTime.UtcNow.Subtract(DataUtc).Milliseconds;
-      balance += samplesDiff;
-      Debug.WriteLine($"------------------------------------------------------------------------------------------- samplesDiff: {samplesDiff}, msDiff: {msDiff} balance: {balance}");
-
+      
       // dump used samples
       int samplesToKeep = SampleCount - slotEndIndex;
       Array.Copy(Samples, slotEndIndex, Samples, 0, samplesToKeep);

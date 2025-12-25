@@ -562,10 +562,9 @@
       // SoundcardDropdownBtn
       // 
       SoundcardDropdownBtn.DisplayStyle = ToolStripItemDisplayStyle.Image;
-      SoundcardDropdownBtn.ImageTransparentColor = Color.Magenta;
       SoundcardDropdownBtn.Name = "SoundcardDropdownBtn";
       SoundcardDropdownBtn.Size = new Size(13, 33);
-      SoundcardDropdownBtn.Text = "toolStripDropDownButton1";
+      SoundcardDropdownBtn.ToolTipText = "Select Audio Output Soundcard";
       SoundcardDropdownBtn.DropDownOpening += SoundcardDropdownBtn_DropDownOpening;
       SoundcardDropdownBtn.MouseEnter += StatusLabel_MouseEnter;
       SoundcardDropdownBtn.MouseLeave += StatusLabel_MouseLeave;

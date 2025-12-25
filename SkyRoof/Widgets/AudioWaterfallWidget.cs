@@ -60,7 +60,7 @@ namespace SkyRoof
 
       SpectrumAnalyzer?.Dispose();
       SpectrumAnalyzer = new SpectrumAnalyzer<float>(SPECTRUM_SIZE, SdrConst.AUDIO_SAMPLING_RATE / SPECTRA_PER_SECOND, BmpWidth);
-      SpectrumAnalyzer.SpectrumAvailable += (s, ev) => BeginInvoke(() => AppendSpectrum(ev.Data));
+      SpectrumAnalyzer.SpectrumAvailable += (s, e) => BeginInvoke(() => AppendSpectrum(e));
 
       CanProcess = true;
     }
@@ -197,26 +197,26 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                      spectra
     //----------------------------------------------------------------------------------------------
-    private unsafe void AppendSpectrum(float[] spectrum)
+    private unsafe void AppendSpectrum(DataEventArgs<float> args)
     {
-      if (!CanProcess || WaterfallBmp == null || WaterfallBmp.Width != spectrum.Length) return;
+      if (!CanProcess || WaterfallBmp == null || WaterfallBmp.Width != args.Count) return;
 
       if (--WriteRow < 0) WriteRow = WaterfallBmp.Height - 1;
 
       // left bar slot number
-      int currentSlotNumber = Ft4Decoder?.CurrentSlotNumber ?? 0;
-      leftBarSlots[WriteRow] = currentSlotNumber;
+      int slotNumber = Ft4Decoder?.SlotNumberAt(args.Utc) ?? 0;
+      leftBarSlots[WriteRow] = slotNumber;
 
 
       // separator
-      if (currentSlotNumber != LastSlot)
+      if (slotNumber != LastSlot)
       {
         AddSeparator(Color.Lime);
-        LastSlot = currentSlotNumber;
+        LastSlot = slotNumber;
       }
 
       // left bar
-      Color leftColor = (currentSlotNumber & 1) == 1 ? Color.Olive : Color.Teal;
+      Color leftColor = (slotNumber & 1) == 1 ? Color.Olive : Color.Teal;
       LeftBmp.SetPixel(0, WriteRow, leftColor);
       LeftBmp.SetPixel(1, WriteRow, leftColor);
 
@@ -229,7 +229,7 @@ namespace SkyRoof
 
       for (int i = 0; i < WaterfallBmp.Width; i++)
       {
-        byte v = (byte)Math.Max(0, Math.Min(255, (int)(brightness + spectrum[i] * contrast)));
+        byte v = (byte)Math.Max(0, Math.Min(255, (int)(brightness + args.Data[i] * contrast)));
         *ptr++ = Palette.Colors[v];
       }
 

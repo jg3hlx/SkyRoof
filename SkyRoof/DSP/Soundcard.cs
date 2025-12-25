@@ -108,9 +108,7 @@ namespace VE3NEA
       if (!IsCurrentSoundcard(sender)) return;
       if (State == SoundcardState.Stopped || State == SoundcardState.Stopping) return;
 
-      Cleanup();
-      State = SoundcardState.Stopped;
-      OnStateChanged();
+      ThreadPool.QueueUserWorkItem(_ => Stop());
     }
 
 
@@ -390,21 +388,24 @@ namespace VE3NEA
     }
 
     private const int blockSize = 4800;
-    DataEventArgs<float> args = new();
+    DataEventArgs<float> Args = new();
     private void ReaderLoop()
     {
-      args.Data = new float[blockSize];
+      Args.Data = new float[blockSize];
 
       while (!stopping)
         try
         {
           if (SampleSource == null) break;
 
-          args.Count = SampleSource.Read(args.Data, 0, blockSize);
+          Args.Count = SampleSource.Read(Args.Data, 0, blockSize);
 
-          if (args.Count > 0)
+          if (Args.Count > 0)
+          {
+            Args.Utc = DateTime.UtcNow;
             // this event is always processed synchronously inThreadedProcessor#StartProcessing
-            SamplesAvailable?.Invoke(this, args);
+            SamplesAvailable?.Invoke(this, Args);
+          }
           else
             Thread.Sleep(20); // avoid busy spin if device starves
         }
