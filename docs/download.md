@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.23](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.23/SkyRoofSetup-v.1.23.zip)
+[SkyRoof v.1.24](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.24/SkyRoofSetup-v.1.24.zip)
 
 <br>
 
@@ -15,6 +15,12 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.24
+
+- work around the JE9PEL satellite list;
+- lower case band names used in the ADIF file;
+- SSB passband shifted relative to the suppressed carrier.
 
 #### v.1.23
 
