@@ -18,7 +18,7 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 
 #### v.1.24
 
-- work around the JE9PEL satellite list;
+- work around the errors in the JE9PEL satellite list;
 - lower case band names used in the ADIF file;
 - SSB passband shifted relative to the suppressed carrier.
 
