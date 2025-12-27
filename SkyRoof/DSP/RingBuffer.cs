@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using MathNet.Numerics;
 
 namespace VE3NEA
@@ -15,6 +16,8 @@ namespace VE3NEA
 
     public RingBuffer(int capacity)
     {
+      if (capacity <= 0) throw new ArgumentException(nameof(capacity));
+
       if (typeof(T) == typeof(Int16)) bytesPerSample = 2;
       else if (typeof(T) == typeof(Int32) || typeof(T) == typeof(float)) bytesPerSample = 4;
       else if (typeof(T) == typeof(double) || typeof(T) == typeof(Complex32)) bytesPerSample = 8;
@@ -26,6 +29,8 @@ namespace VE3NEA
 
     public void Resize(int capacity)
     {
+      if (capacity <= 0) throw new ArgumentException(nameof(capacity));
+
       lock (lockObject)
       {
         ringBuffer = new T[capacity];
@@ -33,8 +38,20 @@ namespace VE3NEA
       }
     }
 
+    public void Clear()
+    {
+      lock (lockObject)
+      {
+        readPos = writePos = Count = 0;
+      }
+    }
+
     public void Write(T[] data, int offset, int count)
     {
+      if (offset < 0) throw new ArgumentException(nameof(offset));
+      if (count < 0) throw new ArgumentException(nameof(count));
+      if (count == 0) return;
+
       lock (lockObject)
       {
         if (count > ringBuffer.Length) Resize(count);
@@ -60,24 +77,9 @@ namespace VE3NEA
         }
 
         Count += count;
+        if (Count < 0) throw new Exception("count < 0");
       }
     }
-
-    private void Dump(int dumpCount)
-    {
-      Count -= dumpCount;
-      readPos += dumpCount;
-      if (readPos >= ringBuffer.Length) readPos -= ringBuffer.Length;
-    }
-
-    public void Clear()
-    {
-      lock (lockObject)
-      {
-        readPos = writePos = Count = 0;
-      }
-    }
-
 
     public int Read(T[] buffer, int offset, int count)
     {
@@ -86,6 +88,10 @@ namespace VE3NEA
 
     public int ReadBytes(byte[] buffer, int offset, int count)
     {
+      if (offset < 0) throw new ArgumentException(nameof(offset));
+      if (count < 0) throw new ArgumentException(nameof(count));
+      if (count == 0) return 0;
+
       lock (lockObject)
       {
         int readSampleCount = Math.Min(Count, count / bytesPerSample);
@@ -117,7 +123,15 @@ namespace VE3NEA
       return count;
     }
 
-    public unsafe void CopyBytes(T[] src, int srcByteOffset, byte[] dst, int dstByteOffset, int byteCount)
+    private void Dump(int dumpCount)
+    {
+      Count -= dumpCount;
+      if (Count < 0) throw new Exception("count < 0");
+      readPos += dumpCount;
+      if (readPos >= ringBuffer.Length) readPos -= ringBuffer.Length;
+    }
+
+    private unsafe void CopyBytes(T[] src, int srcByteOffset, byte[] dst, int dstByteOffset, int byteCount)
     {
       fixed (T* pSrc = src)
       fixed (byte* pDst = dst)

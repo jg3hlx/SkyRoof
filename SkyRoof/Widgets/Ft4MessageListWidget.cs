@@ -380,6 +380,16 @@ namespace SkyRoof
         }
       }
     }
+
+    private void ClearMNU_Click(object sender, EventArgs e)
+    {
+      listBox.Items.Clear();
+    }
+
+    private void ScrollMNU_Click(object sender, EventArgs e)
+    {
+      listBox.ScrollToBottom();
+    }
   }
 }
 

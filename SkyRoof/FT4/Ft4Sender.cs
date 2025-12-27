@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using CSCore;
 using VE3NEA;
 
 namespace SkyRoof
@@ -21,6 +17,7 @@ namespace SkyRoof
     private object lockObj = new();
     private Thread? WorkerThread;
     private bool Stopping;
+    private Ft4Slot Slot = new();
 
 
     public int PttOnMargin = 500; // milliseconds
@@ -37,6 +34,7 @@ namespace SkyRoof
     public void StartTuning() => SetMode(Mode.Tuning);
     public void StartSending() => SetMode(Mode.Sending);
     public void Stop() => SetMode(Mode.Idle);
+    public bool TxOdd;
 
     public void SetMessage(string message)
     {
@@ -45,7 +43,7 @@ namespace SkyRoof
       Array.Clear(MessageChars);
       Encoding.ASCII.GetBytes(message, 0, len, MessageChars, 0);
 
-      NativeFT4Coder.encode_ft4_f(MessageChars, ref txAudioFrequency, AudioSamples);
+      NativeFT4Coder.encode_ft4(MessageChars, ref txAudioFrequency, AudioSamples);
 
       // copy to waveform
       lock (lockObj)
@@ -103,7 +101,10 @@ namespace SkyRoof
     }
 
     private const int leadSampleCount = NativeFT4Coder.SAMPLING_RATE;
-    private float[] txBuffer = new float[leadSampleCount]; 
+    private readonly TimeSpan leadTime = TimeSpan.FromSeconds(leadSampleCount / (double)NativeFT4Coder.SAMPLING_RATE);
+    private readonly float[] txBuffer = new float[leadSampleCount];
+    private readonly float[] silence = new float[leadSampleCount];
+
     private double sinePhase;
 
     private void TuneThreadProcedure()
@@ -138,10 +139,115 @@ namespace SkyRoof
       AfterTransmit?.Invoke(this, EventArgs.Empty);
     }
 
+
+
+    private enum SendStage { Idle, Scheduled, Sending }
+
     private void SendThreadProcedure()
-    {
+    { 
+      int sampleIndex = 0;
+      int sampleCount;
+      DateTime now;
+      SendStage stage = SendStage.Idle;
 
 
+      SetMessage("CQ VE3NEA FN03"); //{!}
+      int len = Waveform.Length;
+      //for (int i = 0; i < len; i++) Waveform[i] *= i / (float)len;
+      Soundcard.ClearBuffer();
+
+
+      while (!Stopping)
+      {
+        now = DateTime.UtcNow;
+        Slot.Utc = now;
+        var startTime = Slot.GetTxStartTime(TxOdd);
+        var endTime = startTime + TimeSpan.FromSeconds(NativeFT4Coder.ENCODE_SECONDS);
+
+        switch (stage)
+        {
+          case SendStage.Idle:
+            sampleCount = (int)((startTime - now).TotalSeconds * NativeFT4Coder.SAMPLING_RATE);
+
+            // time to schedule
+            if (now < startTime && sampleCount < leadSampleCount)
+            {
+              Soundcard.AddSamples(silence, 0, sampleCount);
+              sampleCount = leadSampleCount - sampleCount;
+              Soundcard.AddSamples(Waveform, 0, sampleCount);
+              sampleIndex = sampleCount;
+              stage = SendStage.Scheduled;
+            }
+
+            // starting in the middle of transmission time
+            else if (now > startTime)
+            {
+              double missedSeconds = (now - startTime).TotalSeconds + PttOnMargin * 1e-3;
+
+              if (missedSeconds < NativeFT4Coder.ENCODE_SECONDS - 1)
+              {
+                // silence for PttOnMargin 
+                sampleCount = (int)(PttOnMargin * 1e-3 * NativeFT4Coder.SAMPLING_RATE);
+                Soundcard.AddSamples(silence, 0, sampleCount);
+
+                // samples, skipping the missed time
+                sampleIndex = (int)(missedSeconds * NativeFT4Coder.SAMPLING_RATE);
+                sampleCount = leadSampleCount - Soundcard.GetBufferedSampleCount();
+                sampleCount = Math.Min(Waveform.Length - sampleIndex, sampleCount); //{!} not needed?
+                Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
+
+                // PTT switch
+                stage = SendStage.Sending;
+                BeforeTransmit?.Invoke(this, EventArgs.Empty);
+                Thread.Sleep(PttOnMargin);
+              }
+            }
+            break;
+
+          case SendStage.Scheduled:
+            // keep buffer full
+            sampleCount = leadSampleCount - Soundcard.GetBufferedSampleCount();
+            Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
+            sampleIndex += sampleCount;
+
+            // scheduled starts now
+            if (now > startTime)
+            {
+              stage = SendStage.Sending;
+              BeforeTransmit?.Invoke(this, EventArgs.Empty);
+            }
+            break;
+
+          case SendStage.Sending:
+            // keep buffer full
+            if (sampleIndex < Waveform.Length)
+            {
+              sampleCount = leadSampleCount - Soundcard.GetBufferedSampleCount();
+              sampleCount = Math.Min(Waveform.Length - sampleIndex, sampleCount);
+              Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
+              sampleIndex += sampleCount;
+            }
+            // all samples in the buffer, switch to idle
+            else if (Soundcard.GetBufferedSampleCount() == 0)
+            {
+              stage = SendStage.Idle;
+              Thread.Sleep(PttOffMargin);
+              AfterTransmit?.Invoke(this, EventArgs.Empty);
+            }
+            break;
+        }
+
+        Thread.Sleep(10);
+      }
+
+      // stop audio and fire event if stopped during transmission
+      Soundcard.ClearBuffer();
+      if (stage == SendStage.Sending)
+      {
+        stage = SendStage.Idle;
+        Thread.Sleep(PttOffMargin);
+        AfterTransmit?.Invoke(this, EventArgs.Empty);
+      }
     }
 
     public void Dispose()

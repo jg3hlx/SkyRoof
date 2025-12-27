@@ -30,11 +30,16 @@
     {
       components = new System.ComponentModel.Container();
       listBox = new VE3NEA.ListBoxEx();
+      contextMenuStrip1 = new ContextMenuStrip(components);
+      ClearMNU = new ToolStripMenuItem();
+      ScrollMNU = new ToolStripMenuItem();
       toolTip1 = new ToolTip(components);
+      contextMenuStrip1.SuspendLayout();
       SuspendLayout();
       // 
       // listBox
       // 
+      listBox.ContextMenuStrip = contextMenuStrip1;
       listBox.Dock = DockStyle.Fill;
       listBox.DrawMode = DrawMode.OwnerDrawFixed;
       listBox.Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -53,6 +58,26 @@
       listBox.MouseMove += ListBox_MouseMove;
       listBox.MouseUp += listBox_MouseUp;
       // 
+      // contextMenuStrip1
+      // 
+      contextMenuStrip1.Items.AddRange(new ToolStripItem[] { ClearMNU, ScrollMNU });
+      contextMenuStrip1.Name = "contextMenuStrip1";
+      contextMenuStrip1.Size = new Size(181, 70);
+      // 
+      // ClearMNU
+      // 
+      ClearMNU.Name = "ClearMNU";
+      ClearMNU.Size = new Size(180, 22);
+      ClearMNU.Text = "Clear";
+      ClearMNU.Click += ClearMNU_Click;
+      // 
+      // ScrollMNU
+      // 
+      ScrollMNU.Name = "ScrollMNU";
+      ScrollMNU.Size = new Size(180, 22);
+      ScrollMNU.Text = "Scroll to Bottom";
+      ScrollMNU.Click += ScrollMNU_Click;
+      // 
       // Ft4MessageListWidget
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -61,11 +86,15 @@
       Name = "Ft4MessageListWidget";
       Padding = new Padding(1);
       Size = new Size(405, 514);
+      contextMenuStrip1.ResumeLayout(false);
       ResumeLayout(false);
     }
 
     #endregion
     private ToolTip toolTip1;
     public VE3NEA.ListBoxEx listBox;
+    private ContextMenuStrip contextMenuStrip1;
+    private ToolStripMenuItem ClearMNU;
+    private ToolStripMenuItem ScrollMNU;
   }
 }

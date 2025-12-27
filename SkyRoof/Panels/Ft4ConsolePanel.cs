@@ -246,7 +246,7 @@ namespace SkyRoof
     }
 
     private void SetButtonColors()
-    {    
+    {
       bool tuning = Ft4Sender.SenderMode == Ft4Sender.Mode.Tuning;
       bool sending = Ft4Sender.SenderMode == Ft4Sender.Mode.Sending;
 
@@ -261,7 +261,7 @@ namespace SkyRoof
     {
       if (ctx.Settings.Ft4Console.EnableTransmit) return true;
 
-      MessageBox.Show("Transmitter is not enabled in Settings.", "SkyRoof", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      MessageBox.Show("FT4 transmit is not enabled in Settings.", "SkyRoof", MessageBoxButtons.OK, MessageBoxIcon.Information);
       return false;
     }
   }

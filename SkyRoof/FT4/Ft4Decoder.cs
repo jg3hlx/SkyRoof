@@ -5,11 +5,12 @@ namespace SkyRoof
 {
   public unsafe class Ft4Decoder : ThreadedProcessor<float>
   {
-    private float[] Samples = [];
+    private float[] ReceivedSamples = [];
     private int SampleCount = 0;
     DateTime DataUtc;
-    private float[] Slot = new float[NativeFT4Coder.DECODE_SAMPLE_COUNT];
+    private float[] SlotSamples = new float[NativeFT4Coder.DECODE_SAMPLE_COUNT];
     private Ft4DecodeBuffers? Buffers = new ();
+    private Ft4Slot Slot = new ();
 
     public const int FT4_SIGNAL_BANDWIDTH = 83; // Hz
     public int RxAudioFrequency = 1500;
@@ -17,7 +18,6 @@ namespace SkyRoof
     public string MyCall = " ";
     public string TheirCall = " ";
 
-    public int CurrentSlotNumber { get; private set; }
     public int DecodedSlotNumber { get; private set; }
 
     public event EventHandler<DataEventArgs<string>>? SlotDecoded;
@@ -26,53 +26,37 @@ namespace SkyRoof
     {
       AppendData(args);
 
-      if (GetSlotToDecode()) Decode(Slot);
+      if (GetSlotToDecode()) Decode(SlotSamples);
     }
 
     private void AppendData(DataEventArgs<float> args)
     {
       int neededLength = SampleCount + args.Count;
-      if (Samples.Length < neededLength) Array.Resize(ref Samples, neededLength);
+      if (ReceivedSamples.Length < neededLength) Array.Resize(ref ReceivedSamples, neededLength);
 
-      Array.Copy(args.Data, 0, Samples, SampleCount, args.Count);
+      Array.Copy(args.Data, 0, ReceivedSamples, SampleCount, args.Count);
       SampleCount += args.Count;
 
       DataUtc = args.Utc;
     }
 
-    internal int SlotNumberAt(DateTime utc)
-    {
-      double secondsSinceMidnight = (utc - utc.Date).TotalSeconds;
-      return (int)Math.Truncate(secondsSinceMidnight / NativeFT4Coder.TIMESLOT_SECONDS);
-    }
-
     private bool GetSlotToDecode()
     {
-      // find slot boundaries
-      double secondsSinceMidnight = (DataUtc - DataUtc.Date).TotalSeconds;
-      CurrentSlotNumber = (int)Math.Truncate(secondsSinceMidnight / NativeFT4Coder.TIMESLOT_SECONDS);
-
-      double secondsIntoSlot = secondsSinceMidnight - (CurrentSlotNumber * NativeFT4Coder.TIMESLOT_SECONDS);
-      int samplesIntoSlot = (int)(secondsIntoSlot * NativeFT4Coder.SAMPLING_RATE);
-
-      int slotStartIndex = SampleCount - samplesIntoSlot;
+      Slot.Utc = DataUtc;
+      int slotStartIndex = SampleCount - Slot.SamplesIntoSlot;
       int slotEndIndex = slotStartIndex + NativeFT4Coder.DECODE_SAMPLE_COUNT;
 
       // is new slot available?
       bool slotAvailable = slotStartIndex >= 0 && slotEndIndex <= SampleCount;
-      bool slotDecoded = CurrentSlotNumber == DecodedSlotNumber;
+      bool slotDecoded = Slot.SlotNumber == DecodedSlotNumber;
       if (!slotAvailable || slotDecoded) return false;
 
       // extract slot
-      Array.Copy(Samples, slotStartIndex, Slot, 0, NativeFT4Coder.DECODE_SAMPLE_COUNT);
+      Array.Copy(ReceivedSamples, slotStartIndex, SlotSamples, 0, NativeFT4Coder.DECODE_SAMPLE_COUNT);
 
-      // DEBUG
-      int samplesDiff = slotEndIndex - (int)(7.5f * NativeFT4Coder.SAMPLING_RATE);
-      int msDiff = DateTime.UtcNow.Subtract(DataUtc).Milliseconds;
-      
       // dump used samples
       int samplesToKeep = SampleCount - slotEndIndex;
-      Array.Copy(Samples, slotEndIndex, Samples, 0, samplesToKeep);
+      Array.Copy(ReceivedSamples, slotEndIndex, ReceivedSamples, 0, samplesToKeep);
       SampleCount = samplesToKeep;
 
       return true;
@@ -90,7 +74,7 @@ namespace SkyRoof
       Buffers!.SetMyCall(MyCall);
       Buffers!.ClearDecoded();
 
-      NativeFT4Coder.decode_ft4_f(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency, 
+      NativeFT4Coder.decode_ft4(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency, 
         Buffers.MyCall, Buffers.HisCall, Buffers.DecodedChars);
 
       string[] messages = Buffers.GetDecodedMessages();
@@ -98,7 +82,7 @@ namespace SkyRoof
       var messageUtc = DataUtc.AddSeconds(-((SampleCount + NativeFT4Coder.DECODE_SAMPLE_COUNT) / (double)NativeFT4Coder.SAMPLING_RATE));
       SlotDecoded?.Invoke(this, new DataEventArgs<string>(messages, messageUtc));
 
-      DecodedSlotNumber = CurrentSlotNumber;
+      DecodedSlotNumber = Slot.SlotNumber;
     }
 
 

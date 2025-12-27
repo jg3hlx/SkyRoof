@@ -40,8 +40,8 @@ namespace SkyRoof
 
     [DisplayName("TX Gain")]
     [Description(" Amplify or attenuate TX data, dB")]
-    [DefaultValue(0)]
-    public int TxGain { get; set; } = 0;
+    [DefaultValue(-30)]
+    public int TxGain { get; set; } = -30;
 
     public override string ToString() { return string.Empty; }
   }

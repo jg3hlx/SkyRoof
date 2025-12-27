@@ -339,12 +339,18 @@ namespace VE3NEA
       soundIn = new WasapiCapture(false, AudioClientShareMode.Shared, 200, format);
       soundIn.Device = mmDevice;
       soundIn.Initialize();
-      soundIn.Stopped += Soundcard_Stopped;
 
       SampleSource = new SoundInSource(soundIn).ToSampleSource();
-      SampleSource = SampleSource.ChangeSampleRate(SamplingRate);
 
+      // in the shared mode the number of channels is not under our control, convert locally
+      if (SampleSource.WaveFormat.Channels > channelCount) SampleSource = SampleSource.ToMono();
+      else if (SampleSource.WaveFormat.Channels < channelCount) SampleSource = SampleSource.ToStereo();
+
+      SampleSource = SampleSource.ChangeSampleRate(SamplingRate);
+      
+      soundIn.Stopped += Soundcard_Stopped;
       soundIn.Start();
+
       StartReaderThread();
     }
 

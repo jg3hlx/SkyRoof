@@ -32,6 +32,7 @@
       AudioWaterfall = new AudioWaterfallWidget();
       MessageListWidget = new Ft4MessageListWidget();
       panel1 = new Panel();
+      ft4TimeBar1 = new SkyRoof.Widgets.Ft4TimeBar();
       HaltTxBtn = new Button();
       EnableTxBtn = new Button();
       TuneBtn = new Button();
@@ -85,6 +86,7 @@
       // 
       // panel1
       // 
+      panel1.Controls.Add(ft4TimeBar1);
       panel1.Controls.Add(HaltTxBtn);
       panel1.Controls.Add(EnableTxBtn);
       panel1.Controls.Add(TuneBtn);
@@ -94,9 +96,16 @@
       panel1.Size = new Size(273, 205);
       panel1.TabIndex = 4;
       // 
+      // ft4TimeBar1
+      // 
+      ft4TimeBar1.Location = new Point(18, 11);
+      ft4TimeBar1.Name = "ft4TimeBar1";
+      ft4TimeBar1.Size = new Size(236, 15);
+      ft4TimeBar1.TabIndex = 4;
+      // 
       // HaltTxBtn
       // 
-      HaltTxBtn.Location = new Point(100, 13);
+      HaltTxBtn.Location = new Point(99, 42);
       HaltTxBtn.Name = "HaltTxBtn";
       HaltTxBtn.Size = new Size(75, 23);
       HaltTxBtn.TabIndex = 2;
@@ -106,7 +115,7 @@
       // 
       // EnableTxBtn
       // 
-      EnableTxBtn.Location = new Point(19, 13);
+      EnableTxBtn.Location = new Point(18, 42);
       EnableTxBtn.Name = "EnableTxBtn";
       EnableTxBtn.Size = new Size(75, 23);
       EnableTxBtn.TabIndex = 1;
@@ -116,7 +125,7 @@
       // 
       // TuneBtn
       // 
-      TuneBtn.Location = new Point(181, 13);
+      TuneBtn.Location = new Point(180, 42);
       TuneBtn.Name = "TuneBtn";
       TuneBtn.Size = new Size(75, 23);
       TuneBtn.TabIndex = 0;
@@ -150,5 +159,6 @@
     private Button EnableTxBtn;
     private Button TuneBtn;
     private Button HaltTxBtn;
+    private Widgets.Ft4TimeBar ft4TimeBar1;
   }
 }

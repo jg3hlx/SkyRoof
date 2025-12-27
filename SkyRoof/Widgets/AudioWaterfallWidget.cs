@@ -197,6 +197,8 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                      spectra
     //----------------------------------------------------------------------------------------------
+    private Ft4Slot Slot = new();
+
     private unsafe void AppendSpectrum(DataEventArgs<float> args)
     {
       if (!CanProcess || WaterfallBmp == null || WaterfallBmp.Width != args.Count) return;
@@ -204,19 +206,19 @@ namespace SkyRoof
       if (--WriteRow < 0) WriteRow = WaterfallBmp.Height - 1;
 
       // left bar slot number
-      int slotNumber = Ft4Decoder?.SlotNumberAt(args.Utc) ?? 0;
-      leftBarSlots[WriteRow] = slotNumber;
+      Slot.Utc = args.Utc;
+      leftBarSlots[WriteRow] = Slot.SlotNumber;
 
 
       // separator
-      if (slotNumber != LastSlot)
+      if (Slot.SlotNumber != LastSlot)
       {
         AddSeparator(Color.Lime);
-        LastSlot = slotNumber;
+        LastSlot = Slot.SlotNumber;
       }
 
       // left bar
-      Color leftColor = (slotNumber & 1) == 1 ? Color.Olive : Color.Teal;
+      Color leftColor = Slot.Odd ? Color.Olive : Color.Teal;
       LeftBmp.SetPixel(0, WriteRow, leftColor);
       LeftBmp.SetPixel(1, WriteRow, leftColor);
 
