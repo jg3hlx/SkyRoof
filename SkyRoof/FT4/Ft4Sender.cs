@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Drawing.Text;
+using System.Security.Cryptography;
 using System.Text;
 using VE3NEA;
 
@@ -20,8 +21,8 @@ namespace SkyRoof
     private Ft4Slot Slot = new();
 
 
-    public int PttOnMargin = 500; // milliseconds
-    public int PttOffMargin = 500;
+    public static int PttOnMargin = 100; // milliseconds
+    public static int PttOffMargin = 300;
 
     public OutputSoundcard<float> Soundcard = new();
     public Mode SenderMode { get; private set; } = Mode.Idle;
@@ -100,7 +101,7 @@ namespace SkyRoof
       }
     }
 
-    private const int leadSampleCount = NativeFT4Coder.SAMPLING_RATE;
+    private const int leadSampleCount = NativeFT4Coder.SAMPLING_RATE / 2;
     private readonly TimeSpan leadTime = TimeSpan.FromSeconds(leadSampleCount / (double)NativeFT4Coder.SAMPLING_RATE);
     private readonly float[] txBuffer = new float[leadSampleCount];
     private readonly float[] silence = new float[leadSampleCount];
@@ -144,7 +145,7 @@ namespace SkyRoof
     private enum SendStage { Idle, Scheduled, Sending }
 
 
-    private List<string> log = new();
+    private StringBuilder log = new();
 
     private void SendThreadProcedure()
     { 
@@ -153,6 +154,12 @@ namespace SkyRoof
       DateTime now;
       SendStage stage = SendStage.Idle;
 
+      int consumed = 0;
+      int wasInBuf = 0;
+      void LogSamples(int place)
+      {
+        log.Append($"writing {place}: index={sampleIndex / (float)NativeFT4Coder.SAMPLING_RATE:F3} -> {(sampleIndex+sampleCount) / (float)NativeFT4Coder.SAMPLING_RATE:F3}  count={sampleCount / (float)NativeFT4Coder.SAMPLING_RATE:F3}  ");
+      }
 
       SetMessage("CQ VE3NEA FN03"); //{!}
       int len = Waveform.Length;
@@ -167,11 +174,18 @@ namespace SkyRoof
         Slot.Utc = now;
         var startTime = Slot.GetTxStartTime(TxOdd);
         var endTime = startTime + TimeSpan.FromSeconds(NativeFT4Coder.ENCODE_SECONDS);
-        log.Add($"--------------- now: {now:mm:ss.fff}  start: {startTime:mm.ss.fff}  stage: {stage}  in-buff: {Soundcard.GetBufferedSampleCount()}");
+
+
+        var slotSeconds = (now - startTime).TotalSeconds;
+        int inBuf = Soundcard.GetBufferedSampleCount();
+        consumed += wasInBuf - inBuf;
+        wasInBuf = inBuf;
+        log.Append($"\nstage: {stage,9}  now: {now:mm:ss.fff}  start: {startTime:mm.ss.f}  ({slotSeconds:f3}s  in-buff={inBuf/(float)NativeFT4Coder.SAMPLING_RATE:F3}  consumed={consumed / (float)NativeFT4Coder.SAMPLING_RATE:F3}");
 
         switch (stage)
         {
           case SendStage.Idle:
+            consumed = 0;
             sampleCount = (int)((startTime - now).TotalSeconds * NativeFT4Coder.SAMPLING_RATE);
 
             // time to schedule
@@ -180,6 +194,7 @@ namespace SkyRoof
               Soundcard.AddSamples(silence, 0, sampleCount);
               sampleCount = leadSampleCount - sampleCount;
               Soundcard.AddSamples(Waveform, 0, sampleCount);
+              LogSamples(1);
               sampleIndex = sampleCount;
               stage = SendStage.Scheduled;
             }
@@ -200,10 +215,12 @@ namespace SkyRoof
                 sampleCount = leadSampleCount - Soundcard.GetBufferedSampleCount();
                 sampleCount = Math.Min(Waveform.Length - sampleIndex, sampleCount); 
                 Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
+                LogSamples(2);
                 sampleIndex += sampleCount;
 
                 // PTT switch
                 stage = SendStage.Sending;
+                log.Append("\nPTT ON");
                 BeforeTransmit?.Invoke(this, EventArgs.Empty);
                 Thread.Sleep(PttOnMargin);
               }
@@ -215,12 +232,14 @@ namespace SkyRoof
             sampleCount = leadSampleCount - Soundcard.GetBufferedSampleCount();
             sampleCount = Math.Min(Waveform.Length - sampleIndex, sampleCount); 
             Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
+            LogSamples(3);
             sampleIndex += sampleCount;
 
             // scheduled starts now
             if (now > startTime)
             {
               stage = SendStage.Sending;
+              log.Append("\nPTT ON");
               BeforeTransmit?.Invoke(this, EventArgs.Empty);
             }
             break;
@@ -232,6 +251,7 @@ namespace SkyRoof
               sampleCount = leadSampleCount - Soundcard.GetBufferedSampleCount();
               sampleCount = Math.Min(Waveform.Length - sampleIndex, sampleCount);
               Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
+              LogSamples(4);
               sampleIndex += sampleCount;
             }
             // all samples in the buffer, switch to idle
@@ -239,6 +259,7 @@ namespace SkyRoof
             {
               stage = SendStage.Idle;
               Thread.Sleep(PttOffMargin);
+              log.Append("\nPTT OFF");
               AfterTransmit?.Invoke(this, EventArgs.Empty);
             }
             break;
@@ -253,10 +274,11 @@ namespace SkyRoof
       {
         stage = SendStage.Idle;
         Thread.Sleep(PttOffMargin);
+        log.Append("\nPTT OFF");
         AfterTransmit?.Invoke(this, EventArgs.Empty);
       }
 
-      File.WriteAllLines("C:\\Users\\Alex\\Desktop\\log.txt", log);
+      File.WriteAllText("C:\\Users\\Alex\\Desktop\\log.txt", log.ToString());
     }
 
     public void Dispose()
