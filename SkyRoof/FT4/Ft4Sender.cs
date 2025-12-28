@@ -143,6 +143,9 @@ namespace SkyRoof
 
     private enum SendStage { Idle, Scheduled, Sending }
 
+
+    private List<string> log = new();
+
     private void SendThreadProcedure()
     { 
       int sampleIndex = 0;
@@ -154,6 +157,7 @@ namespace SkyRoof
       SetMessage("CQ VE3NEA FN03"); //{!}
       int len = Waveform.Length;
       //for (int i = 0; i < len; i++) Waveform[i] *= i / (float)len;
+      log.Clear();
       Soundcard.ClearBuffer();
 
 
@@ -163,6 +167,7 @@ namespace SkyRoof
         Slot.Utc = now;
         var startTime = Slot.GetTxStartTime(TxOdd);
         var endTime = startTime + TimeSpan.FromSeconds(NativeFT4Coder.ENCODE_SECONDS);
+        log.Add($"--------------- now: {now:mm:ss.fff}  start: {startTime:mm.ss.fff}  stage: {stage}  in-buff: {Soundcard.GetBufferedSampleCount()}");
 
         switch (stage)
         {
@@ -193,8 +198,9 @@ namespace SkyRoof
                 // samples, skipping the missed time
                 sampleIndex = (int)(missedSeconds * NativeFT4Coder.SAMPLING_RATE);
                 sampleCount = leadSampleCount - Soundcard.GetBufferedSampleCount();
-                sampleCount = Math.Min(Waveform.Length - sampleIndex, sampleCount); //{!} not needed?
+                sampleCount = Math.Min(Waveform.Length - sampleIndex, sampleCount); 
                 Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
+                sampleIndex += sampleCount;
 
                 // PTT switch
                 stage = SendStage.Sending;
@@ -207,6 +213,7 @@ namespace SkyRoof
           case SendStage.Scheduled:
             // keep buffer full
             sampleCount = leadSampleCount - Soundcard.GetBufferedSampleCount();
+            sampleCount = Math.Min(Waveform.Length - sampleIndex, sampleCount); 
             Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
             sampleIndex += sampleCount;
 
@@ -248,6 +255,8 @@ namespace SkyRoof
         Thread.Sleep(PttOffMargin);
         AfterTransmit?.Invoke(this, EventArgs.Empty);
       }
+
+      File.WriteAllLines("C:\\Users\\Alex\\Desktop\\log.txt", log);
     }
 
     public void Dispose()

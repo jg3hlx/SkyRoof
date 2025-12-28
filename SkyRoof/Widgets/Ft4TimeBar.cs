@@ -25,7 +25,7 @@ namespace SkyRoof.Widgets
     {
       Slot.Utc = DateTime.UtcNow;
 
-      double activeSeconds = NativeFT4Coder.DECODE_SAMPLE_COUNT / NativeFT4Coder.SAMPLING_RATE;
+      double activeSeconds = NativeFT4Coder.ENCODE_SAMPLE_COUNT / NativeFT4Coder.SAMPLING_RATE;
       double activeFraction = activeSeconds / NativeFT4Coder.TIMESLOT_SECONDS;
       double currentFraction = Slot.SecondsIntoSlot / NativeFT4Coder.TIMESLOT_SECONDS;
 

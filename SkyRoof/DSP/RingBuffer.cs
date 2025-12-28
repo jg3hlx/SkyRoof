@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Numerics;
+﻿using System.Numerics;
 using MathNet.Numerics;
 
 namespace VE3NEA
@@ -50,6 +49,7 @@ namespace VE3NEA
     {
       if (offset < 0) throw new ArgumentException(nameof(offset));
       if (count < 0) throw new ArgumentException(nameof(count));
+      if (offset + count > data.Length) throw new ArgumentException("Array too short");
       if (count == 0) return;
 
       lock (lockObject)
@@ -90,6 +90,7 @@ namespace VE3NEA
     {
       if (offset < 0) throw new ArgumentException(nameof(offset));
       if (count < 0) throw new ArgumentException(nameof(count));
+      if (offset + count > buffer.Length) throw new ArgumentException("Array too short");
       if (count == 0) return 0;
 
       lock (lockObject)
