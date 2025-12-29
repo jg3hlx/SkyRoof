@@ -92,6 +92,7 @@ namespace SkyRoof
       ctx.Settings.Ui.ClockUtcMode = Clock.UtcMode;
       if (ctx.WaterfallPanel != null)
         ctx.Settings.Waterfall.SplitterDistance = ctx.WaterfallPanel.SplitContainer.SplitterDistance;
+
       ctx.Settings.SaveToFile();
 
       // dispose sdr and dsp

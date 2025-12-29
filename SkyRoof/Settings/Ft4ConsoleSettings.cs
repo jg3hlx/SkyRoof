@@ -43,6 +43,10 @@ namespace SkyRoof
     [DefaultValue(-30)]
     public int TxGain { get; set; } = -30;
 
+    [Browsable(false)]
+    [DefaultValue(266)]
+    public int SplitterDistance { get; set; } = 266;
+
     public override string ToString() { return string.Empty; }
   }
 

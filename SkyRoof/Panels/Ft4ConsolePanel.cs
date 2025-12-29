@@ -14,6 +14,7 @@ namespace SkyRoof
     public Ft4Sender Ft4Sender = new();
     public WsjtxUdpSender WsjtxUdpSender;
     public int TxCountdown;
+    private string CurrentMessage = "CQ VE3NEA FN03";
 
     public Ft4ConsolePanel()
     {
@@ -47,6 +48,10 @@ namespace SkyRoof
       Ft4Sender.AfterTransmit += Ft4Sender_AfterTransmit;
 
       ApplySettings();
+
+      // ignore mousewheel on the spinners
+      RxSpinner.MouseWheel += (o, e) => ((HandledMouseEventArgs)e).Handled = true;
+      TxSpinner.MouseWheel += (o, e) => ((HandledMouseEventArgs)e).Handled = true;
     }
 
     private void Ft4ConsolePanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -60,6 +65,8 @@ namespace SkyRoof
       Ft4Decoder = null;
       WsjtxUdpSender?.Dispose();
       WsjtxUdpSender = null;
+
+      ctx.Settings.Ft4Console.SplitterDistance = SplitContainer.SplitterDistance;
 
       Ft4Sender?.Dispose();
       Ft4Sender = null;
@@ -183,8 +190,8 @@ namespace SkyRoof
     private void AudioWaterfall_MouseDown(object? sender, MouseEventArgs e)
     {
       AudioWaterfall.SetFrequenciesFromMouseClick(e);
-      Ft4Decoder.RxAudioFrequency = AudioWaterfall.RxAudioFrequency;
-      Ft4Sender.TxAudioFrequency = AudioWaterfall.TxAudioFrequency;
+      RxSpinner.Value = AudioWaterfall.RxAudioFrequency;
+      TxSpinner.Value = AudioWaterfall.TxAudioFrequency;
     }
 
     private void AudioWaterfall_MouseMove(object sender, MouseEventArgs e)
@@ -263,7 +270,7 @@ namespace SkyRoof
 
     private void Ft4Sender_BeforeTransmit(object? sender, EventArgs e)
     {
-      ft4TimeBar1.Transmitting = true;
+      ft4TimeBar1.Transmitting = Ft4Sender.SenderMode == Ft4Sender.Mode.Sending;
       TxCountdown--;
       BeginInvoke(SetButtonColors);
       Console.Beep();
@@ -278,6 +285,51 @@ namespace SkyRoof
         SetButtonColors();
       });
       Console.Beep();
+    }
+
+    private void Spinner_ValueChanged(object sender, EventArgs e)
+    {
+      if (RxSpinner.Value != Ft4Decoder.RxAudioFrequency)
+      {
+        AudioWaterfall.RxAudioFrequency = Ft4Decoder.RxAudioFrequency = (int)RxSpinner.Value;
+      }
+
+
+      if (TxSpinner.Value != Ft4Sender.TxAudioFrequency)
+      {
+        AudioWaterfall.TxAudioFrequency = Ft4Sender.TxAudioFrequency = (int)TxSpinner.Value;
+        Ft4Sender.SetMessage(CurrentMessage);
+      }
+    }
+
+    private void TxSpinner_ValueChanged(object sender, EventArgs e)
+    {
+      if (TxSpinner.Value != Ft4Sender.TxAudioFrequency)
+      {
+        AudioWaterfall.TxAudioFrequency = Ft4Sender.TxAudioFrequency = (int)TxSpinner.Value;
+        Ft4Sender.SetMessage(CurrentMessage);
+      }
+    }
+
+    private void RxSpinner_ValueChanged(object sender, EventArgs e)
+    {
+      if (RxSpinner.Value != Ft4Decoder.RxAudioFrequency)
+        AudioWaterfall.RxAudioFrequency = Ft4Decoder.RxAudioFrequency = (int)RxSpinner.Value;
+    }
+
+    private void TxToRxBtn_Click(object sender, EventArgs e)
+    {
+      RxSpinner.Value = TxSpinner.Value;
+    }
+
+    private void RxToTxBtn_Click(object sender, EventArgs e)
+    {
+      TxSpinner.Value = RxSpinner.Value;
+    }
+
+    private void Ft4ConsolePanel_Shown(object sender, EventArgs e)
+    {
+      SplitContainer.SplitterDistance = ctx.Settings.Ft4Console.SplitterDistance;
     }
   }
 }

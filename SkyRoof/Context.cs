@@ -52,6 +52,7 @@ namespace SkyRoof
     
     public void ClosePanels()
     {
+      Ft4ConsolePanel?.Close();
       GroupViewPanel?.Close();
       SatelliteDetailsPanel?.Close();
       PassesPanel?.Close();
@@ -61,7 +62,6 @@ namespace SkyRoof
       TransmittersPanel?.Close();
       WaterfallPanel?.Close();
       QsoEntryPanel?.Close();
-      Ft4ConsolePanel?.Close();
     }
   }
 }

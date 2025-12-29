@@ -14,7 +14,7 @@ namespace SkyRoof
     private float[] AudioSamples = new float[NativeFT4Coder.ENCODE_SAMPLE_COUNT];
     private float[] Waveform = new float[NativeFT4Coder.ENCODE_SAMPLE_COUNT];
 
-    private float txAudioFrequency = 1500;
+    private int txAudioFrequency = 1500;
     private object lockObj = new();
     private Thread? WorkerThread;
     private bool Stopping;
@@ -30,7 +30,7 @@ namespace SkyRoof
     public event EventHandler? BeforeTransmit;
     public event EventHandler? AfterTransmit;
 
-    public float TxAudioFrequency { get => txAudioFrequency; set { lock (lockObj) { txAudioFrequency = value; } }}
+    public int TxAudioFrequency { get => txAudioFrequency; set { lock (lockObj) { txAudioFrequency = value; } }}
 
     public void StartTuning() => SetMode(Mode.Tuning);
     public void StartSending() => SetMode(Mode.Sending);
@@ -54,8 +54,9 @@ namespace SkyRoof
       int len = Math.Min(message.Length, MessageChars.Length - 1);
       Array.Clear(MessageChars);
       Encoding.ASCII.GetBytes(message, 0, len, MessageChars, 0);
+      float frequency = txAudioFrequency;
 
-      NativeFT4Coder.encode_ft4(MessageChars, ref txAudioFrequency, AudioSamples);
+      NativeFT4Coder.encode_ft4(MessageChars, ref frequency, AudioSamples);
 
       // copy to waveform
       lock (lockObj)
