@@ -331,5 +331,10 @@ namespace SkyRoof
     {
       SplitContainer.SplitterDistance = ctx.Settings.Ft4Console.SplitterDistance;
     }
+
+    private void OddRadioBtn_CheckedChanged(object sender, EventArgs e)
+    {
+      Ft4Sender.TxOdd = OddRadioBtn.Checked;
+    }
   }
 }

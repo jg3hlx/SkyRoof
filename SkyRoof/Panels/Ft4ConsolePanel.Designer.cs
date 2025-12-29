@@ -353,6 +353,7 @@
       OddRadioBtn.TabIndex = 0;
       OddRadioBtn.Text = "n";
       OddRadioBtn.UseVisualStyleBackColor = true;
+      OddRadioBtn.CheckedChanged += OddRadioBtn_CheckedChanged;
       // 
       // ft4TimeBar1
       // 
