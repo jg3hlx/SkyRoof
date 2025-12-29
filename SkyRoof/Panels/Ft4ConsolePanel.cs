@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using System.Windows.Forms;
+using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 using static SkyRoof.Ft4MessageListWidget;
@@ -12,6 +13,7 @@ namespace SkyRoof
     public Ft4Decoder Ft4Decoder = new();
     public Ft4Sender Ft4Sender = new();
     public WsjtxUdpSender WsjtxUdpSender;
+    public int TxCountdown;
 
     public Ft4ConsolePanel()
     {
@@ -45,28 +47,6 @@ namespace SkyRoof
       Ft4Sender.AfterTransmit += Ft4Sender_AfterTransmit;
 
       ApplySettings();
-    }
-
-    private void Ft4Sender_AfterTransmit(object? sender, EventArgs e)
-    {
-      Console.Beep();
-    }
-
-    private void Ft4Sender_BeforeTransmit(object? sender, EventArgs e)
-    {
-      Console.Beep();
-    }
-
-    private void WsjtxUdpSender_HighlightCallsignReceived(object? sender, HighlightCallsignEventArgs e)
-    {
-      MessageListWidget.HighlightCallsign(e);
-    }
-
-    private void AudioWaterfall_MouseDown(object? sender, MouseEventArgs e)
-    {
-      AudioWaterfall.SetFrequenciesFromMouseClick(e);
-      Ft4Decoder.RxAudioFrequency = AudioWaterfall.RxAudioFrequency;
-      Ft4Sender.TxAudioFrequency = AudioWaterfall.TxAudioFrequency;
     }
 
     private void Ft4ConsolePanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -110,11 +90,8 @@ namespace SkyRoof
       Ft4Decoder.MyCall = ctx.Settings.User.Call;
       Ft4Decoder.CutoffFrequency = sett.Waterfall.Bandwidth - 100;
 
-      //Ft4Sender.Mode oldMode = Ft4Sender.SenderMode;
-      //Ft4Sender.Stop();
       Ft4Sender.Soundcard.SetDeviceId(sett.TxSoundcard);
       Ft4Sender.Soundcard.Volume = Dsp.FromDb2(sett.TxGain);
-      //Ft4Sender.SetMode(oldMode);
       SetButtonColors();
     }
 
@@ -198,6 +175,18 @@ namespace SkyRoof
       return item;
     }
 
+    private void WsjtxUdpSender_HighlightCallsignReceived(object? sender, HighlightCallsignEventArgs e)
+    {
+      MessageListWidget.HighlightCallsign(e);
+    }
+
+    private void AudioWaterfall_MouseDown(object? sender, MouseEventArgs e)
+    {
+      AudioWaterfall.SetFrequenciesFromMouseClick(e);
+      Ft4Decoder.RxAudioFrequency = AudioWaterfall.RxAudioFrequency;
+      Ft4Sender.TxAudioFrequency = AudioWaterfall.TxAudioFrequency;
+    }
+
     private void AudioWaterfall_MouseMove(object sender, MouseEventArgs e)
     {
       AudioWaterfall.ShowLeftBarTooltip(e.Location);
@@ -215,7 +204,28 @@ namespace SkyRoof
       AudioWaterfall.ShowCallsign(MessageListWidget.HotItem);
     }
 
-    private void TuneBtn_Click(object sender, EventArgs e)
+    private void EnableTxBtn_MouseDown(object sender, MouseEventArgs e)
+    {
+      if (!CheckTxEnabled()) return;
+
+      if (Ft4Sender.SenderMode == Ft4Sender.Mode.Sending && TxCountdown > 0)
+        TxCountdown = 0;
+      else
+      {
+        TxCountdown = 20;  // stop after 20 transmissions
+        Ft4Sender.StartSending();
+      }
+
+      SetButtonColors();
+    }
+
+    private void HaltTxBtn_MouseDown(object sender, MouseEventArgs e)
+    {
+      Ft4Sender.Stop();
+      SetButtonColors();
+    }
+
+    private void TuneBtn_MouseDown(object sender, MouseEventArgs e)
     {
       if (!CheckTxEnabled()) return;
 
@@ -227,34 +237,20 @@ namespace SkyRoof
       SetButtonColors();
     }
 
-    private void EnableTxBtn_Click(object sender, EventArgs e)
-    {
-      if (!CheckTxEnabled()) return;
-
-      if (Ft4Sender.SenderMode == Ft4Sender.Mode.Sending)
-        Ft4Sender.Stop();
-      else
-        Ft4Sender.StartSending();
-
-      SetButtonColors();
-    }
-
-    private void HaltTxBtn_Click(object sender, EventArgs e)
-    {
-      Ft4Sender.Stop();
-      SetButtonColors();
-    }
-
     private void SetButtonColors()
     {
       bool tuning = Ft4Sender.SenderMode == Ft4Sender.Mode.Tuning;
-      bool sending = Ft4Sender.SenderMode == Ft4Sender.Mode.Sending;
+      bool sendEnabled = Ft4Sender.SenderMode == Ft4Sender.Mode.Sending && TxCountdown > 0;
+      //bool sending = Ft4Sender.stage == Ft4Sender.SendStage.Sending;
 
+
+      EnableTxBtn.BackColor = sendEnabled ? Color.LightCoral : Color.Transparent;
+      //HaltTxBtn.BackColor = sending ? Color.Red : Color.Transparent;
       TuneBtn.BackColor = tuning ? Color.LightCoral : Color.Transparent;
-      EnableTxBtn.BackColor = sending ? Color.LightCoral : Color.Transparent;
 
       TuneBtn.Refresh();
       EnableTxBtn.Refresh();
+      HaltTxBtn.Refresh();
     }
 
     private bool CheckTxEnabled()
@@ -263,6 +259,25 @@ namespace SkyRoof
 
       MessageBox.Show("FT4 transmit is not enabled in Settings.", "SkyRoof", MessageBoxButtons.OK, MessageBoxIcon.Information);
       return false;
+    }
+
+    private void Ft4Sender_BeforeTransmit(object? sender, EventArgs e)
+    {
+      ft4TimeBar1.Transmitting = true;
+      TxCountdown--;
+      BeginInvoke(SetButtonColors);
+      Console.Beep();
+    }
+
+    private void Ft4Sender_AfterTransmit(object? sender, EventArgs e)
+    {
+      ft4TimeBar1.Transmitting = false;
+      BeginInvoke(() =>
+      {
+        if (TxCountdown <= 0) Ft4Sender.Stop();
+        SetButtonColors();
+      });
+      Console.Beep();
     }
   }
 }

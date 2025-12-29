@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using VE3NEA;
+﻿using VE3NEA;
 
 namespace SkyRoof.Widgets
 {
@@ -26,7 +17,7 @@ namespace SkyRoof.Widgets
       Slot.Utc = DateTime.UtcNow;
 
       double activeSeconds = NativeFT4Coder.ENCODE_SAMPLE_COUNT / NativeFT4Coder.SAMPLING_RATE;
-      double activeFraction = (activeSeconds + Ft4Sender.PttOffMargin * 1e-3) / NativeFT4Coder.TIMESLOT_SECONDS;
+      double activeFraction = activeSeconds / NativeFT4Coder.TIMESLOT_SECONDS;
       double currentFraction = Slot.SecondsIntoSlot / NativeFT4Coder.TIMESLOT_SECONDS;
 
       // tx colors

@@ -105,33 +105,33 @@
       // 
       // HaltTxBtn
       // 
-      HaltTxBtn.Location = new Point(99, 42);
+      HaltTxBtn.Location = new Point(109, 42);
       HaltTxBtn.Name = "HaltTxBtn";
-      HaltTxBtn.Size = new Size(75, 23);
+      HaltTxBtn.Size = new Size(80, 28);
       HaltTxBtn.TabIndex = 2;
       HaltTxBtn.Text = "Halt TX";
       HaltTxBtn.UseVisualStyleBackColor = true;
-      HaltTxBtn.Click += HaltTxBtn_Click;
+      HaltTxBtn.MouseDown += HaltTxBtn_MouseDown;
       // 
       // EnableTxBtn
       // 
       EnableTxBtn.Location = new Point(18, 42);
       EnableTxBtn.Name = "EnableTxBtn";
-      EnableTxBtn.Size = new Size(75, 23);
+      EnableTxBtn.Size = new Size(80, 28);
       EnableTxBtn.TabIndex = 1;
       EnableTxBtn.Text = "Enable TX";
       EnableTxBtn.UseVisualStyleBackColor = true;
-      EnableTxBtn.Click += EnableTxBtn_Click;
+      EnableTxBtn.MouseDown += EnableTxBtn_MouseDown;
       // 
       // TuneBtn
       // 
-      TuneBtn.Location = new Point(180, 42);
+      TuneBtn.Location = new Point(212, 42);
       TuneBtn.Name = "TuneBtn";
-      TuneBtn.Size = new Size(75, 23);
+      TuneBtn.Size = new Size(42, 28);
       TuneBtn.TabIndex = 0;
       TuneBtn.Text = "Tune";
       TuneBtn.UseVisualStyleBackColor = true;
-      TuneBtn.Click += TuneBtn_Click;
+      TuneBtn.MouseDown += TuneBtn_MouseDown;
       // 
       // Ft4ConsolePanel
       // 
