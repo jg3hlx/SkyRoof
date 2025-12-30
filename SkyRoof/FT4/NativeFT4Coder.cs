@@ -16,7 +16,7 @@ namespace VE3NEA
       SIGNOFF,
     }
 
-    private const int SAMPLES_PER_SYMBOL = 576 * 4; // 2304
+    public const int SAMPLES_PER_SYMBOL = 576 * 4; // 2304
     private const int SYMBOLS_PER_MESSAGE = 16 + 87; // 103
 
     public const int SAMPLING_RATE = 48_000;

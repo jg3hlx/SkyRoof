@@ -62,8 +62,10 @@ namespace SkyRoof
       return true;
     }
 
-    private void Decode(float[] samples)
+    public void Decode(float[]? samples = null)
     {
+      samples ??= SlotSamples;
+
       // scale to -1..1
       float max = samples.Max(Math.Abs);
       if (max > 0)
@@ -79,7 +81,9 @@ namespace SkyRoof
 
       string[] messages = Buffers.GetDecodedMessages();
 
-      var messageUtc = DataUtc.AddSeconds(-((SampleCount + NativeFT4Coder.DECODE_SAMPLE_COUNT) / (double)NativeFT4Coder.SAMPLING_RATE));
+
+      var messageUtc = DateTime.UtcNow;
+      if(DataUtc != DateTime.MinValue) messageUtc = DataUtc.AddSeconds(-((SampleCount + NativeFT4Coder.DECODE_SAMPLE_COUNT) / (double)NativeFT4Coder.SAMPLING_RATE));
       SlotDecoded?.Invoke(this, new DataEventArgs<string>(messages, messageUtc));
 
       DecodedSlotNumber = Slot.SlotNumber;

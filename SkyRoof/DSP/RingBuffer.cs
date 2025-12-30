@@ -124,6 +124,17 @@ namespace VE3NEA
       return count;
     }
 
+    // perform multi-step operations, e.g., replace buffer data: read Count, Clear(), Write().
+    public void ExecuteLocked(Action action)
+    {
+      if (action == null) throw new ArgumentNullException(nameof(action));
+
+      lock (lockObject)
+      {
+        action();
+      }
+    }
+
     private void Dump(int dumpCount)
     {
       Count -= dumpCount;

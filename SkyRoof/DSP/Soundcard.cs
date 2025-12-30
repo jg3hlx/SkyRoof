@@ -239,6 +239,8 @@ namespace VE3NEA
     private WaveSource<T> waveSource;
     private WasapiOut? wasapiOut;
     private float volume;
+
+    public RingBuffer<T> Buffer => waveSource.Buffer;
     public float Volume { get => volume; set => SetVolume(value); }
 
 
@@ -255,7 +257,7 @@ namespace VE3NEA
 
     protected override void DoStart()
     {
-        waveSource.ClearBuffer();
+        waveSource.Buffer.Clear();
 
         wasapiOut = new WasapiOut(false, AudioClientShareMode.Shared, 200);
         wasapiOut.Device = mmDevice;
@@ -279,7 +281,7 @@ namespace VE3NEA
         wasapiOut = null;
       }
 
-      waveSource.ClearBuffer();
+      waveSource.Buffer.Clear();
     }
 
     private void SetVolume(float value)
@@ -291,16 +293,6 @@ namespace VE3NEA
     public void AddSamples(T[] samples, int offset = 0, int? count = null)
     {
       if (Enabled) waveSource.AddSamples(samples, offset, count);
-    }
-
-    public void ClearBuffer()
-    {
-      waveSource.ClearBuffer();
-    }
-
-    public int GetBufferedSampleCount()
-    {
-      return waveSource.GetBufferedSampleCount();
     }
   }
 

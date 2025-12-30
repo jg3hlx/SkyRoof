@@ -31,6 +31,7 @@ namespace SkyRoof
       ctx.Ft4ConsolePanel = this;
       ctx.MainForm.Ft4ConsoleMNU.Checked = true;
 
+      Ft4Decoder.Decode(); // prime the decoding engine
       Ft4Decoder.SlotDecoded += Ft4Decoder_SlotDecoded;
       Soundcard.SamplesAvailable += (s, a) => AddSamplesFromSoundcard(a);
       Soundcard.Retry = true;
@@ -52,6 +53,11 @@ namespace SkyRoof
       // ignore mousewheel on the spinners
       RxSpinner.MouseWheel += (o, e) => ((HandledMouseEventArgs)e).Handled = true;
       TxSpinner.MouseWheel += (o, e) => ((HandledMouseEventArgs)e).Handled = true;
+    }
+
+    private void Ft4ConsolePanel_Shown(object sender, EventArgs e)
+    {
+      SplitContainer.SplitterDistance = ctx.Settings.Ft4Console.SplitterDistance;
     }
 
     private void Ft4ConsolePanel_FormClosing(object sender, FormClosingEventArgs e)
@@ -216,11 +222,15 @@ namespace SkyRoof
       if (!CheckTxEnabled()) return;
 
       if (Ft4Sender.SenderMode == Ft4Sender.Mode.Sending && TxCountdown > 0)
+      {
         TxCountdown = 0;
+        if (Ft4Sender.stage == Ft4Sender.SendStage.Idle) Ft4Sender.Stop();
+      }
       else
       {
-        TxCountdown = 20;  // stop after 20 transmissions
         Ft4Sender.StartSending();
+        if (Ft4Sender.SenderMode == Ft4Sender.Mode.Sending) // no sending if was tuning 
+          TxCountdown = 20;  // stop after 20 transmissions
       }
 
       SetButtonColors();
@@ -287,21 +297,6 @@ namespace SkyRoof
       Console.Beep();
     }
 
-    private void Spinner_ValueChanged(object sender, EventArgs e)
-    {
-      if (RxSpinner.Value != Ft4Decoder.RxAudioFrequency)
-      {
-        AudioWaterfall.RxAudioFrequency = Ft4Decoder.RxAudioFrequency = (int)RxSpinner.Value;
-      }
-
-
-      if (TxSpinner.Value != Ft4Sender.TxAudioFrequency)
-      {
-        AudioWaterfall.TxAudioFrequency = Ft4Sender.TxAudioFrequency = (int)TxSpinner.Value;
-        Ft4Sender.SetMessage(CurrentMessage);
-      }
-    }
-
     private void TxSpinner_ValueChanged(object sender, EventArgs e)
     {
       if (TxSpinner.Value != Ft4Sender.TxAudioFrequency)
@@ -325,11 +320,6 @@ namespace SkyRoof
     private void RxToTxBtn_Click(object sender, EventArgs e)
     {
       TxSpinner.Value = RxSpinner.Value;
-    }
-
-    private void Ft4ConsolePanel_Shown(object sender, EventArgs e)
-    {
-      SplitContainer.SplitterDistance = ctx.Settings.Ft4Console.SplitterDistance;
     }
 
     private void OddRadioBtn_CheckedChanged(object sender, EventArgs e)

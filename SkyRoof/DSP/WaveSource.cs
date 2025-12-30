@@ -7,28 +7,18 @@ namespace VE3NEA
   public class WaveSource<T> : IWaveSource
   {
     private readonly WaveFormat format;
-    private RingBuffer<T> ringBuffer;
+    public RingBuffer<T> Buffer { get; private set; }
 
     public WaveSource(int samplingRate)
     {
       int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
       format = new WaveFormat(samplingRate, 32, channelCount, AudioEncoding.IeeeFloat);
-      ringBuffer = new(samplingRate);
+      Buffer = new(samplingRate);
     }
 
   public void AddSamples(T[] samples, int offset = 0, int? count = null)
     {
-      ringBuffer.Write(samples, offset, count ?? samples.Length);
-    }
-
-    public void ClearBuffer()
-    {
-      ringBuffer.Clear(); 
-    }
-
-    public int GetBufferedSampleCount()
-    {
-      return ringBuffer.Count;
+      Buffer.Write(samples, offset, count ?? samples.Length);
     }
 
 
@@ -43,7 +33,7 @@ namespace VE3NEA
     public long Length => throw new NotImplementedException();
     public int Read(byte[] buffer, int offset, int count)
     {
-      ringBuffer.ReadBytes(buffer, offset, count);
+      Buffer.ReadBytes(buffer, offset, count);
       return count;
     }
 
