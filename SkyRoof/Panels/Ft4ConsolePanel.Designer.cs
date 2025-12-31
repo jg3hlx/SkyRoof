@@ -32,7 +32,7 @@
       AudioWaterfall = new AudioWaterfallWidget();
       MessageListWidget = new Ft4MessageListWidget();
       panel1 = new Panel();
-      label1 = new Label();
+      TxMessageLabel = new Label();
       flowLayoutPanel1 = new FlowLayoutPanel();
       button1 = new Button();
       button2 = new Button();
@@ -111,7 +111,7 @@
       // 
       // panel1
       // 
-      panel1.Controls.Add(label1);
+      panel1.Controls.Add(TxMessageLabel);
       panel1.Controls.Add(flowLayoutPanel1);
       panel1.Controls.Add(groupBox2);
       panel1.Controls.Add(OddEvenGroupBox);
@@ -125,16 +125,16 @@
       panel1.Size = new Size(273, 263);
       panel1.TabIndex = 4;
       // 
-      // label1
+      // TxMessageLabel
       // 
-      label1.BackColor = SystemColors.Window;
-      label1.Font = new Font("Courier New", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-      label1.Location = new Point(14, 165);
-      label1.Name = "label1";
-      label1.Size = new Size(246, 21);
-      label1.TabIndex = 32;
-      label1.Text = "CQ VE3NEA FN03";
-      label1.TextAlign = ContentAlignment.MiddleCenter;
+      TxMessageLabel.BackColor = SystemColors.Window;
+      TxMessageLabel.Font = new Font("Courier New", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      TxMessageLabel.Location = new Point(14, 165);
+      TxMessageLabel.Name = "TxMessageLabel";
+      TxMessageLabel.Size = new Size(246, 21);
+      TxMessageLabel.TabIndex = 32;
+      TxMessageLabel.Text = "CQ VE3NEA FN03";
+      TxMessageLabel.TextAlign = ContentAlignment.MiddleCenter;
       // 
       // flowLayoutPanel1
       // 
@@ -155,8 +155,10 @@
       button1.Name = "button1";
       button1.Size = new Size(76, 23);
       button1.TabIndex = 0;
+      button1.Tag = "6";
       button1.Text = "CQ";
       button1.UseVisualStyleBackColor = true;
+      button1.Click += MessageBtn_Click;
       // 
       // button2
       // 
@@ -164,8 +166,10 @@
       button2.Name = "button2";
       button2.Size = new Size(76, 23);
       button2.TabIndex = 1;
+      button2.Tag = "2";
       button2.Text = "dB";
       button2.UseVisualStyleBackColor = true;
+      button2.Click += MessageBtn_Click;
       // 
       // button3
       // 
@@ -173,8 +177,10 @@
       button3.Name = "button3";
       button3.Size = new Size(76, 23);
       button3.TabIndex = 2;
+      button3.Tag = "4";
       button3.Text = "RR73";
       button3.UseVisualStyleBackColor = true;
+      button3.Click += MessageBtn_Click;
       // 
       // button4
       // 
@@ -182,8 +188,10 @@
       button4.Name = "button4";
       button4.Size = new Size(76, 23);
       button4.TabIndex = 3;
+      button4.Tag = "1";
       button4.Text = "DE";
       button4.UseVisualStyleBackColor = true;
+      button4.Click += MessageBtn_Click;
       // 
       // button5
       // 
@@ -191,8 +199,10 @@
       button5.Name = "button5";
       button5.Size = new Size(76, 23);
       button5.TabIndex = 4;
+      button5.Tag = "3";
       button5.Text = "RR-dB";
       button5.UseVisualStyleBackColor = true;
+      button5.Click += MessageBtn_Click;
       // 
       // button6
       // 
@@ -200,8 +210,10 @@
       button6.Name = "button6";
       button6.Size = new Size(76, 23);
       button6.TabIndex = 5;
+      button6.Tag = "5";
       button6.Text = "73";
       button6.UseVisualStyleBackColor = true;
+      button6.Click += MessageBtn_Click;
       // 
       // groupBox2
       // 
@@ -275,6 +287,7 @@
       RxSpinner.Location = new Point(32, 53);
       RxSpinner.Margin = new Padding(4, 3, 4, 3);
       RxSpinner.Maximum = new decimal(new int[] { 5000, 0, 0, 0 });
+      RxSpinner.Minimum = new decimal(new int[] { 50, 0, 0, 0 });
       RxSpinner.Name = "RxSpinner";
       RxSpinner.Size = new Size(59, 23);
       RxSpinner.TabIndex = 3;
@@ -307,6 +320,7 @@
       TxSpinner.Location = new Point(32, 16);
       TxSpinner.Margin = new Padding(4, 3, 4, 3);
       TxSpinner.Maximum = new decimal(new int[] { 5000, 0, 0, 0 });
+      TxSpinner.Minimum = new decimal(new int[] { 50, 0, 0, 0 });
       TxSpinner.Name = "TxSpinner";
       TxSpinner.Size = new Size(59, 23);
       TxSpinner.TabIndex = 2;
@@ -444,7 +458,7 @@
     private Button button4;
     private Button button5;
     private Button button6;
-    private Label label1;
+    private Label TxMessageLabel;
     public SplitContainer SplitContainer;
   }
 }

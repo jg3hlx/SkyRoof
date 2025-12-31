@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using Serilog;
+﻿using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 using static SkyRoof.Ft4MessageListWidget;
@@ -50,7 +49,7 @@ namespace SkyRoof
 
       ApplySettings();
 
-      // ignore mousewheel on the spinners
+      // disable mousewheel on the spinners
       RxSpinner.MouseWheel += (o, e) => ((HandledMouseEventArgs)e).Handled = true;
       TxSpinner.MouseWheel += (o, e) => ((HandledMouseEventArgs)e).Handled = true;
     }
@@ -101,7 +100,7 @@ namespace SkyRoof
       WsjtxUdpSender.SetEnabled(ctx.Settings.Ft4Console.UdpSender.Enabled);
 
       Ft4Decoder.MyCall = ctx.Settings.User.Call;
-      Ft4Decoder.CutoffFrequency = sett.Waterfall.Bandwidth - 100;
+      Ft4Decoder.CutoffFrequency = sett.Waterfall.Bandwidth - 50;
 
       Ft4Sender.Soundcard.SetDeviceId(sett.TxSoundcard);
       Ft4Sender.Soundcard.Volume = Dsp.FromDb2(sett.TxGain);
@@ -325,6 +324,17 @@ namespace SkyRoof
     private void OddRadioBtn_CheckedChanged(object sender, EventArgs e)
     {
       Ft4Sender.TxOdd = OddRadioBtn.Checked;
+    }
+
+    private void MessageBtn_Click(object sender, EventArgs e)
+    {
+      Ft4MessageType messageType = (Ft4MessageType)int.Parse((string)((Button)sender).Tag!);
+      TxMessageLabel.Text = $"{messageType}";
+
+      if (messageType == Ft4MessageType.CQ)
+        Ft4Sender.SetMessage("CQ VE3NEA FN03");
+      else
+        Ft4Sender.SetMessage("ZS8W VE3NEA -10");
     }
   }
 }

@@ -53,8 +53,12 @@ public sealed class Ft4DecodeBuffers : IDisposable
   {
     Array.Clear(buffer, 0, buffer.Length);
 
-    int len = Math.Min(s.Length, buffer.Length - 1);
-    Encoding.ASCII.GetBytes(s, 0, len, buffer, 0);
+    int len = 0;
+    if (!string.IsNullOrEmpty(s))
+    {
+      len = Math.Min(s.Length, buffer.Length - 1);
+      Encoding.ASCII.GetBytes(s, 0, len, buffer, 0);
+    }
     buffer[len] = 0;
   }
 
