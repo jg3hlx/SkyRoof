@@ -133,7 +133,7 @@ namespace SkyRoof
       }
 
       // callsign
-      if (HotItem?.Type == Ft4MessageListWidget.DecodedItemType.RxMessage)
+      if (HotItem?.Type == DecodedItemType.RxMessage)
       {
         x = LEFT_BAR_WIDTH + pixelsPerHz * HotItem.Decode.OffsetFrequencyHz; 
         DrawTriangle(e.Graphics, (int)x, Pens.Green, Brushes.Lime);

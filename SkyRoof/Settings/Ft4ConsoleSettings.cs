@@ -39,9 +39,14 @@ namespace SkyRoof
     public bool EnableTransmit { get; set; } = false;
 
     [DisplayName("TX Gain")]
-    [Description(" Amplify or attenuate TX data, dB")]
+    [Description("Amplify or attenuate TX data, dB")]
     [DefaultValue(-30)]
     public int TxGain { get; set; } = -30;
+
+    [DisplayName("TX Watchdog")]
+    [Description("Stop transmission after N minutes")]
+    [DefaultValue(6)]
+    public int TxWatchDog { get; set; } = 6;
 
     [Browsable(false)]
     [DefaultValue(266)]

@@ -1,6 +1,9 @@
-﻿using Serilog;
+﻿using Newtonsoft.Json.Linq;
+using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
+using WsjtxUtils.WsjtxMessages.Messages;
+using static SkyRoof.DecodedItem;
 using static SkyRoof.Ft4MessageListWidget;
 
 namespace SkyRoof
@@ -9,11 +12,11 @@ namespace SkyRoof
   {
     private readonly Context ctx;
     private InputSoundcard<float> Soundcard = new();
-    public Ft4Decoder Ft4Decoder = new();
-    public Ft4Sender Ft4Sender = new();
+    public Ft4Decoder Decoder = new();
+    public Ft4Sender Sender = new();
+    private Ft4QsoSequencer Sequencer;
     public WsjtxUdpSender WsjtxUdpSender;
     public int TxCountdown;
-    private string CurrentMessage = "CQ VE3NEA FN03";
 
     public Ft4ConsolePanel()
     {
@@ -30,22 +33,23 @@ namespace SkyRoof
       ctx.Ft4ConsolePanel = this;
       ctx.MainForm.Ft4ConsoleMNU.Checked = true;
 
-      Ft4Decoder.Decode(); // prime the decoding engine
-      Ft4Decoder.SlotDecoded += Ft4Decoder_SlotDecoded;
+      Decoder.Decode(); // prime the decoding engine
+      Decoder.SlotDecoded += Ft4Decoder_SlotDecoded;
       Soundcard.SamplesAvailable += (s, a) => AddSamplesFromSoundcard(a);
       Soundcard.Retry = true;
 
+      AudioWaterfall.Ft4Decoder = Decoder;
       AudioWaterfall.MouseDown += AudioWaterfall_MouseDown;
-
-      AudioWaterfall.Ft4Decoder = Ft4Decoder;
 
       MessageListWidget.MessageHover += MessageListWidget_MessageHover;
 
       WsjtxUdpSender = new(ctx);
       WsjtxUdpSender.HighlightCallsignReceived += WsjtxUdpSender_HighlightCallsignReceived;
 
-      Ft4Sender.BeforeTransmit += Ft4Sender_BeforeTransmit;
-      Ft4Sender.AfterTransmit += Ft4Sender_AfterTransmit;
+      Sender.BeforeTransmit += Ft4Sender_BeforeTransmit;
+      Sender.AfterTransmit += Ft4Sender_AfterTransmit;
+
+      Sequencer = new(ctx.Settings.User.Call, ctx.Settings.User.Square);
 
       ApplySettings();
 
@@ -66,15 +70,15 @@ namespace SkyRoof
       ctx.MainForm.Ft4ConsoleMNU.Checked = false;
       Soundcard?.Dispose();
       Soundcard = null;
-      Ft4Decoder?.Dispose();
-      Ft4Decoder = null;
+      Decoder?.Dispose();
+      Decoder = null;
       WsjtxUdpSender?.Dispose();
       WsjtxUdpSender = null;
 
       ctx.Settings.Ft4Console.SplitterDistance = SplitContainer.SplitterDistance;
 
-      Ft4Sender?.Dispose();
-      Ft4Sender = null;
+      Sender?.Dispose();
+      Sender = null;
     }
 
     public void ApplySettings()
@@ -90,7 +94,7 @@ namespace SkyRoof
       AudioWaterfall.Bandwidth = sett.Waterfall.Bandwidth;
       AudioWaterfall.SetBandwidth(); // {!} do not call in design mode
 
-      MessageListWidget.ApplySettings(ctx.Settings.Ft4Console.Messages);
+      MessageListWidget.ApplySettings(ctx.Settings);
       foreach (DecodedItem item in MessageListWidget.listBox.Items)
         item.SetColors(ctx.Settings.Ft4Console.Messages);
       MessageListWidget.listBox.Refresh();
@@ -99,19 +103,26 @@ namespace SkyRoof
       WsjtxUdpSender.Host = ctx.Settings.Ft4Console.UdpSender.Host;
       WsjtxUdpSender.SetEnabled(ctx.Settings.Ft4Console.UdpSender.Enabled);
 
-      Ft4Decoder.MyCall = ctx.Settings.User.Call;
-      Ft4Decoder.CutoffFrequency = sett.Waterfall.Bandwidth - 50;
+      Decoder.MyCall = ctx.Settings.User.Call;
+      Decoder.CutoffFrequency = sett.Waterfall.Bandwidth - 50;
 
-      Ft4Sender.Soundcard.SetDeviceId(sett.TxSoundcard);
-      Ft4Sender.Soundcard.Volume = Dsp.FromDb2(sett.TxGain);
-      SetButtonColors();
+      Sender.Soundcard.SetDeviceId(sett.TxSoundcard);
+      Sender.Soundcard.Volume = Dsp.FromDb2(sett.TxGain);
+
+      Sequencer.MyCall = ctx.Settings.User.Call;
+      Sequencer.MySquare = ctx.Settings.User.Square;
+      TxMessageLabel.Text = $"{Sequencer.Message}";
+      Sender.SetMessage(Sequencer.Message!);
+      UpdateMessageButtons();
+
+      UpdateTxButtons();
     }
 
     public void AddSamplesFromSdr(DataEventArgs<float> e)
     {
       if (ctx.Settings.Ft4Console.AudioSource == Ft4AudioSource.SDR)
       {
-        Ft4Decoder.StartProcessing(e);
+        Decoder.StartProcessing(e);
         if (AudioWaterfall.CanProcess) AudioWaterfall.SpectrumAnalyzer.StartProcessing(e);
       }
     }
@@ -120,7 +131,7 @@ namespace SkyRoof
     {
       if (ctx.Settings.Ft4Console.AudioSource == Ft4AudioSource.Soundcard)
       {
-        Ft4Decoder?.StartProcessing(e);
+        Decoder?.StartProcessing(e);
         if (AudioWaterfall.CanProcess) AudioWaterfall.SpectrumAnalyzer?.StartProcessing(e);
       }
     }
@@ -131,7 +142,7 @@ namespace SkyRoof
       {
         MessageListWidget.BeginUpdateItems();
 
-        MessageListWidget.AddSeparator(Ft4Decoder.DecodedSlotNumber,
+        MessageListWidget.AddSeparator(Decoder.DecodedSlotNumber,
           ctx.SatelliteSelector.SelectedSatellite.name, ctx.FrequencyControl.GetBandName(false));
 
         if (e.Data.Length >= 0)
@@ -175,7 +186,7 @@ namespace SkyRoof
 
       item.Type = DecodedItemType.RxMessage;
       item.Utc = utc;
-      item.SlotNumber = Ft4Decoder.DecodedSlotNumber;
+      item.SlotNumber = Decoder.DecodedSlotNumber;
       item.ToMe = item.Parse.DXCallsign == ctx.Settings.User.Call;
       item.FromMe = item.Parse.DECallsign == ctx.Settings.User.Call;
       item.SetColors(ctx.Settings.Ft4Console.Messages);
@@ -220,43 +231,43 @@ namespace SkyRoof
     {
       if (!CheckTxEnabled()) return;
 
-      if (Ft4Sender.SenderMode == Ft4Sender.Mode.Sending && TxCountdown > 0)
+      if (Sender.Mode == Ft4Sender.SenderMode.Sending && TxCountdown > 0)
       {
         TxCountdown = 0;
-        if (Ft4Sender.stage == Ft4Sender.SendStage.Idle) Ft4Sender.Stop();
+        if (Sender.SenderPhase == Ft4Sender.SendingStage.Idle) Sender.Stop();
       }
       else
       {
-        Ft4Sender.StartSending();
-        if (Ft4Sender.SenderMode == Ft4Sender.Mode.Sending) // no sending if was tuning 
-          TxCountdown = 20;  // stop after 20 transmissions
+        Sender.StartSending();
+        if (Sender.Mode == Ft4Sender.SenderMode.Sending) // no sending if was tuning 
+          TxCountdown = ctx.Settings.Ft4Console.TxWatchDog * 4;
       }
 
-      SetButtonColors();
+      UpdateTxButtons();
     }
 
     private void HaltTxBtn_MouseDown(object sender, MouseEventArgs e)
     {
-      Ft4Sender.Stop();
-      SetButtonColors();
+      Sender.Stop();
+      UpdateTxButtons();
     }
 
     private void TuneBtn_MouseDown(object sender, MouseEventArgs e)
     {
       if (!CheckTxEnabled()) return;
 
-      if (Ft4Sender.SenderMode == Ft4Sender.Mode.Tuning)
-        Ft4Sender.Stop();
+      if (Sender.Mode == Ft4Sender.SenderMode.Tuning)
+        Sender.Stop();
       else
-        Ft4Sender.StartTuning();
+        Sender.StartTuning();
 
-      SetButtonColors();
+      UpdateTxButtons();
     }
 
-    private void SetButtonColors()
+    private void UpdateTxButtons()
     {
-      bool tuning = Ft4Sender.SenderMode == Ft4Sender.Mode.Tuning;
-      bool sendEnabled = Ft4Sender.SenderMode == Ft4Sender.Mode.Sending && TxCountdown > 0;
+      bool tuning = Sender.Mode == Ft4Sender.SenderMode.Tuning;
+      bool sendEnabled = Sender.Mode == Ft4Sender.SenderMode.Sending && TxCountdown > 0;
       //bool sending = Ft4Sender.stage == Ft4Sender.SendStage.Sending;
 
 
@@ -279,36 +290,40 @@ namespace SkyRoof
 
     private void Ft4Sender_BeforeTransmit(object? sender, EventArgs e)
     {
-      ft4TimeBar1.Transmitting = Ft4Sender.SenderMode == Ft4Sender.Mode.Sending;
-      TxCountdown--;
-      BeginInvoke(SetButtonColors);
+      Ft4TimeBar1.Transmitting = Sender.Mode == Ft4Sender.SenderMode.Sending;
+      BeginInvoke(() =>
+      {
+        AddTxMessageToList();
+        UpdateTxButtons();
+      });
       Console.Beep();
     }
 
     private void Ft4Sender_AfterTransmit(object? sender, EventArgs e)
     {
-      ft4TimeBar1.Transmitting = false;
+      Ft4TimeBar1.Transmitting = false;
       BeginInvoke(() =>
       {
-        if (TxCountdown <= 0) Ft4Sender.Stop();
-        SetButtonColors();
+        TxCountdown--;
+        if (TxCountdown <= 0) Sender.Stop();
+        UpdateTxButtons();
       });
       Console.Beep();
     }
 
     private void TxSpinner_ValueChanged(object sender, EventArgs e)
     {
-      if (TxSpinner.Value != Ft4Sender.TxAudioFrequency)
+      if (TxSpinner.Value != Sender.TxAudioFrequency)
       {
-        AudioWaterfall.TxAudioFrequency = Ft4Sender.TxAudioFrequency = (int)TxSpinner.Value;
-        Ft4Sender.SetMessage(CurrentMessage);
+        AudioWaterfall.TxAudioFrequency = Sender.TxAudioFrequency = (int)TxSpinner.Value;
+        Sender.SetMessage(Sequencer.Message!);
       }
     }
 
     private void RxSpinner_ValueChanged(object sender, EventArgs e)
     {
-      if (RxSpinner.Value != Ft4Decoder.RxAudioFrequency)
-        AudioWaterfall.RxAudioFrequency = Ft4Decoder.RxAudioFrequency = (int)RxSpinner.Value;
+      if (RxSpinner.Value != Decoder.RxAudioFrequency)
+        AudioWaterfall.RxAudioFrequency = Decoder.RxAudioFrequency = (int)RxSpinner.Value;
     }
 
     private void TxToRxBtn_Click(object sender, EventArgs e)
@@ -323,18 +338,63 @@ namespace SkyRoof
 
     private void OddRadioBtn_CheckedChanged(object sender, EventArgs e)
     {
-      Ft4Sender.TxOdd = OddRadioBtn.Checked;
+      Sender.TxOdd = OddRadioBtn.Checked;
+      OddEvenGroupBox.Text = Sender.TxOdd ? "TX Odd" : "TX Even";
+    }
+
+    private Ft4MessageType GetButtonMessage(object btn)
+    {
+      return (Ft4MessageType)int.Parse((string)((Button)btn).Tag!);
     }
 
     private void MessageBtn_Click(object sender, EventArgs e)
     {
-      Ft4MessageType messageType = (Ft4MessageType)int.Parse((string)((Button)sender).Tag!);
-      TxMessageLabel.Text = $"{messageType}";
+      var msg = GetButtonMessage(sender);
+      Sequencer.ForceMessage(msg);
+      TxMessageLabel.Text = $"{Sequencer.Message}";
+      Sender.SetMessage(Sequencer.Message!);
+    }
 
-      if (messageType == Ft4MessageType.CQ)
-        Ft4Sender.SetMessage("CQ VE3NEA FN03");
-      else
-        Ft4Sender.SetMessage("ZS8W VE3NEA -10");
+    public void UpdateMessageButtons()
+    {
+      foreach (Button btn in TxMessagesPanel.Controls)
+      {
+        var msg = GetButtonMessage(btn);
+        btn.Enabled = Sequencer.IsMessageAvailable(msg);
+        btn.BackColor = msg == Sequencer.MessageType ? Color.LightCoral : SystemColors.Control;
+      }
+
+      TxMessageLabel.Text = Sequencer.Message;
+    }
+
+    private void MessageListWidget_MessageClick(object sender, Ft4MessageEventArgs e)
+    {
+      Sequencer.ReplyToMessage(e.Item);
+      Sender.SetMessage(Sequencer.Message!);
+    }
+
+
+    private void AddTxMessageToList()
+    {
+      Sender.Slot.Utc = DateTime.UtcNow;
+
+      var item = new DecodedItem();
+      item.Type = DecodedItemType.TxMessage;
+      item.Utc = DateTime.UtcNow;
+      item.SlotNumber = Sender.Slot.SlotNumber;
+
+      item.Tokens = [
+        new DisplayToken(" TX "),
+        new DisplayToken($"{Sender.Slot.SecondsIntoSlot,4:F1}"),
+        new DisplayToken($"{Sender.TxAudioFrequency,4:D}")
+      ];
+      item.Tokens.AddRange(DecodedItem.SplitWords(Sequencer.Message ?? ""));
+      foreach (var token in item.Tokens) token.fgBrush = Brushes.White;
+
+      MessageListWidget.AddSeparator(Sender.Slot.SlotNumber,
+          ctx.SatelliteSelector.SelectedSatellite.name, ctx.FrequencyControl.GetBandName(false));
+
+      MessageListWidget.AddSentMessage(item);
     }
   }
 }

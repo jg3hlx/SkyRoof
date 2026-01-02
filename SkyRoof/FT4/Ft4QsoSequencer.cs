@@ -2,7 +2,7 @@
 namespace SkyRoof
 {
   // meaningful names for the WsjtxQsoState enum
-  public enum Ft4MessageType {Unknown, DE, dB, RR_dB, RR73, _73, CQ }
+  public enum Ft4MessageType {Unknown, DE, dB, R_dB, RR73, _73, CQ }
 
   internal class Ft4QsoSequencer
   {
@@ -17,15 +17,15 @@ namespace SkyRoof
     public int? MyReport { get; private set; }
     public int? HisReport { get; private set; }
 
-    public Ft4MessageType MessageType {get; private set;}
+    public Ft4MessageType MessageType { get; private set; }
     public string? Message => messages[(int)MessageType];
 
 
-    public Ft4QsoSequencer(string call, string square, string myCall)
+    public Ft4QsoSequencer(string call, string square)
     {
       myCall = call;
-      mySquare = square;
-      GenerateMessages();
+      mySquare = square[..4];
+      Reset();
     }
 
     public void Reset()
@@ -37,16 +37,9 @@ namespace SkyRoof
       MessageType = Ft4MessageType.CQ;
     }
 
-    private void SetMyCall(string value)
+    public bool IsMessageAvailable(Ft4MessageType type)
     {
-      myCall = value;
-      GenerateMessages();
-    }
-
-    private void SetMySquare(string value)
-    {
-      mySquare = value;
-      GenerateMessages();
+      return messages[(int)type] != null;
     }
 
     // messages received
@@ -68,6 +61,18 @@ namespace SkyRoof
 
     }
 
+    private void SetMyCall(string value)
+    {
+      myCall = value;
+      GenerateMessages();
+    }
+
+    private void SetMySquare(string value)
+    {
+      mySquare = value[..4];
+      GenerateMessages();
+    }
+
     private void GenerateMessages()
     {
       messages[(int)Ft4MessageType.CQ] = $"CQ {myCall} {mySquare}";
@@ -76,7 +81,7 @@ namespace SkyRoof
       {
         messages[(int)Ft4MessageType.DE] = $"{HisCall} {myCall} {mySquare}";
         messages[(int)Ft4MessageType.dB] = $"{HisCall} {myCall} {MyReport}";
-        messages[(int)Ft4MessageType.RR_dB] = $"{HisCall} {myCall} RR{MyReport}";
+        messages[(int)Ft4MessageType.R_dB] = $"{HisCall} {myCall} R{MyReport}";
         messages[(int)Ft4MessageType.RR73] = $"{HisCall} {myCall} RR73";
         messages[(int)Ft4MessageType._73] = $"{HisCall} {myCall} 73";
       }

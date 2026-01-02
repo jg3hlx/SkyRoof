@@ -7,7 +7,10 @@ namespace SkyRoof
 {
   public class Ft4Sender : IDisposable
   {  
-    public enum Mode { Idle, Tuning, Sending }
+    // kind of sender's work
+    public enum SenderMode { Idle, Tuning, Sending }
+    // stages of sending
+    public enum SendingStage { Idle, Scheduled, Sending }
 
     public const int PttOnMargin = 150; // milliseconds
     public const int PttOffMargin = 300;
@@ -29,31 +32,30 @@ namespace SkyRoof
     private object lockObj = new();
     private Thread? WorkerThread;
     private bool Stopping;
-    private Ft4Slot Slot = new();
-    
+    public Ft4Slot Slot = new();
+    private int SampleIndex = 0;
+
 
 
     public OutputSoundcard<float> Soundcard = new();
-    public Mode SenderMode { get; private set; } = Mode.Idle;
+    public SenderMode Mode { get; private set; } = SenderMode.Idle;
 
     public event EventHandler? BeforeTransmit;
     public event EventHandler? AfterTransmit;
 
     public int TxAudioFrequency { get => txAudioFrequency; set { lock (lockObj) { txAudioFrequency = value; } }}
 
-    public void StartTuning() => SetMode(Mode.Tuning);
-    public void StartSending() => SetMode(Mode.Sending);
-    public void Stop() => SetMode(Mode.Idle);
+    public void StartTuning() => SetMode(SenderMode.Tuning);
+    public void StartSending() => SetMode(SenderMode.Sending);
+    public void Stop() => SetMode(SenderMode.Idle);
     public bool TxOdd;
 
-    public enum SendStage { Idle, Scheduled, Sending }
 
-    public SendStage stage = SendStage.Idle;
+    public SendingStage SenderPhase = SendingStage.Idle;
 
     public Ft4Sender()
     {
       GenerateRamp();
-      SetMessage("CQ VE3NEA FN03"); //{!}
     }
 
     private void GenerateRamp()
@@ -69,27 +71,44 @@ namespace SkyRoof
       Array.Clear(MessageChars);
       Encoding.ASCII.GetBytes(message, 0, len, MessageChars, 0);
       float frequency = txAudioFrequency;
-
       NativeFT4Coder.encode_ft4(MessageChars, ref frequency, AudioSamples);
 
-      //if (stage == SendStage.Idle)
-        lock (lockObj)
-        {
-          Array.Copy(AudioSamples, Waveform, WaveformSampleCount);
-        }
-      //else
-      //  MessageChanged = true;
+      lock (lockObj)
+      {
+        if (SenderPhase != SendingStage.Idle)
+          Soundcard.Buffer.ExecuteLocked(() =>
+            {
+              if (SampleIndex > RampSampleCount && SampleIndex < WaveformSampleCount - RampSampleCount)
+              {
+                // remove old data from soundcard's buffer
+                SampleIndex -= Soundcard.Buffer.Count;
+                Soundcard.Buffer.Clear();
+
+                // ramp
+                for (int i = 0; i < RampSampleCount; i++)
+                  TxBuffer[i] = Waveform[SampleIndex + i] * Ramp[RampSampleCount - 1 - i] + AudioSamples[SampleIndex + i] * Ramp[i];
+                Soundcard.Buffer.Write(TxBuffer, 0, RampSampleCount);
+                SampleIndex += RampSampleCount;
+
+                // top up with new waveform
+                Array.Copy(AudioSamples, Waveform, WaveformSampleCount);
+                TopUp(AudioSamples);
+              }
+            });
+
+        Array.Copy(AudioSamples, Waveform, WaveformSampleCount);
+      }
     }
 
-    public void SetMode(Mode newMode)
+    public void SetMode(SenderMode newMode)
     {
-      if (SenderMode == newMode) return;
+      if (Mode == newMode) return;
 
-      Mode oldMode = SenderMode;
-      SenderMode = newMode;
+      SenderMode oldMode = Mode;
+      Mode = newMode;
 
       // stopping audio
-      if (newMode == Mode.Idle)
+      if (newMode == SenderMode.Idle)
       {
         lock (lockObj) { Stopping = true; }
         Stopping = true;
@@ -98,7 +117,7 @@ namespace SkyRoof
       }
 
       // starting audio
-      else if (oldMode == Mode.Idle)
+      else if (oldMode == SenderMode.Idle)
       {
         Soundcard.Enabled = true;
 
@@ -107,12 +126,12 @@ namespace SkyRoof
           MessageBox.Show("Unable to open the soundcard.", "SkyRoof",
             MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-          SenderMode = Mode.Idle;
+          Mode = SenderMode.Idle;
           return;
         }
 
         Stopping = false;
-        if (newMode == Mode.Tuning)
+        if (newMode == SenderMode.Tuning)
           WorkerThread = new(TuneThreadProcedure);
         else
           WorkerThread = new(SendThreadProcedure);
@@ -127,37 +146,35 @@ namespace SkyRoof
       else
       {
         Console.Beep();
-        SenderMode = oldMode;
+        Mode = oldMode;
       }
     }
 
-    private double sinePhase;
-
     private void TuneThreadProcedure()
     {
+      int samplesNeeded = 0;
+      double sinePhase = 0;
+      double phaseInc = 0;
+
       BeforeTransmit?.Invoke(this, EventArgs.Empty);
       Thread.Sleep(PttOnMargin);
 
-      int samplesNeeded = 0;
-      double phaseInc = 0;
-
       while (!Stopping)
       {
-        lock (lockObj)
-        {
-          samplesNeeded = Math.Max(0, LeadSampleCount - Soundcard.Buffer.Count);
-          phaseInc = 2.0 * Math.PI * txAudioFrequency / NativeFT4Coder.SAMPLING_RATE;
-        }
+        Thread.Sleep(50);
+
+        samplesNeeded = Math.Max(0, LeadSampleCount - Soundcard.Buffer.Count);
+        if (samplesNeeded <= 0) continue;
+        phaseInc = 2.0 * Math.PI * txAudioFrequency / NativeFT4Coder.SAMPLING_RATE;
 
         for (int i = 0; i < samplesNeeded; i++)
-          {
-            TxBuffer[i] = (float)Math.Sin(sinePhase);
-            sinePhase += phaseInc;
-            if (sinePhase > 2 * Math.PI) sinePhase -= 2 * Math.PI;
-          }
+        {
+          TxBuffer[i] = (float)Math.Sin(sinePhase);
+          sinePhase += phaseInc;
+          if (sinePhase > 2 * Math.PI) sinePhase -= 2 * Math.PI;
+        }
 
-        if (samplesNeeded > 0) Soundcard.AddSamples(TxBuffer, 0, samplesNeeded);
-        Thread.Sleep(50);
+        Soundcard.AddSamples(TxBuffer, 0, samplesNeeded);
       }
 
       Soundcard.Buffer.Clear();
@@ -167,26 +184,9 @@ namespace SkyRoof
 
     private void SendThreadProcedure()
     {
-      int sampleIndex = 0;
       int sampleCount;
       DateTime now;
-      stage = SendStage.Idle;
-
-      void RampDown()
-      {
-        Soundcard.Buffer.ExecuteLocked(() =>
-        {
-          sampleIndex -= Soundcard.Buffer.Count;
-          Soundcard.Buffer.Clear();
-          if (sampleIndex >= 0 && sampleIndex + RampSampleCount <= WaveformSampleCount)
-          {
-            for (int i = 0; i < RampSampleCount; i++) TxBuffer[i] = Waveform[sampleIndex + i] * Ramp[RampSampleCount - 1 - i];
-            Soundcard.Buffer.Write(TxBuffer, 0, RampSampleCount);
-          }
-        });
-  
-        sampleIndex = WaveformSampleCount;
-      }
+      SenderPhase = SendingStage.Idle;
 
       Soundcard.Buffer.Clear();
 
@@ -196,9 +196,9 @@ namespace SkyRoof
         Slot.Utc = now;
         var startTime = Slot.GetTxStartTime(TxOdd);
 
-        switch (stage)
+        switch (SenderPhase)
         {
-          case SendStage.Idle:
+          case SendingStage.Idle:
             sampleCount = (int)((startTime - now).TotalSeconds * NativeFT4Coder.SAMPLING_RATE);
 
             // time to schedule
@@ -206,10 +206,9 @@ namespace SkyRoof
             {
               Soundcard.AddSamples(Silence, 0, sampleCount);
               Soundcard.AddSamples(Silence, 0, PttOnSampleCount);
-              sampleCount = LeadSampleCount - sampleCount;
-              Soundcard.AddSamples(Waveform, 0, sampleCount);
-              sampleIndex = sampleCount;
-              stage = SendStage.Scheduled;
+              SampleIndex = 0;
+              TopUp();
+              SenderPhase = SendingStage.Scheduled;
             }
 
             // starting in the middle of transmission time
@@ -225,62 +224,50 @@ namespace SkyRoof
                 Soundcard.AddSamples(Silence, 0, sampleCount);
 
                 // current position in waveform
-                sampleIndex = (int)(missedSeconds * NativeFT4Coder.SAMPLING_RATE);
+                SampleIndex = (int)(missedSeconds * NativeFT4Coder.SAMPLING_RATE);
 
                 // ramped waveform
-                for (int i = 0; i < RampSampleCount; i++) TxBuffer[i] = Waveform[sampleIndex + i] * Ramp[i];
+                for (int i = 0; i < RampSampleCount; i++) TxBuffer[i] = Waveform[SampleIndex + i] * Ramp[i];
                 Soundcard.Buffer.Write(TxBuffer, 0, RampSampleCount);
-                sampleIndex += RampSampleCount;
+                SampleIndex += RampSampleCount;
 
                 // waveform
-                sampleCount = LeadSampleCount - Soundcard.Buffer.Count;
-                sampleCount = Math.Min(WaveformSampleCount - sampleIndex, sampleCount);
-                Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
-                sampleIndex += sampleCount;
+                TopUp();
 
                 // PTT switch
-                stage = SendStage.Sending;
+                SenderPhase = SendingStage.Sending;
                 BeforeTransmit?.Invoke(this, EventArgs.Empty);
                 Thread.Sleep(PttOnMargin);
               }
             }
             break;
 
-          case SendStage.Scheduled:
+          case SendingStage.Scheduled:
             // keep buffer full
-            sampleCount = LeadSampleCount - Soundcard.Buffer.Count;
-            sampleCount = Math.Max(0, Math.Min(WaveformSampleCount - sampleIndex, sampleCount)); 
-            Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
-            sampleIndex += sampleCount;
+            TopUp();
 
-            // scheduled starts now
+            // scheduled transmission starts now
             if (now > startTime)
             {
-              stage = SendStage.Sending;
+              SenderPhase = SendingStage.Sending;
               BeforeTransmit?.Invoke(this, EventArgs.Empty);
             }
             break;
 
-          case SendStage.Sending:
+          case SendingStage.Sending:
             // keep buffer full
-            if (sampleIndex < WaveformSampleCount)
-            {
-              sampleCount = LeadSampleCount - Soundcard.Buffer.Count;
-              sampleCount = Math.Min(WaveformSampleCount - sampleIndex, sampleCount);
-              Soundcard.AddSamples(Waveform, sampleIndex, sampleCount);
-              sampleIndex += sampleCount;
-            }
+            if (SampleIndex < WaveformSampleCount) TopUp();
 
-            // all samples in the buffer, switch to idle
+            // all samples have been sent, switch to idle
             else if (Soundcard.Buffer.Count == 0)
             {
-              stage = SendStage.Idle;
+              SenderPhase = SendingStage.Idle;
               Thread.Sleep(PttOffMargin);
               AfterTransmit?.Invoke(this, EventArgs.Empty);
             }
 
             // Odd/Even changed, stop sending
-            if (sampleIndex < WaveformSampleCount && startTime > now) RampDown();
+            if (SampleIndex < WaveformSampleCount && startTime > now) RampDown();
 
             break;
         }
@@ -289,15 +276,41 @@ namespace SkyRoof
       }
 
       // aborted, stop audio and fire event
-      if (stage == SendStage.Sending)
+      if (SenderPhase == SendingStage.Sending)
       {
         RampDown();
-        stage = SendStage.Idle;
+        SenderPhase = SendingStage.Idle;
         Thread.Sleep(PttOffMargin);
         AfterTransmit?.Invoke(this, EventArgs.Empty);
       }
 
       Soundcard.Buffer.Clear();
+    }
+
+    void RampDown()
+    {
+      Soundcard.Buffer.ExecuteLocked(() =>
+      {
+        SampleIndex -= Soundcard.Buffer.Count;
+        Soundcard.Buffer.Clear();
+        if (SampleIndex >= 0 && SampleIndex + RampSampleCount <= WaveformSampleCount)
+        {
+          for (int i = 0; i < RampSampleCount; i++) TxBuffer[i] = Waveform[SampleIndex + i] * Ramp[RampSampleCount - 1 - i];
+          Soundcard.Buffer.Write(TxBuffer, 0, RampSampleCount);
+        }
+      });
+
+      SampleIndex = WaveformSampleCount;
+    }
+
+    private void TopUp(float[]? buffer = null)
+    {
+      int sampleCount = LeadSampleCount - Soundcard.Buffer.Count;
+      if (sampleCount < 0) return;
+
+      sampleCount = Math.Min(WaveformSampleCount - SampleIndex, sampleCount);
+      Soundcard.AddSamples(buffer ?? Waveform, SampleIndex, sampleCount);
+      SampleIndex += sampleCount;
     }
 
     public void Dispose()

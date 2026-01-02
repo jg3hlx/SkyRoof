@@ -8,6 +8,7 @@ using static SkyRoof.Slicer;
 
 namespace SkyRoof
 {
+  public enum DecodedItemType { Separator, TxMessage, RxMessage };
 
   public class DecodedItem
   {
@@ -98,13 +99,11 @@ namespace SkyRoof
         new DisplayToken(text[36..37]),
         new DisplayToken(text[38..40])
        ]);
-
-      var s = string.Join("", Tokens.Select(t => t.text));
     }
 
-    private static IEnumerable<DisplayToken> SplitWords(string text)
+    public static IEnumerable<DisplayToken> SplitWords(string text)
     {
-      var tokens = text[..35].Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(s => new DisplayToken(s)).ToList();
+      var tokens = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(s => new DisplayToken(s)).ToList();
 
       // handle "<CALL>"
       for (int i = tokens.Count - 1; i >= 0; i--)

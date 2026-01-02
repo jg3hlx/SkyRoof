@@ -33,7 +33,7 @@
       MessageListWidget = new Ft4MessageListWidget();
       panel1 = new Panel();
       TxMessageLabel = new Label();
-      flowLayoutPanel1 = new FlowLayoutPanel();
+      TxMessagesPanel = new FlowLayoutPanel();
       button1 = new Button();
       button2 = new Button();
       button3 = new Button();
@@ -52,7 +52,7 @@
       OddEvenGroupBox = new GroupBox();
       EvenRadioBtn = new RadioButton();
       OddRadioBtn = new RadioButton();
-      ft4TimeBar1 = new SkyRoof.Widgets.Ft4TimeBar();
+      Ft4TimeBar1 = new SkyRoof.Widgets.Ft4TimeBar();
       HaltTxBtn = new Button();
       EnableTxBtn = new Button();
       TuneBtn = new Button();
@@ -61,7 +61,7 @@
       SplitContainer.Panel2.SuspendLayout();
       SplitContainer.SuspendLayout();
       panel1.SuspendLayout();
-      flowLayoutPanel1.SuspendLayout();
+      TxMessagesPanel.SuspendLayout();
       groupBox2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)RxSpinner).BeginInit();
       ((System.ComponentModel.ISupportInitialize)TxSpinner).BeginInit();
@@ -108,14 +108,15 @@
       MessageListWidget.Padding = new Padding(1);
       MessageListWidget.Size = new Size(527, 263);
       MessageListWidget.TabIndex = 3;
+      MessageListWidget.MessageClick += MessageListWidget_MessageClick;
       // 
       // panel1
       // 
       panel1.Controls.Add(TxMessageLabel);
-      panel1.Controls.Add(flowLayoutPanel1);
+      panel1.Controls.Add(TxMessagesPanel);
       panel1.Controls.Add(groupBox2);
       panel1.Controls.Add(OddEvenGroupBox);
-      panel1.Controls.Add(ft4TimeBar1);
+      panel1.Controls.Add(Ft4TimeBar1);
       panel1.Controls.Add(HaltTxBtn);
       panel1.Controls.Add(EnableTxBtn);
       panel1.Controls.Add(TuneBtn);
@@ -133,21 +134,20 @@
       TxMessageLabel.Name = "TxMessageLabel";
       TxMessageLabel.Size = new Size(246, 21);
       TxMessageLabel.TabIndex = 32;
-      TxMessageLabel.Text = "CQ VE3NEA FN03";
       TxMessageLabel.TextAlign = ContentAlignment.MiddleCenter;
       // 
-      // flowLayoutPanel1
+      // TxMessagesPanel
       // 
-      flowLayoutPanel1.Controls.Add(button1);
-      flowLayoutPanel1.Controls.Add(button2);
-      flowLayoutPanel1.Controls.Add(button3);
-      flowLayoutPanel1.Controls.Add(button4);
-      flowLayoutPanel1.Controls.Add(button5);
-      flowLayoutPanel1.Controls.Add(button6);
-      flowLayoutPanel1.Location = new Point(14, 196);
-      flowLayoutPanel1.Name = "flowLayoutPanel1";
-      flowLayoutPanel1.Size = new Size(246, 59);
-      flowLayoutPanel1.TabIndex = 31;
+      TxMessagesPanel.Controls.Add(button1);
+      TxMessagesPanel.Controls.Add(button2);
+      TxMessagesPanel.Controls.Add(button3);
+      TxMessagesPanel.Controls.Add(button4);
+      TxMessagesPanel.Controls.Add(button5);
+      TxMessagesPanel.Controls.Add(button6);
+      TxMessagesPanel.Location = new Point(14, 196);
+      TxMessagesPanel.Name = "TxMessagesPanel";
+      TxMessagesPanel.Size = new Size(246, 59);
+      TxMessagesPanel.TabIndex = 31;
       // 
       // button1
       // 
@@ -200,7 +200,7 @@
       button5.Size = new Size(76, 23);
       button5.TabIndex = 4;
       button5.Tag = "3";
-      button5.Text = "RR-dB";
+      button5.Text = "R-dB";
       button5.UseVisualStyleBackColor = true;
       button5.Click += MessageBtn_Click;
       // 
@@ -369,12 +369,12 @@
       OddRadioBtn.UseVisualStyleBackColor = true;
       OddRadioBtn.CheckedChanged += OddRadioBtn_CheckedChanged;
       // 
-      // ft4TimeBar1
+      // Ft4TimeBar1
       // 
-      ft4TimeBar1.Location = new Point(14, 11);
-      ft4TimeBar1.Name = "ft4TimeBar1";
-      ft4TimeBar1.Size = new Size(246, 15);
-      ft4TimeBar1.TabIndex = 4;
+      Ft4TimeBar1.Location = new Point(14, 11);
+      Ft4TimeBar1.Name = "Ft4TimeBar1";
+      Ft4TimeBar1.Size = new Size(246, 15);
+      Ft4TimeBar1.TabIndex = 4;
       // 
       // HaltTxBtn
       // 
@@ -421,7 +421,7 @@
       ((System.ComponentModel.ISupportInitialize)SplitContainer).EndInit();
       SplitContainer.ResumeLayout(false);
       panel1.ResumeLayout(false);
-      flowLayoutPanel1.ResumeLayout(false);
+      TxMessagesPanel.ResumeLayout(false);
       groupBox2.ResumeLayout(false);
       groupBox2.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)RxSpinner).EndInit();
@@ -438,7 +438,7 @@
     private Button EnableTxBtn;
     private Button TuneBtn;
     private Button HaltTxBtn;
-    private Widgets.Ft4TimeBar ft4TimeBar1;
+    private Widgets.Ft4TimeBar Ft4TimeBar1;
     private GroupBox groupBox2;
     private Button TxToRxBtn;
     private Button RxToTxBtn;
@@ -451,7 +451,7 @@
     private GroupBox OddEvenGroupBox;
     private RadioButton EvenRadioBtn;
     private RadioButton OddRadioBtn;
-    private FlowLayoutPanel flowLayoutPanel1;
+    private FlowLayoutPanel TxMessagesPanel;
     private Button button1;
     private Button button2;
     private Button button3;

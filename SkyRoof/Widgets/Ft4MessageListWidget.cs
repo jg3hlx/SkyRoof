@@ -8,8 +8,6 @@ namespace SkyRoof
 {
   public partial class Ft4MessageListWidget : UserControl
   {
-    public enum DecodedItemType { Separator, TxMessage, RxMessage };
-
     public class Ft4MessageEventArgs : EventArgs
     {
       public DecodedItem Item { get; }
@@ -35,6 +33,8 @@ namespace SkyRoof
 
     private Font fontAwesome11;
 
+    public string MyCall;
+
     public event EventHandler<Ft4MessageEventArgs?>? MessageHover;
     public event EventHandler<Ft4MessageEventArgs>? MessageClick;
 
@@ -51,22 +51,25 @@ namespace SkyRoof
       listBox.Scroll += ListBox_Scroll;
     }
 
-    internal void ApplySettings(Ft4MessagesSettings settings)
+    internal void ApplySettings(Settings settings)
     {
+      MyCall = settings.User.Call;
+
+      var sett = settings.Ft4Console.Messages;
       // font
-      Font messageFont = new Font(listBox.Font.Name, settings.FontSize);
+      Font messageFont = new Font(listBox.Font.Name, sett.FontSize);
       listBox.Font = messageFont;
       listBox.ItemHeight = messageFont.Height;
-      listBox.ForeColor = settings.TextColor;
+      listBox.ForeColor = sett.TextColor;
 
       // bg colors
-      listBox.BackColor = settings.BkColors.Window;
-      SeparatorBkBrush = new SolidBrush(settings.BkColors.Separator);
-      TxBkBrush = new SolidBrush(settings.BkColors.TxMessage);
-      RxBkBrush = new SolidBrush(settings.BkColors.Window);
-      ToMeBkBrush = new SolidBrush(settings.BkColors.ToMe);
-      FromMeBkBrush = new SolidBrush(settings.BkColors.FromMe);
-      HotBkBrush = new SolidBrush(settings.BkColors.Hot);
+      listBox.BackColor = sett.BkColors.Window;
+      SeparatorBkBrush = new SolidBrush(sett.BkColors.Separator);
+      TxBkBrush = new SolidBrush(sett.BkColors.TxMessage);
+      RxBkBrush = new SolidBrush(sett.BkColors.Window);
+      ToMeBkBrush = new SolidBrush(sett.BkColors.ToMe);
+      FromMeBkBrush = new SolidBrush(sett.BkColors.FromMe);
+      HotBkBrush = new SolidBrush(sett.BkColors.Hot);
 
       fontAwesome11 = FontAwesomeFactory.Create(11);
     }
@@ -89,7 +92,8 @@ namespace SkyRoof
       HotItem = newHotItem;
 
       // hand cursor
-      listBox.Cursor = HotItem != null && HotItem.IsClickable() ? Cursors.Hand : Cursors.Default;
+      bool clickable = HotItem?.IsClickable() == true && HotItem.Parse.DECallsign != MyCall;
+      listBox.Cursor = clickable ? Cursors.Hand : Cursors.Default;
 
       // tooltip, placemark and waterfall call
       toolTip1.Hide(listBox);
@@ -104,7 +108,7 @@ namespace SkyRoof
         ShowSeparatorTooltip(HotItem);
         OnMessageHover(null);
       }
-      else
+      else if (HotItem.Type == DecodedItemType.RxMessage)
       {
         ShowTooltip(HotItem.Parse.DECallsign, HotItem.GetTooltip());
         OnMessageHover(HotItem);
@@ -140,15 +144,11 @@ namespace SkyRoof
 
     private void ListBox_MouseDown(object sender, MouseEventArgs e)
     {
-      ClickedItem = GetItemUnderCursor();
-      //      callsignMenuStrip1.ClickedCallsign = ClickedItem?.Call ?? "";
-      //      callsignMenuStrip1.ClickedMessage = ClickedItem?.GetText() ?? "";
-
-      if (ClickedItem == null) return;
       if (e.Button != MouseButtons.Left) return;
 
-      bool ctrl = (ModifierKeys & Keys.Control) > 0;
-      OnMessageClick(ClickedItem);
+      ClickedItem = GetItemUnderCursor();
+      if (ClickedItem?.IsClickable() == true) 
+        OnMessageClick(ClickedItem);
     }
 
     private void listBox_MouseUp(object? sender, MouseEventArgs e)
@@ -204,44 +204,50 @@ namespace SkyRoof
     //--------------------------------------------------------------------------------------------------------------
     //                                                items
     //--------------------------------------------------------------------------------------------------------------
-    private DecodedItem GetItemUnderCursor()
-    {
-      Point p = listBox.PointToClient(Cursor.Position);
-      int index = listBox.IndexFromPoint(p);
-      if (index < 0) return null;
-      return (DecodedItem)listBox.Items[index];
-    }
-
-    internal void BeginUpdateItems()
-    {
-      listBox.BeginUpdate();
-    }
-
-    internal void EndUpdateItems()
-    {
-      DeleteOldItems();
-      CheckAndScrollToBottom();
-      listBox.EndUpdate();
-      listBox.Refresh();
-    }
-
-    public const int MAX_LINE_COUNT = 5000;
-
-    internal void DeleteOldItems()
-    {
-      while (listBox.Items.Count > MAX_LINE_COUNT)
-        listBox.Items.RemoveAt(0);
-    }
-
+    
+    // received messages
     internal void AddItems(IEnumerable<DecodedItem> items)
     {
-      if (!Visible) return;
-
-      foreach (var item in items) listBox.Items.Add(item);
+      foreach (var item in items)
+      {
+        if (item.FromMe) AddMessageFromMe(item);
+        else listBox.Items.Add(item);
+      }
     }
 
+    // sending message 
+    public void AddSentMessage(DecodedItem item)
+    {
+      BeginUpdateItems();
+      listBox.Items.Add(item);
+      EndUpdateItems();
+    }
+
+    // previously sent message has been received back from the sat
+    private void AddMessageFromMe(DecodedItem item)
+    {
+      for (int i = listBox.Items.Count - 1; i >= 0; i--)
+      {
+        var itm = ((DecodedItem)listBox.Items[i]);
+        if (itm.SlotNumber < item.SlotNumber) break;
+
+        else if (itm.Type == DecodedItemType.TxMessage && itm.SlotNumber == item.SlotNumber)
+        {
+          listBox.Items[i] = item; 
+          return;
+        }
+      }
+
+      listBox.Items.Add(item);
+    }
+
+    // new time slot started
     internal void AddSeparator(int slot, string satelliteName, string bandName)
     {
+      int count = listBox.Items.Count;
+
+      if (count > 0 && ((DecodedItem)listBox.Items[count - 1]).SlotNumber == slot) return;
+
       DateTime slotTime = DateTime.MinValue + TimeSpan.FromSeconds(slot * NativeFT4Coder.TIMESLOT_SECONDS);
 
       // create new separator token
@@ -253,7 +259,6 @@ namespace SkyRoof
       separator.Tokens[0].fgBrush = separator.Odd ? Brushes.Olive : Brushes.Teal;
 
       //
-      int count = listBox.Items.Count;
       if (count >= 2 &&
         ((DecodedItem)listBox.Items[count - 1]).Type == DecodedItemType.Separator &&
         ((DecodedItem)listBox.Items[count - 2]).Type == DecodedItemType.Separator)
@@ -285,6 +290,36 @@ namespace SkyRoof
 
       return null;
     }
+    private DecodedItem GetItemUnderCursor()
+    {
+      Point p = listBox.PointToClient(Cursor.Position);
+      int index = listBox.IndexFromPoint(p);
+      if (index < 0) return null;
+      return (DecodedItem)listBox.Items[index];
+    }
+
+    internal void BeginUpdateItems()
+    {
+      listBox.BeginUpdate();
+    }
+
+    internal void EndUpdateItems()
+    {
+      DeleteOldItems();
+      CheckAndScrollToBottom();
+      listBox.EndUpdate();
+      listBox.Refresh();
+    }
+
+    public const int MAX_LINE_COUNT = 5000;
+
+    internal void DeleteOldItems()
+    {
+      while (listBox.Items.Count > MAX_LINE_COUNT)
+        listBox.Items.RemoveAt(0);
+    }
+
+
 
 
     //--------------------------------------------------------------------------------------------------------------
@@ -396,7 +431,6 @@ namespace SkyRoof
 /*
 000000  -7  0.2 2397 +  CQ SM/UA1CBX
 000000 -11  0.1 1531 +  CQ VE3NEA FN03
-
 
 |aP|Message components
 |a1|CQ   &#160; &#160;   ?   &#160; &#160;   ? 
