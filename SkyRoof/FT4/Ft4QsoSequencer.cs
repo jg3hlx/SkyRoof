@@ -52,7 +52,16 @@ namespace SkyRoof
     // user clicked on received message
     public void ReplyToMessage(DecodedItem item)
     {
+      HisCall = item.Parse.DECallsign;
+      GenerateMessages();
 
+      if (item.Parse.DXCallsign == MyCall)
+      {
+        // todo
+        MessageType = Ft4MessageType.dB;
+      }
+      else
+        MessageType = Ft4MessageType.DE;
     }
 
     // user clicked on a message type button

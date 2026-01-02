@@ -73,6 +73,8 @@ namespace SkyRoof
     }
 
 
+
+
     //--------------------------------------------------------------------------------------------------------------
     //                                                mouse
     //--------------------------------------------------------------------------------------------------------------
@@ -156,6 +158,7 @@ namespace SkyRoof
 
 
 
+
     //--------------------------------------------------------------------------------------------------------------
     //                                                scroll
     //--------------------------------------------------------------------------------------------------------------
@@ -199,22 +202,42 @@ namespace SkyRoof
 
 
 
+
     //--------------------------------------------------------------------------------------------------------------
     //                                                items
     //--------------------------------------------------------------------------------------------------------------
     
     // received messages
-    internal void AddItems(IEnumerable<DecodedItem> items)
+    internal void AddMessages(IEnumerable<DecodedItem> items)
     {
       foreach (var item in items)
       {
         if (item.FromMe) AddMessageFromMe(item);
-        else listBox.Items.Add(item);
+        else AddMessage(item);
       }
     }
 
+    // message from current or new slot: append
+    // message from old slot: instert
+    private int FindInsertionPoint(DecodedItem item)
+    {
+      int count = listBox.Items.Count;
+
+      for (int i = count; i > 0; i--)
+        if (((DecodedItem)listBox.Items[i - 1]).SlotNumber <= item.SlotNumber)
+          return i;
+
+      return 0;
+    }
+
+    private void AddMessage(DecodedItem item)
+    {
+      int index = FindInsertionPoint(item);
+        listBox.Items.Insert(index, item); // todo: remove IF
+    }
+
     // sending message 
-    public void AddSentMessage(DecodedItem item)
+    public void AddTxMessage(DecodedItem item)
     {
       BeginUpdateItems();
       listBox.Items.Add(item);
@@ -226,7 +249,7 @@ namespace SkyRoof
     {
       for (int i = listBox.Items.Count - 1; i >= 0; i--)
       {
-        var itm = ((DecodedItem)listBox.Items[i]);
+        var itm = (DecodedItem)listBox.Items[i];
         if (itm.SlotNumber < item.SlotNumber) break;
 
         else if (itm.Type == DecodedItemType.TxMessage && itm.SlotNumber == item.SlotNumber)
@@ -236,41 +259,32 @@ namespace SkyRoof
         }
       }
 
-      listBox.Items.Add(item);
+      AddMessage(item);
     }
 
-    // new time slot started
-    internal void AddSeparator(int slot, string satelliteName, string bandName)
+    internal void AddSeparator(DecodedItem separator)
     {
-      int count = listBox.Items.Count;
+      int index = FindInsertionPoint(separator);
 
-      if (count > 0 && ((DecodedItem)listBox.Items[count - 1]).SlotNumber == slot) return;
+      // separator already present
+      if (index > 0 && ((DecodedItem)listBox.Items[index - 1]).SlotNumber == separator.SlotNumber) return;
 
-      DateTime slotTime = DateTime.MinValue + TimeSpan.FromSeconds(slot * NativeFT4Coder.TIMESLOT_SECONDS);
+      // merge with older separators
+      if (index >= 2 &&
+        ((DecodedItem)listBox.Items[index - 1]).Type == DecodedItemType.Separator &&
+        ((DecodedItem)listBox.Items[index - 2]).Type == DecodedItemType.Separator)
 
-      // create new separator token
-      var separator = new DecodedItem();
-      separator.Type = DecodedItemType.Separator;
-      separator.SlotNumber = slot;
-      separator.Utc = slotTime;
-      separator.Tokens = [new(FontAwesomeIcons.Circle), new($"{slotTime:HH:mm:ss.f}"), new(satelliteName), new(bandName)];
-      separator.Tokens[0].fgBrush = separator.Odd ? Brushes.Olive : Brushes.Teal;
-
-      //
-      if (count >= 2 &&
-        ((DecodedItem)listBox.Items[count - 1]).Type == DecodedItemType.Separator &&
-        ((DecodedItem)listBox.Items[count - 2]).Type == DecodedItemType.Separator)
-
-        if (((DecodedItem)listBox.Items[count - 2]).Tokens[0].text == "···")
-          listBox.Items[count - 1] = separator;
+        if (((DecodedItem)listBox.Items[index - 2]).Tokens[0].text == "···")
+          listBox.Items[index - 1] = separator;
         else
         {
-          ((DecodedItem)listBox.Items[count - 1]).Tokens = [new("···")];
-          listBox.Items.Add(separator);
+          ((DecodedItem)listBox.Items[index - 1]).Tokens = [new("···")];
+          listBox.Items.Insert(index, separator);
         }
 
+      // add new
       else
-        listBox.Items.Add(separator);
+        listBox.Items.Insert(index, separator);
     }
 
     internal DecodedItem? FindItem(int slotNumber, int audioFrequency)
@@ -429,8 +443,6 @@ namespace SkyRoof
 }
 
 /*
-000000  -7  0.2 2397 +  CQ SM/UA1CBX
-000000 -11  0.1 1531 +  CQ VE3NEA FN03
 
 |aP|Message components
 |a1|CQ   &#160; &#160;   ?   &#160; &#160;   ? 
@@ -439,14 +451,5 @@ namespace SkyRoof
 |a4|MyCall DxCall RRR
 |a5|MyCall DxCall 73
 |a6|MyCall DxCall RR73
-|a7|(Call_1 or CQ) Call_2 &#160; &#160;   ?  // only ft8
 
-.FT4 and FT8 AP decoding types for each QSO state
-|State        |AP type
-|CALLING STN  |   2, 3
-|REPORT       |   2, 3
-|ROGER_REPORT |   3, 4, 5, 6
-|ROGERS       |   3, 4, 5, 6
-|SIGNOFF      |   3, 1, 2
-|CALLING CQ   |   1, 2
  */

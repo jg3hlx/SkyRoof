@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using FontAwesome;
+using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -114,6 +115,12 @@ namespace SkyRoof
       UpdateTxButtons();
     }
 
+
+
+
+    //--------------------------------------------------------------------------------------------------------------
+    //                                                decoder
+    //--------------------------------------------------------------------------------------------------------------
     public void AddSamplesFromSdr(DataEventArgs<float> e)
     {
       if (ctx.Settings.Ft4Console.AudioSource == Ft4AudioSource.SDR)
@@ -138,17 +145,16 @@ namespace SkyRoof
       {
         MessageListWidget.BeginUpdateItems();
 
-        MessageListWidget.AddSeparator(Decoder.DecodedSlotNumber,
-          ctx.SatelliteSelector.SelectedSatellite.name, ctx.FrequencyControl.GetBandName(false));
+        AddSeparator(Decoder.DecodedSlotNumber);
 
         if (e.Data.Length >= 0)
         {
           double frequency = ctx.FrequencyControl.RadioLink.CorrectedDownlinkFrequency;
           string satellite = ctx.SatelliteSelector.SelectedSatellite.name;
+          var messages = e.Data.Select(s => MakeDecodedItem(s, e.Utc)).ToList();
 
           // to listbox
-          var messages = e.Data.Select(s => MakeDecodedItem(s, e.Utc)).ToList();
-          MessageListWidget.AddItems(messages);
+          MessageListWidget.AddMessages(messages);
 
           // to udp sender
           WsjtxUdpSender.SendDecodedMessages(messages, frequency);
@@ -163,6 +169,7 @@ namespace SkyRoof
 
     private void SaveToFile(IEnumerable<DecodedItem> messages, double frequency, string satellite)
     {
+      // {!} todo:
       //if (!ctx.Settings.Ft4Console.ArchiveToFile) return;
 
       string archiveFolder = Path.Combine(Utils.GetUserDataFolder(), "FT4");
@@ -172,28 +179,6 @@ namespace SkyRoof
       string text = string.Join('\n', messages.Select(msg => msg.ToArchiveString(frequency, satellite)).ToArray());
 
       using (StreamWriter writer = File.AppendText(filePath)) writer.WriteLine(text);
-
-    }
-
-    private DecodedItem MakeDecodedItem(string s, DateTime utc)
-    {
-      DecodedItem item = new();
-      item.ParseMessage(s, utc);
-
-      item.Type = DecodedItemType.RxMessage;
-      item.Utc = utc;
-      item.SlotNumber = Decoder.DecodedSlotNumber;
-      item.ToMe = item.Parse.DXCallsign == ctx.Settings.User.Call;
-      item.FromMe = item.Parse.DECallsign == ctx.Settings.User.Call;
-      item.SetColors(ctx.Settings.Ft4Console.Messages);
-
-      //if (item.FromMe) foreach (var token in item.Tokens) token.fgBrush = Brushes.White;
-
-      // callsign color from logger if not receiving wsjtx colors
-      if (!WsjtxUdpSender.Active && !item.FromMe)
-        item.SetCallsignColors(ctx.LoggerInterface);
-
-      return item;
     }
 
     private void WsjtxUdpSender_HighlightCallsignReceived(object? sender, HighlightCallsignEventArgs e)
@@ -201,6 +186,43 @@ namespace SkyRoof
       MessageListWidget.HighlightCallsign(e);
     }
 
+
+
+
+    //--------------------------------------------------------------------------------------------------------------
+    //                                                encoder
+    //--------------------------------------------------------------------------------------------------------------
+    private void Ft4Sender_BeforeTransmit(object? sender, EventArgs e)
+    {
+      Ft4TimeBar1.Transmitting = Sender.Mode == Ft4Sender.SenderMode.Sending;
+
+      BeginInvoke(() =>
+      {
+        Console.Beep();
+        UpdateTxButtons();
+        AddTxMessageToList();
+      });
+    }
+
+    private void Ft4Sender_AfterTransmit(object? sender, EventArgs e)
+    {
+      Ft4TimeBar1.Transmitting = false;
+
+      BeginInvoke(() =>
+      {
+        Console.Beep();
+        TxCountdown--;
+        if (TxCountdown <= 0) Sender.Stop();
+        UpdateTxButtons();
+      });
+    }
+
+
+
+
+    //--------------------------------------------------------------------------------------------------------------
+    //                                                mouse
+    //--------------------------------------------------------------------------------------------------------------
     private void AudioWaterfall_MouseDown(object? sender, MouseEventArgs e)
     {
       AudioWaterfall.SetFrequenciesFromMouseClick(e);
@@ -262,6 +284,12 @@ namespace SkyRoof
       UpdateTxButtons();
     }
 
+
+
+
+    //--------------------------------------------------------------------------------------------------------------
+    //                                                buttons
+    //--------------------------------------------------------------------------------------------------------------
     private void UpdateTxButtons()
     {
       bool tuning = Sender.Mode == Ft4Sender.SenderMode.Tuning;
@@ -284,29 +312,6 @@ namespace SkyRoof
 
       MessageBox.Show("FT4 transmit is not enabled in Settings.", "SkyRoof", MessageBoxButtons.OK, MessageBoxIcon.Information);
       return false;
-    }
-
-    private void Ft4Sender_BeforeTransmit(object? sender, EventArgs e)
-    {
-      Ft4TimeBar1.Transmitting = Sender.Mode == Ft4Sender.SenderMode.Sending;
-      BeginInvoke(() =>
-      {
-        UpdateTxButtons();
-      });
-      Console.Beep();
-    }
-
-    private void Ft4Sender_AfterTransmit(object? sender, EventArgs e)
-    {
-      Ft4TimeBar1.Transmitting = false;
-      BeginInvoke(() =>
-      {
-        TxCountdown--;
-        if (TxCountdown <= 0) Sender.Stop();
-        AddTxMessageToList();
-        UpdateTxButtons();
-      });
-      Console.Beep();
     }
 
     private void TxSpinner_ValueChanged(object sender, EventArgs e)
@@ -340,6 +345,12 @@ namespace SkyRoof
       OddEvenGroupBox.Text = Sender.TxOdd ? "TX Odd" : "TX Even";
     }
 
+
+
+
+    //--------------------------------------------------------------------------------------------------------------
+    //                                           message buttons
+    //--------------------------------------------------------------------------------------------------------------
     private Ft4MessageType GetButtonMessage(object btn)
     {
       return (Ft4MessageType)int.Parse((string)((Button)btn).Tag!);
@@ -365,12 +376,34 @@ namespace SkyRoof
       TxMessageLabel.Text = Sequencer.Message;
     }
 
-    private void MessageListWidget_MessageClick(object sender, Ft4MessageEventArgs e)
-    {
-      Sequencer.ReplyToMessage(e.Item);
-      Sender.SetMessage(Sequencer.Message!);
-    }
 
+
+
+    //--------------------------------------------------------------------------------------------------------------
+    //                                           message list
+    //--------------------------------------------------------------------------------------------------------------
+    private DecodedItem MakeDecodedItem(string s, DateTime utc)
+    {
+      DecodedItem item = new();
+      item.ParseMessage(s, utc);
+
+      item.Type = DecodedItemType.RxMessage;
+      item.Utc = utc;
+      item.SlotNumber = Decoder.DecodedSlotNumber;
+      item.ToMe = item.Parse.DXCallsign == ctx.Settings.User.Call;
+      item.FromMe = item.Parse.DECallsign == ctx.Settings.User.Call;
+      item.SetColors(ctx.Settings.Ft4Console.Messages);
+
+      // white text for my messages
+      if (item.Type == DecodedItemType.TxMessage || item.FromMe) 
+        foreach (var token in item.Tokens) token.fgBrush = Brushes.White;
+
+      // callsign color from logger if not receiving wsjtx colors
+      else if (!WsjtxUdpSender.Active)
+        item.SetCallsignColors(ctx.LoggerInterface);
+
+      return item;
+    }
 
     private void AddTxMessageToList()
     {
@@ -378,20 +411,54 @@ namespace SkyRoof
 
       var item = new DecodedItem();
       item.Type = DecodedItemType.TxMessage;
-      item.Utc = Sender.Slot.CurrentSlotStartTime;
+      //item.Utc = Sender.Slot.CurrentSlotStartTime;
       item.SlotNumber = Sender.Slot.SlotNumber;
 
       item.Tokens = [
-        new DecodedItem.DisplayToken(" TX "),
-        new DecodedItem.DisplayToken(" 0.0"),
+        new DecodedItem.DisplayToken(" TX  0.0"),
         new DecodedItem.DisplayToken($"{Sender.TxAudioFrequency,4:D}")
       ];
       item.Tokens.AddRange(DecodedItem.SplitWords(Sequencer.Message ?? ""));
 
-      MessageListWidget.AddSeparator(Sender.Slot.SlotNumber,
-          ctx.SatelliteSelector.SelectedSatellite.name, ctx.FrequencyControl.GetBandName(false));
+      AddSeparator(Sender.Slot.SlotNumber);
+      MessageListWidget.AddTxMessage(item);
+    }
 
-      MessageListWidget.AddSentMessage(item);
+    private void AddSeparator(int slot)
+    {
+      DateTime slotTime = DateTime.MinValue + TimeSpan.FromSeconds(slot * NativeFT4Coder.TIMESLOT_SECONDS);
+
+      var satelliteName = ctx.SatelliteSelector.SelectedSatellite.name;
+      var bandName = ctx.FrequencyControl.GetBandName(false);
+
+      var separator = new DecodedItem();
+      separator.Type = DecodedItemType.Separator;
+      separator.SlotNumber = slot;
+      separator.Utc = slotTime;
+      separator.Tokens = [new(FontAwesomeIcons.Circle), new($"{slotTime:HH:mm:ss.f}"), new(satelliteName), new(bandName)];
+      separator.Tokens[0].fgBrush = separator.Odd ? Brushes.Olive : Brushes.Teal;
+
+      MessageListWidget.AddSeparator(separator);
+    }
+
+
+
+
+    //--------------------------------------------------------------------------------------------------------------
+    //                                             sequencer
+    //--------------------------------------------------------------------------------------------------------------
+    private void MessageListWidget_MessageClick(object sender, Ft4MessageEventArgs e)
+    {
+      Sequencer.ReplyToMessage(e.Item);
+      Sender.SetMessage(Sequencer.Message!);
+      Sender.TxOdd = !e.Item.Odd;
+      Sender.StartSending();
+      if (Sender.Mode == Ft4Sender.SenderMode.Sending) // no sending if was tuning 
+        TxCountdown = ctx.Settings.Ft4Console.TxWatchDog * 4;
+
+      TxMessageLabel.Text = Sequencer.Message!;
+      UpdateTxButtons();
+      UpdateMessageButtons();
     }
   }
 }
