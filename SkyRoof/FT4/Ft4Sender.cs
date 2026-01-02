@@ -18,11 +18,11 @@ namespace SkyRoof
     private const int PttOnSampleCount = (int)(PttOnSeconds * NativeFT4Coder.SAMPLING_RATE);
     private const int RampSampleCount = NativeFT4Coder.SAMPLES_PER_SYMBOL;
     private const double RampSeconds = RampSampleCount / (double)NativeFT4Coder.SAMPLING_RATE;
-    private const int LeadSampleCount = 2 * NativeFT4Coder.SAMPLING_RATE / 3;
+    private const int LeadSampleCount = NativeFT4Coder.SAMPLING_RATE;
     private const int WaveformSampleCount = NativeFT4Coder.ENCODE_SAMPLE_COUNT;
 
     private byte[] MessageChars = new byte[NativeFT4Coder.ENCODE_MESSAGE_LENGTH + 1];
-    private float[] AudioSamples = new float[WaveformSampleCount];
+    private float[] NewWaveform = new float[WaveformSampleCount];
     private float[] Waveform = new float[WaveformSampleCount];
     private float[] Ramp = new float[RampSampleCount];
     private readonly float[] TxBuffer = new float[LeadSampleCount];
@@ -71,7 +71,7 @@ namespace SkyRoof
       Array.Clear(MessageChars);
       Encoding.ASCII.GetBytes(message, 0, len, MessageChars, 0);
       float frequency = txAudioFrequency;
-      NativeFT4Coder.encode_ft4(MessageChars, ref frequency, AudioSamples);
+      NativeFT4Coder.encode_ft4(MessageChars, ref frequency, NewWaveform);
 
       lock (lockObj)
       {
@@ -86,17 +86,17 @@ namespace SkyRoof
 
                 // ramp
                 for (int i = 0; i < RampSampleCount; i++)
-                  TxBuffer[i] = Waveform[SampleIndex + i] * Ramp[RampSampleCount - 1 - i] + AudioSamples[SampleIndex + i] * Ramp[i];
+                  TxBuffer[i] = Waveform[SampleIndex + i] * Ramp[RampSampleCount - 1 - i] + NewWaveform[SampleIndex + i] * Ramp[i];
                 Soundcard.Buffer.Write(TxBuffer, 0, RampSampleCount);
                 SampleIndex += RampSampleCount;
 
                 // top up with new waveform
-                Array.Copy(AudioSamples, Waveform, WaveformSampleCount);
-                TopUp(AudioSamples);
+                Array.Copy(NewWaveform, Waveform, WaveformSampleCount);
+                TopUp(NewWaveform);
               }
             });
 
-        Array.Copy(AudioSamples, Waveform, WaveformSampleCount);
+        Array.Copy(NewWaveform, Waveform, WaveformSampleCount);
       }
     }
 
@@ -187,7 +187,6 @@ namespace SkyRoof
       int sampleCount;
       DateTime now;
       SenderPhase = SendingStage.Idle;
-
       Soundcard.Buffer.Clear();
 
       while (!Stopping)
@@ -215,30 +214,7 @@ namespace SkyRoof
             else if (now > startTime)
             {
               double missedSeconds = (now - startTime).TotalSeconds + PttOnSeconds;
-
-              if (missedSeconds < NativeFT4Coder.ENCODE_SECONDS - PttOnSeconds - RampSeconds)
-              {
-                // silence for PttOnMargin 
-                Soundcard.Buffer.Clear();
-                sampleCount = (int)(PttOnSeconds * NativeFT4Coder.SAMPLING_RATE);
-                Soundcard.AddSamples(Silence, 0, sampleCount);
-
-                // current position in waveform
-                SampleIndex = (int)(missedSeconds * NativeFT4Coder.SAMPLING_RATE);
-
-                // ramped waveform
-                for (int i = 0; i < RampSampleCount; i++) TxBuffer[i] = Waveform[SampleIndex + i] * Ramp[i];
-                Soundcard.Buffer.Write(TxBuffer, 0, RampSampleCount);
-                SampleIndex += RampSampleCount;
-
-                // waveform
-                TopUp();
-
-                // PTT switch
-                SenderPhase = SendingStage.Sending;
-                BeforeTransmit?.Invoke(this, EventArgs.Empty);
-                Thread.Sleep(PttOnMargin);
-              }
+              StartInMiddle(missedSeconds);
             }
             break;
 
@@ -285,6 +261,36 @@ namespace SkyRoof
       }
 
       Soundcard.Buffer.Clear();
+    }
+
+    private void StartInMiddle(double missedSeconds)
+    {
+      {
+        if (missedSeconds < NativeFT4Coder.ENCODE_SECONDS - PttOnSeconds - RampSeconds)
+        {
+          // silence for PttOnMargin 
+          Soundcard.Buffer.Clear();
+          int sampleCount = (int)(PttOnSeconds * NativeFT4Coder.SAMPLING_RATE);
+          Soundcard.AddSamples(Silence, 0, sampleCount);
+
+          // current position in waveform
+          SampleIndex = (int)(missedSeconds * NativeFT4Coder.SAMPLING_RATE);
+
+          // ramped waveform
+          for (int i = 0; i < RampSampleCount; i++) TxBuffer[i] = Waveform[SampleIndex + i] * Ramp[i];
+          Soundcard.Buffer.Write(TxBuffer, 0, RampSampleCount);
+          SampleIndex += RampSampleCount;
+
+          // waveform
+          TopUp();
+
+          // PTT switch
+          SenderPhase = SendingStage.Sending;
+          BeforeTransmit?.Invoke(this, EventArgs.Empty);
+          Thread.Sleep(PttOnMargin);
+        }
+      }
+
     }
 
     void RampDown()

@@ -12,7 +12,7 @@ namespace SkyRoof
 
   public class DecodedItem
   {
-    private static readonly string[] CqWords = ["CQ", "73", "RR73"];
+    public static readonly string[] CqWords = ["CQ", "73", "RR73"];
 
     public class DisplayToken
     {
@@ -131,9 +131,10 @@ namespace SkyRoof
           Brushes.Transparent : new SolidBrush(settings.BkColors.Ap);
 
         // CQ words
-        for (int i = 2; i < Tokens.Count; i++)
-          if (CqWords.Contains(Tokens[i].text))
-            Tokens[i].bgBrush = new SolidBrush(settings.BkColors.CqWord);
+        if (!FromMe)
+          for (int i = 2; i < Tokens.Count; i++)
+            if (CqWords.Contains(Tokens[i].text))
+              Tokens[i].bgBrush = new SolidBrush(settings.BkColors.CqWord);
       }
     }
 

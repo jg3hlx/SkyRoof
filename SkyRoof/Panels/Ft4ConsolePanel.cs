@@ -1,10 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
-using Serilog;
+﻿using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
-using WsjtxUtils.WsjtxMessages.Messages;
-using static SkyRoof.DecodedItem;
-using static SkyRoof.Ft4MessageListWidget;
 
 namespace SkyRoof
 {
@@ -191,8 +187,10 @@ namespace SkyRoof
       item.FromMe = item.Parse.DECallsign == ctx.Settings.User.Call;
       item.SetColors(ctx.Settings.Ft4Console.Messages);
 
+      //if (item.FromMe) foreach (var token in item.Tokens) token.fgBrush = Brushes.White;
+
       // callsign color from logger if not receiving wsjtx colors
-      if (!WsjtxUdpSender.Active)
+      if (!WsjtxUdpSender.Active && !item.FromMe)
         item.SetCallsignColors(ctx.LoggerInterface);
 
       return item;
@@ -293,7 +291,6 @@ namespace SkyRoof
       Ft4TimeBar1.Transmitting = Sender.Mode == Ft4Sender.SenderMode.Sending;
       BeginInvoke(() =>
       {
-        AddTxMessageToList();
         UpdateTxButtons();
       });
       Console.Beep();
@@ -306,6 +303,7 @@ namespace SkyRoof
       {
         TxCountdown--;
         if (TxCountdown <= 0) Sender.Stop();
+        AddTxMessageToList();
         UpdateTxButtons();
       });
       Console.Beep();
@@ -380,16 +378,15 @@ namespace SkyRoof
 
       var item = new DecodedItem();
       item.Type = DecodedItemType.TxMessage;
-      item.Utc = DateTime.UtcNow;
+      item.Utc = Sender.Slot.CurrentSlotStartTime;
       item.SlotNumber = Sender.Slot.SlotNumber;
 
       item.Tokens = [
-        new DisplayToken(" TX "),
-        new DisplayToken($"{Sender.Slot.SecondsIntoSlot,4:F1}"),
-        new DisplayToken($"{Sender.TxAudioFrequency,4:D}")
+        new DecodedItem.DisplayToken(" TX "),
+        new DecodedItem.DisplayToken(" 0.0"),
+        new DecodedItem.DisplayToken($"{Sender.TxAudioFrequency,4:D}")
       ];
       item.Tokens.AddRange(DecodedItem.SplitWords(Sequencer.Message ?? ""));
-      foreach (var token in item.Tokens) token.fgBrush = Brushes.White;
 
       MessageListWidget.AddSeparator(Sender.Slot.SlotNumber,
           ctx.SatelliteSelector.SelectedSatellite.name, ctx.FrequencyControl.GetBandName(false));

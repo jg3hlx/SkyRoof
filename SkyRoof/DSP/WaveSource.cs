@@ -13,7 +13,7 @@ namespace VE3NEA
     {
       int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
       format = new WaveFormat(samplingRate, 32, channelCount, AudioEncoding.IeeeFloat);
-      Buffer = new(samplingRate);
+      Buffer = new(2 * samplingRate);
     }
 
   public void AddSamples(T[] samples, int offset = 0, int? count = null)

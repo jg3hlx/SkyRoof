@@ -6,17 +6,15 @@ using VE3NEA;
 
 namespace SkyRoof
 {
+  public class Ft4MessageEventArgs : EventArgs
+  {
+    public DecodedItem Item { get; }
+    public Ft4MessageEventArgs(DecodedItem item) { Item = item; }
+  }
+
+
   public partial class Ft4MessageListWidget : UserControl
   {
-    public class Ft4MessageEventArgs : EventArgs
-    {
-      public DecodedItem Item { get; }
-      public Ft4MessageEventArgs(DecodedItem item) { Item = item; }
-    }
-
-
-
-
     private readonly System.Timers.Timer freezeTimer = new System.Timers.Timer();
     public DecodedItem HotItem, ClickedItem;
     private Point lastMouseLocation;
@@ -397,13 +395,15 @@ namespace SkyRoof
 
     internal void HighlightCallsign(HighlightCallsignEventArgs e)
     {
+      if (DecodedItem.CqWords.Contains(e.Callsign)) return;
+
       for (int i = listBox.Items.Count - 1; i >= 0; i--)
       {
         var item = (DecodedItem)listBox.Items[i];
 
         if (item.Type != DecodedItemType.RxMessage)
           break;
-        else if (item.Parse.DECallsign != e.Callsign)
+        else if (item.Parse.DECallsign != e.Callsign || item.FromMe)
           continue;
         else
         {
