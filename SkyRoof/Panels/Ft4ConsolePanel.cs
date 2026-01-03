@@ -31,7 +31,7 @@ namespace SkyRoof
       ctx.MainForm.Ft4ConsoleMNU.Checked = true;
 
       Decoder.Decode(); // prime the decoding engine
-      Decoder.SlotDecoded += Ft4Decoder_SlotDecoded;
+      Decoder.MessageDecoded += Ft4Decoder_MessageDecoded;
       Soundcard.SamplesAvailable += (s, a) => AddSamplesFromSoundcard(a);
       Soundcard.Retry = true;
 
@@ -139,9 +139,9 @@ namespace SkyRoof
       }
     }
 
-    private void Ft4Decoder_SlotDecoded(object? sender, DataEventArgs<string> e)
+    private void Ft4Decoder_MessageDecoded(object? sender, DataEventArgs<string> e)
     {
-      MessageListWidget.BeginInvoke(() =>
+      BeginInvoke(() =>
       {
         MessageListWidget.BeginUpdateItems();
 

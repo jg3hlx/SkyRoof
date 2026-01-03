@@ -33,12 +33,22 @@ namespace VE3NEA
 
     public const int MAX_CALL_LENGTH = 12;
 
-    
+
     [DllImport("ft4_coder", CallingConvention = CallingConvention.Cdecl)]
     public static extern void encode_ft4(byte[] message, ref float txAudioFrequency, float[] audioSamples);
 
-    [DllImport("ft4_coder", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void decode_ft4(float[] audioSamples, ref int nQSOProgress, ref int nfqso,
-        ref int nfb, byte[] mycall, byte[] hiscall, byte[] decodedMessages);
+    [DllImport("ft4_coder", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+    public static extern void decode_ft4(
+        [In] float[] audio_samples,
+        ref int nQSOProgress,
+        ref int nfqso,
+        ref int nfb,
+        [In] byte[] mycall,
+        [In] byte[] hiscall,
+        DecodedMessageCallback callback);
+
+    // callback delegate
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void DecodedMessageCallback(IntPtr message);
   }
 }

@@ -1,4 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using Serilog;
 using VE3NEA;
 
 namespace SkyRoof
@@ -9,8 +12,8 @@ namespace SkyRoof
     private int SampleCount = 0;
     DateTime DataUtc;
     private float[] SlotSamples = new float[NativeFT4Coder.DECODE_SAMPLE_COUNT];
-    private Ft4DecodeBuffers? Buffers = new ();
-    private Ft4Slot Slot = new ();
+    private Ft4DecodeBuffers? Buffers = new();
+    private Ft4Slot Slot = new();
 
     public const int FT4_SIGNAL_BANDWIDTH = 83; // Hz
     public int RxAudioFrequency = 1500;
@@ -20,7 +23,7 @@ namespace SkyRoof
 
     public int DecodedSlotNumber { get; private set; }
 
-    public event EventHandler<DataEventArgs<string>>? SlotDecoded;
+    public event EventHandler<DataEventArgs<string>>? MessageDecoded;
 
     protected override void Process(DataEventArgs<float> args)
     {
@@ -74,21 +77,26 @@ namespace SkyRoof
 
       int stage = (int)NativeFT4Coder.QsoStage.CALLING;
       Buffers!.SetMyCall(MyCall);
-      Buffers!.ClearDecoded();
-
-      NativeFT4Coder.decode_ft4(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency, 
-        Buffers.MyCall, Buffers.HisCall, Buffers.DecodedChars);
-
-      string[] messages = Buffers.GetDecodedMessages();
-
-
-      var messageUtc = DateTime.UtcNow;
-      if(DataUtc != DateTime.MinValue) messageUtc = DataUtc.AddSeconds(-((SampleCount + NativeFT4Coder.DECODE_SAMPLE_COUNT) / (double)NativeFT4Coder.SAMPLING_RATE));
-      SlotDecoded?.Invoke(this, new DataEventArgs<string>(messages, messageUtc));
 
       DecodedSlotNumber = Slot.SlotNumber;
+
+      NativeFT4Coder.decode_ft4(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency,
+        Buffers.MyCall, Buffers.HisCall, DecodedMessageCallback);
     }
 
+    private void DecodedMessageCallback(IntPtr messagePtr)
+    {
+      try
+      {
+        string? message = Marshal.PtrToStringAnsi(messagePtr);
+        if (!string.IsNullOrEmpty(message))
+          MessageDecoded?.Invoke(this, new([message], DateTime.UtcNow));
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, "Error in FT4 decoded message callback");
+      }
+    }
 
     public override void Dispose()
     {
