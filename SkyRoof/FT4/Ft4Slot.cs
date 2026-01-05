@@ -7,7 +7,7 @@
     private DateTime utc;
 
     public DateTime Utc { get => utc; set => SetUtc(value); }
-    public int SlotNumber { get; private set; }
+    public long SlotNumber { get; private set; }
     public double SlotStartSeconds { get; private set; }
     public double SecondsIntoSlot { get; private set; }
     public int SamplesIntoSlot { get; private set; }
@@ -17,23 +17,23 @@
 
     public DateTime GetTxStartTime(bool odd)
     {
-      int slotNumber = SlotNumber;                                 // current slot
-      if (odd != Odd) slotNumber++;                                // if rx slot, advance to next one
-      else if (SecondsIntoSlot > TxLengthSeconds) slotNumber += 2; // transmission in this slot already finished, advance by 2 slots
+      long slotNumber = SlotNumber;                                 // current slot
+      if (odd != Odd) slotNumber++;                                // if rx slot, advance to next
+      else if (SecondsIntoSlot > TxLengthSeconds) slotNumber += 2; // tx slot but transmission already finished, advance by 2 slots
 
-      return Utc.Date + TimeSpan.FromSeconds(slotNumber * NativeFT4Coder.TIMESLOT_SECONDS);
+      return DateTime.MinValue + TimeSpan.FromSeconds(slotNumber * NativeFT4Coder.TIMESLOT_SECONDS);
     }
 
     private void SetUtc(DateTime value)
     {
       utc = value;
-      double secondsSinceMidnight = (Utc - Utc.Date).TotalSeconds;
-      SlotNumber = (int)Math.Truncate(secondsSinceMidnight / NativeFT4Coder.TIMESLOT_SECONDS);
+      double secondsSinceStartOftime = (Utc - DateTime.MinValue).TotalSeconds;
+      SlotNumber = (long)Math.Truncate(secondsSinceStartOftime / NativeFT4Coder.TIMESLOT_SECONDS);
       SlotStartSeconds = SlotNumber * NativeFT4Coder.TIMESLOT_SECONDS;
-      SecondsIntoSlot = secondsSinceMidnight - SlotStartSeconds;
+      SecondsIntoSlot = secondsSinceStartOftime - SlotStartSeconds;
       SamplesIntoSlot = (int)(SecondsIntoSlot * NativeFT4Coder.SAMPLING_RATE);
 
-      CurrentSlotStartTime = utc.Date + TimeSpan.FromSeconds(SlotStartSeconds); 
+      CurrentSlotStartTime = DateTime.MinValue + TimeSpan.FromSeconds(SlotStartSeconds); 
     }
   }
 }

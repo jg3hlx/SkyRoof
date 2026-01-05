@@ -29,7 +29,7 @@ namespace SkyRoof
     }
 
     public DecodedItemType Type;
-    public int SlotNumber;
+    public long SlotNumber;
     public bool Odd => SlotNumber % 2 == 1;
 
     public string WkdStatus = "";

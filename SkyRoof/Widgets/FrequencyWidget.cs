@@ -154,6 +154,14 @@ namespace SkyRoof
       RadioLinkToUi();
     }
 
+    internal void SetPtt(bool ptt)
+    {
+      if (ctx.CatControl.Tx == null) return;
+
+      ctx.CatControl.Tx!.SetPtt(ptt);
+      UpdateTxButton();
+    }
+
 
 
 
@@ -516,8 +524,7 @@ namespace SkyRoof
     private void TxBtn_Click(object sender, EventArgs e)
     {
       var ptt = ctx.CatControl.Tx!.Ptt == true;
-      ctx.CatControl.Tx!.SetPtt(!ptt);
-      UpdateTxButton();
+      SetPtt(!ptt);
     }
 
     private void UpdateTxButton()

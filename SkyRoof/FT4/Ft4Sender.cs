@@ -5,13 +5,14 @@ using VE3NEA;
 
 namespace SkyRoof
 {
+  // kind of sender's work
+  public enum SenderMode { Off, Tuning, Sending }
+  
+  // stages of sending
+  public enum SendingStage { Idle, Scheduled, Sending }
+
   public class Ft4Sender : IDisposable
   {  
-    // kind of sender's work
-    public enum SenderMode { Idle, Tuning, Sending }
-    // stages of sending
-    public enum SendingStage { Idle, Scheduled, Sending }
-
     public const int PttOnMargin = 150; // milliseconds
     public const int PttOffMargin = 300;
     private const double PttOnSeconds = PttOnMargin * 1e-3;
@@ -38,7 +39,7 @@ namespace SkyRoof
 
 
     public OutputSoundcard<float> Soundcard = new();
-    public SenderMode Mode { get; private set; } = SenderMode.Idle;
+    public SenderMode Mode { get; private set; } = SenderMode.Off;
 
     public event EventHandler? BeforeTransmit;
     public event EventHandler? AfterTransmit;
@@ -47,7 +48,7 @@ namespace SkyRoof
 
     public void StartTuning() => SetMode(SenderMode.Tuning);
     public void StartSending() => SetMode(SenderMode.Sending);
-    public void Stop() => SetMode(SenderMode.Idle);
+    public void Stop() => SetMode(SenderMode.Off);
     public bool TxOdd;
 
 
@@ -108,7 +109,7 @@ namespace SkyRoof
       Mode = newMode;
 
       // stopping audio
-      if (newMode == SenderMode.Idle)
+      if (newMode == SenderMode.Off)
       {
         lock (lockObj) { Stopping = true; }
         Stopping = true;
@@ -117,7 +118,7 @@ namespace SkyRoof
       }
 
       // starting audio
-      else if (oldMode == SenderMode.Idle)
+      else if (oldMode == SenderMode.Off)
       {
         Soundcard.Enabled = true;
 
@@ -126,7 +127,7 @@ namespace SkyRoof
           MessageBox.Show("Unable to open the soundcard.", "SkyRoof",
             MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-          Mode = SenderMode.Idle;
+          Mode = SenderMode.Off;
           return;
         }
 

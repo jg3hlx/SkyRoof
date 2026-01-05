@@ -24,12 +24,12 @@ namespace SkyRoof
       Rectangle? bounds = Screen.PrimaryScreen?.Bounds;
       Log.Information($"Screen resolution: {bounds?.Width}x{bounds?.Height}");
 
-      ctx.SatelliteSelector = SatelliteSelector;
-      ctx.FrequencyControl = FrequencyControl;
+      ctx.SatelliteSelector = SatelliteSelecionWidget;
+      ctx.FrequencyControl = FrequencyWidget;
       ctx.RotatorControl = RotatorWidget;
-      SatelliteSelector.ctx = ctx;
-      FrequencyControl.ctx = ctx;
-      GainControl.ctx = ctx;
+      SatelliteSelecionWidget.ctx = ctx;
+      FrequencyWidget.ctx = ctx;
+      GainWidget.ctx = ctx;
       ctx.Announcer.ctx = ctx;
       ctx.CatControl.ctx = ctx;
       ctx.RotatorControl.ctx = ctx;
@@ -156,7 +156,7 @@ namespace SkyRoof
         ctx.Sdr.StateChanged += Sdr_StateChanged;
         ctx.Sdr.DataAvailable += Sdr_DataAvailable;
 
-        GainControl.ApplyRfGain();
+        GainWidget.ApplyRfGain();
         ConfigureWaterfall();
         ConfigureSlicer();
 
@@ -340,7 +340,7 @@ namespace SkyRoof
     internal void ApplyAudioSettings()
     {
       ctx.SpeakerSoundcard.SetDeviceId(ctx.Settings.Audio.SpeakerSoundcard);
-      GainControl.ApplyAfGain();
+      GainWidget.ApplyAfGain();
       ctx.SpeakerSoundcard.Enabled = ctx.Settings.Audio.SpeakerEnabled;
     }
 
@@ -529,7 +529,7 @@ namespace SkyRoof
 
       if (rc != DialogResult.OK) return;
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
-      SatelliteSelector.LoadSatelliteGroups();
+      SatelliteSelecionWidget.LoadSatelliteGroups();
     }
 
     private void GroupViewMNU_Click(object sender, EventArgs e)
@@ -865,7 +865,7 @@ namespace SkyRoof
       Clock.ShowTime();
       ctx.SkyViewPanel?.Advance();
       ctx.WaterfallPanel?.ScaleControl?.Invalidate();
-      FrequencyControl.ClockTick();
+      FrequencyWidget.ClockTick();
     }
 
     private void OneSecondTick()
@@ -917,7 +917,7 @@ namespace SkyRoof
       ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
 
-      SatelliteSelector.LoadSatelliteGroups();
+      SatelliteSelecionWidget.LoadSatelliteGroups();
       ctx.HamPasses.FullRebuild();
       ctx.GroupPasses.FullRebuild();
       ctx.SdrPasses.FullRebuild();
@@ -985,7 +985,7 @@ namespace SkyRoof
 
     private void SatelliteSelector_SelectedTransmitterChanged(object sender, EventArgs e)
     {
-      FrequencyControl.SetTransmitter();
+      FrequencyWidget.SetTransmitter();
       ctx.TransmittersPanel?.ShowSelectedTransmitter();
       ctx.WaterfallPanel?.BringInView(ctx.FrequencyControl.RadioLink.CorrectedDownlinkFrequency);
       ctx.SdrPasses.UpdateFrequencyRange();

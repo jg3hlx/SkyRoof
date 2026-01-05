@@ -21,7 +21,7 @@ namespace SkyRoof
     public string MyCall = " ";
     public string TheirCall = " ";
 
-    public int DecodedSlotNumber { get; private set; }
+    public long DecodedSlotNumber { get; private set; }
 
     public event EventHandler<DataEventArgs<string>>? MessageDecoded;
 
@@ -82,6 +82,9 @@ namespace SkyRoof
 
       NativeFT4Coder.decode_ft4(samples, ref stage, ref RxAudioFrequency, ref CutoffFrequency,
         Buffers.MyCall, Buffers.HisCall, DecodedMessageCallback);
+
+      // saparator if no messages decoded
+      MessageDecoded?.Invoke(this, new([], Slot.CurrentSlotStartTime));
     }
 
     private void DecodedMessageCallback(IntPtr messagePtr)
@@ -90,7 +93,7 @@ namespace SkyRoof
       {
         string? message = Marshal.PtrToStringAnsi(messagePtr);
         if (!string.IsNullOrEmpty(message))
-          MessageDecoded?.Invoke(this, new([message], DateTime.UtcNow));
+          MessageDecoded?.Invoke(this, new([message], Slot.CurrentSlotStartTime));
       }
       catch (Exception ex)
       {

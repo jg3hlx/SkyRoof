@@ -78,7 +78,7 @@ namespace SkyRoof
       UdpClient?.Send(HeartbeatBytes, EndPoint);
     }
 
-    public void SendDecodedMessages(IEnumerable<DecodedItem> items, double frequency)
+    public void SendDecodedMessages(DecodedItem item, double frequency)
     {
       if (!Active) return;
 
@@ -92,9 +92,8 @@ namespace SkyRoof
       status.TRPeriod = 7;
       SendMessage(status);
 
-      // decoded messages
-      foreach (var item in items) 
-        SendMessage(DecodedItemToUdpMessage(item));
+      // decoded message
+      SendMessage(DecodedItemToUdpMessage(item));
     }
 
     private void SendMessage(IWsjtxDirectionIn message)

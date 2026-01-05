@@ -33,12 +33,12 @@
       Toolbar = new Panel();
       RotatorWidget = new RotatorWidget();
       panel7 = new Panel();
-      GainControl = new GainWidget();
+      GainWidget = new GainWidget();
       panel3 = new Panel();
       panel6 = new Panel();
-      FrequencyControl = new FrequencyWidget();
+      FrequencyWidget = new FrequencyWidget();
       panel1 = new Panel();
-      SatelliteSelector = new SatelliteSelectorWidget();
+      SatelliteSelecionWidget = new SatelliteSelectorWidget();
       ClockPanel = new Panel();
       Clock = new VE3NEA.Clock.ClockWidget();
       panel2 = new Panel();
@@ -116,11 +116,11 @@
       // 
       Toolbar.Controls.Add(RotatorWidget);
       Toolbar.Controls.Add(panel7);
-      Toolbar.Controls.Add(GainControl);
+      Toolbar.Controls.Add(GainWidget);
       Toolbar.Controls.Add(panel3);
-      Toolbar.Controls.Add(FrequencyControl);
+      Toolbar.Controls.Add(FrequencyWidget);
       Toolbar.Controls.Add(panel1);
-      Toolbar.Controls.Add(SatelliteSelector);
+      Toolbar.Controls.Add(SatelliteSelecionWidget);
       Toolbar.Controls.Add(ClockPanel);
       Toolbar.Controls.Add(panel2);
       Toolbar.Controls.Add(panel5);
@@ -147,14 +147,14 @@
       panel7.Size = new Size(4, 78);
       panel7.TabIndex = 10;
       // 
-      // GainControl
+      // GainWidget
       // 
-      GainControl.BorderStyle = BorderStyle.FixedSingle;
-      GainControl.Dock = DockStyle.Left;
-      GainControl.Location = new Point(1034, 0);
-      GainControl.Name = "GainControl";
-      GainControl.Size = new Size(210, 78);
-      GainControl.TabIndex = 7;
+      GainWidget.BorderStyle = BorderStyle.FixedSingle;
+      GainWidget.Dock = DockStyle.Left;
+      GainWidget.Location = new Point(1034, 0);
+      GainWidget.Name = "GainWidget";
+      GainWidget.Size = new Size(210, 78);
+      GainWidget.TabIndex = 7;
       // 
       // panel3
       // 
@@ -173,14 +173,14 @@
       panel6.Size = new Size(4, 78);
       panel6.TabIndex = 7;
       // 
-      // FrequencyControl
+      // FrequencyWidget
       // 
-      FrequencyControl.BorderStyle = BorderStyle.FixedSingle;
-      FrequencyControl.Dock = DockStyle.Left;
-      FrequencyControl.Location = new Point(348, 0);
-      FrequencyControl.Name = "FrequencyControl";
-      FrequencyControl.Size = new Size(682, 78);
-      FrequencyControl.TabIndex = 3;
+      FrequencyWidget.BorderStyle = BorderStyle.FixedSingle;
+      FrequencyWidget.Dock = DockStyle.Left;
+      FrequencyWidget.Location = new Point(348, 0);
+      FrequencyWidget.Name = "FrequencyWidget";
+      FrequencyWidget.Size = new Size(682, 78);
+      FrequencyWidget.TabIndex = 3;
       // 
       // panel1
       // 
@@ -190,18 +190,18 @@
       panel1.Size = new Size(4, 78);
       panel1.TabIndex = 4;
       // 
-      // SatelliteSelector
+      // SatelliteSelecionWidget
       // 
-      SatelliteSelector.BorderStyle = BorderStyle.FixedSingle;
-      SatelliteSelector.Dock = DockStyle.Left;
-      SatelliteSelector.Location = new Point(4, 0);
-      SatelliteSelector.Name = "SatelliteSelector";
-      SatelliteSelector.Size = new Size(340, 78);
-      SatelliteSelector.TabIndex = 2;
-      SatelliteSelector.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
-      SatelliteSelector.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
-      SatelliteSelector.SelectedTransmitterChanged += SatelliteSelector_SelectedTransmitterChanged;
-      SatelliteSelector.SelectedPassChanged += SatelliteSelector_SelectedPassChanged;
+      SatelliteSelecionWidget.BorderStyle = BorderStyle.FixedSingle;
+      SatelliteSelecionWidget.Dock = DockStyle.Left;
+      SatelliteSelecionWidget.Location = new Point(4, 0);
+      SatelliteSelecionWidget.Name = "SatelliteSelecionWidget";
+      SatelliteSelecionWidget.Size = new Size(340, 78);
+      SatelliteSelecionWidget.TabIndex = 2;
+      SatelliteSelecionWidget.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
+      SatelliteSelecionWidget.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
+      SatelliteSelecionWidget.SelectedTransmitterChanged += SatelliteSelector_SelectedTransmitterChanged;
+      SatelliteSelecionWidget.SelectedPassChanged += SatelliteSelector_SelectedPassChanged;
       // 
       // ClockPanel
       // 
@@ -817,13 +817,12 @@
     private ToolTip toolTip1;
     private ToolStripMenuItem DownloadTleMNU;
     public ToolStripMenuItem TransmittersMNU;
-    public SatelliteSelectorWidget SatelliteSelector;
-    private FrequencyWidget FrequencyControl;
+    public SatelliteSelectorWidget SatelliteSelecionWidget;
     private Panel panel1;
     private Panel panel2;
     private ToolStripDropDownButton SoundcardDropdownBtn;
     private Panel panel3;
-    private GainWidget GainControl;
+    private GainWidget GainWidget;
     private ToolStripStatusLabel RxCatLedLabel;
     private ToolStripStatusLabel RxCatStatusLabel;
     private RotatorWidget RotatorWidget;
@@ -844,5 +843,6 @@
     private ToolStripMenuItem EnableRotatorMNU;
     private ToolStripMenuItem TrackRotatorMNU;
     public ToolStripMenuItem Ft4ConsoleMNU;
+    public FrequencyWidget FrequencyWidget;
   }
 }

@@ -206,16 +206,6 @@ namespace SkyRoof
     //--------------------------------------------------------------------------------------------------------------
     //                                                items
     //--------------------------------------------------------------------------------------------------------------
-    
-    // received messages
-    internal void AddMessages(IEnumerable<DecodedItem> items)
-    {
-      foreach (var item in items)
-      {
-        if (item.FromMe) AddMessageFromMe(item);
-        else AddMessage(item);
-      }
-    }
 
     // message from current or new slot: append
     // message from old slot: instert
@@ -230,7 +220,7 @@ namespace SkyRoof
       return 0;
     }
 
-    private void AddMessage(DecodedItem item)
+    public void AddMessage(DecodedItem item)
     {
       int index = FindInsertionPoint(item);
         listBox.Items.Insert(index, item); // todo: remove IF
@@ -245,7 +235,7 @@ namespace SkyRoof
     }
 
     // previously sent message has been received back from the sat
-    private void AddMessageFromMe(DecodedItem item)
+    public void AddMessageFromMe(DecodedItem item)
     {
       for (int i = listBox.Items.Count - 1; i >= 0; i--)
       {
@@ -287,7 +277,7 @@ namespace SkyRoof
         listBox.Items.Insert(index, separator);
     }
 
-    internal DecodedItem? FindItem(int slotNumber, int audioFrequency)
+    internal DecodedItem? FindItem(long slotNumber, int audioFrequency)
     {
       foreach (DecodedItem item in listBox.Items)
       {

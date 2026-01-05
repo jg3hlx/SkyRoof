@@ -52,6 +52,7 @@ namespace SkyRoof
     [DefaultValue(266)]
     public int SplitterDistance { get; set; } = 266;
 
+
     public override string ToString() { return string.Empty; }
   }
 
@@ -91,6 +92,10 @@ namespace SkyRoof
 
   public class Ft4MessagesSettings
   {
+    [DisplayName("Save to File")]
+    [Description("Save decoded messages to a file")]
+    public bool ArchiveToFile { get; set; }
+
     [DisplayName("Text Color")]
     public Color TextColor { get; set; } = SystemColors.WindowText;
 

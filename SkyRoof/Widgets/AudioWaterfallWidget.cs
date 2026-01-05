@@ -15,11 +15,11 @@ namespace SkyRoof
     private readonly Palette Palette = new Palette();
     private Bitmap WaterfallBmp;
     private readonly Bitmap LeftBmp = new Bitmap(2, BMP_HEIGHT, PixelFormat.Format32bppRgb);
-    private readonly int[] leftBarSlots = new int[BMP_HEIGHT];
+    private readonly long[] leftBarSlots = new long[BMP_HEIGHT];
     private DecodedItem? HotItem;
     private int BmpWidth;
     private int WriteRow;
-    private int LastSlot;
+    private long LastSlot;
 
     public SpectrumAnalyzer<float> SpectrumAnalyzer;
     public int RxAudioFrequency = 1500;
@@ -282,11 +282,11 @@ namespace SkyRoof
       Refresh();
     }
 
-    internal (int slotNumber, int audioFreq) GetSlotAndFreq(Point location)
+    internal (long slotNumber, int audioFreq) GetSlotAndFreq(Point location)
     {
       int index = WriteRow + (location.Y - TOP_BAR_HEIGHT);
       if (index >= BMP_HEIGHT) index -= BMP_HEIGHT;
-      int slot = leftBarSlots[index];
+      long slot = leftBarSlots[index];
 
       int frequency = PixelToFrequency(location.X);
       return (slot, frequency);
@@ -300,7 +300,7 @@ namespace SkyRoof
         return;
       }
 
-      (int slot, float freq) = GetSlotAndFreq(p);
+      (long slot, float freq) = GetSlotAndFreq(p);
       string odd = (slot & 1) == 1 ? "Odd (2-nd)" : "Even (1-st)";
       DateTime start = DateTime.Today + TimeSpan.FromSeconds(slot * NativeFT4Coder.TIMESLOT_SECONDS);
 

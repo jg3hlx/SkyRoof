@@ -109,6 +109,10 @@ namespace SkyRoof
         case "SkyRoof.Ft4ConsoleSettings.EnableTransmit":
           canChange = ValidateFt4Transmit(e);
           break;
+
+        case "SkyRoof.Ft4ConsoleSettings.TxWatchDog":
+          ValidateInt(e, 20, 1);
+          break;          
       }
 
       if (canChange) ChangedFields.Add(label);
