@@ -91,7 +91,7 @@
       // AudioWaterfall
       // 
       AudioWaterfall.Dock = DockStyle.Fill;
-      AudioWaterfall.Font = new Font("Courier New", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      AudioWaterfall.Font = new Font("Courier New", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
       AudioWaterfall.Location = new Point(0, 0);
       AudioWaterfall.Margin = new Padding(4, 3, 4, 3);
       AudioWaterfall.Name = "AudioWaterfall";

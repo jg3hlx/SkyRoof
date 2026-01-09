@@ -20,10 +20,11 @@ namespace SkyRoof
     private int BmpWidth;
     private int WriteRow;
     private long LastSlot;
+    private Font CallsignFont;
 
     public SpectrumAnalyzer<float> SpectrumAnalyzer;
-    public int RxAudioFrequency = 1500;
-    public int TxAudioFrequency = 1500;
+    public int RxAudioFrequency = NativeFT4Coder.DEFAULT_AUDIO_FREQUENCY;
+    public int TxAudioFrequency = NativeFT4Coder.DEFAULT_AUDIO_FREQUENCY;
     public int Bandwidth = 0;
     public bool CanProcess = false;
     public Ft4Decoder? Ft4Decoder;
@@ -33,6 +34,8 @@ namespace SkyRoof
     public AudioWaterfallWidget()
     {
       InitializeComponent();
+
+      CallsignFont = new("Courier New", 14);
     }
 
     // SpeftrumAnalyzer cannot be created in the design mode, otherwise
@@ -135,24 +138,33 @@ namespace SkyRoof
       // callsign
       if (HotItem?.Type == DecodedItemType.RxMessage)
       {
-        x = LEFT_BAR_WIDTH + pixelsPerHz * HotItem.Decode.OffsetFrequencyHz; 
+        x = LEFT_BAR_WIDTH + pixelsPerHz * HotItem.Decode.OffsetFrequencyHz;
         DrawTriangle(e.Graphics, (int)x, Pens.Green, Brushes.Lime);
 
-        var bgBrush = Brushes.White;
         var fgBrush = Brushes.Black;
-        var token = HotItem.Tokens.FirstOrDefault(t => t.text == HotItem.Parse.DECallsign);
-        if (token != null)
+        var bgBrush = Brushes.White;
+
+        if (HotItem.FromMe)
         {
-          if ((token.bgBrush as SolidBrush)?.Color != Color.Transparent) bgBrush = token.bgBrush;
-          if ((token.fgBrush as SolidBrush)?.Color != Color.Silver) fgBrush = token.fgBrush;
+          fgBrush = Brushes.White;
+          bgBrush = Brushes.Red;
+        }
+        else
+        {
+          var token = HotItem.Tokens.FirstOrDefault(t => t.text == HotItem.Parse.DECallsign);
+          if (token != null)
+          {
+            if ((token.bgBrush as SolidBrush)?.Color != Color.Transparent) bgBrush = token.bgBrush;
+            if ((token.fgBrush as SolidBrush)?.Color != Color.Silver) fgBrush = token.fgBrush;
+          }
         }
 
-        var size = e.Graphics.MeasureString(HotItem.Parse.DECallsign, Font);
-        var textRect = new RectangleF(x + 13, 4, size.Width, size.Height);
+        var size = e.Graphics.MeasureString(HotItem.Parse.DECallsign, CallsignFont);
+        var textRect = new RectangleF(x + 13, 5, size.Width, size.Height - 4);
         var borderRect = textRect; borderRect.Inflate(1, 1);
         e.Graphics.FillRectangle(Brushes.Green, borderRect);
         e.Graphics.FillRectangle(bgBrush, textRect);
-        e.Graphics.DrawString(HotItem.Parse.DECallsign, Font, fgBrush, textRect.Left, textRect.Top);
+        e.Graphics.DrawString(HotItem.Parse.DECallsign, CallsignFont, fgBrush, textRect.Left, textRect.Top);
       }
 
       // waterfall

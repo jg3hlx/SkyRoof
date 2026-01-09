@@ -332,6 +332,7 @@ namespace SkyRoof
       rresamp = null;
       SecondMixer = null;
       firfilt = null;
+      freqdem = null;
     }
   }
 }

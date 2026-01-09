@@ -78,7 +78,7 @@ namespace SkyRoof
       UdpClient?.Send(HeartbeatBytes, EndPoint);
     }
 
-    public void SendDecodedMessages(DecodedItem item, double frequency)
+    public void SendDecodedMessage(DecodedItem item, double frequency)
     {
       if (!Active) return;
 
@@ -90,15 +90,14 @@ namespace SkyRoof
       status.DEGrid = ctx.Settings.User.Square;
       status.Mode = "+";
       status.TRPeriod = 7;
-      SendMessage(status);
+      SendMessage(MessageToBytes(status));
 
       // decoded message
-      SendMessage(DecodedItemToUdpMessage(item));
+      SendMessage(MessageToBytes(DecodedItemToUdpMessage(item)));
     }
 
-    private void SendMessage(IWsjtxDirectionIn message)
+    private void SendMessage(byte[] bytes)
     {
-      byte[] bytes = MessageToBytes(message);
       int sentByteCount = UdpClient!.Send(bytes, EndPoint);
       if (sentByteCount != bytes.Length)
         Log.Error($"UdpClient.Send returned {sentByteCount} instead of {bytes.Length}");
@@ -163,6 +162,43 @@ namespace SkyRoof
       {
         Log.Error(e, "Error in UDP listener");
       }
+    }
+
+    public void SendLogQsoMessage(QsoInfo qso)
+    {
+      if (!Active) return;
+      if (qso.Mode != "FT4") return;
+
+      WritableQsoLogged msg = MakeQsoLoggedMessage(qso);
+      SendMessage(MessageToBytes(msg));
+    }
+
+    private WritableQsoLogged MakeQsoLoggedMessage(QsoInfo qso)
+    {
+      var msg = new WritableQsoLogged();
+      msg.Id = UniqueId;
+
+      // from qso
+      msg.DateTimeOn = qso.Utc;
+      msg.DateTimeOff = qso.Utc;
+      msg.DXCall = qso.Call;
+      msg.DXGrid = qso.Grid;
+      msg.MyCall = qso.StationCallsign;
+      msg.OperatorCall = qso.StationCallsign;
+      msg.MyGrid = qso.MyGridSquare;
+      msg.Name = qso.Name;
+      msg.Comments = qso.Notes;
+      msg.AdifPropagationMode = string.IsNullOrWhiteSpace(qso.Sat) ? "" : "SAT";
+      msg.ReportSent = qso.Sent;
+      msg.ReportReceived = qso.Recv;
+      msg.ExchangeSent = qso.Sat; // repurpose ExchangeSent to hold satellite name
+
+      // from other sources
+      msg.Mode = "FT4";
+      msg.TXPower = "";
+      msg.TXFrequencyInHz = qso.TxFreq;
+
+      return msg;
     }
   }
 

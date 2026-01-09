@@ -26,6 +26,8 @@ namespace SkyRoof
     public string BackColor = "#FFFFFF";
     public string ForeColor = "#000000";
     
+    internal ulong TxFreq;
+
     internal AdifEntry ToAdifEntry()
     {
       AdifEntry entry = new() {

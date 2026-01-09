@@ -13,6 +13,7 @@ namespace SkyRoof
     public SatelliteDetailsFormSettings SatelliteDetailsForm { get; set; } = new();
     public SatelliteDetailsPanelSettings SatelliteDetailsPanel { get; set; } = new();
     public SatellitePassesPanelSettings SatellitePassesPanel { get; set; } = new();
+    public string DefaultDockingString => Encoding.UTF8.GetString(Properties.Resources.default_docking);
 
     public void StoreWindowPosition(Form form)
     {
@@ -56,7 +57,15 @@ namespace SkyRoof
 
       return true;
     }
+
+    internal void ResetDockingLayout(MainForm form)
+    {
+      form.ctx.ClosePanels();
+      DockingLayoutString = DefaultDockingString;
+      RestoreDockingLayout(form);
+    }
   }
+  
 
   public class SatellitePassesPanelSettings
   {

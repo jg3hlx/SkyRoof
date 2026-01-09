@@ -16,7 +16,7 @@ namespace SkyRoof
     private Ft4Slot Slot = new();
 
     public const int FT4_SIGNAL_BANDWIDTH = 83; // Hz
-    public int RxAudioFrequency = 1500;
+    public int RxAudioFrequency = NativeFT4Coder.DEFAULT_AUDIO_FREQUENCY;
     public int CutoffFrequency = 4000;
     public string MyCall = " ";
     public string TheirCall = " ";

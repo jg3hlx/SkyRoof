@@ -19,7 +19,6 @@ namespace SkyRoof
     public AmsatStatusLoader AmsatStatusLoader = new();
     public LoggerInterface LoggerInterface;
 
-
     // main form
     public MainForm MainForm;
     public SatelliteSelectorWidget SatelliteSelector;
@@ -37,6 +36,9 @@ namespace SkyRoof
     public WaterfallPanel? WaterfallPanel;
     public QsoEntryPanel? QsoEntryPanel;
     public Ft4ConsolePanel? Ft4ConsolePanel;
+
+    // dialogs
+    internal LoqFt4QsoDialog LoqFt4QsoDialog = new();
 
     // devices
     public SoapySdrDevice? Sdr;

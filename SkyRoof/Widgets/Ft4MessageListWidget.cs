@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Timers;
-using CSCore.Win32;
+﻿using System.Timers;
 using FontAwesome;
 using VE3NEA;
 
@@ -239,9 +237,9 @@ namespace SkyRoof
     {
       for (int i = listBox.Items.Count - 1; i >= 0; i--)
       {
+        // replace TX message if present
         var itm = (DecodedItem)listBox.Items[i];
         if (itm.SlotNumber < item.SlotNumber) break;
-
         else if (itm.Type == DecodedItemType.TxMessage && itm.SlotNumber == item.SlotNumber)
         {
           listBox.Items[i] = item; 
@@ -249,6 +247,7 @@ namespace SkyRoof
         }
       }
 
+      // add new RX message
       AddMessage(item);
     }
 

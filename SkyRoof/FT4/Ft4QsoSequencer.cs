@@ -1,13 +1,11 @@
-﻿
-using System.Diagnostics.Eventing.Reader;
-using static VE3NEA.NativeFT4Coder;
+﻿using VE3NEA;
 
 namespace SkyRoof
 {
   // meaningful names for the WsjtxQsoState enum
   public enum Ft4MessageType {Unknown, DE, dB, R_dB, RR73, _73, CQ }
 
-  internal class Ft4QsoSequencer
+  public class Ft4QsoSequencer
   {
     private string mySquare;
     private string myCall;
@@ -16,7 +14,7 @@ namespace SkyRoof
     public string MyCall { get => myCall; set => SetMyCall(value); }
     public string MySquare{ get => mySquare; set => SetMySquare(value); }
 
-    private string? LastHisCall;
+    public string? LastHisCall {get; private set; }
 
     public string? HisCall { get; private set; }
     public string? HisSquare { get; private set; }
@@ -26,6 +24,7 @@ namespace SkyRoof
     public Ft4MessageType MessageType { get; private set; }
     public string? Message => messages[(int)MessageType];
 
+    public int RxAudioFrequency { get; private set; } = NativeFT4Coder.DEFAULT_AUDIO_FREQUENCY;
 
     public Ft4QsoSequencer(string call, string square)
     {
@@ -52,47 +51,42 @@ namespace SkyRoof
     //--------------------------------------------------------------------------------------------------------------
     //                                           update state
     //--------------------------------------------------------------------------------------------------------------
-
-    // messages received
-    // called only if DXCallsign == MyCall, and Sender is in TX mode
-    public bool ProcessReceivedMessage(DecodedItem item)
+    // ProcessMessage is called in two cases:
+    //   - I received a message addressed to me (forceReply=false)
+    //   - I clicked on a message, addressed to me or not (forceReply=true)
+    public bool ProcessMessage(DecodedItem item, bool forceReply)
     {
+      // I am in the middle of a qso and someone else calls me
+      if (!forceReply && HisCall != null && item.Parse.DECallsign != HisCall) return false;
+
+      // always ignore 73
+      if ((Ft4MessageType)item.Parse.QsoState == Ft4MessageType._73) return false;
+
       // extract info from his message
-      var hisMessage = (Ft4MessageType)item.Parse.QsoState;
-      HisCall = item.Parse.DECallsign;
       HisSnr = item.Decode.Snr;
-      if (item.Parse.DXCallsign == MyCall &&
-        !string.IsNullOrEmpty(item.Parse.Report) &&
-        item.Parse.Report != "RR73")
+      RxAudioFrequency = (int)item.Decode.OffsetFrequencyHz;
+      var hisMessageType = (Ft4MessageType)item.Parse.QsoState;
+      HisCall = item.Parse.DECallsign;
+      if (item.Parse.DXCallsign == MyCall && !string.IsNullOrEmpty(item.Parse.Report) && item.Parse.Report != "RR73")
         MySnr = ReportToInt(item.Parse.Report);
       if (!string.IsNullOrEmpty(item.Parse.GridSquare)) HisSquare = item.Parse.GridSquare;
 
       GenerateMessages();
 
+      //var oldMessageType = MessageType; 
+
       // I am calling him
       if (item.Parse.DXCallsign != MyCall)
         MessageType = Ft4MessageType.DE;
 
-      // I am replying to his message
+      // reply received during a qso, or I clicked on his message to me that was part of our qso
       else
+        // cq: not possible if dxcallsign==mycall
+        // 73: was handled above
+        // the rest: reply with next message type
+        MessageType = hisMessageType + 1;
 
-        switch (hisMessage)
-        {
-          case Ft4MessageType.CQ:
-            MessageType = Ft4MessageType.DE;
-            break;
-
-          case Ft4MessageType.Unknown:
-          case Ft4MessageType.DE:
-          case Ft4MessageType._73:
-            MessageType = Ft4MessageType.dB;
-            break;
-
-          default:
-            MessageType = hisMessage + 1;
-            break;
-        }
-      return true;
+      return true; // MessageType != oldMessageType;
     }
 
     // user clicked on a message type button
@@ -127,11 +121,13 @@ namespace SkyRoof
       return int.Parse(report);
     }
 
-    private string IntToReport(int snr)
+    public string IntToReport(int? snr)
     {
-      snr = Math.Min(49, Math.Max(-24, snr));
-      string result = $"{snr,2}";
-      if (snr > 0) result = "+" + result;
+      if (snr == null) return "";
+
+      snr = Math.Min(49, Math.Max(-24, snr.Value));
+      string result = $"{snr:D2}";
+      if (snr >= 0) result = "+" + result;
       return result;
     }
 

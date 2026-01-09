@@ -20,6 +20,7 @@ namespace VE3NEA
     private const int SYMBOLS_PER_MESSAGE = 16 + 87; // 103
 
     public const int SAMPLING_RATE = 48_000;
+    public const int DEFAULT_AUDIO_FREQUENCY = 1500;
 
     public const int DECODE_SAMPLE_COUNT = 21 * 3456 * 4; // 290304, 6.048s
     public const int DECODE_MAX_CHARS = 16384; // buffer size for all decoded messages

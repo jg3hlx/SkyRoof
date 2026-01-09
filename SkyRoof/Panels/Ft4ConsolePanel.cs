@@ -1,4 +1,5 @@
-﻿using FontAwesome;
+﻿using System.Diagnostics;
+using FontAwesome;
 using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
@@ -11,7 +12,7 @@ namespace SkyRoof
     private InputSoundcard<float> Soundcard = new();
     public Ft4Decoder Decoder = new();
     public Ft4Sender Sender = new();
-    private Ft4QsoSequencer Sequencer;
+    public Ft4QsoSequencer Sequencer;
     public WsjtxUdpSender WsjtxUdpSender;
     public int TxCountdown;
 
@@ -23,6 +24,9 @@ namespace SkyRoof
     public Ft4ConsolePanel(Context ctx)
     {
       InitializeComponent();
+      
+      TestQDateTime();
+
 
       this.ctx = ctx;
       Log.Information("Creating Ft4ConsolePanel");
@@ -69,6 +73,7 @@ namespace SkyRoof
       Soundcard = null;
       Decoder?.Dispose();
       Decoder = null;
+      WsjtxUdpSender.HighlightCallsignReceived -= WsjtxUdpSender_HighlightCallsignReceived;
       WsjtxUdpSender?.Dispose();
       WsjtxUdpSender = null;
 
@@ -160,7 +165,7 @@ namespace SkyRoof
           else MessageListWidget.AddMessage(message);
 
           // to udp sender
-          WsjtxUdpSender.SendDecodedMessages(message, frequency);
+          WsjtxUdpSender.SendDecodedMessage(message, frequency);
 
           // to file
           SaveMessageToFile(message);
@@ -204,8 +209,7 @@ namespace SkyRoof
     private void AudioWaterfall_MouseDown(object? sender, MouseEventArgs e)
     {
       AudioWaterfall.SetFrequenciesFromMouseClick(e);
-      RxSpinner.Value = AudioWaterfall.RxAudioFrequency;
-      TxSpinner.Value = AudioWaterfall.TxAudioFrequency;
+      UpdateControls();
     }
 
     private void AudioWaterfall_MouseMove(object sender, MouseEventArgs e)
@@ -276,12 +280,29 @@ namespace SkyRoof
 
 
       EnableTxBtn.BackColor = sendEnabled ? Color.LightCoral : Color.Transparent;
-      //HaltTxBtn.BackColor = sending ? Color.Red : Color.Transparent;
+      HaltTxBtn.BackColor = Sender.SenderPhase == SendingStage.Sending ? Color.Red : Color.Transparent;
       TuneBtn.BackColor = tuning ? Color.LightCoral : Color.Transparent;
 
       TuneBtn.Refresh();
       EnableTxBtn.Refresh();
       HaltTxBtn.Refresh();
+    }
+
+    private void UpdateControls()
+    {
+      if (Sender.TxOdd)
+      {
+        OddRadioBtn.Checked = true;
+        OddEvenGroupBox.Text = "TX Odd";
+      }
+      else
+      {
+        EvenRadioBtn.Checked = true;
+        OddEvenGroupBox.Text = "TX Even";
+      }
+
+      RxSpinner.Value = AudioWaterfall.RxAudioFrequency;
+      TxSpinner.Value = AudioWaterfall.TxAudioFrequency;    
     }
 
     private bool CheckTxEnabled()
@@ -310,6 +331,7 @@ namespace SkyRoof
     private void TxToRxBtn_Click(object sender, EventArgs e)
     {
       RxSpinner.Value = TxSpinner.Value;
+      ctx.LoqFt4QsoDialog.PopUp(ctx, GetQsoInfo()); //{!}
     }
 
     private void RxToTxBtn_Click(object sender, EventArgs e)
@@ -320,7 +342,7 @@ namespace SkyRoof
     private void OddRadioBtn_CheckedChanged(object sender, EventArgs e)
     {
       Sender.TxOdd = OddRadioBtn.Checked;
-      OddEvenGroupBox.Text = Sender.TxOdd ? "TX Odd" : "TX Even";
+      UpdateControls();
     }
 
 
@@ -364,12 +386,8 @@ namespace SkyRoof
       item.FromMe = item.Parse.DECallsign == ctx.Settings.User.Call;
       item.SetColors(ctx.Settings.Ft4Console.Messages);
 
-      // white text for my messages
-      if (item.Type == DecodedItemType.TxMessage || item.FromMe) 
-        foreach (var token in item.Tokens) token.fgBrush = Brushes.White;
-
       // callsign color from logger if not receiving wsjtx colors
-      else if (!WsjtxUdpSender.Active)
+      if (!WsjtxUdpSender.Active)
         item.SetCallsignColors(ctx.LoggerInterface);
 
       return item;
@@ -430,11 +448,14 @@ namespace SkyRoof
       BeginInvoke(() =>
       {
         ctx.MainForm.FrequencyWidget.SetPtt(true);
-
         UpdateTxButtons();
-        var item = MakeTxItem();
-        AddTxMessageToList(item);
-        SaveMessageToFile(item);
+
+        if (Ft4TimeBar1.Transmitting) // as opposed to tuning
+        {
+          var item = MakeTxItem();
+          AddTxMessageToList(item);
+          SaveMessageToFile(item);
+        }
       });
     }
 
@@ -446,18 +467,51 @@ namespace SkyRoof
       {
         ctx.MainForm.FrequencyWidget.SetPtt(false);
 
-        TxCountdown--;
-        if (TxCountdown <= 0) Sender.Stop();
-        else if (Sequencer.MessageType == Ft4MessageType.RR73 || Sequencer.MessageType == Ft4MessageType._73)
+        if (Sender.Mode == SenderMode.Sending) // and not tuning
         {
-          TxCountdown = 0;
-          Sender.Stop();
-          Sequencer.Reset();
+          TxCountdown--;
+          if (TxCountdown <= 0) Sender.Stop();
+
+          if (Sequencer.MessageType == Ft4MessageType.RR73 || Sequencer.MessageType == Ft4MessageType._73)
+          {
+            TxCountdown = 0;
+            Sender.Stop();
+            QsoInfo qso = GetQsoInfo();
+            Sequencer.Reset();
+            Sender.SetMessage(Sequencer.Message);
+            ctx.LoqFt4QsoDialog.PopUp(ctx, qso); 
+          }
         }
 
         UpdateTxButtons();
         UpdateMessageButtons();
       });
+    }
+
+    private QsoInfo GetQsoInfo()
+    {
+      QsoInfo qso = new();
+
+      string sat = ctx.SatelliteSelector.SelectedSatellite?.LotwName ?? "";
+      double freq = ctx.FrequencyControl.RadioLink.CorrectedUplinkFrequency;
+      string band = ctx.FrequencyControl.GetBandName(true);
+
+      qso.StationCallsign = Sequencer.MyCall;
+      qso.MyGridSquare = Sequencer.MySquare;
+      qso.Utc = Sender.Slot.CurrentSlotStartTime;
+      qso.Call = Sequencer.HisCall!;
+      qso.Band = band;
+      qso.Mode = "FT4";
+      qso.Sat = sat;
+      qso.Grid = Sequencer.HisSquare ?? "";
+      qso.State = "";
+      qso.Sent = Sequencer.IntToReport(Sequencer.HisSnr);
+      qso.Recv = Sequencer.IntToReport(Sequencer.MySnr);
+      qso.Name = "";
+      qso.Notes = "";
+      qso.TxFreq = (ulong)freq;
+
+      return qso;
     }
 
 
@@ -471,14 +525,14 @@ namespace SkyRoof
       if (Sender.Mode != SenderMode.Sending) return;
       if (!message.ToMe) return;
 
-      if (Sequencer.ProcessReceivedMessage(message)) SetTxMessage(Sender.TxOdd);
+      if (Sequencer.ProcessMessage(message, false)) SetTxMessage(Sender.TxOdd);
     }
 
     private void MessageListWidget_MessageClick(object sender, Ft4MessageEventArgs e)
     {
       if (Sender.Mode == SenderMode.Tuning) return;
 
-      if (Sequencer.ProcessReceivedMessage(e.Item)) SetTxMessage(!e.Item.Odd);
+      if (Sequencer.ProcessMessage(e.Item, true)) SetTxMessage(!e.Item.Odd);
     }
 
     private void MessageBtn_Click(object sender, EventArgs e)
@@ -489,22 +543,59 @@ namespace SkyRoof
 
     private void SetTxMessage(bool odd)
     {
-      bool wasSending = Sender.SenderPhase != SendingStage.Idle;
+      bool wasSending = Sender.SenderPhase == SendingStage.Sending;
+
+      Sender.TxOdd = odd;
+
+      if (Sequencer.RxAudioFrequency != Decoder.RxAudioFrequency)
+      {
+        Decoder.RxAudioFrequency = Sequencer.RxAudioFrequency;
+        AudioWaterfall.RxAudioFrequency = Sequencer.RxAudioFrequency;
+
+        if (ModifierKeys == Keys.Control)
+        {
+          AudioWaterfall.TxAudioFrequency = Sequencer.RxAudioFrequency;
+          Sender.TxAudioFrequency = Sequencer.RxAudioFrequency;
+        }
+      }
 
       Sender.SetMessage(Sequencer.Message!);
-      Sender.TxOdd = odd;
       Sender.StartSending();
       TxCountdown = ctx.Settings.Ft4Console.TxWatchDog * 4;
 
       TxMessageLabel.Text = Sequencer.Message!;
       UpdateTxButtons();
       UpdateMessageButtons();
+      UpdateControls();
 
       if (wasSending)
       {
         var item = MakeTxItem();
         AddTxMessageToList(item);
         SaveMessageToFile(item);
+      }
+    }
+
+    public void TestQDateTime()
+    {
+      for (int h = 0; h < 48; h += 6)
+      {
+        var utc = DateTime.UtcNow.Date + TimeSpan.FromHours(h);
+
+        // c# write
+        long julianDay = (long)Math.Floor(utc.ToOADate()) + 2415019;
+        uint milliseconds = (uint)(utc.TimeOfDay.TotalMilliseconds);
+
+        // c# original read
+        var date = DateTime.FromOADate(julianDay - 2415018.5).Date;
+        DateTime outUtc =date.AddMilliseconds(milliseconds);
+
+        // Delphi read
+        double delphiDouble = julianDay - 2415019 + milliseconds / 86400000d;
+        DateTime delphiUtc = DateTime.SpecifyKind(DateTime.FromOADate(delphiDouble),DateTimeKind.Unspecified);
+
+
+        Debug.WriteLine($"{utc:yyyy-MM-dd HH:mm}  {julianDay,10}  {milliseconds / 86400000d:F3}  c#: {outUtc:yyyy-MM-dd HH:mm}  Delphi: {delphiDouble:F3}  {delphiUtc:yyyy-MM-dd HH:mm}");
       }
     }
   }

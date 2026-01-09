@@ -14,14 +14,14 @@ namespace SkyRoof
     public Bearing? AntBearing { get => engine?.LastReadBearing; }
 
     // PathOptimizerForm instance is created once and reused
-    private PathOptimizerForm pathOptimizerForm = new();
+    private PathOptimizerForm dialog = new();
 
     public RotatorWidget()
     {
       InitializeComponent();
 
       // Create the PathOptimizerForm on startup, but do not show it yet
-      pathOptimizerForm.FormClosing += (s, e) => { e.Cancel = true; pathOptimizerForm.Hide(); };
+      dialog.FormClosing += (s, e) => { if (e.CloseReason == CloseReason.UserClosing) e.Cancel = true; dialog.Hide(); };
     }
 
     //----------------------------------------------------------------------------------------------
@@ -265,12 +265,12 @@ namespace SkyRoof
     {
       UpdatePathOptimizerForm();
 
-      if (!pathOptimizerForm.Visible) pathOptimizerForm.Show();
-      else pathOptimizerForm.BringToFront();
+      if (!dialog.Visible) dialog.Show();
+      else dialog.BringToFront();
     }
     private void UpdatePathOptimizerForm()
     {
-      pathOptimizerForm.UpdateContents(Path);
+      dialog.UpdateContents(Path);
     }
   }
 }

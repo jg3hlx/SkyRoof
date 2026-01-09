@@ -10,7 +10,7 @@ namespace SkyRoof
 {
   public partial class MainForm : Form
   {
-    Context ctx = new();
+    internal Context ctx = new();
 
     public MainForm()
     {
@@ -84,6 +84,8 @@ namespace SkyRoof
 
     private void MainForm_FormClosing(object sender, EventArgs e)
     {
+      timer.Enabled = false;
+
       // save settings
       ctx.Settings.Ui.StoreDockingLayout(DockHost);
       ctx.ClosePanels();
@@ -649,8 +651,7 @@ namespace SkyRoof
 
     private void ResetWindowLayoutMNU_Click(object sender, EventArgs e)
     {
-      ctx.ClosePanels();
-      ctx.Settings.Ui.RestoreDockingLayout(this);
+      ctx.Settings.Ui.ResetDockingLayout(this);
     }
 
 
@@ -803,7 +804,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                     docking
     //----------------------------------------------------------------------------------------------
-    private void ShowFloatingPanel(DockContent panel)
+    public void ShowFloatingPanel(DockContent panel)
     {
       var rect = panel.Bounds;
       rect.Offset(

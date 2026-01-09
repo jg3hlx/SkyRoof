@@ -29,7 +29,7 @@ namespace SkyRoof
     private readonly float[] TxBuffer = new float[LeadSampleCount];
     private readonly float[] Silence = new float[LeadSampleCount];
 
-    private int txAudioFrequency = 1500;
+    private int txAudioFrequency = NativeFT4Coder.DEFAULT_AUDIO_FREQUENCY;
     private object lockObj = new();
     private Thread? WorkerThread;
     private bool Stopping;
@@ -85,6 +85,13 @@ namespace SkyRoof
                 SampleIndex -= Soundcard.Buffer.Count;
                 Soundcard.Buffer.Clear();
 
+                // if silence was removed, put it back
+                if (SampleIndex < 0)
+                {
+                  Soundcard.Buffer.Write(Silence, 0, -SampleIndex);
+                  SampleIndex = 0;
+                }
+
                 // ramp
                 for (int i = 0; i < RampSampleCount; i++)
                   TxBuffer[i] = Waveform[SampleIndex + i] * Ramp[RampSampleCount - 1 - i] + NewWaveform[SampleIndex + i] * Ramp[i];
@@ -124,7 +131,7 @@ namespace SkyRoof
 
         if (!Soundcard.IsRunning)
         {
-          MessageBox.Show("Unable to open the soundcard.", "SkyRoof",
+          MessageBox.Show("Unable to open the soundcard for output.", "SkyRoof",
             MessageBoxButtons.OK, MessageBoxIcon.Error);
 
           Mode = SenderMode.Off;

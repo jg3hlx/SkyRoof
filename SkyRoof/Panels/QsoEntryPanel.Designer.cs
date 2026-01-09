@@ -33,7 +33,7 @@
       panel1 = new Panel();
       UtcFrame = new Panel();
       UtcPicker = new DateTimePicker();
-      label9 = new Label();
+      UtcLabel = new Label();
       panel2 = new Panel();
       BandFrame = new Panel();
       BandComboBox = new ComboBox();
@@ -129,7 +129,7 @@
       // 
       panel1.BackColor = Color.LightSkyBlue;
       panel1.Controls.Add(UtcFrame);
-      panel1.Controls.Add(label9);
+      panel1.Controls.Add(UtcLabel);
       panel1.Location = new Point(3, 3);
       panel1.Name = "panel1";
       panel1.Size = new Size(177, 36);
@@ -154,17 +154,18 @@
       UtcPicker.Size = new Size(128, 23);
       UtcPicker.TabIndex = 1;
       UtcPicker.ValueChanged += Field_Changed;
-      UtcPicker.MouseDown += UtcPicker_MouseDown;
+      UtcPicker.KeyDown += UtcPicker_KeyDown;
       // 
-      // label9
+      // UtcLabel
       // 
-      label9.AutoSize = true;
-      label9.Location = new Point(3, 11);
-      label9.Name = "label9";
-      label9.Size = new Size(28, 15);
-      label9.TabIndex = 21;
-      label9.Text = "UTC";
-      label9.TextAlign = ContentAlignment.MiddleLeft;
+      UtcLabel.AutoSize = true;
+      UtcLabel.Location = new Point(3, 11);
+      UtcLabel.Name = "UtcLabel";
+      UtcLabel.Size = new Size(28, 15);
+      UtcLabel.TabIndex = 21;
+      UtcLabel.Text = "UTC";
+      UtcLabel.TextAlign = ContentAlignment.MiddleLeft;
+      UtcLabel.MouseClick += Utclabel_MouseClick;
       // 
       // panel2
       // 
@@ -652,7 +653,7 @@
 
     private FlowLayoutPanel flowLayoutPanel1;
     private Panel panel1;
-    private Label label9;
+    private Label UtcLabel;
     private TextBox SentEdit;
     private Panel panel2;
     private Label label10;

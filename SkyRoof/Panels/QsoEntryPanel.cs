@@ -6,11 +6,14 @@ namespace SkyRoof
 {
   public partial class QsoEntryPanel : DockContent
   {
-    private const string States = "AL,AK,AZ,AR,CA,CO,CT,DE,FL,GA,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD,MA,MI,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY";
+    private const string States = "AL,AK,AZ,AR,CA,CO,CT,DE,FL,GA,HI,ID,IL,IN,IA,KS,KY,LA,ME,MD," +
+      "MA,MI,MN,MS,MO,MT,NE,NV,NH,NJ,NM,NY,NC,ND,OH,OK,OR,PA,RI,SC,SD,TN,TX,UT,VT,VA,WA,WV,WI,WY";
     private Context ctx;
     private bool Changing;
 
     public Slicer.Mode? LastSetMode = null;
+
+    public bool ShouldClose = false;
 
     public QsoEntryPanel()
     {
@@ -55,6 +58,7 @@ namespace SkyRoof
       SetSatellite();
       SetBand();
       SetMode();
+      SetReport();
 
       CallEdit.Text = GridEdit.Text = NameEdit.Text = NotesEdit.Text = string.Empty;
       CallEdit.BackColor = SystemColors.Window;
@@ -173,7 +177,7 @@ namespace SkyRoof
       if (ModeComboBox.Text == "CW") defaultReport = RecvEdit.Text = "599";
       else if (ModeComboBox.Text == "SSB") defaultReport = RecvEdit.Text = "59";
       else if (ModeComboBox.Text == "FM") defaultReport = RecvEdit.Text = "59";
-      else defaultReport = RecvEdit.Text = string.Empty;
+      else defaultReport = string.Empty;
 
       SentEdit.Text = RecvEdit.Text = defaultReport;
       SentFrame.BackColor = RecvFrame.BackColor = Color.LightSkyBlue;
@@ -186,10 +190,11 @@ namespace SkyRoof
 
     private void Field_Changed(object sender, EventArgs e)
     {
-      if (sender == ModeComboBox) SetReport();
+      if (sender == ModeComboBox) SetReport(); // report is mode-specific
       if (Changing) return;
 
-      // blue frame indicates that the value was entered manually
+      // dark blue frame indicates that the value was entered manually
+
       var control = (Control)sender;
       control.Parent!.BackColor = control.Text == "" ? Color.LightSkyBlue : Color.Blue;
 
@@ -199,13 +204,24 @@ namespace SkyRoof
       if (sender == CallEdit)
       {
         qso = ctx.LoggerInterface.Augment(qso);
-        QsoInfoToFields(qso);
+        AugmentedInfoToFields(qso);
       }
 
       // any field changed, update status
       qso = ctx.LoggerInterface.GetStatus(qso);
       QsoInfoToStatus(qso);
     }
+
+    private void UtcPicker_KeyDown(object sender, KeyEventArgs e)
+    {
+      UtcFrame.BackColor = Color.Blue;
+    }
+
+    private void Utclabel_MouseClick(object sender, MouseEventArgs e)
+    {
+      UtcFrame.BackColor = UtcFrame.BackColor == Color.LightSkyBlue ? Color.Blue : Color.LightSkyBlue;
+    }
+
 
     private void LogBtn_Click(object sender, EventArgs e)
     {
@@ -215,15 +231,29 @@ namespace SkyRoof
       if (qso.Band == string.Empty) { ErrBox("Invalid band"); return; }
       if (qso.Mode == string.Empty) { ErrBox("Invalid mode"); return; }
 
-      if (!Utils.GridSquare4Regex.IsMatch(qso.Grid) && !Ask("Invalid or empty grid square")) return; 
+      if (!Utils.GridSquare4Regex.IsMatch(qso.Grid) && !Ask("Invalid or empty grid square")) return;
       if (qso.Sat == string.Empty && !Ask("Satellite not specified")) return;
       if (qso.Sent == string.Empty && !Ask("Sent report not specified")) return;
       if (qso.Recv == string.Empty && !Ask("Received report not specified")) return;
 
+      if (qso.TxFreq == 0) qso.TxFreq = FrequencyOfBand(qso.Band);
+
+      ctx.Ft4ConsolePanel?.WsjtxUdpSender?.SendLogQsoMessage(qso);
+
       ctx.LoggerInterface.SaveQso(qso);
       ClearFields();
+      if (DockState == DockState.Float && ShouldClose) Close();
     }
 
+    private ulong FrequencyOfBand(string band)
+    {
+      switch (band)
+      {
+        case "2m": return 145_800_000;
+        case "70cm": return 435_000_000;
+        default: return 1_240_000_000;
+      }
+    }
 
     private QsoInfo FieldsToQsoInfo(bool onlyEdited = false)
     {
@@ -263,7 +293,7 @@ namespace SkyRoof
       return info;
     }
 
-    public void QsoInfoToFields(QsoInfo qso)
+    public void AugmentedInfoToFields(QsoInfo qso)
     {
       Changing = true;
 
@@ -297,9 +327,28 @@ namespace SkyRoof
         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
     }
 
-    private void UtcPicker_MouseDown(object sender, MouseEventArgs e)
+    internal void SetQsoInfo(QsoInfo qso)
     {
-      UtcFrame.BackColor = UtcFrame.BackColor == Color.LightSkyBlue ? Color.Blue : Color.LightSkyBlue;
+      Changing = true;
+
+      UtcPicker.Value = qso.Utc;
+      UtcFrame.BackColor = Color.Blue; // i.e. modified
+
+      BandComboBox.Text = qso.Band;
+      ModeComboBox.Text = qso.Mode;
+      SatComboBox.Text = qso.Sat;
+      CallEdit.Text = qso.Call;
+      GridEdit.Text = qso.Grid;
+      StateComboBox.Text = qso.State;
+      SentEdit.Text = qso.Sent;
+      RecvEdit.Text = qso.Recv;
+      NameEdit.Text = qso.Name;
+      NotesEdit.Text = qso.Notes;
+
+      Changing = false;
+
+      qso = ctx.LoggerInterface.Augment(qso);
+      AugmentedInfoToFields(qso);
     }
   }
 }
