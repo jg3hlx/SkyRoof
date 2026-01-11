@@ -170,6 +170,14 @@ namespace SkyRoof
       FrequenciesToUi();
     }
 
+    // FT4 XIT
+    internal void SetXit(double xit)
+    {
+      RadioLink.XitOffset = RadioLink.Tx?.invert == true ? -xit : xit;
+      RadioLink.ComputeFrequencies();
+      RadioLinkToRadio();
+    }
+
 
 
 
@@ -450,6 +458,9 @@ namespace SkyRoof
 
       if (RadioLink.IsTransponder)
         tooltip += $"Transponder offset:     {RadioLink.TransponderOffset:n0} Hz\n";
+
+      if (RadioLink.XitOffset != 0)
+        tooltip += $"XIT offset:     {RadioLink.XitOffset:n0} Hz\n";
 
       return tooltip + "\nClick for manual entry\nRight-click for options";
     }

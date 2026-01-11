@@ -1,4 +1,5 @@
-﻿using System.Drawing.Text;
+﻿using System.Diagnostics;
+using System.Drawing.Text;
 using System.Security.Cryptography;
 using System.Text;
 using VE3NEA;
@@ -44,8 +45,11 @@ namespace SkyRoof
     public event EventHandler? BeforeTransmit;
     public event EventHandler? AfterTransmit;
 
-    public int TxAudioFrequency { get => txAudioFrequency; set { lock (lockObj) { txAudioFrequency = value; } }}
+    public int TxAudioFrequency { get => txAudioFrequency; set => SetTxAudioFrequency(value); }
 
+    private bool xitEnabled = true;
+    public bool XitEnabled { get => xitEnabled; set => SetXitEnabled(value); }
+    public int XitOffset { get; private set; }
     public void StartTuning() => SetMode(SenderMode.Tuning);
     public void StartSending() => SetMode(SenderMode.Sending);
     public void Stop() => SetMode(SenderMode.Off);
@@ -57,6 +61,34 @@ namespace SkyRoof
     public Ft4Sender()
     {
       GenerateRamp();
+    }
+
+    private void SetTxAudioFrequency(int value)
+    {
+      txAudioFrequency = value;
+      ComputeXitOffset();
+    }
+
+    private void SetXitEnabled(bool value)
+    {
+      xitEnabled = value;
+      ComputeXitOffset();
+    }
+
+    private void ComputeXitOffset()
+    {
+      if (XitEnabled)
+      {
+        int hz = TxAudioFrequency % 1000;
+        int wholeKhz = TxAudioFrequency - hz;
+        XitOffset = wholeKhz - 1000;
+        // transmitter offset (XIT) is used to keep the audio frequency in this range,
+        // to ensure that 3-rd harmonic is outside of the passband.
+        int frequency = TxAudioFrequency - XitOffset;
+        Debug.Assert(frequency >= 1000 && frequency < 2000);
+      }
+      else
+        XitOffset = 0;
     }
 
     private void GenerateRamp()
@@ -71,7 +103,7 @@ namespace SkyRoof
       int len = Math.Min(message.Length, MessageChars.Length - 1);
       Array.Clear(MessageChars);
       Encoding.ASCII.GetBytes(message, 0, len, MessageChars, 0);
-      float frequency = txAudioFrequency;
+      float frequency = TxAudioFrequency - XitOffset;
       NativeFT4Coder.encode_ft4(MessageChars, ref frequency, NewWaveform);
 
       lock (lockObj)
@@ -173,7 +205,7 @@ namespace SkyRoof
 
         samplesNeeded = Math.Max(0, LeadSampleCount - Soundcard.Buffer.Count);
         if (samplesNeeded <= 0) continue;
-        phaseInc = 2.0 * Math.PI * txAudioFrequency / NativeFT4Coder.SAMPLING_RATE;
+        phaseInc = 2.0 * Math.PI * (TxAudioFrequency - XitOffset) / NativeFT4Coder.SAMPLING_RATE;
 
         for (int i = 0; i < samplesNeeded; i++)
         {

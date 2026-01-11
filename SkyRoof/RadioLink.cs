@@ -13,6 +13,7 @@ namespace SkyRoof
     public bool IsTerrestrial = true;
     public bool RitEnabled;
     public double RitOffset;
+    public double XitOffset;
 
     // persistent
     public Slicer.Mode DownlinkMode 
@@ -101,7 +102,6 @@ namespace SkyRoof
         if (RitEnabled) CorrectedDownlinkFrequency += RitOffset;
         CorrectedUplinkFrequency = UplinkFrequency = 0;
         DopplerFactor = 0;
-
       }
 
       else
@@ -125,8 +125,12 @@ namespace SkyRoof
 
         // uplink corrected
         CorrectedUplinkFrequency = UplinkFrequency;
-        if (UplinkDopplerCorrectionEnabled) CorrectedUplinkFrequency *= 1 + DopplerFactor;
-        if (UplinkManualCorrectionEnabled) CorrectedUplinkFrequency += UplinkManualCorrection;
+        if (UplinkFrequency > 0)
+        {
+          if (UplinkDopplerCorrectionEnabled) CorrectedUplinkFrequency *= 1 + DopplerFactor;
+          if (UplinkManualCorrectionEnabled) CorrectedUplinkFrequency += UplinkManualCorrection;
+          CorrectedUplinkFrequency += XitOffset;
+        }
       }
     }
 

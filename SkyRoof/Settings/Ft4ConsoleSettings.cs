@@ -48,6 +48,13 @@ namespace SkyRoof
     [DefaultValue(6)]
     public int TxWatchDog { get; set; } = 6;
 
+    [DisplayName("XIT")]
+    [Description("Enable transmitter offset when sending FT4")]
+    [DefaultValue(true)]
+    public bool XitEnabled{ get; set; } = true;
+
+
+
     [Browsable(false)]
     [DefaultValue(266)]
     public int SplitterDistance { get; set; } = 266;
@@ -94,9 +101,11 @@ namespace SkyRoof
   {
     [DisplayName("Save to File")]
     [Description("Save decoded messages to a file")]
+    [DefaultValue(false)]
     public bool ArchiveToFile { get; set; }
 
     [DisplayName("Text Color")]
+    [DefaultValue(typeof(SystemColors), "WindowText")]
     public Color TextColor { get; set; } = SystemColors.WindowText;
 
     [DisplayName("Font Size")]

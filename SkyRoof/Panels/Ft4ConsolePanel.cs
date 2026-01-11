@@ -107,6 +107,7 @@ namespace SkyRoof
 
       Sender.Soundcard.SetDeviceId(sett.TxSoundcard);
       Sender.Soundcard.Volume = Dsp.FromDb2(sett.TxGain);
+      Sender.XitEnabled = sett.XitEnabled;
 
       Sequencer.MyCall = ctx.Settings.User.Call;
       Sequencer.MySquare = ctx.Settings.User.Square;
@@ -452,6 +453,7 @@ namespace SkyRoof
 
       BeginInvoke(() =>
       {
+        ctx.MainForm.FrequencyWidget.SetXit(Sender.XitOffset);
         ctx.MainForm.FrequencyWidget.SetPtt(true);
         UpdateTxButtons();
 
@@ -471,6 +473,7 @@ namespace SkyRoof
       BeginInvoke(() =>
       {
         ctx.MainForm.FrequencyWidget.SetPtt(false);
+        ctx.MainForm.FrequencyWidget.SetXit(0);
 
         if (Sender.Mode == SenderMode.Sending) // and not tuning
         {
@@ -483,7 +486,7 @@ namespace SkyRoof
             Sender.Stop();
             QsoInfo qso = GetQsoInfo();
             Sequencer.Reset();
-            Sender.SetMessage(Sequencer.Message);
+            Sender.SetMessage(Sequencer.Message!);
             ctx.LoqFt4QsoDialog.PopUp(ctx, qso); 
           }
         }
