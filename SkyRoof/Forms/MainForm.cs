@@ -344,6 +344,7 @@ namespace SkyRoof
       ctx.SpeakerSoundcard.SetDeviceId(ctx.Settings.Audio.SpeakerSoundcard);
       GainWidget.ApplyAfGain();
       ctx.SpeakerSoundcard.Enabled = ctx.Settings.Audio.SpeakerEnabled;
+      if (ctx.Slicer != null) ctx.Slicer.SquelchEnabled = ctx.Settings.Audio.Squelch;
     }
 
     internal void ApplyOutputStreamSettings()

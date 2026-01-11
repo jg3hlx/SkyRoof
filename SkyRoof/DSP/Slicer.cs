@@ -35,6 +35,7 @@ namespace SkyRoof
     private double RationalResamplerInputRate;
     private double offset;
     public Mode CurrentMode, NewMode;
+    public bool SquelchEnabled = true;
     
 
     public double InputRate { get; private set; }
@@ -232,7 +233,7 @@ namespace SkyRoof
         }
 
         // apply soft squelching
-        if (CurrentMode == Mode.FM) SoftSquelch.Process(audioArgs.Data);
+        if (CurrentMode == Mode.FM && SquelchEnabled) SoftSquelch.Process(audioArgs.Data);
       }
       else
       {
