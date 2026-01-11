@@ -24,7 +24,7 @@ namespace SkyRoof
     private NativeLiquidDsp.rresamp_crcf* rresamp;
     private NativeLiquidDsp.firfilt_crcf* firfilt;
     private NativeLiquidDsp.freqdem* freqdem;
-    private SoftSquelch SoftSquelch = new();
+    public SoftSquelch Squelch = new();
 
     private FifoBuffer<Complex32> InputBuffer = new();
     private FifoBuffer<Complex32> OctaveResamplerInputBuffer = new();
@@ -35,8 +35,7 @@ namespace SkyRoof
     private double RationalResamplerInputRate;
     private double offset;
     public Mode CurrentMode, NewMode;
-    public bool SquelchEnabled = true;
-    
+   
 
     public double InputRate { get; private set; }
     public double Bandwidth { get => Bandwidths[(int)CurrentMode]; }
@@ -233,7 +232,7 @@ namespace SkyRoof
         }
 
         // apply soft squelching
-        if (CurrentMode == Mode.FM && SquelchEnabled) SoftSquelch.Process(audioArgs.Data);
+        if (CurrentMode == Mode.FM) Squelch.Process(audioArgs.Data);
       }
       else
       {

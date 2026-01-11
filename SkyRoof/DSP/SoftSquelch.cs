@@ -16,7 +16,7 @@ namespace SkyRoof
     private readonly OnlineIirFilter Hpf, Lpf;      
     private NativeLiquidDsp.firfilt_rrrf* Bpf;
     private float[] DelayLine = new float[FILTER_DELAY + 1024];
-    //private float[] Buffer = new float[1024];
+    private float gain = 1;
 
     public bool Enabled = true;
 
@@ -59,8 +59,6 @@ namespace SkyRoof
 
     public unsafe void Process(float[] data)
     {
-      if (!Enabled) return;
-
       // ensure buffer size
       int count = data.Length;
       //if (Buffer.Length < count) Array.Resize(ref Buffer, count);
@@ -69,31 +67,31 @@ namespace SkyRoof
       // push to delay line
       Array.Copy(data, 0, DelayLine, FILTER_DELAY, count);
 
-      for (int i = 0; i < data.Length; i++)
-      {
-        // extract noise power above 3500 Hz
-        double value = Hpf.ProcessSample(data[i]);
-        value *= value;
+      if (Enabled)
+        for (int i = 0; i < data.Length; i++)
+        {
+          // extract noise power above 3500 Hz
+          double value = Hpf.ProcessSample(data[i]);
+          value *= value;
 
-        // compute smoothed amplitude
-        value = Lpf.ProcessSample(value);
-        value = Math.Sqrt(Math.Max(1e-6, value));
+          // compute smoothed amplitude
+          value = Lpf.ProcessSample(value);
+          value = Math.Sqrt(Math.Max(1e-6, value));
 
-        // threshold
-        if (value < 0.08) gain = 3; else if (value > 0.095) gain = 0.3f;
+          // threshold
+          if (value < 0.08) gain = 3; else if (value > 0.095) gain = 0.3f;
 
-        // apply gain
-        data[i] = DelayLine[i] * gain;
-      }
+          // apply gain
+          data[i] = DelayLine[i] * gain;
+        }
 
       // low-pass filter the result
-      fixed (float* pData = data) 
+      fixed (float* pData = data)
         NativeLiquidDsp.firfilt_rrrf_execute_block(Bpf, pData, (uint)count, pData);
 
       // dump old samples
       Array.Copy(DelayLine, count, DelayLine, 0, FILTER_DELAY);
     }
-    float gain = 1;
 
     public void Dispose()
     {
