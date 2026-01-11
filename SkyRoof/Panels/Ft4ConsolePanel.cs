@@ -24,9 +24,6 @@ namespace SkyRoof
     public Ft4ConsolePanel(Context ctx)
     {
       InitializeComponent();
-      
-      TestQDateTime();
-
 
       this.ctx = ctx;
       Log.Information("Creating Ft4ConsolePanel");
@@ -429,7 +426,15 @@ namespace SkyRoof
       separator.Type = DecodedItemType.Separator;
       separator.SlotNumber = slot;
       separator.Utc = slotTime;
-      separator.Tokens = [new(FontAwesomeIcons.Circle), new($"{slotTime:HH:mm:ss.f}"), new(satelliteName), new(bandName)];
+      
+      separator.Tokens = [
+        new(FontAwesomeIcons.Circle), 
+        new($"{slotTime:HH:mm:ss.f}"), 
+        new(satelliteName), 
+        new(bandName), 
+        new(new string('-', 20)) // '̶'
+        ];
+
       separator.Tokens[0].fgBrush = separator.Odd ? Brushes.Olive : Brushes.Teal;
 
       MessageListWidget.AddSeparator(separator);
@@ -530,9 +535,12 @@ namespace SkyRoof
 
     private void MessageListWidget_MessageClick(object sender, Ft4MessageEventArgs e)
     {
-      if (Sender.Mode == SenderMode.Tuning) return;
+      if (e.Item.FromMe && ModifierKeys == Keys.Control)
+        AdjustUplinkOffset(e.Item);
 
-      if (Sequencer.ProcessMessage(e.Item, true)) SetTxMessage(!e.Item.Odd);
+      else if (Sender.Mode != SenderMode.Tuning) 
+        if (Sequencer.ProcessMessage(e.Item, true)) 
+          SetTxMessage(!e.Item.Odd);
     }
 
     private void MessageBtn_Click(object sender, EventArgs e)
@@ -597,6 +605,22 @@ namespace SkyRoof
 
         Debug.WriteLine($"{utc:yyyy-MM-dd HH:mm}  {julianDay,10}  {milliseconds / 86400000d:F3}  c#: {outUtc:yyyy-MM-dd HH:mm}  Delphi: {delphiDouble:F3}  {delphiUtc:yyyy-MM-dd HH:mm}");
       }
+    }
+
+
+
+
+    //--------------------------------------------------------------------------------------------------------------
+    //                                         transmitter frequency
+    //--------------------------------------------------------------------------------------------------------------
+    private void AdjustUplinkOffset(DecodedItem item)
+    {
+      double error = item.Decode.OffsetFrequencyHz - AudioWaterfall.TxAudioFrequency;
+      
+      if (Math.Abs(error) <= 1000)
+        ctx.FrequencyControl.AdjustUplinkOffset(error);
+      else
+        Console.Beep();      
     }
   }
 }

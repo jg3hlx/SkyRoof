@@ -104,7 +104,6 @@ namespace SkyRoof
       RadioLinkToUi();
     }
 
-
     internal void ClockTick()
     {
       if (RadioLink.IsTerrestrial) return;
@@ -161,6 +160,16 @@ namespace SkyRoof
       ctx.CatControl.Tx!.SetPtt(ptt);
       UpdateTxButton();
     }
+
+    // from FT4 self-decode
+    internal void AdjustUplinkOffset(double error)
+    {
+      RadioLink.UplinkManualCorrection -= RadioLink.Tx?.invert == true ? -error : error;
+      RadioLink.ComputeFrequencies();
+      RadioLinkToRadio();
+      FrequenciesToUi();
+    }
+
 
 
 
