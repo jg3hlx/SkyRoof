@@ -204,9 +204,17 @@ namespace VE3NEA
 
     public static string? GetDefaultSoundcardId(DataFlow direction)
     {
-      using (var deviceEnumerator = new MMDeviceEnumerator())
-        return deviceEnumerator.GetDefaultAudioEndpoint(direction, Role.Multimedia)?.DeviceID;
-    }
+      try
+      {
+        using (var deviceEnumerator = new MMDeviceEnumerator())
+          return deviceEnumerator.GetDefaultAudioEndpoint(direction, Role.Multimedia)?.DeviceID;
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, $"Default {direction} audio device not found.");
+        return null;
+      }
+}
 
     public static string? GetFirstVacId(DataFlow direction)
     {
