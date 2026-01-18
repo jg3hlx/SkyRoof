@@ -28,11 +28,20 @@
     /// </summary>
     private void InitializeComponent()
     {
+      components = new System.ComponentModel.Container();
       SplitContainer = new SplitContainer();
       AudioWaterfall = new AudioWaterfallWidget();
       MessageListWidget = new Ft4MessageListWidget();
       panel1 = new Panel();
+      AmplitudeBar = new Ft4AmplitudeBar();
       TxMessageLabel = new Label();
+      flowLayoutPanel1 = new FlowLayoutPanel();
+      button7 = new Button();
+      button8 = new Button();
+      button9 = new Button();
+      button10 = new Button();
+      button11 = new Button();
+      button12 = new Button();
       TxMessagesPanel = new FlowLayoutPanel();
       button1 = new Button();
       button2 = new Button();
@@ -56,11 +65,13 @@
       HaltTxBtn = new Button();
       EnableTxBtn = new Button();
       TuneBtn = new Button();
+      toolTip1 = new ToolTip(components);
       ((System.ComponentModel.ISupportInitialize)SplitContainer).BeginInit();
       SplitContainer.Panel1.SuspendLayout();
       SplitContainer.Panel2.SuspendLayout();
       SplitContainer.SuspendLayout();
       panel1.SuspendLayout();
+      flowLayoutPanel1.SuspendLayout();
       TxMessagesPanel.SuspendLayout();
       groupBox2.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)RxSpinner).BeginInit();
@@ -106,13 +117,15 @@
       MessageListWidget.Margin = new Padding(4, 3, 4, 3);
       MessageListWidget.Name = "MessageListWidget";
       MessageListWidget.Padding = new Padding(1);
-      MessageListWidget.Size = new Size(527, 263);
+      MessageListWidget.Size = new Size(514, 263);
       MessageListWidget.TabIndex = 3;
       MessageListWidget.MessageClick += MessageListWidget_MessageClick;
       // 
       // panel1
       // 
+      panel1.Controls.Add(AmplitudeBar);
       panel1.Controls.Add(TxMessageLabel);
+      panel1.Controls.Add(flowLayoutPanel1);
       panel1.Controls.Add(TxMessagesPanel);
       panel1.Controls.Add(groupBox2);
       panel1.Controls.Add(OddEvenGroupBox);
@@ -121,10 +134,19 @@
       panel1.Controls.Add(EnableTxBtn);
       panel1.Controls.Add(TuneBtn);
       panel1.Dock = DockStyle.Right;
-      panel1.Location = new Point(527, 0);
+      panel1.Location = new Point(514, 0);
       panel1.Name = "panel1";
-      panel1.Size = new Size(273, 263);
+      panel1.Size = new Size(286, 263);
       panel1.TabIndex = 4;
+      // 
+      // AmplitudeBar
+      // 
+      AmplitudeBar.BackColor = SystemColors.ButtonShadow;
+      AmplitudeBar.Location = new Point(261, 77);
+      AmplitudeBar.Name = "AmplitudeBar";
+      AmplitudeBar.Size = new Size(9, 80);
+      AmplitudeBar.TabIndex = 33;
+      toolTip1.SetToolTip(AmplitudeBar, "Amplitude");
       // 
       // TxMessageLabel
       // 
@@ -132,9 +154,88 @@
       TxMessageLabel.Font = new Font("Courier New", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
       TxMessageLabel.Location = new Point(14, 165);
       TxMessageLabel.Name = "TxMessageLabel";
-      TxMessageLabel.Size = new Size(246, 21);
+      TxMessageLabel.Size = new Size(258, 21);
       TxMessageLabel.TabIndex = 32;
       TxMessageLabel.TextAlign = ContentAlignment.MiddleCenter;
+      // 
+      // flowLayoutPanel1
+      // 
+      flowLayoutPanel1.Controls.Add(button7);
+      flowLayoutPanel1.Controls.Add(button8);
+      flowLayoutPanel1.Controls.Add(button9);
+      flowLayoutPanel1.Controls.Add(button10);
+      flowLayoutPanel1.Controls.Add(button11);
+      flowLayoutPanel1.Controls.Add(button12);
+      flowLayoutPanel1.Location = new Point(14, 196);
+      flowLayoutPanel1.Name = "flowLayoutPanel1";
+      flowLayoutPanel1.Size = new Size(258, 59);
+      flowLayoutPanel1.TabIndex = 31;
+      // 
+      // button7
+      // 
+      button7.Location = new Point(3, 3);
+      button7.Name = "button7";
+      button7.Size = new Size(79, 23);
+      button7.TabIndex = 0;
+      button7.Tag = "6";
+      button7.Text = "CQ";
+      button7.UseVisualStyleBackColor = true;
+      button7.Click += MessageBtn_Click;
+      // 
+      // button8
+      // 
+      button8.Location = new Point(88, 3);
+      button8.Name = "button8";
+      button8.Size = new Size(79, 23);
+      button8.TabIndex = 1;
+      button8.Tag = "2";
+      button8.Text = "dB";
+      button8.UseVisualStyleBackColor = true;
+      button8.Click += MessageBtn_Click;
+      // 
+      // button9
+      // 
+      button9.Location = new Point(173, 3);
+      button9.Name = "button9";
+      button9.Size = new Size(79, 23);
+      button9.TabIndex = 2;
+      button9.Tag = "4";
+      button9.Text = "RR73";
+      button9.UseVisualStyleBackColor = true;
+      button9.Click += MessageBtn_Click;
+      // 
+      // button10
+      // 
+      button10.Location = new Point(3, 32);
+      button10.Name = "button10";
+      button10.Size = new Size(79, 23);
+      button10.TabIndex = 3;
+      button10.Tag = "1";
+      button10.Text = "DE";
+      button10.UseVisualStyleBackColor = true;
+      button10.Click += MessageBtn_Click;
+      // 
+      // button11
+      // 
+      button11.Location = new Point(88, 32);
+      button11.Name = "button11";
+      button11.Size = new Size(79, 23);
+      button11.TabIndex = 4;
+      button11.Tag = "3";
+      button11.Text = "R-dB";
+      button11.UseVisualStyleBackColor = true;
+      button11.Click += MessageBtn_Click;
+      // 
+      // button12
+      // 
+      button12.Location = new Point(173, 32);
+      button12.Name = "button12";
+      button12.Size = new Size(79, 23);
+      button12.TabIndex = 5;
+      button12.Tag = "5";
+      button12.Text = "73";
+      button12.UseVisualStyleBackColor = true;
+      button12.Click += MessageBtn_Click;
       // 
       // TxMessagesPanel
       // 
@@ -225,11 +326,11 @@
       groupBox2.Controls.Add(label3);
       groupBox2.Controls.Add(label2);
       groupBox2.Controls.Add(TxSpinner);
-      groupBox2.Location = new Point(96, 77);
+      groupBox2.Location = new Point(98, 77);
       groupBox2.Margin = new Padding(4, 3, 4, 3);
       groupBox2.Name = "groupBox2";
       groupBox2.Padding = new Padding(4, 3, 4, 3);
-      groupBox2.Size = new Size(164, 82);
+      groupBox2.Size = new Size(156, 82);
       groupBox2.TabIndex = 30;
       groupBox2.TabStop = false;
       // 
@@ -237,7 +338,7 @@
       // 
       TxToRxBtn.Font = new Font("Wingdings 3", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 2);
       TxToRxBtn.ForeColor = Color.LightGreen;
-      TxToRxBtn.Location = new Point(122, 14);
+      TxToRxBtn.Location = new Point(110, 14);
       TxToRxBtn.Margin = new Padding(4, 3, 4, 3);
       TxToRxBtn.Name = "TxToRxBtn";
       TxToRxBtn.Size = new Size(36, 27);
@@ -251,7 +352,7 @@
       // 
       RxToTxBtn.Font = new Font("Wingdings 3", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 2);
       RxToTxBtn.ForeColor = Color.LightCoral;
-      RxToTxBtn.Location = new Point(122, 50);
+      RxToTxBtn.Location = new Point(110, 50);
       RxToTxBtn.Margin = new Padding(4, 3, 4, 3);
       RxToTxBtn.Name = "RxToTxBtn";
       RxToTxBtn.Size = new Size(36, 27);
@@ -264,7 +365,7 @@
       // label4
       // 
       label4.AutoSize = true;
-      label4.Location = new Point(96, 55);
+      label4.Location = new Point(84, 55);
       label4.Margin = new Padding(4, 0, 4, 0);
       label4.Name = "label4";
       label4.Size = new Size(21, 15);
@@ -289,7 +390,7 @@
       RxSpinner.Maximum = new decimal(new int[] { 5000, 0, 0, 0 });
       RxSpinner.Minimum = new decimal(new int[] { 50, 0, 0, 0 });
       RxSpinner.Name = "RxSpinner";
-      RxSpinner.Size = new Size(59, 23);
+      RxSpinner.Size = new Size(47, 23);
       RxSpinner.TabIndex = 3;
       RxSpinner.Value = new decimal(new int[] { 1500, 0, 0, 0 });
       RxSpinner.ValueChanged += RxSpinner_ValueChanged;
@@ -297,7 +398,7 @@
       // label3
       // 
       label3.AutoSize = true;
-      label3.Location = new Point(96, 18);
+      label3.Location = new Point(84, 18);
       label3.Margin = new Padding(4, 0, 4, 0);
       label3.Name = "label3";
       label3.Size = new Size(21, 15);
@@ -310,7 +411,7 @@
       label2.Location = new Point(5, 18);
       label2.Margin = new Padding(4, 0, 4, 0);
       label2.Name = "label2";
-      label2.Size = new Size(20, 15);
+      label2.Size = new Size(21, 15);
       label2.TabIndex = 19;
       label2.Text = "TX";
       // 
@@ -322,7 +423,7 @@
       TxSpinner.Maximum = new decimal(new int[] { 5000, 0, 0, 0 });
       TxSpinner.Minimum = new decimal(new int[] { 50, 0, 0, 0 });
       TxSpinner.Name = "TxSpinner";
-      TxSpinner.Size = new Size(59, 23);
+      TxSpinner.Size = new Size(47, 23);
       TxSpinner.TabIndex = 2;
       TxSpinner.Value = new decimal(new int[] { 1500, 0, 0, 0 });
       TxSpinner.ValueChanged += TxSpinner_ValueChanged;
@@ -335,7 +436,7 @@
       OddEvenGroupBox.Margin = new Padding(4, 3, 4, 3);
       OddEvenGroupBox.Name = "OddEvenGroupBox";
       OddEvenGroupBox.Padding = new Padding(4, 3, 4, 3);
-      OddEvenGroupBox.Size = new Size(75, 82);
+      OddEvenGroupBox.Size = new Size(74, 82);
       OddEvenGroupBox.TabIndex = 29;
       OddEvenGroupBox.TabStop = false;
       OddEvenGroupBox.Text = "TX Even";
@@ -373,14 +474,14 @@
       // 
       Ft4TimeBar1.Location = new Point(14, 11);
       Ft4TimeBar1.Name = "Ft4TimeBar1";
-      Ft4TimeBar1.Size = new Size(246, 15);
+      Ft4TimeBar1.Size = new Size(258, 15);
       Ft4TimeBar1.TabIndex = 4;
       // 
       // HaltTxBtn
       // 
-      HaltTxBtn.Location = new Point(114, 42);
+      HaltTxBtn.Location = new Point(118, 42);
       HaltTxBtn.Name = "HaltTxBtn";
-      HaltTxBtn.Size = new Size(88, 28);
+      HaltTxBtn.Size = new Size(96, 28);
       HaltTxBtn.TabIndex = 2;
       HaltTxBtn.Text = "Halt TX";
       HaltTxBtn.UseVisualStyleBackColor = true;
@@ -390,7 +491,7 @@
       // 
       EnableTxBtn.Location = new Point(14, 43);
       EnableTxBtn.Name = "EnableTxBtn";
-      EnableTxBtn.Size = new Size(88, 28);
+      EnableTxBtn.Size = new Size(96, 28);
       EnableTxBtn.TabIndex = 1;
       EnableTxBtn.Text = "Enable TX";
       EnableTxBtn.UseVisualStyleBackColor = true;
@@ -398,13 +499,17 @@
       // 
       // TuneBtn
       // 
-      TuneBtn.Location = new Point(214, 42);
+      TuneBtn.Location = new Point(222, 42);
       TuneBtn.Name = "TuneBtn";
-      TuneBtn.Size = new Size(42, 28);
+      TuneBtn.Size = new Size(50, 28);
       TuneBtn.TabIndex = 0;
       TuneBtn.Text = "Tune";
       TuneBtn.UseVisualStyleBackColor = true;
       TuneBtn.MouseDown += TuneBtn_MouseDown;
+      // 
+      // toolTip1
+      // 
+      toolTip1.Popup += toolTip1_Popup;
       // 
       // Ft4ConsolePanel
       // 
@@ -421,6 +526,7 @@
       ((System.ComponentModel.ISupportInitialize)SplitContainer).EndInit();
       SplitContainer.ResumeLayout(false);
       panel1.ResumeLayout(false);
+      flowLayoutPanel1.ResumeLayout(false);
       TxMessagesPanel.ResumeLayout(false);
       groupBox2.ResumeLayout(false);
       groupBox2.PerformLayout();
@@ -460,5 +566,14 @@
     private Button button6;
     private Label TxMessageLabel;
     public SplitContainer SplitContainer;
+    private FlowLayoutPanel flowLayoutPanel1;
+    private Button button7;
+    private Button button8;
+    private Button button9;
+    private Button button10;
+    private Button button11;
+    private Button button12;
+    private Ft4AmplitudeBar AmplitudeBar;
+    private ToolTip toolTip1;
   }
 }

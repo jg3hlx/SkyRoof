@@ -130,6 +130,7 @@ namespace SkyRoof
       {
         Decoder.StartProcessing(e);
         if (AudioWaterfall.CanProcess) AudioWaterfall.SpectrumAnalyzer.StartProcessing(e);
+        AmplitudeBar.UpdateAmplitude(e, 0.01f);
       }
     }
 
@@ -139,6 +140,7 @@ namespace SkyRoof
       {
         Decoder?.StartProcessing(e);
         if (AudioWaterfall.CanProcess) AudioWaterfall.SpectrumAnalyzer?.StartProcessing(e);
+        AmplitudeBar.UpdateAmplitude(e);
       }
     }
 
@@ -189,7 +191,7 @@ namespace SkyRoof
       string text = message.ToArchiveString(frequency, satellite);
 
       if (text != "")
-        using (StreamWriter writer = File.AppendText(filePath)) 
+        using (StreamWriter writer = File.AppendText(filePath))
           writer.WriteLine(text);
     }
 
@@ -300,7 +302,7 @@ namespace SkyRoof
       }
 
       RxSpinner.Value = AudioWaterfall.RxAudioFrequency;
-      TxSpinner.Value = AudioWaterfall.TxAudioFrequency;    
+      TxSpinner.Value = AudioWaterfall.TxAudioFrequency;
     }
 
     private bool CheckTxEnabled()
@@ -341,6 +343,11 @@ namespace SkyRoof
     {
       Sender.TxOdd = OddRadioBtn.Checked;
       UpdateControls();
+    }
+
+    private void toolTip1_Popup(object sender, PopupEventArgs e)
+    {
+      if (e.AssociatedControl == AmplitudeBar) toolTip1.SetToolTip(AmplitudeBar, AmplitudeBar.GetTooltip());
     }
 
 
@@ -427,12 +434,12 @@ namespace SkyRoof
       separator.Type = DecodedItemType.Separator;
       separator.SlotNumber = slot;
       separator.Utc = slotTime;
-      
+
       separator.Tokens = [
-        new(FontAwesomeIcons.Circle), 
-        new($"{slotTime:HH:mm:ss.f}"), 
-        new(satelliteName), 
-        new(bandName), 
+        new(FontAwesomeIcons.Circle),
+        new($"{slotTime:HH:mm:ss.f}"),
+        new(satelliteName),
+        new(bandName),
         new(new string('-', 20)) // '̶'
         ];
 
@@ -487,7 +494,7 @@ namespace SkyRoof
             QsoInfo qso = GetQsoInfo();
             Sequencer.Reset();
             Sender.SetMessage(Sequencer.Message!);
-            ctx.LoqFt4QsoDialog.PopUp(ctx, qso); 
+            ctx.LoqFt4QsoDialog.PopUp(ctx, qso);
           }
         }
 
@@ -541,13 +548,15 @@ namespace SkyRoof
       if (e.Item.FromMe && ModifierKeys == Keys.Control)
         AdjustUplinkOffset(e.Item);
 
-      else if (Sender.Mode != SenderMode.Tuning) 
-        if (Sequencer.ProcessMessage(e.Item, true)) 
+      else if (Sender.Mode != SenderMode.Tuning)
+        if (Sequencer.ProcessMessage(e.Item, true))
           SetTxMessage(!e.Item.Odd);
     }
 
     private void MessageBtn_Click(object sender, EventArgs e)
     {
+      if (!CheckTxEnabled()) return;
+
       var msg = GetButtonMessage(sender);
       if (Sequencer.ForceMessage(msg)) SetTxMessage(Sender.TxOdd);
     }
@@ -599,11 +608,11 @@ namespace SkyRoof
 
         // c# original read
         var date = DateTime.FromOADate(julianDay - 2415018.5).Date;
-        DateTime outUtc =date.AddMilliseconds(milliseconds);
+        DateTime outUtc = date.AddMilliseconds(milliseconds);
 
         // Delphi read
         double delphiDouble = julianDay - 2415019 + milliseconds / 86400000d;
-        DateTime delphiUtc = DateTime.SpecifyKind(DateTime.FromOADate(delphiDouble),DateTimeKind.Unspecified);
+        DateTime delphiUtc = DateTime.SpecifyKind(DateTime.FromOADate(delphiDouble), DateTimeKind.Unspecified);
 
 
         Debug.WriteLine($"{utc:yyyy-MM-dd HH:mm}  {julianDay,10}  {milliseconds / 86400000d:F3}  c#: {outUtc:yyyy-MM-dd HH:mm}  Delphi: {delphiDouble:F3}  {delphiUtc:yyyy-MM-dd HH:mm}");
@@ -619,11 +628,11 @@ namespace SkyRoof
     private void AdjustUplinkOffset(DecodedItem item)
     {
       double error = item.Decode.OffsetFrequencyHz - AudioWaterfall.TxAudioFrequency;
-      
+
       if (Math.Abs(error) <= 1000)
         ctx.FrequencyControl.AdjustUplinkOffset(error);
       else
-        Console.Beep();      
+        Console.Beep();
     }
   }
 }

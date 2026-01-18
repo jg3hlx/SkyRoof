@@ -34,8 +34,8 @@ namespace SkyRoof.Widgets
       float w = ClientRectangle.Width;
       float h = ClientRectangle.Height;
 
-      float x1 = (float)(currentFraction * ClientRectangle.Width);
-      float x2 = (float)(activeFraction * ClientRectangle.Width);
+      float x1 = (float)(currentFraction * w);
+      float x2 = (float)(activeFraction * w);
       float x3 = Math.Max(x1, x2);
 
       if (x1 > 0) e.Graphics.FillRectangle(FgBrush, new RectangleF(0, 0, x1, h));
