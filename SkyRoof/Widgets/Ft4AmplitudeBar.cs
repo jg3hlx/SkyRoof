@@ -14,7 +14,7 @@ namespace SkyRoof
   public partial class Ft4AmplitudeBar : UserControl
   {
     private const float Alpha = 0.1f;
-    private float Amplitude = 0.1f;
+    private float Amplitude = 0.01f;
 
     public Ft4AmplitudeBar()
     {
@@ -36,7 +36,7 @@ namespace SkyRoof
 
     internal string GetTooltip()
     {
-      return $"{Dsp.ToDb(Amplitude):F0} dBFS";
+      return $"{Dsp.ToDb2(Amplitude):F0} dBFS";
     }
 
     private void Ft4AmplitudeBar_Paint(object sender, PaintEventArgs e)
