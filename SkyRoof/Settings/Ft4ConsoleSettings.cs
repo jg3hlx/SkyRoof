@@ -130,16 +130,16 @@ namespace SkyRoof
     public Color Separator { get; set; } = Color.FromArgb(233, 233, 233);
 
     [DisplayName("Transmitted Message")]
-    [DefaultValue(typeof(Color), "Red")]
-    public Color TxMessage { get; set; } = Color.Red;
+    [DefaultValue(typeof(Color), "LightCoral")]
+    public Color TxMessage { get; set; } = Color.LightCoral;
 
     [DisplayName("Message To Me")]
-    [DefaultValue(typeof(Color), "255, 175, 175")]
-    public Color ToMe { get; set; } = Color.FromArgb(255, 175, 175);
+    [DefaultValue(typeof(Color), "LightGreen")]
+    public Color ToMe { get; set; } = Color.LightGreen;
 
     [DisplayName("Message From Me")]
-    [DefaultValue(typeof(Color), "175, 255, 175")]
-    public Color FromMe { get; set; } = Color.FromArgb(175, 255, 175);
+    [DefaultValue(typeof(Color), "Red")]
+    public Color FromMe { get; set; } = Color.Red;
 
     [DisplayName("CQ Word")]
     [DefaultValue(typeof(Color), "Yellow")]

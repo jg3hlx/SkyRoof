@@ -111,6 +111,7 @@ namespace SkyRoof
       RadioLink.ComputeFrequencies();
       RadioLinkToRadio();
       FrequenciesToUi();
+      label8.Text = $"{RadioLink.XitOffset:n0} Hz";
     }
 
     internal void RxTuned()

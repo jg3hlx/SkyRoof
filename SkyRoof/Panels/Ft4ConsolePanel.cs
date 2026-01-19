@@ -66,6 +66,12 @@ namespace SkyRoof
       Log.Information("Closing Ft4ConsolePanel");
       ctx.Ft4ConsolePanel = null;
       ctx.MainForm.Ft4ConsoleMNU.Checked = false;
+      ctx.Settings.Ft4Console.SplitterDistance = SplitContainer.SplitterDistance;
+
+      Sender?.Dispose();
+      Sender = null;
+      ctx.FrequencyControl.SetPtt(false);
+      ctx.FrequencyControl.SetXit(0);
       Soundcard?.Dispose();
       Soundcard = null;
       Decoder?.Dispose();
@@ -73,11 +79,6 @@ namespace SkyRoof
       WsjtxUdpSender.HighlightCallsignReceived -= WsjtxUdpSender_HighlightCallsignReceived;
       WsjtxUdpSender?.Dispose();
       WsjtxUdpSender = null;
-
-      ctx.Settings.Ft4Console.SplitterDistance = SplitContainer.SplitterDistance;
-
-      Sender?.Dispose();
-      Sender = null;
     }
 
     public void ApplySettings()
@@ -210,6 +211,7 @@ namespace SkyRoof
     {
       AudioWaterfall.SetFrequenciesFromMouseClick(e);
       UpdateControls();
+      ctx.MainForm.FrequencyWidget.SetXit(Sender.XitOffset);
     }
 
     private void AudioWaterfall_MouseMove(object sender, MouseEventArgs e)
@@ -319,6 +321,7 @@ namespace SkyRoof
       {
         AudioWaterfall.TxAudioFrequency = Sender.TxAudioFrequency = (int)TxSpinner.Value;
         Sender.SetMessage(Sequencer.Message!);
+        ctx.MainForm.FrequencyWidget.SetXit(Sender.XitOffset);
       }
     }
 
@@ -587,6 +590,7 @@ namespace SkyRoof
       UpdateTxButtons();
       UpdateMessageButtons();
       UpdateControls();
+      ctx.MainForm.FrequencyWidget.SetXit(Sender.XitOffset);
 
       if (wasSending)
       {

@@ -34,12 +34,13 @@
       // 
       // AudioWaterfallWidget
       // 
-      AutoScaleDimensions = new SizeF(7F, 15F);
+      AutoScaleDimensions = new SizeF(7F, 17F);
       AutoScaleMode = AutoScaleMode.Font;
       Cursor = Cursors.Cross;
       DoubleBuffered = true;
+      Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
       Name = "AudioWaterfallWidget";
-      Size = new Size(472, 161);
+      Size = new Size(472, 182);
       Resize += AudioWaterfallWidget_Resize;
       ResumeLayout(false);
     }

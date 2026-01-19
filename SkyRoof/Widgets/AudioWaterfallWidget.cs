@@ -20,7 +20,7 @@ namespace SkyRoof
     private int BmpWidth;
     private int WriteRow;
     private long LastSlot;
-    private Font CallsignFont;
+    private Font CallsignFont = new("Courier New", 14);
 
     public SpectrumAnalyzer<float> SpectrumAnalyzer;
     public int RxAudioFrequency = NativeFT4Coder.DEFAULT_AUDIO_FREQUENCY;
@@ -34,8 +34,6 @@ namespace SkyRoof
     public AudioWaterfallWidget()
     {
       InitializeComponent();
-
-      CallsignFont = new("Courier New", 14);
     }
 
     // SpeftrumAnalyzer cannot be created in the design mode, otherwise
