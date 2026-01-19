@@ -13,6 +13,7 @@
 		<Platforms>x64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ApplicationIcon>SkyRoof.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Version>1.0</Version>
 		<FileVersion>1.0</FileVersion>
 	</PropertyGroup>

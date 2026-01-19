@@ -13,6 +13,7 @@ namespace SkyRoof
         try
         {
           ExceptionLogger.Initialize();
+          Application.SetHighDpiMode(HighDpiMode.SystemAware); // compatibility with Wine 9
           ApplicationConfiguration.Initialize();
           Application.Run(new MainForm());
         }
