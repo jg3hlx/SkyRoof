@@ -27,6 +27,8 @@ items:
       href: setting_up_cat_control.md
     - name: Setting Up Rotator Control
       href: setting_up_rotator_control.md
+    - name: Setting Up FT4 Console
+      href: setting_up_ft4_console.md
   - name: User Interface
     items:
     - name: Satellites and Groups Window
@@ -69,6 +71,8 @@ items:
       href: earth_view_panel.md
     - name: QSO Entry
       href: qso_entry_panel.md
+    - name: FT4 Console
+      href: ft4_console_panel.md
   - name: How To
     items:
     - name: Decode Telemetry from PEARL-1C

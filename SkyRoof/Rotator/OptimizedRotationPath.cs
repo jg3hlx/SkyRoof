@@ -157,7 +157,7 @@ namespace SkyRoof
     // if the pass is over, return null
     internal Bearing? GetSatelliteBearing()
     {
-      // todo: use Satellite to comute current bearing
+      // todo: use Satellite to compute current bearing
 
       if (OptimizedPath == null) return null;
 

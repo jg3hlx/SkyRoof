@@ -49,6 +49,12 @@ namespace SkyRoof
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public QsoEntrySettings QsoEntry { get; set; } = new();
 
+
+    [DisplayName("FT4 Console")]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public Ft4ConsoleSettings Ft4Console { get; set; } = new ();
+
+
     private static string GetFileName()
     {
       return Path.Combine(Utils.GetUserDataFolder(), "Settings.json");
@@ -70,7 +76,7 @@ namespace SkyRoof
     private void SetDefaults()
     {
       if (Ui.DockingLayoutString == null)
-        Ui.DockingLayoutString = Encoding.UTF8.GetString(Properties.Resources.default_docking);
+        Ui.DockingLayoutString = Ui.DefaultDockingString;
 
       Satellites.Sanitize(true);
     }

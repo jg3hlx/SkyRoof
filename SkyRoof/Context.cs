@@ -10,13 +10,14 @@ namespace SkyRoof
     internal readonly Font AwesomeFont14 = FontAwesomeFactory.Create(14);
     internal readonly PaletteManager PaletteManager = new PaletteManager();
 
-    // satellite data
+    // data
     public Settings Settings = new();
     public SatnogsDb SatnogsDb;
     public GroupSatellitePasses GroupPasses;
     public HamSatellitePasses HamPasses;
     public SdrSatellitePasses SdrPasses;
     public AmsatStatusLoader AmsatStatusLoader = new();
+    public LoggerInterface LoggerInterface;
 
     // main form
     public MainForm MainForm;
@@ -34,6 +35,10 @@ namespace SkyRoof
     public TransmittersPanel? TransmittersPanel;
     public WaterfallPanel? WaterfallPanel;
     public QsoEntryPanel? QsoEntryPanel;
+    public Ft4ConsolePanel? Ft4ConsolePanel;
+
+    // dialogs
+    internal LoqFt4QsoDialog LoqFt4QsoDialog = new();
 
     // devices
     public SoapySdrDevice? Sdr;
@@ -41,14 +46,15 @@ namespace SkyRoof
     public CatControl CatControl = new();
 
     // soundcards
-    public readonly Soundcard<float> SpeakerSoundcard = new();
-    public readonly Soundcard<float> AudioVacSoundcard = new();
-    public readonly Soundcard<Complex32> IqVacSoundcard = new();
+    public readonly OutputSoundcard<float> SpeakerSoundcard = new();
+    public readonly OutputSoundcard<float> AudioVacSoundcard = new();
+    public readonly OutputSoundcard<Complex32> IqVacSoundcard = new();
     public readonly Announcer Announcer = new();
     public UdpStreamSender UdpStreamSender = new();
-
+    
     public void ClosePanels()
     {
+      Ft4ConsolePanel?.Close();
       GroupViewPanel?.Close();
       SatelliteDetailsPanel?.Close();
       PassesPanel?.Close();

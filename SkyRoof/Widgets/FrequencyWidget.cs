@@ -32,6 +32,17 @@ namespace SkyRoof
       Changing = false;
     }
 
+    internal string GetBandName(bool uplink)
+    {
+      var freq = uplink ? RadioLink.CorrectedUplinkFrequency : RadioLink.CorrectedDownlinkFrequency;
+      if (SatnogsDbTransmitter.IsUhfFrequency(freq))
+        return "70cm";
+      else if (SatnogsDbTransmitter.IsVhfFrequency(freq))
+        return "2m";
+      else
+        return string.Empty;
+    }
+
 
 
 
@@ -93,7 +104,6 @@ namespace SkyRoof
       RadioLinkToUi();
     }
 
-
     internal void ClockTick()
     {
       if (RadioLink.IsTerrestrial) return;
@@ -101,6 +111,7 @@ namespace SkyRoof
       RadioLink.ComputeFrequencies();
       RadioLinkToRadio();
       FrequenciesToUi();
+      label8.Text = $"{RadioLink.XitOffset:n0} Hz";
     }
 
     internal void RxTuned()
@@ -113,6 +124,9 @@ namespace SkyRoof
 
     internal void TxTuned()
     {
+      // when FT4 XIT is on, ignore dial knob
+      if (RadioLink.XitOffset != 0) return;
+
       int delta = (int)(ctx.CatControl.Tx!.LastReadTxFrequency - RadioLink.CorrectedUplinkFrequency);
       RadioLink.IncrementUplinkFrequency(delta);
       RadioLinkToRadio();
@@ -142,6 +156,33 @@ namespace SkyRoof
       RadioLinkToRadio();
       RadioLinkToUi();
     }
+
+    internal void SetPtt(bool ptt)
+    {
+      if (ctx.CatControl.Tx == null) return;
+
+      ctx.CatControl.Tx!.SetPtt(ptt);
+      UpdateTxButton();
+    }
+
+    // from FT4 self-decode
+    internal void AdjustUplinkOffset(double error)
+    {
+      RadioLink.UplinkManualCorrection -= RadioLink.Tx?.invert == true ? -error : error;
+      RadioLink.ComputeFrequencies();
+      RadioLinkToRadio();
+      FrequenciesToUi();
+    }
+
+    // FT4 XIT
+    internal void SetXit(double xit)
+    {
+      RadioLink.XitOffset = RadioLink.Tx?.invert == true ? -xit : xit;
+      RadioLink.ComputeFrequencies();
+      RadioLinkToRadio();
+      FrequenciesToUi();
+    }
+
 
 
 
@@ -423,6 +464,9 @@ namespace SkyRoof
       if (RadioLink.IsTransponder)
         tooltip += $"Transponder offset:     {RadioLink.TransponderOffset:n0} Hz\n";
 
+      if (RadioLink.XitOffset != 0)
+        tooltip += $"XIT offset:     {RadioLink.XitOffset:n0} Hz\n";
+
       return tooltip + "\nClick for manual entry\nRight-click for options";
     }
 
@@ -505,8 +549,7 @@ namespace SkyRoof
     private void TxBtn_Click(object sender, EventArgs e)
     {
       var ptt = ctx.CatControl.Tx!.Ptt == true;
-      ctx.CatControl.Tx!.SetPtt(!ptt);
-      UpdateTxButton();
+      SetPtt(!ptt);
     }
 
     private void UpdateTxButton()

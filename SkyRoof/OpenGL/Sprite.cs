@@ -68,9 +68,9 @@ namespace SkyRoof
       scale = Math.Max(0.25f, Math.Min(1, value)); 
     }
 
+    int[] viewport = new int[4]; // 0, 0, W, H
     private Matrix4x4 GetTransform()
     {      
-      var viewport = new int[4]; // 0, 0, W, H
       gl.GetInteger(OpenGL.GL_VIEWPORT, viewport);
 
       float scaleX = Scale * ImageSize.Width / viewport[2];

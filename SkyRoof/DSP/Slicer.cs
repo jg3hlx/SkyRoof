@@ -10,12 +10,12 @@ namespace SkyRoof
   public unsafe class Slicer : ThreadedProcessor<Complex32>
   {
     public enum Mode { USB, LSB, USB_D, LSB_D, CW, FM, FM_D }
-    //300..3000, 100..4000, 350..850, -8000..8000 Hz
-    private static readonly int[] Bandwidths = [2800, 2800, 3900, 3900, 500, 16000, 48000];
-    private static readonly int[] ModeOffsets = [1600, -1600, 2050, -2050, 600, 0, 0];
+    //300..3000, 50..5990, 350..850, -8000..8000 Hz
+    private static readonly int[] Bandwidths = [2800, 2800, 5000, 5000, 500, 16000, 48000];
+    private static readonly int[] ModeOffsets = [1600, -1600, 2500, -2500, 600, 0, 0];
 
     private const int STOPBAND_REJECTION_DB = 80;
-    private const double USEFUL_BANDWIDTH = 0.9 * SdrConst.AUDIO_SAMPLING_RATE / 2; // 22 kHz useful at 48 KHz sampling rate
+    private const double USEFUL_BANDWIDTH = 0.95 * SdrConst.AUDIO_SAMPLING_RATE / 2; // 22 kHz useful at 48 KHz sampling rate
     public const int OUTPUT_SAMPLING_RATE = 48000;
 
     private int OctaveDecimationFactor, RationalInterpolationFactor, RationalDecimationFactor;
@@ -24,7 +24,7 @@ namespace SkyRoof
     private NativeLiquidDsp.rresamp_crcf* rresamp;
     private NativeLiquidDsp.firfilt_crcf* firfilt;
     private NativeLiquidDsp.freqdem* freqdem;
-    private SoftSquelch SoftSquelch = new();
+    public SoftSquelch Squelch = new();
 
     private FifoBuffer<Complex32> InputBuffer = new();
     private FifoBuffer<Complex32> OctaveResamplerInputBuffer = new();
@@ -35,7 +35,7 @@ namespace SkyRoof
     private double RationalResamplerInputRate;
     private double offset;
     public Mode CurrentMode, NewMode;
-    
+   
 
     public double InputRate { get; private set; }
     public double Bandwidth { get => Bandwidths[(int)CurrentMode]; }
@@ -86,6 +86,20 @@ namespace SkyRoof
       return ModeOffsets[(int)CurrentMode];
     }
 
+    public TimeSpan GetDelay()
+    {
+      double rationalDelaySamples = NativeLiquidDsp.rresamp_crcf_get_delay(rresamp);
+      double seconds = rationalDelaySamples / OUTPUT_SAMPLING_RATE;
+
+      if (OctaveDecimationFactor > 1)
+      {
+        double octaveDelaySamples = NativeLiquidDsp.msresamp2_crcf_get_delay(msresamp2);
+        seconds = + octaveDelaySamples / RationalResamplerInputRate;
+      }
+
+      return TimeSpan.FromSeconds(seconds);
+    }
+
 
 
 
@@ -123,7 +137,7 @@ namespace SkyRoof
       double filterRate = RationalResamplerInputRate * RationalInterpolationFactor;  // sampling rate after interpolation
       float fc = (float)(USEFUL_BANDWIDTH / filterRate);
 
-      int FILTER_DELAY = 25; // the default in LiquidDsp is 15
+      int FILTER_DELAY = 45; // the default in LiquidDsp is 15
       int filterLength = 2 * FILTER_DELAY * RationalInterpolationFactor + 1;
       var filter = NativeLiquidDsp.firfilt_crcf_create_kaiser((uint)filterLength, fc, STOPBAND_REJECTION_DB, 0);
       var coeffPointer = NativeLiquidDsp.firfilt_crcf_get_coefficients(filter);
@@ -162,8 +176,6 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                        process
     //----------------------------------------------------------------------------------------------
-    Random random = new Random(5);
-
     protected override void Process(DataEventArgs<Complex32> args)
     {
       if (NewMode != CurrentMode) SetMode(NewMode);
@@ -186,11 +198,15 @@ namespace SkyRoof
         ApplyRationalResampler(RationalResamplerInputBuffer);
       }
 
-
-      // return IQ data
+      // get args for events
       int outputCount = RationalResamplerOutputBuffer.Count;
       var audioArgs = FloatArgsPool.Rent(outputCount);
       var iqArgs = ComplexArgsPool.Rent(outputCount);
+      audioArgs.Utc = args.Utc;
+      iqArgs.Utc = args.Utc;
+
+
+      // return IQ data
       for (int i = 0; i < outputCount; i++)
         iqArgs.Data[i] = RationalResamplerOutputBuffer.Data[i] * 0.3f;
       IqDataAvailable?.Invoke(this, iqArgs);
@@ -216,7 +232,7 @@ namespace SkyRoof
         }
 
         // apply soft squelching
-        if (CurrentMode == Mode.FM) SoftSquelch.Process(audioArgs.Data);
+        if (CurrentMode == Mode.FM) Squelch.Process(audioArgs.Data);
       }
       else
       {
@@ -316,6 +332,7 @@ namespace SkyRoof
       rresamp = null;
       SecondMixer = null;
       firfilt = null;
+      freqdem = null;
     }
   }
 }

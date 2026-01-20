@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime;
 using CSCore.CoreAudioAPI;
 using MathNet.Numerics;
 using Serilog;
@@ -9,7 +10,7 @@ namespace SkyRoof
 {
   public partial class MainForm : Form
   {
-    Context ctx = new();
+    internal Context ctx = new();
 
     public MainForm()
     {
@@ -18,15 +19,17 @@ namespace SkyRoof
       Text = Utils.GetVersionString();
       ctx.MainForm = this;
 
+      GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+
       Rectangle? bounds = Screen.PrimaryScreen?.Bounds;
       Log.Information($"Screen resolution: {bounds?.Width}x{bounds?.Height}");
 
-      ctx.SatelliteSelector = SatelliteSelector;
-      ctx.FrequencyControl = FrequencyControl;
+      ctx.SatelliteSelector = SatelliteSelecionWidget;
+      ctx.FrequencyControl = FrequencyWidget;
       ctx.RotatorControl = RotatorWidget;
-      SatelliteSelector.ctx = ctx;
-      FrequencyControl.ctx = ctx;
-      GainControl.ctx = ctx;
+      SatelliteSelecionWidget.ctx = ctx;
+      FrequencyWidget.ctx = ctx;
+      GainWidget.ctx = ctx;
       ctx.Announcer.ctx = ctx;
       ctx.CatControl.ctx = ctx;
       ctx.RotatorControl.ctx = ctx;
@@ -40,6 +43,7 @@ namespace SkyRoof
       ctx.GroupPasses = new(ctx);
       ctx.HamPasses = new(ctx);
       ctx.SdrPasses = new(ctx);
+      ctx.LoggerInterface = new(ctx);
 
       timer.Interval = 1000 / TICKS_PER_SECOND;
 
@@ -80,12 +84,17 @@ namespace SkyRoof
 
     private void MainForm_FormClosing(object sender, EventArgs e)
     {
+      timer.Enabled = false;
+
       // save settings
       ctx.Settings.Ui.StoreDockingLayout(DockHost);
+      ctx.ClosePanels();
+
       ctx.Settings.Ui.StoreWindowPosition(this);
       ctx.Settings.Ui.ClockUtcMode = Clock.UtcMode;
       if (ctx.WaterfallPanel != null)
         ctx.Settings.Waterfall.SplitterDistance = ctx.WaterfallPanel.SplitContainer.SplitterDistance;
+
       ctx.Settings.SaveToFile();
 
       // dispose sdr and dsp
@@ -117,21 +126,21 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                        sdr
     //----------------------------------------------------------------------------------------------
-    internal WidebandSpectrumAnalyzer? SpectrumAnalyzer;
+    internal SpectrumAnalyzer<Complex32>? WidebandSpectrumAnalyzer;
 
     public void CreateSpectrumAnalyzer()
     {
       Fft<Complex32>.LoadWisdom(Path.Combine(Utils.GetUserDataFolder(), "wsjtx_wisdom.dat"));
 
-      SpectrumAnalyzer = new(ctx.WaterfallPanel!.WaterfallControl.SpectraWidth, 6_000_000);
-      SpectrumAnalyzer.SpectrumAvailable += Spect_SpectrumAvailable;
+      WidebandSpectrumAnalyzer = new(ctx.WaterfallPanel!.WaterfallControl.SpectraWidth, 6_000_000);
+      WidebandSpectrumAnalyzer.SpectrumAvailable += Spect_SpectrumAvailable;
     }
 
     public void DestroySpectrumAnalyzer()
     {
-      SpectrumAnalyzer!.SpectrumAvailable -= Spect_SpectrumAvailable;
-      SpectrumAnalyzer.Dispose();
-      SpectrumAnalyzer = null;
+      WidebandSpectrumAnalyzer!.SpectrumAvailable -= Spect_SpectrumAvailable;
+      WidebandSpectrumAnalyzer.Dispose();
+      WidebandSpectrumAnalyzer = null;
     }
 
     private void Spect_SpectrumAvailable(object? sender, DataEventArgs<float> e)
@@ -149,7 +158,7 @@ namespace SkyRoof
         ctx.Sdr.StateChanged += Sdr_StateChanged;
         ctx.Sdr.DataAvailable += Sdr_DataAvailable;
 
-        GainControl.ApplyRfGain();
+        GainWidget.ApplyRfGain();
         ConfigureWaterfall();
         ConfigureSlicer();
 
@@ -180,13 +189,13 @@ namespace SkyRoof
 
     private void Sdr_DataAvailable(object? sender, DataEventArgs<Complex32> e)
     {
-      SpectrumAnalyzer?.StartProcessing(e);
+      WidebandSpectrumAnalyzer?.StartProcessing(e);
       ctx.Slicer?.StartProcessing(e);
     }
 
     internal void ConfigureWaterfall()
     {
-      if (ctx.WaterfallPanel == null || ctx.Sdr?.Info == null || SpectrumAnalyzer == null)
+      if (ctx.WaterfallPanel == null || ctx.Sdr?.Info == null || WidebandSpectrumAnalyzer == null)
         return;
 
       SetWaterfallSpeed();
@@ -219,6 +228,8 @@ namespace SkyRoof
     private void Slicer_AudioDataAvailable(object? sender, DataEventArgs<float> e)
     {
       ctx.SpeakerSoundcard.AddSamples(e.Data);
+
+      ctx.Ft4ConsolePanel?.AddSamplesFromSdr(e);
 
       // apply output stream gain (float)
       float gain = Dsp.FromDb2(ctx.Settings.OutputStream.Gain);
@@ -277,7 +288,7 @@ namespace SkyRoof
       bool change = ctx.Settings.Waterfall.Speed != ctx.WaterfallPanel.WaterfallControl.ScrollSpeed;
 
       if (ctx.Sdr != null)
-        SpectrumAnalyzer.Spectrum.Step = ctx.Sdr.Info.SampleRate / ctx.Settings.Waterfall.Speed;
+        WidebandSpectrumAnalyzer.Spectrum.Step = ctx.Sdr.Info.SampleRate / ctx.Settings.Waterfall.Speed;
 
       if (ctx.WaterfallPanel?.WaterfallControl != null)
       {
@@ -331,8 +342,9 @@ namespace SkyRoof
     internal void ApplyAudioSettings()
     {
       ctx.SpeakerSoundcard.SetDeviceId(ctx.Settings.Audio.SpeakerSoundcard);
-      GainControl.ApplyAfGain();
+      GainWidget.ApplyAfGain();
       ctx.SpeakerSoundcard.Enabled = ctx.Settings.Audio.SpeakerEnabled;
+      if (ctx.Slicer != null) ctx.Slicer.Squelch.Enabled = ctx.Settings.Audio.Squelch;
     }
 
     internal void ApplyOutputStreamSettings()
@@ -365,16 +377,16 @@ namespace SkyRoof
     {
       if (!ctx.SpeakerSoundcard.Enabled)
         SoundcardLedLabel.ForeColor = Color.Gray;
-      else if (!ctx.SpeakerSoundcard.IsPlaying())
+      else if (!ctx.SpeakerSoundcard.IsRunning)
         SoundcardLedLabel.ForeColor = Color.Red;
       else
         SoundcardLedLabel.ForeColor = Color.Lime;
 
       if (!ctx.Settings.OutputStream.Enabled)
         VacLedLabel.ForeColor = Color.Gray;
-      else if (ctx.Settings.OutputStream.Type == DataStreamType.AudioToVac && !ctx.AudioVacSoundcard.IsPlaying())
+      else if (ctx.Settings.OutputStream.Type == DataStreamType.AudioToVac && !ctx.AudioVacSoundcard.IsRunning)
         VacLedLabel.ForeColor = Color.Red;
-      else if (ctx.Settings.OutputStream.Type == DataStreamType.IqToVac && !ctx.IqVacSoundcard.IsPlaying())
+      else if (ctx.Settings.OutputStream.Type == DataStreamType.IqToVac && !ctx.IqVacSoundcard.IsRunning)
         VacLedLabel.ForeColor = Color.Red;
       else
         VacLedLabel.ForeColor = Color.Lime;
@@ -520,7 +532,7 @@ namespace SkyRoof
 
       if (rc != DialogResult.OK) return;
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
-      SatelliteSelector.LoadSatelliteGroups();
+      SatelliteSelecionWidget.LoadSatelliteGroups();
     }
 
     private void GroupViewMNU_Click(object sender, EventArgs e)
@@ -595,6 +607,15 @@ namespace SkyRoof
         ctx.QsoEntryPanel.Close();
     }
 
+
+    private void Ft4ConsoleMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.Ft4ConsolePanel == null)
+        ShowFloatingPanel(new Ft4ConsolePanel(ctx));
+      else
+        ctx.Ft4ConsolePanel.Close();
+    }
+
     private void SettingsMNU_Click(object sender, EventArgs e)
     {
       new SettingsDialog(ctx).ShowDialog();
@@ -631,8 +652,7 @@ namespace SkyRoof
 
     private void ResetWindowLayoutMNU_Click(object sender, EventArgs e)
     {
-      ctx.ClosePanels();
-      ctx.Settings.Ui.RestoreDockingLayout(this);
+      ctx.Settings.Ui.ResetDockingLayout(this);
     }
 
 
@@ -709,7 +729,7 @@ namespace SkyRoof
     private void SoundcardDropdownBtn_DropDownOpening(object sender, EventArgs e)
     {
       SoundcardDropdownBtn.DropDownItems.Clear();
-      foreach (var dev in Soundcard<float>.ListDevices(DataFlow.Render))
+      foreach (var dev in OutputSoundcard<float>.ListDevices(DataFlow.Render))
       {
         var item = new ToolStripMenuItem(dev.Name);
         item.Checked = dev.Id == ctx.Settings.Audio.SpeakerSoundcard;
@@ -785,7 +805,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                     docking
     //----------------------------------------------------------------------------------------------
-    private void ShowFloatingPanel(DockContent panel)
+    public void ShowFloatingPanel(DockContent panel)
     {
       var rect = panel.Bounds;
       rect.Offset(
@@ -809,6 +829,7 @@ namespace SkyRoof
         case "SkyRoof.EarthViewPanel": return new EarthViewPanel(ctx);
         case "SkyRoof.WaterfallPanel": return new WaterfallPanel(ctx);
         case "SkyRoof.QsoEntryPanel": return new QsoEntryPanel(ctx);
+        case "SkyRoof.Ft4ConsolePanel": return new Ft4ConsolePanel(ctx);
 
         default: return null;
       }
@@ -846,7 +867,7 @@ namespace SkyRoof
       Clock.ShowTime();
       ctx.SkyViewPanel?.Advance();
       ctx.WaterfallPanel?.ScaleControl?.Invalidate();
-      FrequencyControl.ClockTick();
+      FrequencyWidget.ClockTick();
     }
 
     private void OneSecondTick()
@@ -898,7 +919,7 @@ namespace SkyRoof
       ctx.SatnogsDb.Customize(ctx.Settings.Satellites.SatelliteCustomizations);
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
 
-      SatelliteSelector.LoadSatelliteGroups();
+      SatelliteSelecionWidget.LoadSatelliteGroups();
       ctx.HamPasses.FullRebuild();
       ctx.GroupPasses.FullRebuild();
       ctx.SdrPasses.FullRebuild();
@@ -966,7 +987,7 @@ namespace SkyRoof
 
     private void SatelliteSelector_SelectedTransmitterChanged(object sender, EventArgs e)
     {
-      FrequencyControl.SetTransmitter();
+      FrequencyWidget.SetTransmitter();
       ctx.TransmittersPanel?.ShowSelectedTransmitter();
       ctx.WaterfallPanel?.BringInView(ctx.FrequencyControl.RadioLink.CorrectedDownlinkFrequency);
       ctx.SdrPasses.UpdateFrequencyRange();

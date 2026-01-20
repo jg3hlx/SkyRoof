@@ -7,10 +7,11 @@ namespace SkyRoof
 {
   public class Announcer
   {
+    // 'break time 1s' is needed because on Windows 11 the first part of the message is sometimes cut off
     private const string SsmlMessage = 
       "<?xml version=\"1.0\"?><speak version=\"1.0\" " +
       "xmlns=\"http://www.w3.org/2001/10/synthesis\" " +
-      "xml:lang=\"{0}\">{1}</speak>";
+      "xml:lang=\"{0}\"><break time='1s'/>{1}</speak>";
 
     private const string NameFormat = "<say-as interpret-as=\"characters\">{0}</say-as> {1}";
 
@@ -51,11 +52,11 @@ namespace SkyRoof
 
       var sett = ctx!.Settings.Announcements;
 
-      var minStartTime = DateTime.UtcNow.AddMinutes(sett.Announcement1.Minutes);
+      var minStartTime = DateTime.UtcNow.AddMinutes(sett.Announcement1.Minutes).AddSeconds(1);
       if (sett.Announcement1.Enabled)
         Queue1 = ctx.GroupPasses.Passes.Where(p => p.StartTime > minStartTime).ToList();
 
-      minStartTime = DateTime.UtcNow.AddMinutes(sett.Announcement2.Minutes);
+      minStartTime = DateTime.UtcNow.AddMinutes(sett.Announcement2.Minutes).AddSeconds(1);
       if (sett.Announcement2.Enabled)
         Queue2 = ctx.GroupPasses.Passes.Where(p => p.StartTime > minStartTime).ToList();
     }
@@ -71,7 +72,7 @@ namespace SkyRoof
     {
       var sett = ctx!.Settings.Announcements;
 
-      var announceTime = DateTime.UtcNow.AddMinutes(sett.Announcement1.Minutes);
+      var announceTime = DateTime.UtcNow.AddMinutes(sett.Announcement1.Minutes).AddSeconds(1);
       for (int i = Queue1.Count - 1; i >= 0; i--)
         if (Queue1[i].StartTime < announceTime)
         {
@@ -79,7 +80,7 @@ namespace SkyRoof
           Queue1.RemoveAt(i);
         }
 
-      announceTime = DateTime.UtcNow.AddMinutes(sett.Announcement2.Minutes);
+      announceTime = DateTime.UtcNow.AddMinutes(sett.Announcement2.Minutes).AddSeconds(1);
       for (int i = Queue2.Count - 1; i >= 0; i--)
         if (Queue2[i].StartTime < announceTime)
         {

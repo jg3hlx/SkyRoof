@@ -67,11 +67,11 @@ namespace SkyRoof
       switch (label)
       {
         case "SkyRoof.UserSettings.Call":
-          canChange = ValidateField(e, Utils.CallsignRegex, "callsign", CharacterCasing.Upper);
+          canChange = ValidateByRegex(e, Utils.CallsignRegex, "callsign", CharacterCasing.Upper);
           break;
 
         case "SkyRoof.UserSettings.Square":
-          canChange = ValidateField(e, Utils.GridSquare6Regex, "grid square", CharacterCasing.Upper);
+          canChange = ValidateByRegex(e, Utils.GridSquare6Regex, "grid square", CharacterCasing.Upper);
           break;
 
         case "SkyRoof.UserSettings.Altitude":
@@ -97,12 +97,44 @@ namespace SkyRoof
         case "SkyRoof.OutputStreamSettings.Gain":
           ValidateInt(e, 60, -60);
           break;
+
+        case "SkyRoof.Ft4WaterfallSettings.Bandwidth":
+          ValidateInt(e, 5000, 2000);
+          break;
+
+        case "SkyRoof.Ft4ConsoleSettings.TxGain":
+          ValidateInt(e, 0, -60);
+          break;
+
+        case "SkyRoof.Ft4ConsoleSettings.EnableTransmit":
+          canChange = ValidateFt4Transmit(e);
+          break;
+
+        case "SkyRoof.Ft4ConsoleSettings.TxWatchDog":
+          ValidateInt(e, 20, 1);
+          break;          
       }
 
       if (canChange) ChangedFields.Add(label);
     }
 
-    private bool ValidateField(PropertyValueChangedEventArgs e, Regex regEx, string fieldName, CharacterCasing casing)
+    private bool ValidateFt4Transmit(PropertyValueChangedEventArgs e)
+    {
+      var value = (bool)e.ChangedItem!.Value!;
+      var call = ((Settings)grid.SelectedObject!).User.Call;
+
+      bool error = value && string.IsNullOrEmpty(call);
+
+      if (error)
+      {
+        MessageBox.Show("Enter your callsign before enabling FT4 transmission.", "SkyRoof", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        e.ChangedItem.PropertyDescriptor.SetValue(e.ChangedItem.Parent.Value, e.OldValue);
+      }
+
+      return !error;
+    }
+
+    private bool ValidateByRegex(PropertyValueChangedEventArgs e, Regex regEx, string fieldName, CharacterCasing casing)
     {
       string newValue = e.ChangedItem.Value.ToString();
       string cleanValue = Utils.SetCasing(newValue.Trim(), casing);
@@ -158,15 +190,23 @@ namespace SkyRoof
 
       if (ChangedFields.Exists(s => s.StartsWith("SkyRoof.AmsatSettings.")))
         if (ctx.Settings.Amsat.Enabled)
-          ctx.AmsatStatusLoader.GetStatusesAsync();
+          ctx.AmsatStatusLoader.GetStatusesAsync().DoNotAwait();
         else
           ctx.GroupViewPanel?.ShowAmsatStatuses();
 
       if (ChangedFields.Exists(s => s.StartsWith("SkyRoof.QsoEntrySettings.")))
         ctx.QsoEntryPanel?.ApplySettings();
 
+      if (ChangedFields.Exists(s => 
+        s.StartsWith("SkyRoof.Ft4ConsoleSettings") ||
+        s.StartsWith("SkyRoof.Ft4WaterfallSettings.") ||
+        s.StartsWith("SkyRoof.Ft4MessagesSettings.") ||
+        s.StartsWith("SkyRoof.Ft4BackgroundColors.") ||
+        s.StartsWith("SkyRoof.UserSettings.Call") ||
+        s.StartsWith("SkyRoof.UdpSenderSettings.")
+        ))
+        ctx.Ft4ConsolePanel?.ApplySettings();
 
-          
       ChangedFields.Clear();
     }
   }

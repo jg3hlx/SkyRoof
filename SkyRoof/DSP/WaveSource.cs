@@ -3,27 +3,22 @@ using MathNet.Numerics;
 
 namespace VE3NEA
 {
+  // <T> is float or Complex32
   public class WaveSource<T> : IWaveSource
   {
-    public const int AUDIO_SAMPLING_RATE = 48_000;
-
     private readonly WaveFormat format;
-    private RingBuffer<T> ringBuffer = new(AUDIO_SAMPLING_RATE / 5);
+    public RingBuffer<T> Buffer { get; private set; }
 
-    public WaveSource(int? samplingRate = null)
+    public WaveSource(int samplingRate)
     {
       int channelCount = typeof(T) == typeof(Complex32) ? 2 : 1;
-      format = new WaveFormat(samplingRate ?? AUDIO_SAMPLING_RATE, 32, channelCount, AudioEncoding.IeeeFloat);
+      format = new WaveFormat(samplingRate, 32, channelCount, AudioEncoding.IeeeFloat);
+      Buffer = new(2 * samplingRate);
     }
 
   public void AddSamples(T[] samples, int offset = 0, int? count = null)
     {
-      ringBuffer.Write(samples, offset, count ?? samples.Length);
-    }
-
-    public void ClearBuffer()
-    {
-      ringBuffer.Clear(); 
+      Buffer.Write(samples, offset, count ?? samples.Length);
     }
 
 
@@ -38,7 +33,7 @@ namespace VE3NEA
     public long Length => throw new NotImplementedException();
     public int Read(byte[] buffer, int offset, int count)
     {
-      ringBuffer.ReadBytes(buffer, offset, count);
+      Buffer.ReadBytes(buffer, offset, count);
       return count;
     }
 
