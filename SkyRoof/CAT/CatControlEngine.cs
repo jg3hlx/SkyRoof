@@ -246,9 +246,8 @@ namespace SkyRoof
 
       long frequency = ReadFrequency(command);
 
-      bool changed = LastReadTxFrequency != 0 &&
-        IsDiff(frequency, LastReadTxFrequency) &&
-        IsDiff(frequency, LastWrittenTxFrequency) &&
+      bool changed = LastReadTxFrequency != 0 && LastWrittenTxFrequency != 0 &&
+        IsDiff(frequency, LastReadTxFrequency) && IsDiff(frequency, LastWrittenTxFrequency) &&
         IsDiff(frequency, LastWrittenRxFrequency);
 
       LastReadTxFrequency = frequency;
@@ -645,7 +644,8 @@ namespace SkyRoof
 
     protected void OnTxFrequencyChanged()
     {
-      LogFreqs($"OnTxFrequencyChanged");
+      LogInfo($"OnTxFrequencyChanged:  (TxRequested={RequestedTxFrequency}  TxWritten={LastWrittenTxFrequency}  TxRdead={LastReadTxFrequency}  RxWritten={LastWrittenRxFrequency}  RxRead={LastReadRxFrequency})");
+
       syncContext.Post(s => TxTuned?.Invoke(this, EventArgs.Empty), null);
     }
   }

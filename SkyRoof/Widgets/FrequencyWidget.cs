@@ -124,6 +124,9 @@ namespace SkyRoof
 
     internal void TxTuned()
     {
+      // when FT4 XIT is on, ignore dial knob
+      if (RadioLink.XitOffset != 0) return;
+
       int delta = (int)(ctx.CatControl.Tx!.LastReadTxFrequency - RadioLink.CorrectedUplinkFrequency);
       RadioLink.IncrementUplinkFrequency(delta);
       RadioLinkToRadio();
@@ -177,6 +180,7 @@ namespace SkyRoof
       RadioLink.XitOffset = RadioLink.Tx?.invert == true ? -xit : xit;
       RadioLink.ComputeFrequencies();
       RadioLinkToRadio();
+      FrequenciesToUi();
     }
 
 
