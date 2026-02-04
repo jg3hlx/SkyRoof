@@ -60,8 +60,8 @@ namespace SkyRoof
 
       try
       {
-
-        SendWriteCommand($"P {RequestedBearing!.AzDeg:F1} {RequestedBearing.ElDeg:F1}");
+        SendWriteCommand($"P {RequestedBearing!.AzDeg.ToString("F1", CultureInfo.InvariantCulture)} " + 
+          $"{RequestedBearing.ElDeg.ToString("F1", CultureInfo.InvariantCulture)}");
       }
       catch (Exception ex)
       {
