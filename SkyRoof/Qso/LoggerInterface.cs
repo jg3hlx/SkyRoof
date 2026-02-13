@@ -40,6 +40,7 @@ namespace SkyRoof
         ["MODE"] = Mode,
       };
 
+      if (Mode == "MFSK") entry["SUBMODE"] = "FT4";
       if (Grid != "") entry["GRIDSQUARE"] = Grid;
       if (State != "") entry["STATE"] = State;
       if (Sent != "") entry["RST_SENT"] = Sent;

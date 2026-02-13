@@ -167,7 +167,7 @@ namespace SkyRoof
     public void SendLogQsoMessage(QsoInfo qso)
     {
       if (!Active) return;
-      if (qso.Mode != "FT4") return;
+      if (qso.Mode != "MFSK") return;
 
       WritableQsoLogged msg = MakeQsoLoggedMessage(qso);
       SendMessage(MessageToBytes(msg));

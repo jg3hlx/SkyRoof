@@ -33,7 +33,7 @@ namespace SkyRoof
 
       Changing = true;
       BandComboBox.DataSource = new string[] { "2m", "70cm", "23cm", "13cm" };
-      ModeComboBox.DataSource = new string[] { "CW", "SSB", "FM", "FT4" };
+      ModeComboBox.DataSource = new string[] { "CW", "SSB", "FM", "MFSK" };
       StateComboBox.DataSource = States.Split(',');
       SatComboBox.DataSource = new SatelliteNames().Lotw.Values.ToArray();
 
@@ -158,7 +158,7 @@ namespace SkyRoof
       else if (mode == Slicer.Mode.FM || mode == Slicer.Mode.FM_D)
         newMode = "FM";
       else if (mode == Slicer.Mode.USB_D || mode == Slicer.Mode.LSB_D)
-        newMode = "FT4";
+        newMode = "MFSK";
       else
         newMode = string.Empty;
 
