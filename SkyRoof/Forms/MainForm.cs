@@ -212,6 +212,7 @@ namespace SkyRoof
       ctx.Slicer = new Slicer(rate, 0, mode);
       ctx.Slicer.AudioDataAvailable += Slicer_AudioDataAvailable;
       ctx.Slicer.IqDataAvailable += Slicer_IqDataAvailable;
+      ctx.Slicer.Squelch.Enabled = ctx.Settings.Audio.Squelch;
     }
 
     private void Slicer_IqDataAvailable(object? sender, DataEventArgs<Complex32> e)
