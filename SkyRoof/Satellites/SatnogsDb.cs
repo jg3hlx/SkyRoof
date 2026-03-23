@@ -180,7 +180,6 @@ namespace SkyRoof
         {
           if (sat.norad_cat_id != null)
           {
-            sat.AmsatEntries = satNames.Amsat.GetValueOrDefault(sat.norad_cat_id.Value) ?? new();
             sat.LotwName = satNames.Lotw.GetValueOrDefault(sat.norad_cat_id.Value);
             if (sat.LotwName != null) { sat.name = sat.LotwName; sat.names += ", " + sat.LotwName; }
           }

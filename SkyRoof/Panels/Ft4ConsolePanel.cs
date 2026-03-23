@@ -531,7 +531,7 @@ namespace SkyRoof
       qso.Utc = DateTime.UtcNow;
       qso.Call = Sequencer.HisCall ?? Sequencer.LastHisCall ?? "NO CALLSIGN"; 
       qso.Band = band;
-      qso.Mode = "FT4";
+      qso.Mode = "MFSK";
       qso.Sat = sat;
       qso.Grid = Sequencer.HisSquare ?? "";
       qso.State = "";

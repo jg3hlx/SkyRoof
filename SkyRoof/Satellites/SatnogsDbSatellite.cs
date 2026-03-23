@@ -212,17 +212,17 @@ namespace SkyRoof
       AllNames.Add(name);
       AllNames.AddRange(names.Replace("\r\n", ",").Split(",").Select(n => n.Trim()));
 
-      if (Tle != null)
-      {
-        string tleName = Tle.tle0.StartsWith("0 ") ? Tle.tle0.Substring(2) : Tle.tle0;
-        AllNames.Add(tleName);
-      }
+      AllNames.AddRange(AmsatEntries);
+
+      if (LotwName != null) { name = LotwName; AllNames.Add(LotwName); }
+      
+      if (Tle != null) AllNames.Add(Tle.tle0.StartsWith("0 ") ? Tle.tle0.Substring(2) : Tle.tle0);
 
       AllNames.AddRange(JE9PEL_Names);
       AllNames.AddRange(JE9PEL_Callsigns);
 
       AllNames = AllNames.Distinct().Where(n => n != "").ToList();
-      SearchText = $"{string.Join("|", AllNames.Select(MakeSearchText))}|{norad_cat_id}";
+      SearchText = $"|{string.Join("|", AllNames.Select(MakeSearchText))}|{norad_cat_id}|";
     }
 
     internal void SetFlags()

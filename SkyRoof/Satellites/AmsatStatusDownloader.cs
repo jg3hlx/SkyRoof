@@ -1,8 +1,11 @@
-﻿using System.Xml.Linq;
+﻿using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using AngleSharp;
 using AngleSharp.Dom;
 using Serilog;
 using VE3NEA;
+using System.Text.RegularExpressions;
+using System.Linq.Expressions;
 
 
 namespace SkyRoof
@@ -10,8 +13,9 @@ namespace SkyRoof
   public class AmsatStatusLoader
   {
     private readonly string url = "https://www.amsat.org/status/?app=SkyRoof";
-    private readonly string[] activeColors = ["#4169E1", "#9900FF"];
-    private readonly string[] inactiveColors = ["yellow", "red"]; 
+    private readonly string[] activeColors = ["#009E73", "#CC79A7"];   // green, purple
+    private readonly string[] inactiveColors = ["#F0E442", "#C0392B"]; // yellow, red
+    private readonly string[] skipColors = ["C0C0C0", "#E69F00"];     // gray (, orange
 
     public readonly Dictionary<int, bool> Statuses = [];
     public Context ctx;
@@ -34,6 +38,7 @@ namespace SkyRoof
 
       try
       {
+        ExtractSatLabels(html);
         ParseAmsatHtml(html);
       }
       catch (Exception ex)
@@ -45,6 +50,43 @@ namespace SkyRoof
 
       ctx.GroupViewPanel?.ShowAmsatStatuses();
       return true;
+    }
+
+    private readonly Regex optionsRx = new Regex(@"(?is)<select\s+name\s*=\s*[""']SatName[""'][^>]*>(?:(?:(?!</select>).)*?\bvalue\s*=\s*[""']([^""']*)[""'])*.*?</select>");
+    private readonly Regex tupleRx = new Regex(@"^(.*?)_\[([^\]]*)\]$");
+    private void ExtractSatLabels(string html)
+    {
+
+      try
+      {
+        // extract entries
+        var m = optionsRx.Match(html);
+        if (!m.Success) throw new Exception("Satellite labels not found");
+        var entries = m.Groups[1].Captures.Skip(1).Select(c => c.Value).ToArray();
+        if (entries.Length == 0) throw new Exception("0 satellite labels found");
+
+        // clear old entries
+        foreach (var sat in ctx.SatnogsDb.Satellites) sat.AmsatEntries = [];
+
+        // add amsat names to the sat
+        foreach (var entry in entries)
+        {
+          var name = SatnogsDbSatellite.MakeSearchText(tupleRx.Match(entry).Groups[1].Value);
+          var sats = ctx.SatnogsDb.Satellites.Where(s => s.SearchText.Contains($"|{name}|")).ToArray();
+
+          if (sats.Length == 1)
+            sats[0].AmsatEntries.Add(entry);
+          else
+            Log.Warning($"{sats.Length} satellites found for AMSAT label {name}");
+        }
+
+        // rebuild AllNames for the sat
+        foreach (var sat in ctx.SatnogsDb.Satellites) sat.BuildAllNames();
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, "Error extracting satellite labels from AMSAT status HTML");
+      }
     }
 
     private async void ParseAmsatHtml(string html)
@@ -64,27 +106,29 @@ namespace SkyRoof
       {
         var cells = row.QuerySelectorAll("td").ToArray();
         string satId = cells[0].TextContent;
-        int? norad_id = new SatelliteNames().Amsat.FirstOrDefault(s => s.Value.Contains(satId)).Key;
+        var sat = ctx.SatnogsDb.Satellites.FirstOrDefault(s => s.AmsatEntries.Contains(satId));
 
-        if (norad_id == null)
+        if (sat == null)
         {
           Log.Warning($"Parsing AMSAT status error: no norad_id found for {satId}");
           return;
         }
 
         string? color = cells.Skip(1).Take(24).Select(cell => cell.GetAttribute("bgcolor"))
-          .Where(color => color != "C0C0C0").FirstOrDefault();
+          .FirstOrDefault(color => !skipColors.Contains(color));
 
         bool status;
         if (activeColors.Contains(color)) status = true;
         else if (inactiveColors.Contains(color)) status = false;
         else return;
 
-        if (Statuses.ContainsKey(norad_id.Value))
+        int norad_id = sat.norad_cat_id!.Value;
+
+        if (Statuses.ContainsKey(norad_id))
           // true if at least one transmitter is active
-          Statuses[norad_id.Value] = Statuses[norad_id.Value] || status;
+          Statuses[norad_id] = Statuses[norad_id] || status;
         else
-          Statuses[norad_id.Value] = status;
+          Statuses[norad_id] = status;
       }
     }
 

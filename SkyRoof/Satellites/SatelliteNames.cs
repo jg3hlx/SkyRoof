@@ -6,7 +6,6 @@ namespace SkyRoof
 {
   public class SatelliteNames
   {
-    public readonly Dictionary<int, List<string>> Amsat;
     public readonly Dictionary<int, string> Lotw;
 
     public SatelliteNames()
@@ -14,11 +13,7 @@ namespace SkyRoof
       string dir = Utils.GetUserDataFolder();
       Directory.CreateDirectory(dir);
 
-      string path = Path.Combine(dir, "amsat_sat_names.json");
-      if (!File.Exists(path)) File.WriteAllBytes(path, Resources.amsat_sat_names);
-      Amsat = JsonConvert.DeserializeObject<Dictionary<int, List<string>>>(File.ReadAllText(path))!;
-
-      path = Path.Combine(dir, "lotw_sat_names.json");
+      string path = Path.Combine(dir, "lotw_sat_names.json");
       if (!File.Exists(path)) File.WriteAllBytes(path, Resources.lotw_sat_names);
       Lotw = JsonConvert.DeserializeObject<Dictionary<int, string>>(File.ReadAllText(path))!;
     }
