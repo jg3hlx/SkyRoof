@@ -1,11 +1,9 @@
 ﻿using System.Text.RegularExpressions;
-using System.Xml.Linq;
+using System.Web;
 using AngleSharp;
 using AngleSharp.Dom;
 using Serilog;
 using VE3NEA;
-using System.Text.RegularExpressions;
-using System.Linq.Expressions;
 
 
 namespace SkyRoof
@@ -140,6 +138,50 @@ namespace SkyRoof
           var response = await client.GetAsync(url);
           return await response.Content.ReadAsStringAsync();
         }
+    }
+
+    public string? SendAmsatStatus(string satName, string report)
+    {
+      try
+      {
+        // build message
+        var queryParams = HttpUtility.ParseQueryString("");
+        var now = DateTime.UtcNow - TimeSpan.FromMinutes(1); // margin for time error on the server
+
+        queryParams["SatSubmit"] = "yes";
+        queryParams["Confirm"] = "yes";
+        queryParams["SatName"] = satName;
+        queryParams["SatYear"] = $"{now.Year}";
+        queryParams["SatMonth"] = $"{now.Month:D2}";
+        queryParams["SatDay"] = $"{now.Day:D2}";
+        queryParams["SatHour"] = $"{now.Hour}";
+        queryParams["SatPeriod"] = $"{now.Minute / 15}";
+        queryParams["SatCall"] = $"{ctx.Settings.User.Call.ToUpper()}";
+        queryParams["SatReport"] = report;
+        queryParams["SatGridSquare"] = $"{ctx.Settings.User.Square.ToUpper()}";
+        queryParams["App"] = "SkyRoof";
+
+        // send
+        string urlString = $"https://www.amsat.org/status/submit.php?{queryParams}";
+        HttpClient client = new();
+        var response = client.GetAsync(urlString).Result;
+
+        // log
+        var content = response.Content.ReadAsStringAsync().Result;
+        content = Utils.HtmlToText(content).Replace("\n", " ");
+        content = Regex.Replace(content, @"\s+", " ");
+        Log.Information($"AMSAT request: {urlString}");
+        Log.Information($"AMSAT reply: {content}");
+
+        if (!response.IsSuccessStatusCode) throw new Exception($"HTTP error {response.StatusCode}");
+
+        return null; // no error
+      }
+      catch (Exception ex)
+      {
+        Log.Error(ex, "Failed to send AMSAT status");
+        return ex.Message;
+      }
     }
   }
 }

@@ -74,9 +74,12 @@ namespace SkyRoof
   {
     private bool DllAvailable;
     private AdifLogger? AdifLogger;
+    private readonly Context ctx;
 
     public LoggerInterface(Context ctx)
     {
+      this.ctx = ctx;
+
       try
       {
         LoggerInterfaceDll.Init();
@@ -102,6 +105,8 @@ namespace SkyRoof
         Log.Information("QSO Saved.");
       else
         MessageBox.Show("Save QSO failed: " + result, "Save QSO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+        ctx.MainForm.BeginInvoke(() => { CheckSendAmsatStatus(qso.Utc); });
     }
 
     public QsoInfo Augment(QsoInfo qso)
@@ -172,6 +177,26 @@ namespace SkyRoof
       {
         return ex.Message;
       }
+    }
+
+    (string satName, int orbit) LastSentInfo = ("", 0);
+    private void CheckSendAmsatStatus(DateTime utc)
+    {
+      // do not post old qso
+      var minutesAgo = (DateTime.UtcNow - utc).TotalMinutes;
+      if (minutesAgo < 0 || minutesAgo > 30) return;
+
+      // get info
+      var sat = ctx.SatelliteSelector.SelectedSatellite;
+      if (sat == null || sat.AmsatEntries.Count == 0) return;
+
+      var pass = ctx.HamPasses.GetNextPass(sat);
+      if (pass == null || pass.StartTime > DateTime.UtcNow || pass.EndTime < DateTime.UtcNow) return;
+
+      // ask only once
+      var info = (sat.AmsatEntries[0], pass.OrbitNumber);
+      if (info != LastSentInfo) AmsatReportDialog.SendReport(ctx, sat);
+      LastSentInfo = info;
     }
   }
 }

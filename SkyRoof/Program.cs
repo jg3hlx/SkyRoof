@@ -19,7 +19,7 @@ namespace SkyRoof
         }
         finally
         {
-          Log.Information("Stopping SkyRoof\r\n-----------------------\r\n");
+          Log.Information("Stopping SkyRoof\r\n\r\n-----------------------\r\n");
           Log.CloseAndFlush();
         }
       }

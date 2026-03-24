@@ -1,9 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using System.Web;
-using Serilog;
-using VE3NEA;
-
-namespace SkyRoof
+﻿namespace SkyRoof
 {
   public partial class AmsatReportDialog : Form
   {
@@ -36,41 +31,12 @@ namespace SkyRoof
       comboBox2.SelectedIndex = 0;
     }
 
-
     private void okBtn_Click(object sender, EventArgs e)
     {
-      var queryParams = HttpUtility.ParseQueryString("");
-      var now = DateTime.UtcNow;
-
-      queryParams["SatSubmit"] = "yes";
-      queryParams["Confirm"] = "yes";
-      queryParams["SatName"] = comboBox1.Text;
-      queryParams["SatYear"] = $"{now.Year}";
-      queryParams["SatMonth"] = $"{now.Month:D2}";
-      queryParams["SatDay"] = $"{now.Day:D2}";
-      queryParams["SatHour"] = $"{now.Hour}";
-      queryParams["SatPeriod"] = $"{now.Minute / 15}";
-      queryParams["SatCall"] = $"{ctx.Settings.User.Call.ToUpper()}";
-      queryParams["SatReport"] = comboBox2.Text;
-      queryParams["SatGridSquare"] = $"{ctx.Settings.User.Square.ToUpper()}";
-      queryParams["App"] = "SkyRoof";
-
-      string urlString = $"https://www.amsat.org/status/submit.php?{queryParams}";
-      HttpClient client = new();
-      var response = client.GetAsync(urlString).Result;
-      var content = response.Content.ReadAsStringAsync().Result;
-      content = Utils.HtmlToText(content).Replace("\n", " ");
-      content = Regex.Replace(content, @"\s+", " ");
-      Log.Information($"AMSAT requesdt: {urlString}");
-      Log.Information($"AMSAT reply: {content}");
-
-      if (!response.IsSuccessStatusCode)
-      {
-        string errorMessage = $"Error {response.StatusCode} sending AMSAT report";
-        Log.Error(errorMessage);
+      string? errorMessage = ctx.AmsatStatusLoader.SendAmsatStatus(comboBox1.Text, comboBox2.Text);
+      if (errorMessage != null) 
         MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-
+ 
       Close();
     }
   }
