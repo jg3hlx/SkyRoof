@@ -19,7 +19,7 @@ namespace SkyRoof
     public RadioLink RadioLink = new();
     private bool Changing;
     private readonly FrequencyEntryForm FrequencyDialog = new();
-
+    private readonly Slicer.Mode[] LsbModes = [Slicer.Mode.LSB, Slicer.Mode.LSB_D];
 
     public FrequencyWidget()
     {
@@ -167,6 +167,7 @@ namespace SkyRoof
     // from FT4 self-decode
     internal void AdjustUplinkOffset(double error)
     {
+      bool invert = RadioLink.Tx?.invert == true ^ LsbModes.Contains(RadioLink.DownlinkMode); 
       RadioLink.UplinkManualCorrection -= RadioLink.Tx?.invert == true ? -error : error;
       RadioLink.ComputeFrequencies();
       RadioLinkToRadio();

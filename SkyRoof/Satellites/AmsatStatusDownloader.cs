@@ -154,7 +154,7 @@ namespace SkyRoof
         queryParams["SatYear"] = $"{now.Year}";
         queryParams["SatMonth"] = $"{now.Month:D2}";
         queryParams["SatDay"] = $"{now.Day:D2}";
-        queryParams["SatHour"] = $"{now.Hour}";
+        queryParams["SatHour"] = $"{now.Hour:D2}";
         queryParams["SatPeriod"] = $"{now.Minute / 15}";
         queryParams["SatCall"] = $"{ctx.Settings.User.Call.ToUpper()}";
         queryParams["SatReport"] = report;

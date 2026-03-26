@@ -570,7 +570,7 @@ namespace SkyRoof
       if (e.Item.FromMe && ModifierKeys == Keys.Control)
         AdjustUplinkOffset(e.Item);
 
-      else if (Sender.Mode != SenderMode.Tuning)
+      else if (!e.Item.FromMe && Sender.Mode != SenderMode.Tuning)
         if (Sequencer.ProcessMessage(e.Item, true))
           SetTxMessage(!e.Item.Odd);
     }
