@@ -11,9 +11,9 @@ namespace SkyRoof
   public class AmsatStatusLoader
   {
     private readonly string url = "https://www.amsat.org/status/?app=SkyRoof";
-    private readonly string[] activeColors = ["#009E73", "#CC79A7"];   // green, purple
-    private readonly string[] inactiveColors = ["#F0E442", "#C0392B"]; // yellow, red
-    private readonly string[] skipColors = ["C0C0C0", "#E69F00"];     // gray (, orange
+    private readonly string[] activeColors = ["#648fff", "#785ef0"];   // blue, purple
+    private readonly string[] inactiveColors = ["#ffb000", "#dc267f"]; // yellow, red
+    private readonly string[] skipColors = ["C0C0C0", "#fe6100"];     // gray, orange
 
     public readonly Dictionary<int, bool> Statuses = [];
     public Context ctx;
