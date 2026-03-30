@@ -60,6 +60,16 @@ namespace SkyRoof
     [DefaultValue(5)]
     public int StepSize { get; set; } = 5;
 
+    [DisplayName("Parking Azimuth")]
+    [Description("Azimuth of the parking position")]
+    [DefaultValue(0)]
+    public int ParkAzimuth { get; set; }
+
+    [DisplayName("Parking Elevation")]
+    [Description("Elevation of the parking position")]
+    [DefaultValue(0)]
+    public int ParkElevation { get; set; }
+
     public override string ToString() { return string.Empty; }
   }
 }

@@ -19,18 +19,26 @@ namespace SkyRoof
       ShowDialog();
     }
 
+    private void OkBtn_Click(object sender, EventArgs e)
+    {
+      StartRotation();
+      Close();
+    }
+
+    private void ParkBtn_Click(object sender, EventArgs e)
+    {
+      AzimuthSpinner.Value = ctx.Settings.Rotator.ParkAzimuth;
+      ElevationSpinner.Value = ctx.Settings.Rotator.ParkElevation;
+      StartRotation();
+      Close();
+    }
+
     private void SetupSpinners()
     {
       AzimuthSpinner.Minimum = ctx.Settings.Rotator.MinAzimuth;
       AzimuthSpinner.Maximum = ctx.Settings.Rotator.MaxAzimuth;
       ElevationSpinner.Minimum = ctx.Settings.Rotator.MinElevation;
       ElevationSpinner.Maximum = ctx.Settings.Rotator.MaxElevation;
-    }
-
-    private void OkBtn_Click(object sender, EventArgs e)
-    {
-      StartRotation();
-      Close();
     }
 
     private void StartRotation()

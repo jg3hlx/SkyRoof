@@ -35,6 +35,7 @@
       label2 = new Label();
       AzimuthSpinner = new NumericUpDown();
       ElevationSpinner = new NumericUpDown();
+      ParkBtn = new Button();
       panel1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)AzimuthSpinner).BeginInit();
       ((System.ComponentModel.ISupportInitialize)ElevationSpinner).BeginInit();
@@ -42,18 +43,18 @@
       // 
       // panel1
       // 
+      panel1.Controls.Add(ParkBtn);
       panel1.Controls.Add(CancelBtn);
       panel1.Controls.Add(OkBtn);
       panel1.Dock = DockStyle.Bottom;
       panel1.Location = new Point(0, 75);
       panel1.Name = "panel1";
-      panel1.Size = new Size(213, 36);
+      panel1.Size = new Size(257, 36);
       panel1.TabIndex = 0;
       // 
       // CancelBtn
       // 
-      CancelBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      CancelBtn.Location = new Point(126, 7);
+      CancelBtn.Location = new Point(171, 8);
       CancelBtn.Name = "CancelBtn";
       CancelBtn.Size = new Size(75, 23);
       CancelBtn.TabIndex = 5;
@@ -62,8 +63,7 @@
       // 
       // OkBtn
       // 
-      OkBtn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      OkBtn.Location = new Point(41, 7);
+      OkBtn.Location = new Point(9, 8);
       OkBtn.Name = "OkBtn";
       OkBtn.Size = new Size(75, 23);
       OkBtn.TabIndex = 3;
@@ -75,7 +75,7 @@
       // 
       label1.AutoSize = true;
       label1.Font = new Font("Segoe UI", 12F);
-      label1.Location = new Point(19, 9);
+      label1.Location = new Point(41, 9);
       label1.Name = "label1";
       label1.Size = new Size(68, 21);
       label1.TabIndex = 1;
@@ -85,7 +85,7 @@
       // 
       label2.AutoSize = true;
       label2.Font = new Font("Segoe UI", 12F);
-      label2.Location = new Point(121, 9);
+      label2.Location = new Point(143, 9);
       label2.Name = "label2";
       label2.Size = new Size(73, 21);
       label2.TabIndex = 2;
@@ -94,7 +94,7 @@
       // AzimuthSpinner
       // 
       AzimuthSpinner.Font = new Font("Segoe UI", 12F);
-      AzimuthSpinner.Location = new Point(20, 35);
+      AzimuthSpinner.Location = new Point(42, 35);
       AzimuthSpinner.Name = "AzimuthSpinner";
       AzimuthSpinner.Size = new Size(68, 29);
       AzimuthSpinner.TabIndex = 1;
@@ -102,10 +102,20 @@
       // ElevationSpinner
       // 
       ElevationSpinner.Font = new Font("Segoe UI", 12F);
-      ElevationSpinner.Location = new Point(123, 35);
+      ElevationSpinner.Location = new Point(145, 35);
       ElevationSpinner.Name = "ElevationSpinner";
       ElevationSpinner.Size = new Size(68, 29);
       ElevationSpinner.TabIndex = 2;
+      // 
+      // ParkBtn
+      // 
+      ParkBtn.Location = new Point(90, 8);
+      ParkBtn.Name = "ParkBtn";
+      ParkBtn.Size = new Size(75, 23);
+      ParkBtn.TabIndex = 6;
+      ParkBtn.Text = "Park";
+      ParkBtn.UseVisualStyleBackColor = true;
+      ParkBtn.Click += ParkBtn_Click;
       // 
       // AzElEntryDialog
       // 
@@ -113,7 +123,7 @@
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       CancelButton = CancelBtn;
-      ClientSize = new Size(213, 111);
+      ClientSize = new Size(257, 111);
       Controls.Add(ElevationSpinner);
       Controls.Add(AzimuthSpinner);
       Controls.Add(label2);
@@ -142,5 +152,6 @@
     private Label label4;
     private NumericUpDown AzimuthSpinner;
     private NumericUpDown ElevationSpinner;
+    private Button ParkBtn;
   }
 }
