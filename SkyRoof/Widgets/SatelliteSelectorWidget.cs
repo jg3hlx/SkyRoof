@@ -163,7 +163,8 @@ namespace SkyRoof
     {
       var cust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(SelectedSatellite.sat_id);
       cust.SelectedTransmitterId ??= SelectedSatellite.Transmitters[0].uuid;
-      SelectedTransmitter = SelectedSatellite.Transmitters.First(t => t.uuid == cust.SelectedTransmitterId);
+      SelectedTransmitter = SelectedSatellite.Transmitters.FirstOrDefault(t => t.uuid == cust.SelectedTransmitterId);
+      SelectedTransmitter ??= SelectedSatellite.Transmitters[0];
 
       changing = true;
       TransmitterComboBox.SelectedItem = SelectedTransmitter;
