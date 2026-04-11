@@ -50,7 +50,8 @@ Click on **Tools / Settings** in the main menu to open the
 - **Azimuth Offset**, **Elevation Offset** - if your rotator is not perfectly calibrated, these settings
     allow you to apply a correction;
 - **Step Size** - to prevent the rotator from starting and stopping too often, change the bearing
-    only when the required change is greater than the step size. The default value is 5 degrees.
+    only when the required change is greater than the step size. The default value is 5 degrees;
+- **Parking Azimuth**, **Parking Elevation** - specify the parking position for your antenna.
 
 <br>
 

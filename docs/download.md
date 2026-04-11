@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.26](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.26/SkyRoofSetup-v.1.26.zip)
+[SkyRoof v.1.27](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.27/SkyRoofSetup-v.1.27.zip)
 
 <br>
 
@@ -15,6 +15,15 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.27
+
+- fixed decimal format in the rotator control command
+- mode set to MFSK for FT4 contacts in the ADIF file
+- squelch option save/restore fixed
+- updated satellite status retrieval to work with new AMSAT format
+- added antenna parting option
+- fixed error when selected transmitter is no longer in the database
 
 #### v.1.26
 

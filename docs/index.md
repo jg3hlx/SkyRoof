@@ -4,13 +4,13 @@ _layout: landing
 
 <center>
 
-# SkyRoof v.1.26
+# SkyRoof v.1.27
 
 A Windows application for Hams and satellite enthusiasts
 
 **open source**
 
-_Copyright &copy; 2025 Alex Shovkoplyas, VE3NEA_
+_Copyright &copy; 2025 - 2026 Alex Shovkoplyas, VE3NEA_
 
 ![email](images/email_me.png)
 

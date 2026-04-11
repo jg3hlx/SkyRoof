@@ -34,6 +34,9 @@ Click on the satellite position display to open the **Manual Rotator Control** w
 
 ![Manual Rotator Control](../images/manual_rotator_control.png)
 
+- click on **Go** to rotate the antenna to the specified azimuth and elevation;
+- click on **Park** to rotate the antenna to the parking position.
+
 ## Stopping
 
 To stop antenna rotation, either manual or due to the satellite tracking, click on the **Stop** button.
