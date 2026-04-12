@@ -16,8 +16,7 @@ namespace SkyRoof
 
     private const int STOPBAND_REJECTION_DB = 80;
     private const double USEFUL_BANDWIDTH = 0.95 * SdrConst.AUDIO_SAMPLING_RATE / 2; // 22 kHz useful at 48 KHz sampling rate
-    public const int OUTPUT_SAMPLING_RATE = 48000;
-
+    
     private int OctaveDecimationFactor, RationalInterpolationFactor, RationalDecimationFactor;
     private NativeLiquidDsp.nco_crcf* FirstMixer, SecondMixer;
     private NativeLiquidDsp.msresamp2_crcf* msresamp2;
@@ -76,7 +75,7 @@ namespace SkyRoof
       CreateFilter();
 
       float audioOffset = ModeOffsets[(int)CurrentMode];
-      NativeLiquidDsp.nco_crcf_set_frequency(SecondMixer, (float)(Geo.TwoPi * audioOffset / OUTPUT_SAMPLING_RATE));
+      NativeLiquidDsp.nco_crcf_set_frequency(SecondMixer, (float)(Geo.TwoPi * audioOffset / SdrConst.AUDIO_SAMPLING_RATE));
 
       SetOffset(offset);
     }
@@ -90,7 +89,7 @@ namespace SkyRoof
     public TimeSpan GetDelay()
     {
       double rationalDelaySamples = NativeLiquidDsp.rresamp_crcf_get_delay(rresamp);
-      double seconds = rationalDelaySamples / OUTPUT_SAMPLING_RATE;
+      double seconds = rationalDelaySamples / SdrConst.AUDIO_SAMPLING_RATE;
 
       if (OctaveDecimationFactor > 1)
       {
@@ -109,7 +108,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     private double CreateOctaveResampler()
     {
-      int octaveStageCount = (int)Math.Ceiling(Math.Log2(InputRate / OUTPUT_SAMPLING_RATE)) - 1;
+      int octaveStageCount = (int)Math.Ceiling(Math.Log2(InputRate / SdrConst.AUDIO_SAMPLING_RATE)) - 1;
       OctaveDecimationFactor = 1 << octaveStageCount;
       if (OctaveDecimationFactor == 1) return InputRate;
 
@@ -130,7 +129,7 @@ namespace SkyRoof
     private void CreateRationalResampler()
     {
       // find the ratio
-      double rationalResamplingFactor = OUTPUT_SAMPLING_RATE / RationalResamplerInputRate;
+      double rationalResamplingFactor = SdrConst.AUDIO_SAMPLING_RATE / RationalResamplerInputRate;
       Debug.Assert(rationalResamplingFactor >= 0.5 && rationalResamplingFactor < 1);
       (RationalInterpolationFactor, RationalDecimationFactor) = Dsp.ApproximateRatio(rationalResamplingFactor, 1e-4);
 

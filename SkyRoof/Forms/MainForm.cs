@@ -225,6 +225,8 @@ namespace SkyRoof
         ctx.IqVacSoundcard.AddSamples(e.Data);
       else if (ctx.Settings.OutputStream.Type == DataStreamType.IqToUdp)
         ctx.UdpStreamSender.Send(e.Data);
+
+      ctx.RecorderPanel?.AddIqSamples(e);
     }
 
     private void Slicer_AudioDataAvailable(object? sender, DataEventArgs<float> e)
@@ -241,6 +243,8 @@ namespace SkyRoof
         ctx.AudioVacSoundcard.AddSamples(e.Data);
       else if (ctx.Settings.OutputStream.Type == DataStreamType.AudioToUdp)
         ctx.UdpStreamSender.Send(e.Data);
+
+      ctx.RecorderPanel?.AddAudioSamples(e);
     }
 
     private void UpdateSdrLabel()
@@ -618,6 +622,14 @@ namespace SkyRoof
         ctx.Ft4ConsolePanel.Close();
     }
 
+    private void RecorderMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.RecorderPanel == null)
+        ShowFloatingPanel(new RecorderPanel(ctx));
+      else
+        ctx.RecorderPanel.Close();
+    }
+
     private void SettingsMNU_Click(object sender, EventArgs e)
     {
       new SettingsDialog(ctx).ShowDialog();
@@ -832,6 +844,7 @@ namespace SkyRoof
         case "SkyRoof.WaterfallPanel": return new WaterfallPanel(ctx);
         case "SkyRoof.QsoEntryPanel": return new QsoEntryPanel(ctx);
         case "SkyRoof.Ft4ConsolePanel": return new Ft4ConsolePanel(ctx);
+        case "SkyRoof.RecorderPanel": return new RecorderPanel(ctx);
 
         default: return null;
       }

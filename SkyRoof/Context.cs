@@ -36,6 +36,7 @@ namespace SkyRoof
     public WaterfallPanel? WaterfallPanel;
     public QsoEntryPanel? QsoEntryPanel;
     public Ft4ConsolePanel? Ft4ConsolePanel;
+    public RecorderPanel? RecorderPanel;
 
     // devices
     public SoapySdrDevice? Sdr;
@@ -61,6 +62,7 @@ namespace SkyRoof
       TransmittersPanel?.Close();
       WaterfallPanel?.Close();
       QsoEntryPanel?.Close();
+      RecorderPanel?.Close();
     }
   }
 }

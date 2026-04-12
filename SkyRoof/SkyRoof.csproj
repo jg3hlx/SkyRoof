@@ -124,6 +124,7 @@
     <None Include="..\Vendor\SoapySDR\SoapySDR.dll" Link="SoapySDR.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include=".github\copilot-instructions.md" />
     <None Include="C:\Proj\DSP\SkyRoof\SkyRoof\.editorconfig" />
   </ItemGroup>
 
@@ -134,6 +135,7 @@
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
     <PackageReference Include="MathNet.Filtering" Version="0.7.0" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />

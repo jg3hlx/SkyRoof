@@ -8,3 +8,5 @@
 - start comment with a lower case letter unless it is all-capitals
 - never remove any comments or blank lines
 - ensure that no syntax errors are introduced by your formatting changes
+
+- never implement functionality that was not explicitly requested. for example: if asked to add a "Save" button, add the button and any minimal wiring (event hookup) but do not implement the file-saving logic unless explicitly requested to do so.
