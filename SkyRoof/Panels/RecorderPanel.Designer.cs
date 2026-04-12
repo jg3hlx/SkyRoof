@@ -40,6 +40,7 @@ namespace SkyRoof
       PlaybackBtn = new Button();
       RecordTimeLabel = new Label();
       toolTip1 = new ToolTip(components);
+      GainSlider = new TrackBar();
       RecordMenu = new ContextMenuStrip(components);
       RecordAudioMNU = new ToolStripMenuItem();
       RecordIqMNU = new ToolStripMenuItem();
@@ -50,14 +51,13 @@ namespace SkyRoof
       ContainerPanel = new Panel();
       WaveformPanel = new Panel();
       SliderPanel = new Panel();
-      GainSlider = new TrackBar();
       StatusBar.SuspendLayout();
       ButtonPanel.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)GainSlider).BeginInit();
       RecordMenu.SuspendLayout();
       SaveMenu.SuspendLayout();
       ContainerPanel.SuspendLayout();
       SliderPanel.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)GainSlider).BeginInit();
       SuspendLayout();
       // 
       // StatusBar
@@ -167,6 +167,20 @@ namespace SkyRoof
       RecordTimeLabel.Text = "Audio 00:00";
       RecordTimeLabel.Visible = false;
       // 
+      // GainSlider
+      // 
+      GainSlider.Dock = DockStyle.Fill;
+      GainSlider.LargeChange = 1;
+      GainSlider.Location = new Point(0, 0);
+      GainSlider.Maximum = 40;
+      GainSlider.Name = "GainSlider";
+      GainSlider.Orientation = Orientation.Vertical;
+      GainSlider.Size = new Size(27, 133);
+      GainSlider.TabIndex = 0;
+      GainSlider.TickFrequency = 20;
+      toolTip1.SetToolTip(GainSlider, "Gain 0 dB");
+      GainSlider.ValueChanged += GainSlider_ValueChanged;
+      // 
       // RecordMenu
       // 
       RecordMenu.Items.AddRange(new ToolStripItem[] { RecordAudioMNU, RecordIqMNU });
@@ -229,13 +243,14 @@ namespace SkyRoof
       // 
       // WaveformPanel
       // 
-      WaveformPanel.BackColor = Color.White;
+      WaveformPanel.BackColor = Color.Black;
       WaveformPanel.Dock = DockStyle.Fill;
       WaveformPanel.Location = new Point(0, 0);
       WaveformPanel.Name = "WaveformPanel";
       WaveformPanel.Size = new Size(585, 133);
       WaveformPanel.TabIndex = 0;
       WaveformPanel.Paint += WaveformPanel_Paint;
+      WaveformPanel.Resize += WaveformPanel_Resize;
       // 
       // SliderPanel
       // 
@@ -246,20 +261,6 @@ namespace SkyRoof
       SliderPanel.Name = "SliderPanel";
       SliderPanel.Size = new Size(27, 133);
       SliderPanel.TabIndex = 1;
-      // 
-      // GainSlider
-      // 
-      GainSlider.Dock = DockStyle.Fill;
-      GainSlider.LargeChange = 1;
-      GainSlider.Location = new Point(0, 0);
-      GainSlider.Maximum = 20;
-      GainSlider.Name = "GainSlider";
-      GainSlider.Orientation = Orientation.Vertical;
-      GainSlider.Size = new Size(27, 133);
-      GainSlider.TabIndex = 0;
-      GainSlider.TickFrequency = 20;
-      GainSlider.Value = 20;
-      GainSlider.ValueChanged += GainSlider_ValueChanged;
       // 
       // RecorderPanel
       // 
@@ -279,12 +280,12 @@ namespace SkyRoof
       StatusBar.PerformLayout();
       ButtonPanel.ResumeLayout(false);
       ButtonPanel.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)GainSlider).EndInit();
       RecordMenu.ResumeLayout(false);
       SaveMenu.ResumeLayout(false);
       ContainerPanel.ResumeLayout(false);
       SliderPanel.ResumeLayout(false);
       SliderPanel.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)GainSlider).EndInit();
       ResumeLayout(false);
       PerformLayout();
     }

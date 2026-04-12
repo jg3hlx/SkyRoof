@@ -9,7 +9,10 @@ namespace SkyRoof
 {
   public partial class RecorderPanel : DockContent
   {
-    private readonly Context ctx;
+    private readonly Context ctx = null!;
+    private static readonly Color waveformBackgroundColor = Color.Black;
+    private static readonly Color waveformForegroundColor = Color.Aqua;
+    private static readonly Color waveformAxisColor = Color.Teal;
     private bool isRecordingAudio => iqBuffer == null;
     private bool isRecording = false;
 
@@ -34,6 +37,7 @@ namespace SkyRoof
     public RecorderPanel(Context ctx)
     {
       InitializeComponent();
+      Utils.SetDoubleBuffered(WaveformPanel, true);
 
       this.ctx = ctx;
       Log.Information("Creating RecorderPanel");
@@ -43,7 +47,7 @@ namespace SkyRoof
 
       // Initialize recording timer
       recordingTimer = new System.Windows.Forms.Timer();
-      recordingTimer.Interval = 1000; 
+      recordingTimer.Interval = 1000;
       recordingTimer.Tick += RecordingTimer_Tick;
 
       ApplySettings();
@@ -90,7 +94,7 @@ namespace SkyRoof
     private void RecordBtn_Click(object sender, EventArgs e)
     {
       if (isRecording) StopRecording();
-      else RecordAudioMNU_Click(sender, e); 
+      else RecordAudioMNU_Click(sender, e);
     }
 
     private void RecordMenuBtn_Click(object sender, EventArgs e)
@@ -126,9 +130,9 @@ namespace SkyRoof
     }
 
     private void SaveWavMNU_Click(object sender, EventArgs e)
-   {
+    {
       SaveRecordingWithDialog("wav");
-   }
+    }
 
     private void LoadBtn_Click(object sender, EventArgs e)
     {
@@ -199,6 +203,7 @@ namespace SkyRoof
       toolTip1.SetToolTip(RecordBtn, "Stop Recording");
 
       isRecording = true;
+      WaveformPanel.Invalidate();
     }
 
     private void StopRecording()
@@ -222,6 +227,8 @@ namespace SkyRoof
       LoadBtn.Enabled = true;
       PlaybackBtn.Enabled = bufferPosition > 0;
       toolTip1.SetToolTip(RecordBtn, "Record Audio");
+
+      WaveformPanel.Invalidate();
     }
 
     private void SetSaveButtonsEnabled(bool enabled)
@@ -332,106 +339,7 @@ namespace SkyRoof
 
       StatusLabel.Text = $"Loaded {Path.GetFileName(filename)}";
       Log.Information($"Recording loaded from {filename}");
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                        write file
-    //----------------------------------------------------------------------------------------------
-
-    private void SaveRecordingWithDialog(string ext)
-    {
-      bool isMp3 = ext == "mp3";
-      bool isIqWav = ext == "wav" && !isRecordingAudio;
-
-      using var dialog = new SaveFileDialog();
-      dialog.Filter = isMp3
-        ? "MP3 Files (*.mp3)|*.mp3|All Files (*.*)|*.*" 
-        : isIqWav
-          ? "I/Q WAV Files (*.iq.wav)|*.iq.wav|WAV Files (*.wav)|*.wav|All Files (*.*)|*.*"
-          : "WAV Files (*.wav)|*.wav|All Files (*.*)|*.*";
-      dialog.DefaultExt = isIqWav ? "iq.wav" : ext;
-      dialog.InitialDirectory = GetRecordingsPath();
-      dialog.FileName = isIqWav
-        ? $"{DateTime.Now:yyyy-MM-dd_HH_mm_ss}.iq.wav"
-        : $"{DateTime.Now:yyyy-MM-dd_HH_mm_ss}.{ext}";
-
-      if (dialog.ShowDialog() != DialogResult.OK) return;
-
-      string fileName = isIqWav ? EnsureIqWavExtension(dialog.FileName) : dialog.FileName;
-
-      try
-      {
-        if (isMp3) SaveRecordingAsMp3(fileName);
-        else SaveRecordingAsWav(fileName);
-
-        StatusLabel.Text = $"Saved to {Path.GetFileName(fileName)}";
-        Log.Information($"Recording saved to {fileName}");
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        Log.Error(ex, "Error saving recording");
-      }
-    }
-
-    private string EnsureIqWavExtension(string fileName)
-    {
-      if (fileName.EndsWith(".iq.wav", StringComparison.OrdinalIgnoreCase)) return fileName;
-      if (fileName.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
-        return fileName[..^4] + ".iq.wav";
-
-      return fileName + ".iq.wav";
-    }
-
-    private string GetRecordingsPath()
-    {
-      string path = Path.Combine(Utils.GetUserDataFolder(), "Recordings");
-      Directory.CreateDirectory(path);
-      return path;
-    }
-
-    private void SaveRecordingAsWav(string fileName)
-    {
-      if (audioBuffer != null)
-      {
-        // write only recorded frames
-        WriteWav(fileName, audioBuffer, 1, bufferPosition);
-        return;
-      }
-
-      if (iqBuffer == null)
-        throw new InvalidOperationException("No recording to save");
-
-      float[] interleaved = new float[bufferPosition * 2];
-      for (int i = 0; i < bufferPosition; i++)
-      {
-        interleaved[2 * i] = iqBuffer[i].Real;
-        interleaved[2 * i + 1] = iqBuffer[i].Imaginary;
-      }
-
-      // framesCount is bufferPosition (each frame has two floats)
-      WriteWav(fileName, interleaved, 2, bufferPosition);
-    }
-
-    private void SaveRecordingAsMp3(string filename)
-    {
-      if (audioBuffer == null)
-        throw new InvalidOperationException("No audio data available for MP3 export");
-
-      short[] pcm = new short[bufferPosition];
-      for (int i = 0; i < bufferPosition; i++)
-      {
-        float sample = Math.Clamp(audioBuffer[i], -1f, 1f);
-        pcm[i] = (short)(sample * short.MaxValue);
-      }
-
-      byte[] buffer = new byte[pcm.Length * sizeof(short)];
-      Buffer.BlockCopy(pcm, 0, buffer, 0, buffer.Length);
-
-      var format = new WaveFormat(SdrConst.AUDIO_SAMPLING_RATE, 16, 1);
-      using var stream = new MemoryStream(buffer, writable: false);
-      using var source = new RawSourceWaveStream(stream, format);
-      MediaFoundationEncoder.EncodeToMp3(source, filename);
+      WaveformPanel.Invalidate();
     }
 
     private float[] ReadAudioSamples(ISampleProvider reader)
@@ -490,6 +398,92 @@ namespace SkyRoof
       return samples;
     }
 
+
+
+    //----------------------------------------------------------------------------------------------
+    //                                        write file
+    //----------------------------------------------------------------------------------------------
+    private void SaveRecordingWithDialog(string ext)
+    {
+      bool isMp3 = ext == "mp3";
+      bool isIqWav = ext == "wav" && !isRecordingAudio;
+
+      using var dialog = new SaveFileDialog();
+      dialog.Filter = isMp3
+        ? "MP3 Files (*.mp3)|*.mp3|All Files (*.*)|*.*"
+        : isIqWav
+          ? "I/Q WAV Files (*.iq.wav)|*.iq.wav|WAV Files (*.wav)|*.wav|All Files (*.*)|*.*"
+          : "WAV Files (*.wav)|*.wav|All Files (*.*)|*.*";
+      dialog.DefaultExt = isIqWav ? "iq.wav" : ext;
+      dialog.InitialDirectory = GetRecordingsPath();
+      dialog.FileName = isIqWav
+        ? $"{DateTime.Now:yyyy-MM-dd_HH_mm_ss}.iq.wav"
+        : $"{DateTime.Now:yyyy-MM-dd_HH_mm_ss}.{ext}";
+
+      if (dialog.ShowDialog() != DialogResult.OK) return;
+
+      string fileName = isIqWav ? EnsureIqWavExtension(dialog.FileName) : dialog.FileName;
+
+      try
+      {
+        if (isMp3) SaveRecordingAsMp3(fileName);
+        else SaveRecordingAsWav(fileName);
+
+        StatusLabel.Text = $"Saved to {Path.GetFileName(fileName)}";
+        Log.Information($"Recording saved to {fileName}");
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        Log.Error(ex, "Error saving recording");
+      }
+    }
+
+    private void SaveRecordingAsWav(string fileName)
+    {
+      if (audioBuffer != null)
+      {
+        // write only recorded frames
+        WriteWav(fileName, audioBuffer, 1, bufferPosition);
+        return;
+      }
+
+      if (iqBuffer == null)
+        throw new InvalidOperationException("No recording to save");
+
+      float[] interleaved = new float[bufferPosition * 2];
+      for (int i = 0; i < bufferPosition; i++)
+      {
+        interleaved[2 * i] = iqBuffer[i].Real;
+        interleaved[2 * i + 1] = iqBuffer[i].Imaginary;
+      }
+
+      // framesCount is bufferPosition (each frame has two floats)
+      WriteWav(fileName, interleaved, 2, bufferPosition);
+    }
+
+    private void SaveRecordingAsMp3(string filename)
+    {
+      if (audioBuffer == null)
+        throw new InvalidOperationException("No audio data available for MP3 export");
+
+      short[] pcm = new short[bufferPosition];
+      for (int i = 0; i < bufferPosition; i++)
+      {
+        float sample = Math.Clamp(audioBuffer[i], -1f, 1f);
+        pcm[i] = (short)(sample * short.MaxValue);
+      }
+
+      byte[] buffer = new byte[pcm.Length * sizeof(short)];
+      Buffer.BlockCopy(pcm, 0, buffer, 0, buffer.Length);
+
+      var format = new WaveFormat(SdrConst.AUDIO_SAMPLING_RATE, 16, 1);
+      using var stream = new MemoryStream(buffer, writable: false);
+      using var source = new RawSourceWaveStream(stream, format);
+      MediaFoundationEncoder.EncodeToMp3(source, filename);
+    }
+
+
     private void WriteWav(string fileName, float[] samples, int channels, int framesCount)
     {
       if (framesCount <= 0) return;
@@ -506,24 +500,155 @@ namespace SkyRoof
       writer.Write(buffer, 0, buffer.Length);
     }
 
+    private string EnsureIqWavExtension(string fileName)
+    {
+      if (fileName.EndsWith(".iq.wav", StringComparison.OrdinalIgnoreCase)) return fileName;
+      if (fileName.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+        return fileName[..^4] + ".iq.wav";
+
+      return fileName + ".iq.wav";
+    }
+
+    private string GetRecordingsPath()
+    {
+      string path = Path.Combine(Utils.GetUserDataFolder(), "Recordings");
+      Directory.CreateDirectory(path);
+      return path;
+    }
+
 
 
     //----------------------------------------------------------------------------------------------
-    //                                        show info
+    //                                        draw
     //----------------------------------------------------------------------------------------------
     private void WaveformPanel_Paint(object sender, PaintEventArgs e)
     {
-      // Example:
+      var waveformRect = DrawWaveformBackground(e.Graphics, WaveformPanel.ClientRectangle);
+      DrawWaveformSamples(e.Graphics, waveformRect, WaveformPanel.ClientRectangle);
+      DrawTimeScale(e.Graphics, waveformRect, WaveformPanel.ClientRectangle);
+    }
 
-      Graphics g = e.Graphics;
-      g.Clear(Color.White);
-      g.DrawString("Waveform Display", Font, Brushes.Black, 10, 10);
+    private Rectangle DrawWaveformBackground(Graphics g, Rectangle bounds)
+    {
+      int textHeight = TextRenderer.MeasureText("0", Font, Size, TextFormatFlags.NoPadding).Height;
+      int scaleHeight = textHeight * 2 + 6;
+      Rectangle waveformRect = new Rectangle(bounds.Left, bounds.Top, bounds.Width, Math.Max(1, bounds.Height - scaleHeight));
+
+      int midY = waveformRect.Top + waveformRect.Height / 2;
+      using var axisPen = new Pen(waveformAxisColor);
+      g.DrawLine(axisPen, waveformRect.Left, midY, waveformRect.Right - 1, midY);
+      g.DrawLine(axisPen, waveformRect.Left, waveformRect.Top, waveformRect.Left, waveformRect.Bottom - 1);
+
+      return waveformRect;
+    }
+
+    private void DrawTimeScale(Graphics g, Rectangle waveformRect, Rectangle bounds)
+    {
+      double totalSeconds = (isRecording ? BUFFER_SIZE : Math.Max(bufferPosition, 0)) / (double)SdrConst.AUDIO_SAMPLING_RATE;
+      if (totalSeconds <= 0 || waveformRect.Width <= 10) return;
+
+      double[] StepsSec = { 1, 2, 5, 10, 20, 30, 60, 120, 300, 600, 1200, 1800, 3600 };
+      double[] SmallStepsSec = { 1.0 / 6.0, 0.5, 1, 2, 5, 10, 30, 60, 150, 300, 600, 900, 1800 };
+
+      double pixelsPerSecond = waveformRect.Width / Math.Max(1.0, totalSeconds);
+
+      double step = 0, smallStep = 0;
+      for (int i = 0; i < StepsSec.Length; i++)
+        if (StepsSec[i] * pixelsPerSecond > 59)
+        {
+          step = StepsSec[i];
+          smallStep = SmallStepsSec[i];
+          break;
+        }
+      if (step == 0) return;
+
+      g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+      int scaleShift = 8; // moved up 2 px earlier
+      int scaleTopY = Math.Min(bounds.Bottom - 1, waveformRect.Bottom + scaleShift);
+
+      // draw horizontal line along upper ends of ticks
+      using var scalePen = new Pen(waveformAxisColor);
+      g.DrawLine(scalePen, waveformRect.Left, scaleTopY, waveformRect.Right - 1, scaleTopY);
+
+      // draw small ticks (downwards from horizontal line)
+      double t = 0;
+      int smallLen = 4;
+      while (t <= totalSeconds)
+      {
+        int x = waveformRect.Left + (int)Math.Round(t * pixelsPerSecond);
+        g.DrawLine(scalePen, x, scaleTopY, x, scaleTopY + smallLen);
+        t += smallStep;
+      }
+
+      // draw major ticks and labels
+      t = 0;
+      int majorLen = 8;
+      while (t <= totalSeconds)
+      {
+        int x = waveformRect.Left + (int)Math.Round(t * pixelsPerSecond);
+        g.DrawLine(scalePen, x, scaleTopY, x, scaleTopY + majorLen);
+
+        TimeSpan ts = TimeSpan.FromSeconds(t);
+        string label = ts.TotalHours >= 1 ? $"{(int)ts.TotalHours:D2}:{ts:mm\\:ss}" : $"{ts:mm\\:ss}";
+        var size = TextRenderer.MeasureText(label, Font, Size, TextFormatFlags.NoPadding);
+        g.DrawString(label, Font, new SolidBrush(waveformAxisColor), x - size.Width / 2, scaleTopY + majorLen + 2);
+
+        t += step;
+      }
+    }
+
+    private void DrawWaveformSamples(Graphics g, Rectangle waveformRect, Rectangle bounds)
+    {
+      int recordedSamples = Math.Max(bufferPosition, 0);
+      if (recordedSamples == 0) return;
+
+      int visibleSamples = isRecording ? BUFFER_SIZE : recordedSamples;
+      if (visibleSamples <= 0) return;
+
+      float halfHeight = Math.Max(1, (waveformRect.Height - 2) / 2f);
+      double gain = 1.0;
+      if (GainSlider != null) // slider 0..20 maps to 0..40 dB
+      {
+        double db = GainSlider.Value;
+        gain = 0.1 * Dsp.FromDb2((float)db);
+      }
+
+      using var waveformPen = new Pen(waveformForegroundColor);
+      int pixelWidth = Math.Max(1, waveformRect.Width);
+
+      for (int x = 0; x < pixelWidth; x++)
+      {
+        int start = (int)((long)x * visibleSamples / pixelWidth);
+        int end = (int)((long)(x + 1) * visibleSamples / pixelWidth);
+        if (end <= start) end = Math.Min(visibleSamples, start + 1);
+        if (start >= recordedSamples) break;
+        if (end > recordedSamples) end = recordedSamples;
+
+        float maxMagnitude = 0;
+        if (audioBuffer != null)
+        {
+          for (int i = start; i < end; i++)
+            maxMagnitude = Math.Max(maxMagnitude, Math.Abs(audioBuffer[i]));
+        }
+        else if (iqBuffer != null)
+        {
+          for (int i = start; i < end; i++)
+            maxMagnitude = Math.Max(maxMagnitude, iqBuffer[i].Magnitude);
+        }
+
+        int amplitude = Math.Min((int)Math.Round(maxMagnitude * gain * halfHeight), (int)halfHeight);
+        if (amplitude <= 0) continue;
+
+        int pixelX = waveformRect.Left + x;
+        g.DrawLine(waveformPen, pixelX, waveformRect.Top + waveformRect.Height / 2 - amplitude, pixelX, waveformRect.Top + waveformRect.Height / 2 + amplitude);
+      }
     }
 
     private void GainSlider_ValueChanged(object sender, EventArgs e)
     {
-      // TODO: Update playback or recording gain
-      // int gain = GainSlider.Value;
+      double db = GainSlider.Value;
+      toolTip1.SetToolTip(GainSlider, $"Gain {db:F0} dB");
+      WaveformPanel.Invalidate();
     }
 
     private void RecordingTimer_Tick(object? sender, EventArgs e)
@@ -533,8 +658,13 @@ namespace SkyRoof
         TimeSpan elapsed = DateTime.Now - recordingStartTime;
         string prefix = isRecordingAudio ? "Audio" : "I/Q";
         RecordTimeLabel.Text = $"{prefix} {elapsed:mm\\:ss}";
+        WaveformPanel.Invalidate();
       }
     }
 
+    private void WaveformPanel_Resize(object? sender, EventArgs e)
+    {
+      WaveformPanel.Invalidate();
+    }
   }
 }
