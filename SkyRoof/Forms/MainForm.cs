@@ -217,34 +217,64 @@ namespace SkyRoof
 
     private void Slicer_IqDataAvailable(object? sender, DataEventArgs<Complex32> e)
     {
-      // apply output stream gain (Complex32)
-      float gain = Dsp.FromDb2(ctx.Settings.OutputStream.Gain);
-      for (int i = 0; i < e.Data.Length; i++) e.Data[i] *= gain;
+      if (ctx.RecorderPanel?.isPlayingBack == true) return;
 
-      if (ctx.Settings.OutputStream.Type == DataStreamType.IqToVac)
-        ctx.IqVacSoundcard.AddSamples(e.Data);
-      else if (ctx.Settings.OutputStream.Type == DataStreamType.IqToUdp)
-        ctx.UdpStreamSender.Send(e.Data);
-
+      ApplyIqOutputStreamGainAndRoute(e.Data, e.Count);
       ctx.RecorderPanel?.AddIqSamples(e);
     }
 
     private void Slicer_AudioDataAvailable(object? sender, DataEventArgs<float> e)
     {
-      ctx.SpeakerSoundcard.AddSamples(e.Data);
-
       ctx.Ft4ConsolePanel?.AddSamplesFromSdr(e);
 
-      // apply output stream gain (float)
+      if (ctx.RecorderPanel?.isPlayingBack == true) return;
+
+      ctx.SpeakerSoundcard.AddSamples(e.Data, 0, e.Count);
+
+      ApplyAudioOutputStreamGainAndRoute(e.Data, e.Count);
+      ctx.RecorderPanel?.AddAudioSamples(e);
+    }
+
+    private void ApplyAudioOutputStreamGainAndRoute(float[] data, int count)
+    {
       float gain = Dsp.FromDb2(ctx.Settings.OutputStream.Gain);
-      for (int i = 0; i < e.Data.Length; i++) e.Data[i] *= gain;
+      for (int i = 0; i < count; i++) data[i] *= gain;
 
       if (ctx.Settings.OutputStream.Type == DataStreamType.AudioToVac)
-        ctx.AudioVacSoundcard.AddSamples(e.Data);
+        ctx.AudioVacSoundcard.AddSamples(data, 0, count);
       else if (ctx.Settings.OutputStream.Type == DataStreamType.AudioToUdp)
-        ctx.UdpStreamSender.Send(e.Data);
+        ctx.UdpStreamSender.Send(data, count);
+    }
 
-      ctx.RecorderPanel?.AddAudioSamples(e);
+    private void ApplyIqOutputStreamGainAndRoute(Complex32[] data, int count)
+    {
+      float gain = Dsp.FromDb2(ctx.Settings.OutputStream.Gain);
+      for (int i = 0; i < count; i++) data[i] *= gain;
+
+      if (ctx.Settings.OutputStream.Type == DataStreamType.IqToVac)
+        ctx.IqVacSoundcard.AddSamples(data, 0, count);
+      else if (ctx.Settings.OutputStream.Type == DataStreamType.IqToUdp)
+        ctx.UdpStreamSender.Send(data, count);
+    }
+
+    internal void RoutePlaybackAudio(float[] data, int offset, int count)
+    {
+      if (count <= 0) return;
+
+      ctx.SpeakerSoundcard.AddSamples(data, offset, count);
+
+      float[] streamData = new float[count];
+      Array.Copy(data, offset, streamData, 0, count);
+      ApplyAudioOutputStreamGainAndRoute(streamData, count);
+    }
+
+    internal void RoutePlaybackIq(Complex32[] data, int offset, int count)
+    {
+      if (count <= 0) return;
+
+      Complex32[] streamData = new Complex32[count];
+      Array.Copy(data, offset, streamData, 0, count);
+      ApplyIqOutputStreamGainAndRoute(streamData, count);
     }
 
     private void UpdateSdrLabel()

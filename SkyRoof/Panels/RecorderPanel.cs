@@ -1,6 +1,8 @@
 using MathNet.Numerics;
+using MultimediaTimer;
 using NAudio.MediaFoundation;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using Serilog;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
@@ -13,8 +15,13 @@ namespace SkyRoof
     private static readonly Color waveformBackgroundColor = Color.Black;
     private static readonly Color waveformForegroundColor = Color.Aqua;
     private static readonly Color waveformAxisColor = Color.Teal;
+    private const int PLAYBACK_TIMER_INTERVAL_MS = 20;
+    private const int PLAYBACK_UI_INTERVAL_MS = 100;
+    private const int PLAYBACK_PREBUFFER_CHUNKS = 10;
+    private const int PLAYBACK_SAMPLES_PER_TICK = SdrConst.AUDIO_SAMPLING_RATE * PLAYBACK_TIMER_INTERVAL_MS / 1000;
     private bool isRecordingAudio => iqBuffer == null;
     private bool isRecording = false;
+    internal bool isPlayingBack { get; private set; }
 
     // Recording buffers
     private const int RECORDING_MINUTES = 30;
@@ -22,9 +29,14 @@ namespace SkyRoof
 
     private float[]? audioBuffer;
     private Complex32[]? iqBuffer;
-    private int bufferPosition = 0;
+    private int samplesInBuffer = 0;
+    private int playbackPosition = 0;
+    private bool speakerEnabledForPlayback;
+    private readonly object playbackLock = new();
     private DateTime recordingStartTime;
     private System.Windows.Forms.Timer? recordingTimer;
+    private System.Windows.Forms.Timer? playbackUiTimer;
+    private MultimediaTimer.Timer? playbackTimer;
 
     //----------------------------------------------------------------------------------------------
     //                                        startup
@@ -50,6 +62,16 @@ namespace SkyRoof
       recordingTimer.Interval = 1000;
       recordingTimer.Tick += RecordingTimer_Tick;
 
+      playbackUiTimer = new System.Windows.Forms.Timer();
+      playbackUiTimer.Interval = PLAYBACK_UI_INTERVAL_MS;
+      playbackUiTimer.Tick += PlaybackUiTimer_Tick;
+
+      playbackTimer = new MultimediaTimer.Timer();
+      playbackTimer.Mode = TimerMode.Periodic;
+      playbackTimer.Interval = TimeSpan.FromMilliseconds(PLAYBACK_TIMER_INTERVAL_MS);
+      playbackTimer.Resolution = TimeSpan.FromMilliseconds(1);
+      playbackTimer.Elapsed += PlaybackTimer_Elapsed;
+
       ApplySettings();
     }
 
@@ -65,10 +87,19 @@ namespace SkyRoof
 
       // Stop recording if active
       if (isRecording) StopRecording();
+      if (isPlayingBack) StopPlayback();
 
       // Dispose timer
       recordingTimer?.Stop();
       recordingTimer?.Dispose();
+      playbackUiTimer?.Stop();
+      playbackUiTimer?.Dispose();
+      if (playbackTimer != null)
+      {
+        playbackTimer.Stop();
+        playbackTimer.Elapsed -= PlaybackTimer_Elapsed;
+        playbackTimer = null;
+      }
 
       ctx.RecorderPanel = null;
       ctx.MainForm.RecorderMNU.Checked = false;
@@ -169,9 +200,6 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     private void StartRecording(bool isAudio)
     {
-      StatusLabel.Text = isAudio ? "Recording Audio..." : "Recording I/Q...";
-
-
       RecordBtn.BackColor = Color.LightCoral;
 
       if (isAudio)
@@ -189,10 +217,10 @@ namespace SkyRoof
         Log.Information("Starting I/Q recording");
       }
 
-      bufferPosition = 0;
+      samplesInBuffer = 0;
+      playbackPosition = 0;
       recordingStartTime = DateTime.Now;
-      RecordTimeLabel.Visible = true;
-      RecordTimeLabel.Text = isRecordingAudio ? "Audio 00:00" : "I/Q 00:00";
+      StatusLabel.Text = $"Recording {(isRecordingAudio ? "Audio" : "I/Q")} 00:00";
       recordingTimer?.Start();
 
       // Disable controls during recording
@@ -213,19 +241,18 @@ namespace SkyRoof
       RecordBtn.BackColor = Color.Transparent;
 
       recordingTimer?.Stop();
-      RecordTimeLabel.Visible = false;
 
       TimeSpan duration = DateTime.Now - recordingStartTime;
       StatusLabel.Text = $"Recording stopped - Duration: {duration:mm\\:ss}";
-      Log.Information($"Recording stopped - {bufferPosition} samples recorded");
+      Log.Information($"Recording stopped - {samplesInBuffer} samples recorded");
 
       // Enable Save button if we have data
-      SetSaveButtonsEnabled(bufferPosition > 0);
+      SetSaveButtonsEnabled(samplesInBuffer > 0);
 
       // Re-enable controls
       RecordMenuBtn.Enabled = true;
       LoadBtn.Enabled = true;
-      PlaybackBtn.Enabled = bufferPosition > 0;
+      PlaybackBtn.Enabled = samplesInBuffer > 0;
       toolTip1.SetToolTip(RecordBtn, "Record Audio");
 
       WaveformPanel.Invalidate();
@@ -245,22 +272,149 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     private void StartPlayback()
     {
+      if (samplesInBuffer <= 0) return;
+
+      playbackTimer?.Stop();
+
+      if (audioBuffer != null && !ctx.SpeakerSoundcard.Enabled)
+      {
+        ctx.SpeakerSoundcard.Enabled = true;
+        speakerEnabledForPlayback = true;
+      }
+
+      if (playbackPosition >= samplesInBuffer) playbackPosition = 0;
+      isPlayingBack = true;
       PlaybackBtn.BackColor = Color.LightGreen;
       toolTip1.SetToolTip(PlaybackBtn, "Stop Playback");
-      StatusLabel.Text = "Playing back...";
+      UpdatePlaybackStatus();
       Log.Information("Starting playback");
 
-      // TODO: Implement playback
+      RecordBtn.Enabled = false;
+      RecordMenuBtn.Enabled = false;
+      LoadBtn.Enabled = false;
+      SetSaveButtonsEnabled(false);
+
+      PreparePlaybackOutputs();
+      PrebufferPlayback();
+
+      if (playbackPosition >= samplesInBuffer)
+      {
+        StopPlayback(true);
+        return;
+      }
+
+      playbackUiTimer?.Start();
+      playbackTimer?.Start();
     }
 
-    private void StopPlayback()
+    private void StopPlayback(bool resetPosition = false)
     {
+      isPlayingBack = false;
+      playbackUiTimer?.Stop();
+      playbackTimer?.Stop();
+      if (resetPosition) playbackPosition = 0;
+
+      if (speakerEnabledForPlayback)
+      {
+        ctx.SpeakerSoundcard.Enabled = false;
+        speakerEnabledForPlayback = false;
+      }
+
       PlaybackBtn.BackColor = Color.Transparent;
       toolTip1.SetToolTip(PlaybackBtn, "Start Playback");
       StatusLabel.Text = "Playback stopped";
       Log.Information("Playback stopped");
 
-      // TODO: Stop playback
+      RecordBtn.Enabled = true;
+      RecordMenuBtn.Enabled = true;
+      LoadBtn.Enabled = true;
+      SetSaveButtonsEnabled(samplesInBuffer > 0);
+      WaveformPanel.Invalidate();
+    }
+
+    private void PlaybackTimer_Elapsed(object? sender, EventArgs e)
+    {
+      if (!PumpPlaybackChunk())
+      {
+        BeginInvoke(() => StopPlayback(true));
+        return;
+      }
+    }
+
+    private void PlaybackUiTimer_Tick(object? sender, EventArgs e)
+    {
+      if (!isPlayingBack) return;
+
+      UpdatePlaybackStatus();
+      WaveformPanel.Invalidate();
+    }
+
+    private void PrebufferPlayback()
+    {
+      for (int i = 0; i < PLAYBACK_PREBUFFER_CHUNKS; i++)
+        if (!PumpPlaybackChunk()) break;
+
+      UpdatePlaybackStatus();
+      WaveformPanel.Invalidate();
+    }
+
+    private bool PumpPlaybackChunk()
+    {
+      lock (playbackLock)
+      {
+        int samplesRemaining = samplesInBuffer - playbackPosition;
+        if (samplesRemaining <= 0) return false;
+
+        int count = Math.Min(PLAYBACK_SAMPLES_PER_TICK, samplesRemaining);
+        if (audioBuffer != null)
+          ctx.MainForm.RoutePlaybackAudio(audioBuffer, playbackPosition, count);
+        else if (iqBuffer != null)
+          ctx.MainForm.RoutePlaybackIq(iqBuffer, playbackPosition, count);
+
+        playbackPosition += count;
+        return playbackPosition < samplesInBuffer;
+      }
+    }
+
+    private void SeekPlaybackToPosition(int position)
+    {
+      if (!isPlayingBack || samplesInBuffer <= 0) return;
+
+      playbackTimer?.Stop();
+
+      lock (playbackLock)
+        playbackPosition = Math.Clamp(position, 0, Math.Max(0, samplesInBuffer - 1));
+
+      PreparePlaybackOutputs();
+      PrebufferPlayback();
+      UpdatePlaybackStatus();
+      WaveformPanel.Invalidate();
+
+      if (playbackPosition >= samplesInBuffer) StopPlayback(true);
+      else playbackTimer?.Start();
+    }
+
+    private void PreparePlaybackOutputs()
+    {
+      if (audioBuffer != null)
+      {
+        ctx.SpeakerSoundcard.Buffer.Clear();
+        if (ctx.Settings.OutputStream.Type == DataStreamType.AudioToVac)
+          ctx.AudioVacSoundcard.Buffer.Clear();
+      }
+      else if (iqBuffer != null && ctx.Settings.OutputStream.Type == DataStreamType.IqToVac)
+      {
+        ctx.IqVacSoundcard.Buffer.Clear();
+      }
+    }
+
+    private void UpdatePlaybackStatus()
+    {
+      TimeSpan elapsed = TimeSpan.FromSeconds(playbackPosition / (double)SdrConst.AUDIO_SAMPLING_RATE);
+      TimeSpan total = TimeSpan.FromSeconds(samplesInBuffer / (double)SdrConst.AUDIO_SAMPLING_RATE);
+      int percent = samplesInBuffer <= 0 ? 0 : (int)Math.Round(100.0 * playbackPosition / samplesInBuffer);
+      percent = Math.Clamp(percent, 0, 100);
+      StatusLabel.Text = $"Playing back {(isRecordingAudio ? "Audio" : "I/Q")} {elapsed:mm\\:ss} of {total:mm\\:ss} ({percent}%)";
     }
 
     //----------------------------------------------------------------------------------------------
@@ -283,14 +437,14 @@ namespace SkyRoof
     private void AddSamples<T>(T[] source, T[] buffer)
     {
       // Copy data to buffer
-      int samplesToWrite = Math.Min(source.Length, buffer.Length - bufferPosition);
+      int samplesToWrite = Math.Min(source.Length, buffer.Length - samplesInBuffer);
       if (samplesToWrite <= 0) return;
 
-      Array.Copy(source, 0, buffer, bufferPosition, samplesToWrite);
-      bufferPosition += samplesToWrite;
+      Array.Copy(source, 0, buffer, samplesInBuffer, samplesToWrite);
+      samplesInBuffer += samplesToWrite;
 
       // Check if buffer is full
-      if (bufferPosition < buffer.Length) return;
+      if (samplesInBuffer < buffer.Length) return;
 
       isRecording = false;
       BeginInvoke(HandleBufferFull);
@@ -308,7 +462,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                        read file
     //----------------------------------------------------------------------------------------------
-    private void LoadRecording(string filename)
+    private void LoadRecording_old(string filename)
     {
       string ext = Path.GetExtension(filename).ToLowerInvariant();
       bool isMp3 = ext == ".mp3";
@@ -333,7 +487,7 @@ namespace SkyRoof
       }
 
       // Enable Save and Playback buttons
-      bool hasData = bufferPosition > 0;
+      bool hasData = samplesInBuffer > 0;
       SetSaveButtonsEnabled(hasData);
       PlaybackBtn.Enabled = hasData;
 
@@ -347,17 +501,17 @@ namespace SkyRoof
       int channels = reader.WaveFormat.Channels;
       float[] samples = new float[BUFFER_SIZE];
       float[] buffer = new float[4096 * channels];
-      bufferPosition = 0;
+      samplesInBuffer = 0;
 
       int samplesRead;
-      while ((samplesRead = reader.Read(buffer, 0, buffer.Length)) > 0 && bufferPosition < BUFFER_SIZE)
+      while ((samplesRead = reader.Read(buffer, 0, buffer.Length)) > 0 && samplesInBuffer < BUFFER_SIZE)
       {
         int framesRead = samplesRead / channels;
-        int framesToCopy = Math.Min(framesRead, BUFFER_SIZE - bufferPosition);
+        int framesToCopy = Math.Min(framesRead, BUFFER_SIZE - samplesInBuffer);
 
         if (channels == 1)
         {
-          Array.Copy(buffer, 0, samples, bufferPosition, framesToCopy);
+          Array.Copy(buffer, 0, samples, samplesInBuffer, framesToCopy);
         }
         else
         {
@@ -367,32 +521,72 @@ namespace SkyRoof
             for (int channel = 0; channel < channels; channel++)
               sum += buffer[i * channels + channel];
 
-            samples[bufferPosition + i] = sum / channels;
+            samples[samplesInBuffer + i] = sum / channels;
           }
         }
 
-        bufferPosition += framesToCopy;
+        samplesInBuffer += framesToCopy;
       }
 
       return samples;
+    }
+
+    private void LoadRecording(string filename)
+    {
+      string ext = Path.GetExtension(filename).ToLowerInvariant();
+      bool isMp3 = ext == ".mp3";
+
+      using var reader = new AudioFileReader(filename);
+
+      iqBuffer = null;
+      audioBuffer = null;
+
+
+      if (isMp3)
+      {
+        // MP3 speech recordings are mono and may be stored at reduced sample rate.
+        ISampleProvider source = reader;
+        if (reader.WaveFormat.SampleRate != SdrConst.AUDIO_SAMPLING_RATE)
+          source = new WdlResamplingSampleProvider(source, SdrConst.AUDIO_SAMPLING_RATE);
+        audioBuffer = ReadAudioSamples(source);
+      }
+      else
+      {
+        if (reader.WaveFormat.SampleRate != SdrConst.AUDIO_SAMPLING_RATE)
+          throw new InvalidOperationException($"Unsupported sample rate: {reader.WaveFormat.SampleRate} Hz");
+
+        if (reader.WaveFormat.Channels == 1) audioBuffer = ReadAudioSamples(reader);
+        else if (reader.WaveFormat.Channels == 2) iqBuffer = ReadIqSamples(reader);
+        else throw new InvalidOperationException($"Unsupported channel count: {reader.WaveFormat.Channels}");
+      }
+
+      playbackPosition = 0;
+
+      bool hasData = samplesInBuffer > 0;
+      SetSaveButtonsEnabled(hasData);
+      PlaybackBtn.Enabled = hasData;
+
+      StatusLabel.Text = $"Loaded {Path.GetFileName(filename)}";
+      Log.Information($"Recording loaded from {filename}");
+      WaveformPanel.Invalidate();
     }
 
     private Complex32[] ReadIqSamples(ISampleProvider reader)
     {
       Complex32[] samples = new Complex32[BUFFER_SIZE];
       float[] buffer = new float[4096 * 2];
-      bufferPosition = 0;
+      samplesInBuffer = 0;
 
       int samplesRead;
-      while ((samplesRead = reader.Read(buffer, 0, buffer.Length)) > 0 && bufferPosition < BUFFER_SIZE)
+      while ((samplesRead = reader.Read(buffer, 0, buffer.Length)) > 0 && samplesInBuffer < BUFFER_SIZE)
       {
         int framesRead = samplesRead / 2;
-        int framesToCopy = Math.Min(framesRead, BUFFER_SIZE - bufferPosition);
+        int framesToCopy = Math.Min(framesRead, BUFFER_SIZE - samplesInBuffer);
 
         for (int i = 0; i < framesToCopy; i++)
-          samples[bufferPosition + i] = new Complex32(buffer[2 * i], buffer[2 * i + 1]);
+          samples[samplesInBuffer + i] = new Complex32(buffer[2 * i], buffer[2 * i + 1]);
 
-        bufferPosition += framesToCopy;
+        samplesInBuffer += framesToCopy;
       }
 
       return samples;
@@ -444,31 +638,31 @@ namespace SkyRoof
       if (audioBuffer != null)
       {
         // write only recorded frames
-        WriteWav(fileName, audioBuffer, 1, bufferPosition);
+        WriteWav(fileName, audioBuffer, 1, samplesInBuffer);
         return;
       }
 
       if (iqBuffer == null)
         throw new InvalidOperationException("No recording to save");
 
-      float[] interleaved = new float[bufferPosition * 2];
-      for (int i = 0; i < bufferPosition; i++)
+      float[] interleaved = new float[samplesInBuffer * 2];
+      for (int i = 0; i < samplesInBuffer; i++)
       {
         interleaved[2 * i] = iqBuffer[i].Real;
         interleaved[2 * i + 1] = iqBuffer[i].Imaginary;
       }
 
       // framesCount is bufferPosition (each frame has two floats)
-      WriteWav(fileName, interleaved, 2, bufferPosition);
+      WriteWav(fileName, interleaved, 2, samplesInBuffer);
     }
 
-    private void SaveRecordingAsMp3(string filename)
+    private void SaveRecordingAsMp3_old(string filename)
     {
       if (audioBuffer == null)
         throw new InvalidOperationException("No audio data available for MP3 export");
 
-      short[] pcm = new short[bufferPosition];
-      for (int i = 0; i < bufferPosition; i++)
+      short[] pcm = new short[samplesInBuffer];
+      for (int i = 0; i < samplesInBuffer; i++)
       {
         float sample = Math.Clamp(audioBuffer[i], -1f, 1f);
         pcm[i] = (short)(sample * short.MaxValue);
@@ -483,6 +677,32 @@ namespace SkyRoof
       MediaFoundationEncoder.EncodeToMp3(source, filename);
     }
 
+    private void SaveRecordingAsMp3(string filename)
+    {
+      if (audioBuffer == null)
+        throw new InvalidOperationException("No audio data available for MP3 export");
+
+      const int targetSampleRate = 16000;
+      const int targetBitrate = 24000;   // 24 kbps
+
+      short[] pcm = new short[samplesInBuffer];
+      for (int i = 0; i < samplesInBuffer; i++)
+        pcm[i] = (short)(Math.Clamp(audioBuffer[i], -1f, 1f) * short.MaxValue);
+
+      byte[] inputBytes = new byte[pcm.Length * sizeof(short)];
+      Buffer.BlockCopy(pcm, 0, inputBytes, 0, inputBytes.Length);
+
+      var inputFormat = new WaveFormat(SdrConst.AUDIO_SAMPLING_RATE, 16, 1);
+
+      using var inputStream = new MemoryStream(inputBytes, writable: false);
+      using var rawSource = new RawSourceWaveStream(inputStream, inputFormat);
+      using var resampled = new MediaFoundationResampler(rawSource, targetSampleRate)
+      {
+        ResamplerQuality = 60
+      };
+
+      MediaFoundationEncoder.EncodeToMp3(resampled, filename, targetBitrate);
+    }
 
     private void WriteWav(string fileName, float[] samples, int channels, int framesCount)
     {
@@ -525,7 +745,21 @@ namespace SkyRoof
     {
       var waveformRect = DrawWaveformBackground(e.Graphics, WaveformPanel.ClientRectangle);
       DrawWaveformSamples(e.Graphics, waveformRect, WaveformPanel.ClientRectangle);
+      DrawPlaybackPosition(g: e.Graphics, waveformRect);
       DrawTimeScale(e.Graphics, waveformRect, WaveformPanel.ClientRectangle);
+    }
+
+    private void DrawPlaybackPosition(Graphics g, Rectangle waveformRect)
+    {
+      if (samplesInBuffer <= 0 || waveformRect.Width <= 0) return;
+      if (!isPlayingBack && playbackPosition <= 0) return;
+
+      int x = waveformRect.Left + (int)Math.Round(((double)waveformRect.Width - 1) * playbackPosition / samplesInBuffer);
+      x = Math.Clamp(x, waveformRect.Left, waveformRect.Right - 1);
+
+      using var pen = new Pen(Color.Red);
+      if (!isPlayingBack) pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+      g.DrawLine(pen, x, waveformRect.Top, x, waveformRect.Bottom - 1);
     }
 
     private Rectangle DrawWaveformBackground(Graphics g, Rectangle bounds)
@@ -544,7 +778,7 @@ namespace SkyRoof
 
     private void DrawTimeScale(Graphics g, Rectangle waveformRect, Rectangle bounds)
     {
-      double totalSeconds = (isRecording ? BUFFER_SIZE : Math.Max(bufferPosition, 0)) / (double)SdrConst.AUDIO_SAMPLING_RATE;
+      double totalSeconds = (isRecording ? BUFFER_SIZE : Math.Max(samplesInBuffer, 0)) / (double)SdrConst.AUDIO_SAMPLING_RATE;
       if (totalSeconds <= 0 || waveformRect.Width <= 10) return;
 
       double[] StepsSec = { 1, 2, 5, 10, 20, 30, 60, 120, 300, 600, 1200, 1800, 3600 };
@@ -599,7 +833,7 @@ namespace SkyRoof
 
     private void DrawWaveformSamples(Graphics g, Rectangle waveformRect, Rectangle bounds)
     {
-      int recordedSamples = Math.Max(bufferPosition, 0);
+      int recordedSamples = Math.Max(samplesInBuffer, 0);
       if (recordedSamples == 0) return;
 
       int visibleSamples = isRecording ? BUFFER_SIZE : recordedSamples;
@@ -607,7 +841,7 @@ namespace SkyRoof
 
       float halfHeight = Math.Max(1, (waveformRect.Height - 2) / 2f);
       double gain = 1.0;
-      if (GainSlider != null) // slider 0..20 maps to 0..40 dB
+      if (GainSlider != null)
       {
         double db = GainSlider.Value;
         gain = 0.1 * Dsp.FromDb2((float)db);
@@ -656,8 +890,7 @@ namespace SkyRoof
       if (isRecording)
       {
         TimeSpan elapsed = DateTime.Now - recordingStartTime;
-        string prefix = isRecordingAudio ? "Audio" : "I/Q";
-        RecordTimeLabel.Text = $"{prefix} {elapsed:mm\\:ss}";
+        StatusLabel.Text = $"Recording {(isRecordingAudio ? "Audio" : "I/Q")} {elapsed:mm\\:ss}";
         WaveformPanel.Invalidate();
       }
     }
@@ -665,6 +898,14 @@ namespace SkyRoof
     private void WaveformPanel_Resize(object? sender, EventArgs e)
     {
       WaveformPanel.Invalidate();
+    }
+
+    private void WaveformPanel_MouseDown(object sender, MouseEventArgs e)
+    {
+      if (!isPlayingBack || samplesInBuffer <= 0 || WaveformPanel.ClientRectangle.Width <= 0) return;
+
+      int position = (int)Math.Round(e.X * (double)samplesInBuffer / WaveformPanel.ClientRectangle.Width);
+      SeekPlaybackToPosition(position);
     }
   }
 }

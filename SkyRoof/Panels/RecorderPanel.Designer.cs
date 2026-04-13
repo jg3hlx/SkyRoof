@@ -38,7 +38,6 @@ namespace SkyRoof
       SaveMenuBtn = new Button();
       LoadBtn = new Button();
       PlaybackBtn = new Button();
-      RecordTimeLabel = new Label();
       toolTip1 = new ToolTip(components);
       GainSlider = new TrackBar();
       RecordMenu = new ContextMenuStrip(components);
@@ -84,7 +83,6 @@ namespace SkyRoof
       ButtonPanel.Controls.Add(SaveMenuBtn);
       ButtonPanel.Controls.Add(LoadBtn);
       ButtonPanel.Controls.Add(PlaybackBtn);
-      ButtonPanel.Controls.Add(RecordTimeLabel);
       ButtonPanel.Dock = DockStyle.Bottom;
       ButtonPanel.Location = new Point(0, 165);
       ButtonPanel.Name = "ButtonPanel";
@@ -156,17 +154,6 @@ namespace SkyRoof
       toolTip1.SetToolTip(PlaybackBtn, "Play Back");
       PlaybackBtn.UseVisualStyleBackColor = true;
       PlaybackBtn.Click += PlaybackBtn_Click;
-      // 
-      // RecordTimeLabel
-      // 
-      RecordTimeLabel.AutoSize = true;
-      RecordTimeLabel.Location = new Point(386, 10);
-      RecordTimeLabel.Name = "RecordTimeLabel";
-      RecordTimeLabel.Size = new Size(69, 15);
-      RecordTimeLabel.TabIndex = 6;
-      RecordTimeLabel.Text = "Audio 00:00";
-      RecordTimeLabel.Visible = false;
-      // 
       // GainSlider
       // 
       GainSlider.Dock = DockStyle.Fill;
@@ -249,6 +236,7 @@ namespace SkyRoof
       WaveformPanel.Name = "WaveformPanel";
       WaveformPanel.Size = new Size(585, 133);
       WaveformPanel.TabIndex = 0;
+      WaveformPanel.MouseDown += WaveformPanel_MouseDown;
       WaveformPanel.Paint += WaveformPanel_Paint;
       WaveformPanel.Resize += WaveformPanel_Resize;
       // 
@@ -307,7 +295,6 @@ namespace SkyRoof
     private ToolStripMenuItem SaveWavMNU;
     private Button LoadBtn;
     private Button PlaybackBtn;
-    private Label RecordTimeLabel;
     private Panel TopPanel;
     private Panel ContainerPanel;
     private Panel WaveformPanel;

@@ -135,6 +135,7 @@
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.1" />
     <PackageReference Include="MathNet.Filtering" Version="0.7.0" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageReference Include="MultimediaTimer" Version="1.0.1" />
     <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Serilog" Version="4.2.0" />
@@ -142,7 +143,7 @@
     <PackageReference Include="SGP.NET" Version="1.4.0" />
     <PackageReference Include="SharpGL.WinForms" Version="3.1.1" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.1" />
-    <PackageReference Include="System.Speech" Version="9.0.3" />
+    <PackageReference Include="System.Speech" Version="10.0.5" />
     <PackageReference Include="WsjtxUtils.WsjtxMessages" Version="1.0.0.69" />
   </ItemGroup>
 

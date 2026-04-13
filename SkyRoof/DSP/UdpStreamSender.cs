@@ -16,11 +16,11 @@ namespace SkyRoof
     private byte[] bytes = new byte[PacketSize];
     private int byteCount = 0;
 
-    public void Send(float[] data)
+    public void Send(float[] data, int count)
     {
       if (!ctx.Settings.OutputStream.Enabled) return;
 
-      for (int i = 0; i < data.Length; i++)
+      for (int i = 0; i < count; i++)
       {
         BitConverter.GetBytes(data[i]).CopyTo(bytes, byteCount);
 
@@ -33,11 +33,11 @@ namespace SkyRoof
       }
     }
 
-    public void Send(Complex32[] data)
+    public void Send(Complex32[] data, int count)
     {
       if (!ctx.Settings.OutputStream.Enabled) return;
 
-      for (int i = 0; i < data.Length; i++)
+      for (int i = 0; i < count; i++)
       {
         BitConverter.GetBytes(data[i].Real).CopyTo(bytes, byteCount);
         BitConverter.GetBytes(data[i].Imaginary).CopyTo(bytes, byteCount + FloatSize);
