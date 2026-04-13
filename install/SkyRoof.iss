@@ -44,7 +44,6 @@ Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\SkyRoof.exe; DestDir: {app
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\SkyRoof.pdb; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\SkyRoof.runtimeconfig.json; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\SoapySDR.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
-Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\System.Speech.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\WeifenLuo.WinFormsUI.Docking.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\lib\SoapySDR\modules0.8\airspy.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion
@@ -60,7 +59,7 @@ Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\lib\SoapySDR\modules0.8\ha
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\lib\SoapySDR\modules0.8\HackRFSupport.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\lib\SoapySDR\modules0.8\libad9361.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\lib\SoapySDR\modules0.8\libiio.dll; DestDir: {app}\lib\SoapySDR\modules0.8; Flags: overwritereadonly ignoreversion
-Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\runtimes\win\lib\net9.0\System.Speech.dll; DestDir: {app}\runtimes\win\lib\net9.0; Flags: overwritereadonly ignoreversion
+Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\runtimes\win\lib\net10.0\System.Speech.dll; DestDir: {app}\runtimes\win\lib\net10.0; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\CSCore.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\fa-solid-900.ttf; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\libfftw3f-3.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
@@ -92,7 +91,7 @@ Filename: {app}\{#MyAppExeName}; Description: {cm:LaunchProgram,{#StringChange(M
 [Code]
 function InitializeSetup: Boolean;
 begin
-  Dependency_AddDotNet90Desktop;
+  Dependency_AddDotNet100Desktop;
   Dependency_AddVC2015To2022;
 
   Result := True;

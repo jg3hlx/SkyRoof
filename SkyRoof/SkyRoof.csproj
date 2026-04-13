@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -184,5 +184,19 @@
   <ItemGroup>
     <Folder Include="ControlsEx\ColorSpace\" />
   </ItemGroup>
+
+  <Target Name="ExcludeRootSystemSpeechFromBuildOutput" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
+                               Condition="'%(ReferenceCopyLocalPaths.Filename)%(ReferenceCopyLocalPaths.Extension)' == 'System.Speech.dll' and '%(ReferenceCopyLocalPaths.DestinationSubDirectory)' == ''" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ExcludeRootSystemSpeechFromPublishOutput" AfterTargets="ComputeResolvedFilesToPublishList">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+                             Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'System.Speech.dll' and '%(ResolvedFileToPublish.RelativePath)' == 'System.Speech.dll'" />
+    </ItemGroup>
+  </Target>
 
 </Project>
