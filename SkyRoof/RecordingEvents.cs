@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text.Json;
 
 namespace SkyRoof
@@ -9,24 +8,21 @@ namespace SkyRoof
     {
       public DateTime Utc { get; set; }
       public string EventType { get; set; } = string.Empty;
-      public string NewValue { get; set; } = string.Empty;
       public string Satellite { get; set; } = string.Empty;
       public string Transmitter { get; set; } = string.Empty;
       public string Mode { get; set; } = string.Empty;
       public string Callsign { get; set; } = string.Empty;
-      public string Offset { get; set; } = string.Empty;
 
       public string GetTooltipText()
       {
         string time = Utc.ToLocalTime().ToString("HH:mm:ss");
         List<string> lines = EventType switch
         {
-          "satellite" => [$"{time} satellite changed"],
-          "transmitter" => [$"{time} transmitter changed"],
-          "mode" => [$"{time} mode changed"],
+          "satellite" => [$"{time} satellite selected"],
+          "transmitter" => [$"{time} transmitter selected"],
+          "mode" => [$"{time} mode selected"],
           "qso" => [$"{time} QSO saved"],
-          "offset" => [$"{time} offset changed"],
-          _ => [$"{time} {EventType}: {NewValue}"],
+          _ => [$"{time} {EventType}"],
         };
 
         if (EventType == "satellite")
@@ -37,12 +33,11 @@ namespace SkyRoof
         }
         else if (EventType == "transmitter")
         {
-          AddTooltipLine(lines, "TX", Transmitter, NewValue);
+          AddTooltipLine(lines, "TX", Transmitter);
           AddTooltipLine(lines, "MODE", Mode);
         }
-        else if (EventType == "mode") AddTooltipLine(lines, "MODE", Mode, NewValue);
-        else if (EventType == "qso") AddTooltipLine(lines, "CALL", Callsign, NewValue);
-        else if (EventType == "offset") AddTooltipLine(lines, "OFFSET", Offset, NewValue);
+        else if (EventType == "mode") AddTooltipLine(lines, "MODE", Mode);
+        else if (EventType == "qso") AddTooltipLine(lines, "CALL", Callsign);
 
         return string.Join("\n", lines);
       }
@@ -59,7 +54,6 @@ namespace SkyRoof
     private string? lastSatelliteValue;
     private string? lastTransmitterValue;
     private string? lastModeValue;
-    private double? lastRememberedOffset;
 
     public void Start(Context ctx)
     {
@@ -68,30 +62,27 @@ namespace SkyRoof
       lastSatelliteValue = GetSelectedSatelliteValue(ctx);
       lastTransmitterValue = GetSelectedTransmitterValue(ctx);
       lastModeValue = GetDownlinkModeValue(ctx);
-      lastRememberedOffset = GetCurrentTransponderOffset(ctx);
 
       var utc = DateTime.UtcNow;
       if (!string.IsNullOrWhiteSpace(lastSatelliteValue))
-        Add(utc, "satellite", lastSatelliteValue, lastSatelliteValue, lastTransmitterValue ?? string.Empty, lastModeValue ?? string.Empty, string.Empty, string.Empty);
+        Add(utc, "satellite", lastSatelliteValue, lastTransmitterValue ?? string.Empty, lastModeValue ?? string.Empty, string.Empty);
     }
 
-    public void Add(DateTime utc, string eventType, string newValue)
+    public void Add(DateTime utc, string eventType)
     {
-      Add(utc, eventType, newValue, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
+      Add(utc, eventType, string.Empty, string.Empty, string.Empty, string.Empty);
     }
 
-    public void Add(DateTime utc, string eventType, string newValue, string satellite, string transmitter, string mode, string callsign, string offset)
+    public void Add(DateTime utc, string eventType, string satellite, string transmitter, string mode, string callsign)
     {
       Events.Add(new RecordingEvent
       {
         Utc = DateTime.SpecifyKind(utc, DateTimeKind.Utc),
         EventType = eventType,
-        NewValue = newValue,
         Satellite = satellite,
         Transmitter = transmitter,
         Mode = mode,
         Callsign = callsign,
-        Offset = offset,
       });
     }
 
@@ -101,7 +92,6 @@ namespace SkyRoof
       string? satelliteValue = GetSelectedSatelliteValue(ctx);
       string? transmitterValue = GetSelectedTransmitterValue(ctx);
       string? modeValue = GetDownlinkModeValue(ctx);
-      double? offset = GetCurrentTransponderOffset(ctx);
       bool satelliteChanged = !string.IsNullOrWhiteSpace(satelliteValue) && satelliteValue != lastSatelliteValue;
       bool transmitterChanged = !string.IsNullOrWhiteSpace(transmitterValue) && transmitterValue != lastTransmitterValue;
       bool modeChanged = !string.IsNullOrWhiteSpace(modeValue) && modeValue != lastModeValue;
@@ -111,8 +101,7 @@ namespace SkyRoof
         lastSatelliteValue = satelliteValue;
         lastTransmitterValue = transmitterValue;
         lastModeValue = modeValue;
-        lastRememberedOffset = offset;
-        Add(utc, "satellite", satelliteValue!, satelliteValue!, transmitterValue ?? string.Empty, modeValue ?? string.Empty, string.Empty, string.Empty);
+        Add(utc, "satellite", satelliteValue!, transmitterValue ?? string.Empty, modeValue ?? string.Empty, string.Empty);
         return true;
       }
 
@@ -120,35 +109,18 @@ namespace SkyRoof
       {
         lastTransmitterValue = transmitterValue;
         if (modeChanged) lastModeValue = modeValue;
-        lastRememberedOffset = offset;
-        Add(utc, "transmitter", transmitterValue!, string.Empty, transmitterValue!, modeValue ?? string.Empty, string.Empty, string.Empty);
+        Add(utc, "transmitter", string.Empty, transmitterValue!, modeValue ?? string.Empty, string.Empty);
         return true;
       }
 
       if (modeChanged)
       {
         lastModeValue = modeValue;
-        Add(utc, "mode", modeValue!, string.Empty, string.Empty, modeValue!, string.Empty, string.Empty);
+        Add(utc, "mode", string.Empty, string.Empty, modeValue!, string.Empty);
         return true;
       }
 
-      if (offset == null)
-      {
-        lastRememberedOffset = null;
-        return false;
-      }
-
-      if (lastRememberedOffset == null)
-      {
-        lastRememberedOffset = offset;
-        return false;
-      }
-
-      if (Math.Abs(offset.Value - lastRememberedOffset.Value) <= 1000) return false;
-
-      lastRememberedOffset = offset;
-      Add(utc, "offset", FormatOffset(offset.Value), string.Empty, string.Empty, string.Empty, string.Empty, FormatOffset(offset.Value));
-      return true;
+      return false;
     }
 
     public bool RememberQsoSaved(string callsign)
@@ -156,7 +128,7 @@ namespace SkyRoof
       if (string.IsNullOrWhiteSpace(callsign)) return false;
 
       string call = callsign.Trim().ToUpperInvariant();
-      Add(DateTime.UtcNow, "qso", call, string.Empty, string.Empty, string.Empty, call, string.Empty);
+      Add(DateTime.UtcNow, "qso", string.Empty, string.Empty, string.Empty, call);
       return true;
     }
 
@@ -191,12 +163,6 @@ namespace SkyRoof
           recordingEvents.lastSatelliteValue = recordingEvents.Events.LastOrDefault(e => !string.IsNullOrWhiteSpace(e.Satellite))?.Satellite;
           recordingEvents.lastTransmitterValue = recordingEvents.Events.LastOrDefault(e => !string.IsNullOrWhiteSpace(e.Transmitter))?.Transmitter;
           recordingEvents.lastModeValue = recordingEvents.Events.LastOrDefault(e => !string.IsNullOrWhiteSpace(e.Mode))?.Mode;
-
-          var lastOffset = recordingEvents.Events.LastOrDefault(e => e.EventType == "offset")?.Offset;
-          if (string.IsNullOrWhiteSpace(lastOffset)) lastOffset = recordingEvents.Events.LastOrDefault(e => e.EventType == "offset")?.NewValue;
-          if (!string.IsNullOrWhiteSpace(lastOffset) && lastOffset.EndsWith(" kHz") &&
-            double.TryParse(lastOffset[..^4], NumberStyles.Float, CultureInfo.InvariantCulture, out double offsetKhz))
-            recordingEvents.lastRememberedOffset = offsetKhz * 1000;
         }
 
         return recordingEvents;
@@ -205,11 +171,6 @@ namespace SkyRoof
       {
         return new();
       }
-    }
-
-    public static string FormatOffset(double offset)
-    {
-      return string.Create(CultureInfo.InvariantCulture, $"{offset / 1000d:F1} kHz");
     }
 
     private static string? GetSelectedSatelliteValue(Context ctx)
@@ -226,13 +187,6 @@ namespace SkyRoof
     {
       if (ctx.FrequencyControl.RadioLink.TxCust == null) return null;
       return ctx.FrequencyControl.RadioLink.DownlinkMode.ToString();
-    }
-
-    private static double? GetCurrentTransponderOffset(Context ctx)
-    {
-      var radioLink = ctx.FrequencyControl.RadioLink;
-      if (radioLink.TxCust == null || !radioLink.IsTransponder) return null;
-      return radioLink.TransponderOffset;
     }
   }
 }

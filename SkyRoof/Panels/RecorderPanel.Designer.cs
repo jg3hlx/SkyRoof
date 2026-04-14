@@ -48,7 +48,7 @@ namespace SkyRoof
       SaveWavMNU = new ToolStripMenuItem();
       TopPanel = new Panel();
       ContainerPanel = new Panel();
-      WaveformPanel = new Panel();
+      WaveformWidget = new WaveformWidget();
       SliderPanel = new Panel();
       StatusBar.SuspendLayout();
       ButtonPanel.SuspendLayout();
@@ -220,7 +220,7 @@ namespace SkyRoof
       // 
       // ContainerPanel
       // 
-      ContainerPanel.Controls.Add(WaveformPanel);
+      ContainerPanel.Controls.Add(WaveformWidget);
       ContainerPanel.Controls.Add(SliderPanel);
       ContainerPanel.Dock = DockStyle.Fill;
       ContainerPanel.Location = new Point(0, 32);
@@ -228,17 +228,15 @@ namespace SkyRoof
       ContainerPanel.Size = new Size(612, 133);
       ContainerPanel.TabIndex = 3;
       // 
-      // WaveformPanel
+      // WaveformWidget
       // 
-      WaveformPanel.BackColor = Color.Black;
-      WaveformPanel.Dock = DockStyle.Fill;
-      WaveformPanel.Location = new Point(0, 0);
-      WaveformPanel.Name = "WaveformPanel";
-      WaveformPanel.Size = new Size(585, 133);
-      WaveformPanel.TabIndex = 0;
-      WaveformPanel.MouseDown += WaveformPanel_MouseDown;
-      WaveformPanel.Paint += WaveformPanel_Paint;
-      WaveformPanel.Resize += WaveformPanel_Resize;
+      WaveformWidget.BackColor = Color.Black;
+      WaveformWidget.Dock = DockStyle.Fill;
+      WaveformWidget.Location = new Point(0, 0);
+      WaveformWidget.Name = "WaveformWidget";
+      WaveformWidget.Size = new Size(585, 133);
+      WaveformWidget.TabIndex = 0;
+      WaveformWidget.SeekRequested += WaveformWidget_SeekRequested;
       // 
       // SliderPanel
       // 
@@ -297,7 +295,7 @@ namespace SkyRoof
     private Button PlaybackBtn;
     private Panel TopPanel;
     private Panel ContainerPanel;
-    private Panel WaveformPanel;
+    private WaveformWidget WaveformWidget;
     private Panel SliderPanel;
     private TrackBar GainSlider;
     private ToolTip toolTip1;
