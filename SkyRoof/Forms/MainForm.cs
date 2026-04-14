@@ -1039,6 +1039,7 @@ namespace SkyRoof
       ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
       ctx.QsoEntryPanel?.SetBand();
       ctx.QsoEntryPanel?.SetMode();
+      ctx.RecorderPanel?.RememberRecordingEvents();
     }
 
     private void SatelliteSelector_SelectedPassChanged(object sender, EventArgs e)

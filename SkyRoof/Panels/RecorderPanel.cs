@@ -37,6 +37,19 @@ namespace SkyRoof
     private System.Windows.Forms.Timer? recordingTimer;
     private System.Windows.Forms.Timer? playbackUiTimer;
     private MultimediaTimer.Timer? playbackTimer;
+    private readonly List<MarkerInfo> waveformMarkers = [];
+    private string? hoveredMarkerTooltip;
+    private RecordingEvents recordingEvents = new();
+
+    public RecordingEvents RecordingEvents => recordingEvents;
+
+    private enum MarkerShape { Circle, Triangle, Square, Diamond, InvertedTriangle }
+
+    private sealed class MarkerInfo(RecordingEvents.RecordingEvent recordingEvent, Rectangle bounds)
+    {
+      public RecordingEvents.RecordingEvent RecordingEvent { get; } = recordingEvent;
+      public Rectangle Bounds { get; } = bounds;
+    }
 
     //----------------------------------------------------------------------------------------------
     //                                        startup
@@ -72,6 +85,9 @@ namespace SkyRoof
       playbackTimer.Resolution = TimeSpan.FromMilliseconds(1);
       playbackTimer.Elapsed += PlaybackTimer_Elapsed;
 
+      WaveformPanel.MouseMove += WaveformPanel_MouseMove;
+      WaveformPanel.MouseLeave += WaveformPanel_MouseLeave;
+
       ApplySettings();
     }
 
@@ -100,6 +116,9 @@ namespace SkyRoof
         playbackTimer.Elapsed -= PlaybackTimer_Elapsed;
         playbackTimer = null;
       }
+
+      WaveformPanel.MouseMove -= WaveformPanel_MouseMove;
+      WaveformPanel.MouseLeave -= WaveformPanel_MouseLeave;
 
       ctx.RecorderPanel = null;
       ctx.MainForm.RecorderMNU.Checked = false;
@@ -219,7 +238,10 @@ namespace SkyRoof
 
       samplesInBuffer = 0;
       playbackPosition = 0;
-      recordingStartTime = DateTime.Now;
+      recordingStartTime = DateTime.UtcNow;
+      recordingEvents.Start(ctx);
+      hoveredMarkerTooltip = null;
+      waveformMarkers.Clear();
       StatusLabel.Text = $"Recording {(isRecordingAudio ? "Audio" : "I/Q")} 00:00";
       recordingTimer?.Start();
 
@@ -242,7 +264,7 @@ namespace SkyRoof
 
       recordingTimer?.Stop();
 
-      TimeSpan duration = DateTime.Now - recordingStartTime;
+      TimeSpan duration = DateTime.UtcNow - recordingStartTime;
       StatusLabel.Text = $"Recording stopped - Duration: {duration:mm\\:ss}";
       Log.Information($"Recording stopped - {samplesInBuffer} samples recorded");
 
@@ -490,6 +512,7 @@ namespace SkyRoof
       bool hasData = samplesInBuffer > 0;
       SetSaveButtonsEnabled(hasData);
       PlaybackBtn.Enabled = hasData;
+      LoadRecordingEvents(filename);
 
       StatusLabel.Text = $"Loaded {Path.GetFileName(filename)}";
       Log.Information($"Recording loaded from {filename}");
@@ -565,6 +588,7 @@ namespace SkyRoof
       bool hasData = samplesInBuffer > 0;
       SetSaveButtonsEnabled(hasData);
       PlaybackBtn.Enabled = hasData;
+      LoadRecordingEvents(filename);
 
       StatusLabel.Text = $"Loaded {Path.GetFileName(filename)}";
       Log.Information($"Recording loaded from {filename}");
@@ -622,6 +646,7 @@ namespace SkyRoof
       {
         if (isMp3) SaveRecordingAsMp3(fileName);
         else SaveRecordingAsWav(fileName);
+        SaveRecordingEvents(fileName);
 
         StatusLabel.Text = $"Saved to {Path.GetFileName(fileName)}";
         Log.Information($"Recording saved to {fileName}");
@@ -736,6 +761,23 @@ namespace SkyRoof
       return path;
     }
 
+    private void SaveRecordingEvents(string recordingFileName)
+    {
+      recordingEvents.Save(GetRecordingEventsFileName(recordingFileName));
+    }
+
+    private void LoadRecordingEvents(string recordingFileName)
+    {
+      recordingEvents = RecordingEvents.Load(GetRecordingEventsFileName(recordingFileName));
+      hoveredMarkerTooltip = null;
+      waveformMarkers.Clear();
+    }
+
+    private string GetRecordingEventsFileName(string recordingFileName)
+    {
+      return recordingFileName + ".json";
+    }
+
 
 
     //----------------------------------------------------------------------------------------------
@@ -745,6 +787,7 @@ namespace SkyRoof
     {
       var waveformRect = DrawWaveformBackground(e.Graphics, WaveformPanel.ClientRectangle);
       DrawWaveformSamples(e.Graphics, waveformRect, WaveformPanel.ClientRectangle);
+      DrawRecordingMarkers(e.Graphics, waveformRect);
       DrawPlaybackPosition(g: e.Graphics, waveformRect);
       DrawTimeScale(e.Graphics, waveformRect, WaveformPanel.ClientRectangle);
     }
@@ -766,7 +809,8 @@ namespace SkyRoof
     {
       int textHeight = TextRenderer.MeasureText("0", Font, Size, TextFormatFlags.NoPadding).Height;
       int scaleHeight = textHeight * 2 + 6;
-      Rectangle waveformRect = new Rectangle(bounds.Left, bounds.Top, bounds.Width, Math.Max(1, bounds.Height - scaleHeight));
+      int markerHeight = GetMaxMarkerSize() + 2;
+      Rectangle waveformRect = new Rectangle(bounds.Left, bounds.Top + markerHeight, bounds.Width, Math.Max(1, bounds.Height - scaleHeight - markerHeight));
 
       int midY = waveformRect.Top + waveformRect.Height / 2;
       using var axisPen = new Pen(waveformAxisColor);
@@ -778,7 +822,7 @@ namespace SkyRoof
 
     private void DrawTimeScale(Graphics g, Rectangle waveformRect, Rectangle bounds)
     {
-      double totalSeconds = (isRecording ? BUFFER_SIZE : Math.Max(samplesInBuffer, 0)) / (double)SdrConst.AUDIO_SAMPLING_RATE;
+      double totalSeconds = GetVisibleDurationSeconds();
       if (totalSeconds <= 0 || waveformRect.Width <= 10) return;
 
       double[] StepsSec = { 1, 2, 5, 10, 20, 30, 60, 120, 300, 600, 1200, 1800, 3600 };
@@ -797,7 +841,7 @@ namespace SkyRoof
       if (step == 0) return;
 
       g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-      int scaleShift = 8; // moved up 2 px earlier
+      int scaleShift = 0; // moved up 2 px earlier
       int scaleTopY = Math.Min(bounds.Bottom - 1, waveformRect.Bottom + scaleShift);
 
       // draw horizontal line along upper ends of ticks
@@ -878,6 +922,135 @@ namespace SkyRoof
       }
     }
 
+    private double GetVisibleDurationSeconds()
+    {
+      return (isRecording ? BUFFER_SIZE : Math.Max(samplesInBuffer, 0)) / (double)SdrConst.AUDIO_SAMPLING_RATE;
+    }
+
+    private void DrawRecordingMarkers(Graphics g, Rectangle waveformRect)
+    {
+      waveformMarkers.Clear();
+
+      double totalSeconds = GetVisibleDurationSeconds();
+      if (totalSeconds <= 0 || waveformRect.Width <= 0 || recordingEvents.Events.Count == 0) return;
+
+      int markerTop = waveformRect.Top + 2;
+
+      foreach (var recordingEvent in recordingEvents.Events.OrderBy(e => e.Utc))
+      {
+        double eventSeconds = recordingEvents.GetRelativeSeconds(recordingEvent);
+        if (eventSeconds < 0 || eventSeconds > totalSeconds) continue;
+
+        int x = waveformRect.Left + (int)Math.Round((waveformRect.Width - 1) * eventSeconds / totalSeconds);
+        int markerSize = GetMarkerSize(recordingEvent.EventType);
+
+        Rectangle bounds = new(
+          x - markerSize / 2,
+          markerTop - markerSize,
+          markerSize,
+          markerSize);
+
+        DrawMarker(g, bounds, recordingEvent.EventType);
+        waveformMarkers.Add(new(recordingEvent, bounds));
+      }
+    }
+
+    private void DrawMarker(Graphics g, Rectangle bounds, string eventType)
+    {
+      var (color, shape) = GetMarkerStyle(eventType);
+
+      using var brush = new SolidBrush(color);
+      using var pen = new Pen(Color.Black);
+
+      switch (shape)
+      {
+        case MarkerShape.Circle:
+          g.FillEllipse(brush, bounds);
+          g.DrawEllipse(pen, bounds);
+          break;
+
+        case MarkerShape.Triangle:
+          g.FillPolygon(brush,
+          [
+            new Point(bounds.Left, bounds.Top),
+            new Point(bounds.Right - 1, bounds.Top + bounds.Height / 2),
+            new Point(bounds.Left, bounds.Bottom - 1),
+          ]);
+          g.DrawPolygon(pen,
+          [
+            new Point(bounds.Left, bounds.Top),
+            new Point(bounds.Right - 1, bounds.Top + bounds.Height / 2),
+            new Point(bounds.Left, bounds.Bottom - 1),
+          ]);
+          break;
+
+        case MarkerShape.Square:
+          g.FillRectangle(brush, bounds);
+          g.DrawRectangle(pen, bounds);
+          break;
+
+        case MarkerShape.Diamond:
+          g.FillPolygon(brush,
+          [
+            new Point(bounds.Left + bounds.Width / 2, bounds.Top),
+            new Point(bounds.Right - 1, bounds.Top + bounds.Height / 2),
+            new Point(bounds.Left + bounds.Width / 2, bounds.Bottom - 1),
+            new Point(bounds.Left, bounds.Top + bounds.Height / 2),
+          ]);
+          g.DrawPolygon(pen,
+          [
+            new Point(bounds.Left + bounds.Width / 2, bounds.Top),
+            new Point(bounds.Right - 1, bounds.Top + bounds.Height / 2),
+            new Point(bounds.Left + bounds.Width / 2, bounds.Bottom - 1),
+            new Point(bounds.Left, bounds.Top + bounds.Height / 2),
+          ]);
+          break;
+
+        case MarkerShape.InvertedTriangle:
+          g.FillPolygon(brush,
+          [
+            new Point(bounds.Left, bounds.Top),
+            new Point(bounds.Right - 1, bounds.Top),
+            new Point(bounds.Left + bounds.Width / 2, bounds.Bottom - 1),
+          ]);
+          g.DrawPolygon(pen,
+          [
+            new Point(bounds.Left, bounds.Top),
+            new Point(bounds.Right - 1, bounds.Top),
+            new Point(bounds.Left + bounds.Width / 2, bounds.Bottom - 1),
+          ]);
+          break;
+      }
+    }
+
+    private (Color color, MarkerShape shape) GetMarkerStyle(string eventType)
+    {
+      return eventType switch
+      {
+        "satellite" => (Color.Lime, MarkerShape.Circle),
+        "transmitter" => (Color.Red, MarkerShape.Triangle),
+        "mode" => (Color.Yellow, MarkerShape.Triangle),
+        "offset" => (Color.Fuchsia, MarkerShape.Diamond),
+        "qso" => (Color.Aqua, MarkerShape.Square),
+        _ => (Color.White, MarkerShape.Circle),
+      };
+    }
+
+    private int GetMarkerSize(string? eventType = null)
+    {
+      int textHeight = TextRenderer.MeasureText("0", Font, Size, TextFormatFlags.NoPadding).Height;
+      int markerSize = Math.Max(12, (int)Math.Round(textHeight * 0.8));
+      if (eventType is "transmitter" or "mode")
+        markerSize = Math.Max(markerSize, (int)Math.Round(markerSize * 1.15));
+
+      return markerSize;
+    }
+
+    private int GetMaxMarkerSize()
+    {
+      return Math.Max(GetMarkerSize(), GetMarkerSize("transmitter"));
+    }
+
     private void GainSlider_ValueChanged(object sender, EventArgs e)
     {
       double db = GainSlider.Value;
@@ -889,7 +1062,8 @@ namespace SkyRoof
     {
       if (isRecording)
       {
-        TimeSpan elapsed = DateTime.Now - recordingStartTime;
+        RememberRecordingEvents();
+        TimeSpan elapsed = DateTime.UtcNow - recordingStartTime;
         StatusLabel.Text = $"Recording {(isRecordingAudio ? "Audio" : "I/Q")} {elapsed:mm\\:ss}";
         WaveformPanel.Invalidate();
       }
@@ -906,6 +1080,48 @@ namespace SkyRoof
 
       int position = (int)Math.Round(e.X * (double)samplesInBuffer / WaveformPanel.ClientRectangle.Width);
       SeekPlaybackToPosition(position);
+    }
+
+    private void WaveformPanel_MouseMove(object? sender, MouseEventArgs e)
+    {
+      string? tooltip = GetMarkerInfo(e.Location)?.RecordingEvent.GetTooltipText();
+      if (tooltip == hoveredMarkerTooltip) return;
+
+      hoveredMarkerTooltip = tooltip;
+      toolTip1.SetToolTip(WaveformPanel, tooltip ?? string.Empty);
+    }
+
+    private void WaveformPanel_MouseLeave(object? sender, EventArgs e)
+    {
+      if (hoveredMarkerTooltip == null) return;
+
+      hoveredMarkerTooltip = null;
+      toolTip1.SetToolTip(WaveformPanel, string.Empty);
+    }
+
+    private MarkerInfo? GetMarkerInfo(Point location)
+    {
+      for (int i = waveformMarkers.Count - 1; i >= 0; i--)
+        if (waveformMarkers[i].Bounds.Contains(location))
+          return waveformMarkers[i];
+
+      return null;
+    }
+
+    internal void RememberRecordingEvents()
+    {
+      if (!isRecording) return;
+      if (!recordingEvents.RememberChanges(ctx)) return;
+
+      WaveformPanel.Invalidate();
+    }
+
+    internal void RememberQsoSaved(string callsign)
+    {
+      if (!isRecording) return;
+      if (!recordingEvents.RememberQsoSaved(callsign)) return;
+
+      WaveformPanel.Invalidate();
     }
   }
 }

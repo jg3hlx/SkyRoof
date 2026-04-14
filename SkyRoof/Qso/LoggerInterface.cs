@@ -102,7 +102,10 @@ namespace SkyRoof
       string result = DllAvailable ? SaveQsoUsingDll(json) : SaveQsoToAdif(qso);
 
       if (string.IsNullOrEmpty(result))
+      {
         Log.Information("QSO Saved.");
+        ctx.RecorderPanel?.RememberQsoSaved(qso.Call);
+      }
       else
         MessageBox.Show("Save QSO failed: " + result, "Save QSO", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
