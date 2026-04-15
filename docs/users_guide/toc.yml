@@ -73,6 +73,8 @@ items:
       href: qso_entry_panel.md
     - name: FT4 Console
       href: ft4_console_panel.md
+    - name: Recorder
+      href: recorder_panel.md
   - name: How To
     items:
     - name: Decode Telemetry from PEARL-1C
