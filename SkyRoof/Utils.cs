@@ -82,6 +82,14 @@ namespace VE3NEA
       return false;
     }
 
+    internal static string SanitizeFileNamePart(string value)
+    {
+      char[] invalidChars = Path.GetInvalidFileNameChars();
+      string sanitized = new string(value.Select(c => invalidChars.Contains(c) ? '_' : c).ToArray()).Trim();
+      while (sanitized.Contains("__")) sanitized = sanitized.Replace("__", "_");
+      return sanitized.Trim('_', ' ', '.');
+    }
+
     internal static string GetVersionNumber()
     {
       var version = typeof(Utils).Assembly.GetName().Version!;

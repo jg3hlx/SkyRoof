@@ -362,9 +362,7 @@ namespace SkyRoof
           : "WAV Files (*.wav)|*.wav|All Files (*.*)|*.*";
       dialog.DefaultExt = isIqWav ? "iq.wav" : ext;
       dialog.InitialDirectory = GetRecordingsPath();
-      dialog.FileName = isIqWav
-        ? $"{DateTime.Now:yyyy-MM-dd_HH_mm_ss}.iq.wav"
-        : $"{DateTime.Now:yyyy-MM-dd_HH_mm_ss}.{ext}";
+      dialog.FileName = BuildRecordingFileName(ext, isIqWav);
 
       if (dialog.ShowDialog() != DialogResult.OK) return;
 
@@ -397,6 +395,15 @@ namespace SkyRoof
       string path = Path.Combine(Utils.GetUserDataFolder(), "Recordings");
       Directory.CreateDirectory(path);
       return path;
+    }
+
+    private string BuildRecordingFileName(string ext, bool isIqWav)
+    {
+      string fileName = $"{DateTime.Now:yyyy-MM-dd_HH_mm_ss}";
+      string? satelliteName = recordingManager.RecordingEvents.GetSingleSatelliteName();
+      if (!string.IsNullOrWhiteSpace(satelliteName)) fileName += "_" + Utils.SanitizeFileNamePart(satelliteName);
+
+      return isIqWav ? fileName + ".iq.wav" : fileName + "." + ext;
     }
 
 

@@ -144,6 +144,17 @@ namespace SkyRoof
       File.WriteAllText(fileName, json);
     }
 
+    public string? GetSingleSatelliteName()
+    {
+      string[] satellites = Events
+        .Select(e => e.Satellite)
+        .Where(s => !string.IsNullOrWhiteSpace(s))
+        .Distinct(StringComparer.Ordinal)
+        .ToArray();
+
+      return satellites.Length == 1 ? satellites[0] : null;
+    }
+
     public static RecordingEvents Load(string fileName)
     {
       try
