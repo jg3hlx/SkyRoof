@@ -28,6 +28,8 @@ The following libraries, images and other resources were used in the SkyRoof pro
 - [Inno Setup](https://jrsoftware.org/isinfo.php)
 - [ISTool](http://www.istool.net/)
 - [InnoDependencyInstaller](https://github.com/DomGries/InnoDependencyInstaller)
+- [Multimedia Timer](https://github.com/MikeCodesDotNET/Multimedia-Timer)
+- [NAudio](https://github.com/naudio/NAudio)
 
 
 
