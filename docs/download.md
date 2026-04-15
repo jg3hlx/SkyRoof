@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.27](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.27/SkyRoofSetup-v.1.27.zip)
+[SkyRoof v.1.28](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.28/SkyRoofSetup-v.1.28.zip)
 
 <br>
 
@@ -15,6 +15,11 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.28
+
+- setup program updated to auto install .NET10 runtime if not present
+- Recorder panel added
 
 #### v.1.27
 

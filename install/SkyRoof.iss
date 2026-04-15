@@ -69,6 +69,13 @@ Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\libusb-1.0.dll; DestDir: {
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\MathNet.Filtering.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\MathNet.Numerics.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\MultimediaTimer.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\NAudio.Asio.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\NAudio.Core.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\NAudio.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\NAudio.Midi.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\NAudio.Wasapi.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\NAudio.WinForms.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
+Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\NAudio.WinMM.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\Newtonsoft.Json.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\pthreadVC2.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
 Source: ..\SkyRoof\bin\x64\Release\net10.0-windows7.0\Serilog.dll; DestDir: {app}; Flags: overwritereadonly ignoreversion
