@@ -98,6 +98,12 @@ namespace SkyRoof
       toolTip.SetToolTip(this, string.Empty);
     }
 
+    protected override void OnResize(EventArgs e)
+    {
+      base.OnResize(e);
+      Invalidate();
+    }
+
     private void DrawPlaybackPosition(Graphics g, Rectangle waveformRect, Rectangle bounds)
     {
       if (RecordingManager == null || RecordingManager.SamplesInBuffer <= 0 || waveformRect.Width <= 0) return;

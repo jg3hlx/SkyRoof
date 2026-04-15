@@ -46,7 +46,6 @@ namespace SkyRoof
       SaveMenu = new ContextMenuStrip(components);
       SaveMp3MNU = new ToolStripMenuItem();
       SaveWavMNU = new ToolStripMenuItem();
-      TopPanel = new Panel();
       ContainerPanel = new Panel();
       WaveformWidget = new WaveformWidget();
       SliderPanel = new Panel();
@@ -62,7 +61,7 @@ namespace SkyRoof
       // StatusBar
       // 
       StatusBar.Items.AddRange(new ToolStripItem[] { StatusLabel });
-      StatusBar.Location = new Point(0, 200);
+      StatusBar.Location = new Point(0, 150);
       StatusBar.Name = "StatusBar";
       StatusBar.Size = new Size(612, 22);
       StatusBar.TabIndex = 0;
@@ -84,7 +83,7 @@ namespace SkyRoof
       ButtonPanel.Controls.Add(LoadBtn);
       ButtonPanel.Controls.Add(PlaybackBtn);
       ButtonPanel.Dock = DockStyle.Bottom;
-      ButtonPanel.Location = new Point(0, 165);
+      ButtonPanel.Location = new Point(0, 115);
       ButtonPanel.Name = "ButtonPanel";
       ButtonPanel.Size = new Size(612, 35);
       ButtonPanel.TabIndex = 1;
@@ -154,6 +153,7 @@ namespace SkyRoof
       toolTip1.SetToolTip(PlaybackBtn, "Play Back");
       PlaybackBtn.UseVisualStyleBackColor = true;
       PlaybackBtn.Click += PlaybackBtn_Click;
+      // 
       // GainSlider
       // 
       GainSlider.Dock = DockStyle.Fill;
@@ -162,7 +162,7 @@ namespace SkyRoof
       GainSlider.Maximum = 40;
       GainSlider.Name = "GainSlider";
       GainSlider.Orientation = Orientation.Vertical;
-      GainSlider.Size = new Size(27, 133);
+      GainSlider.Size = new Size(27, 115);
       GainSlider.TabIndex = 0;
       GainSlider.TickFrequency = 20;
       toolTip1.SetToolTip(GainSlider, "Gain 0 dB");
@@ -208,24 +208,14 @@ namespace SkyRoof
       SaveWavMNU.Text = "Save .wav";
       SaveWavMNU.Click += SaveWavMNU_Click;
       // 
-      // TopPanel
-      // 
-      TopPanel.BackColor = SystemColors.Control;
-      TopPanel.BorderStyle = BorderStyle.FixedSingle;
-      TopPanel.Dock = DockStyle.Top;
-      TopPanel.Location = new Point(0, 0);
-      TopPanel.Name = "TopPanel";
-      TopPanel.Size = new Size(612, 32);
-      TopPanel.TabIndex = 2;
-      // 
       // ContainerPanel
       // 
       ContainerPanel.Controls.Add(WaveformWidget);
       ContainerPanel.Controls.Add(SliderPanel);
       ContainerPanel.Dock = DockStyle.Fill;
-      ContainerPanel.Location = new Point(0, 32);
+      ContainerPanel.Location = new Point(0, 0);
       ContainerPanel.Name = "ContainerPanel";
-      ContainerPanel.Size = new Size(612, 133);
+      ContainerPanel.Size = new Size(612, 115);
       ContainerPanel.TabIndex = 3;
       // 
       // WaveformWidget
@@ -234,7 +224,7 @@ namespace SkyRoof
       WaveformWidget.Dock = DockStyle.Fill;
       WaveformWidget.Location = new Point(0, 0);
       WaveformWidget.Name = "WaveformWidget";
-      WaveformWidget.Size = new Size(585, 133);
+      WaveformWidget.Size = new Size(585, 115);
       WaveformWidget.TabIndex = 0;
       WaveformWidget.SeekRequested += WaveformWidget_SeekRequested;
       // 
@@ -245,16 +235,15 @@ namespace SkyRoof
       SliderPanel.Dock = DockStyle.Right;
       SliderPanel.Location = new Point(585, 0);
       SliderPanel.Name = "SliderPanel";
-      SliderPanel.Size = new Size(27, 133);
+      SliderPanel.Size = new Size(27, 115);
       SliderPanel.TabIndex = 1;
       // 
       // RecorderPanel
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(612, 222);
+      ClientSize = new Size(612, 172);
       Controls.Add(ContainerPanel);
-      Controls.Add(TopPanel);
       Controls.Add(ButtonPanel);
       Controls.Add(StatusBar);
       Font = new Font("Segoe UI", 9F);
@@ -265,7 +254,6 @@ namespace SkyRoof
       StatusBar.ResumeLayout(false);
       StatusBar.PerformLayout();
       ButtonPanel.ResumeLayout(false);
-      ButtonPanel.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)GainSlider).EndInit();
       RecordMenu.ResumeLayout(false);
       SaveMenu.ResumeLayout(false);
@@ -293,7 +281,6 @@ namespace SkyRoof
     private ToolStripMenuItem SaveWavMNU;
     private Button LoadBtn;
     private Button PlaybackBtn;
-    private Panel TopPanel;
     private Panel ContainerPanel;
     private WaveformWidget WaveformWidget;
     private Panel SliderPanel;
