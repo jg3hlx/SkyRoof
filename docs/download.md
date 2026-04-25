@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.28](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.28/SkyRoofSetup-v.1.28.zip)
+[SkyRoof v.1.29](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.29/SkyRoofSetup-v.1.29.zip)
 
 <br>
 
@@ -15,6 +15,10 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.29
+
+- no changes, version bumped to rebuild
 
 #### v.1.28
 
