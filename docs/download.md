@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.29](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.29/SkyRoofSetup-v.1.29.zip)
+[SkyRoof v.1.30](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.30/SkyRoofSetup-v.1.30.zip)
 
 <br>
 
@@ -15,6 +15,10 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.30
+
+- added support of transverter offset
 
 #### v.1.29
 
