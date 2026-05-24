@@ -810,23 +810,40 @@ namespace SkyRoof
 
     public void ShowCatStatus()
     {
+      var transverter = ctx.Settings.Transverter;
+      var link = ctx.FrequencyControl.RadioLink;
+
+      bool rxOutOfBand = transverter.RxCatOffsetEnabled && transverter.GetCatBand(link.CorrectedDownlinkFrequency) == null;
+      bool txOutOfBand = transverter.TxCatOffsetEnabled && transverter.GetCatBand(link.CorrectedUplinkFrequency) == null;
+
       if (ctx.CatControl.Rx == null) RxCatLedLabel.ForeColor = Color.Gray;
       else if (!ctx.CatControl.Rx!.IsRunning) RxCatLedLabel.ForeColor = Color.Red;
+      else if (rxOutOfBand) RxCatLedLabel.ForeColor = Color.Yellow;
       else RxCatLedLabel.ForeColor = Color.Lime;
 
       if (!ctx.Settings.Cat.TxCat.Enabled) TxCatLedLabel.ForeColor = Color.Gray;
-      else if (!ctx.FrequencyControl.RadioLink.HasUplink) TxCatLedLabel.ForeColor = Color.Black;
+      else if (!link.HasUplink) TxCatLedLabel.ForeColor = Color.Black;
       else if (!ctx.CatControl.Tx?.IsRunning ?? false) TxCatLedLabel.ForeColor = Color.Red;
+      else if (txOutOfBand) TxCatLedLabel.ForeColor = Color.Yellow;
       else TxCatLedLabel.ForeColor = Color.Lime;
 
-      RxCatStatusLabel.ToolTipText = ctx.CatControl.Rx?.GetStatusString() ?? "Disabled";
+      string rxTip = rxOutOfBand
+        ? $"RX CAT transverter offset is enabled, but no CAT transverter band covers the downlink frequency ({link.CorrectedDownlinkFrequency:n0} Hz). No frequency is being sent to the radio."
+        : ctx.CatControl.Rx?.GetStatusString() ?? "Disabled";
+      RxCatStatusLabel.ToolTipText = rxTip;
+      RxCatLedLabel.ToolTipText = rxTip;
 
+      string txTip;
       if (!ctx.Settings.Cat.TxCat.Enabled)
-        TxCatStatusLabel.ToolTipText = "Disabled";
-      else if (!ctx.FrequencyControl.RadioLink.HasUplink)
-        TxCatStatusLabel.ToolTipText = "No Uplink";
+        txTip = "Disabled";
+      else if (!link.HasUplink)
+        txTip = "No Uplink";
+      else if (txOutOfBand)
+        txTip = $"TX CAT transverter offset is enabled, but no CAT transverter band covers the uplink frequency ({link.CorrectedUplinkFrequency:n0} Hz). No frequency is being sent to the radio.";
       else
-        TxCatStatusLabel.ToolTipText = ctx.CatControl.Tx?.GetStatusString();
+        txTip = ctx.CatControl.Tx?.GetStatusString();
+      TxCatStatusLabel.ToolTipText = txTip;
+      TxCatLedLabel.ToolTipText = txTip;
     }
 
     public void ShowRotatorStatus()

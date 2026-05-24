@@ -268,6 +268,10 @@ namespace SkyRoof
         else
           ctx.CatControl.Tx.SetTxFrequency((long)Math.Truncate(txRf));
       }
+
+      // refresh the LED labels so the yellow "no matching CAT band" state tracks the active RF
+      if (transverter.RxCatOffsetEnabled || transverter.TxCatOffsetEnabled)
+        ctx.MainForm?.ShowCatStatus();
     }
 
     private void SetSlicerFrequency()
@@ -530,6 +534,14 @@ namespace SkyRoof
       if (RadioLink.IsTransponder)
         tooltip += $"Transponder offset:     {RadioLink.TransponderOffset:n0} Hz\n";
 
+      var transverter = ctx.Settings.Transverter;
+      if (transverter.TxCatOffsetEnabled)
+      {
+        var catBand = transverter.GetCatBand(RadioLink.CorrectedUplinkFrequency);
+        if (catBand != null)
+          tooltip += $"CAT Transverter IF: {(RadioLink.CorrectedUplinkFrequency - catBand.LoOffset) / 1e6:F6} MHz\n";
+      }
+
       return tooltip + "\nRight-click for options";
     }
 
@@ -545,6 +557,20 @@ namespace SkyRoof
 
       if (RadioLink.XitOffset != 0)
         tooltip += $"XIT offset:     {RadioLink.XitOffset:n0} Hz\n";
+
+      var transverter = ctx.Settings.Transverter;
+      if (transverter.SdrOffsetEnabled)
+      {
+        var sdrBand = transverter.GetSdrBand(RadioLink.CorrectedDownlinkFrequency);
+        if (sdrBand != null)
+          tooltip += $"SDR Transverter IF: {(RadioLink.CorrectedDownlinkFrequency - sdrBand.LoOffset) / 1e6:F6} MHz\n";
+      }
+      if (transverter.RxCatOffsetEnabled)
+      {
+        var catBand = transverter.GetCatBand(RadioLink.CorrectedDownlinkFrequency);
+        if (catBand != null)
+          tooltip += $"CAT Transverter IF: {(RadioLink.CorrectedDownlinkFrequency - catBand.LoOffset) / 1e6:F6} MHz\n";
+      }
 
       return tooltip + "\nClick for manual entry\nRight-click for options";
     }
