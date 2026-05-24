@@ -37,9 +37,27 @@ namespace SkyRoof
 
     private void resetToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      grid.ResetSelectedProperty();
-
       string label = PropertyGridEx.GetItemProperty(grid.SelectedGridItem, "HelpKeyword");
+
+      // collection properties don't have a [DefaultValue]; handle their reset explicitly
+      var settings = (Settings?)grid.SelectedObject;
+      switch (label)
+      {
+        case "SkyRoof.TransverterSettings.SdrBands":
+          settings!.Transverter.ResetSdrBands();
+          grid.Refresh();
+          break;
+
+        case "SkyRoof.TransverterSettings.CatBands":
+          settings!.Transverter.ResetCatBands();
+          grid.Refresh();
+          break;
+
+        default:
+          grid.ResetSelectedProperty();
+          break;
+      }
+
       ChangedFields.Add(label);
     }
 

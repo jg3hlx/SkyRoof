@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build *)",
+      "Bash(grep -E \"error |Build succeeded|Build FAILED|Error\\\\\\(s\\\\\\)\" C:\\\\\\\\Users\\\\\\\\alsho\\\\\\\\.claude\\\\\\\\projects\\\\\\\\c--Proj-DSP-SkyRoof\\\\\\\\938bdf71-c544-4c02-9096-44e64fdd0939\\\\\\\\tool-results\\\\\\\\b7v0m48nt.txt)",
+      "Bash(grep -E \"error |Build succeeded|Build FAILED|Error\\\\\\(s\\\\\\)\" \"/c/Users/alsho/.claude/projects/c--Proj-DSP-SkyRoof/938bdf71-c544-4c02-9096-44e64fdd0939/tool-results/b7v0m48nt.txt\" | head -50)",
+      "Read(//c/Users/alsho/.claude/projects/c--Proj-DSP-SkyRoof/938bdf71-c544-4c02-9096-44e64fdd0939/tool-results/**)"
+    ]
+  }
+}
