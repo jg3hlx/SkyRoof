@@ -27,6 +27,8 @@ items:
       href: setting_up_cat_control.md
     - name: Setting Up Rotator Control
       href: setting_up_rotator_control.md
+    - name: Setting Up Transverter
+      href: setting_up_transverter.md
     - name: Setting Up FT4 Console
       href: setting_up_ft4_console.md
   - name: User Interface
