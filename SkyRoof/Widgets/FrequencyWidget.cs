@@ -237,42 +237,65 @@ namespace SkyRoof
       SetSlicerFrequency();
 
       // freq in external radio (with optional transverter CAT offset)
-      var transverter = ctx.Settings.Transverter;
-
       if (ctx.CatControl.Rx != null)
-      {
-        double rxRf = RadioLink.CorrectedDownlinkFrequency;
-        if (transverter.RxCatOffsetEnabled)
-        {
-          var band = transverter.GetCatBand(rxRf);
-          if (band == null)
-            Serilog.Log.Warning($"RX CAT transverter offset enabled but no CAT band matches RF {rxRf:n0} Hz — skipping CAT command");
-          else
-            ctx.CatControl.Rx.SetRxFrequency((long)Math.Truncate(rxRf - band.LoOffset));
-        }
-        else
-          ctx.CatControl.Rx.SetRxFrequency((long)Math.Truncate(rxRf));
-      }
+        SendCatRxFrequency(RadioLink.CorrectedDownlinkFrequency);
 
       if (RadioLink.CorrectedUplinkFrequency != 0 && ctx.CatControl.Tx != null)
-      {
-        double txRf = RadioLink.CorrectedUplinkFrequency;
-        if (transverter.TxCatOffsetEnabled)
-        {
-          var band = transverter.GetCatBand(txRf);
-          if (band == null)
-            Serilog.Log.Warning($"TX CAT transverter offset enabled but no CAT band matches RF {txRf:n0} Hz — skipping CAT command");
-          else
-            ctx.CatControl.Tx.SetTxFrequency((long)Math.Truncate(txRf - band.LoOffset));
-        }
-        else
-          ctx.CatControl.Tx.SetTxFrequency((long)Math.Truncate(txRf));
-      }
+        SendCatTxFrequency(RadioLink.CorrectedUplinkFrequency);
 
       // refresh the LED labels so the yellow "no matching CAT band" state tracks the active RF
+      var transverter = ctx.Settings.Transverter;
       if (transverter.RxCatOffsetEnabled || transverter.TxCatOffsetEnabled)
         ctx.MainForm?.ShowCatStatus();
     }
+
+    private void SendCatRxFrequency(double rxRf)
+    {
+      var transverter = ctx.Settings.Transverter;
+      if (transverter.RxCatOffsetEnabled)
+      {
+        var band = transverter.GetCatBand(rxRf);
+        if (band == null)
+          Serilog.Log.Warning($"RX CAT transverter offset enabled but no CAT band matches RF {rxRf:n0} Hz — skipping CAT command");
+        else
+          ctx.CatControl.Rx!.SetRxFrequency((long)Math.Truncate(rxRf - band.LoOffset));
+      }
+      else
+        ctx.CatControl.Rx!.SetRxFrequency((long)Math.Truncate(rxRf));
+    }
+
+    private void SendCatTxFrequency(double txRf)
+    {
+      var transverter = ctx.Settings.Transverter;
+      if (transverter.TxCatOffsetEnabled)
+      {
+        var band = transverter.GetCatBand(txRf);
+        if (band == null)
+          Serilog.Log.Warning($"TX CAT transverter offset enabled but no CAT band matches RF {txRf:n0} Hz — skipping CAT command");
+        else
+          ctx.CatControl.Tx!.SetTxFrequency((long)Math.Truncate(txRf - band.LoOffset));
+      }
+      else
+        ctx.CatControl.Tx!.SetTxFrequency((long)Math.Truncate(txRf));
+    }
+
+    // True when RX CAT transverter offset is enabled but the current downlink RF falls outside
+    // every configured CAT band — no CAT frequency is being sent in this state.
+    public bool IsRxCatTransverterOutOfBand =>
+      ctx.Settings.Transverter.RxCatOffsetEnabled &&
+      ctx.Settings.Transverter.GetCatBand(RadioLink.CorrectedDownlinkFrequency) == null;
+
+    // True when TX CAT transverter offset is enabled but the current uplink RF falls outside
+    // every configured CAT band — no CAT frequency is being sent in this state.
+    public bool IsTxCatTransverterOutOfBand =>
+      ctx.Settings.Transverter.TxCatOffsetEnabled &&
+      ctx.Settings.Transverter.GetCatBand(RadioLink.CorrectedUplinkFrequency) == null;
+
+    public string GetRxCatTransverterOutOfBandMessage() =>
+      $"RX CAT transverter offset is enabled, but no CAT transverter band covers the downlink frequency ({RadioLink.CorrectedDownlinkFrequency:n0} Hz). No frequency is being sent to the radio.";
+
+    public string GetTxCatTransverterOutOfBandMessage() =>
+      $"TX CAT transverter offset is enabled, but no CAT transverter band covers the uplink frequency ({RadioLink.CorrectedUplinkFrequency:n0} Hz). No frequency is being sent to the radio.";
 
     private void SetSlicerFrequency()
     {
