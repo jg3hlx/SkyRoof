@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.30](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.30/SkyRoofSetup-v.1.30.zip)
+[SkyRoof v.1.31](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.31/SkyRoofSetup-v.1.31.zip)
 
 <br>
 
@@ -15,6 +15,11 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.31
+
+- added satellite image panel on the toolbar - contributed by [cozmogeek](https://github.com/cozmogeek)
+- reduced the minimum antenna tracking step to 0.01°
 
 #### v.1.30
 
