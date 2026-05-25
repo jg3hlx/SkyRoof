@@ -35,18 +35,22 @@ namespace SkyRoof
       Tooltip = new ToolTip(components);
       ((System.ComponentModel.ISupportInitialize)Picture).BeginInit();
       SuspendLayout();
-      //
+      // 
       // Picture
-      //
-      Picture.Dock = DockStyle.Fill;
-      Picture.SizeMode = PictureBoxSizeMode.Zoom;
-      // let the toolbar background show through cached PNG alpha
+      // 
       Picture.BackColor = Color.Transparent;
+      Picture.Cursor = Cursors.Hand;
+      Picture.Dock = DockStyle.Fill;
+      Picture.Location = new Point(0, 0);
       Picture.Name = "Picture";
+      Picture.Size = new Size(90, 78);
+      Picture.SizeMode = PictureBoxSizeMode.Zoom;
+      Picture.TabIndex = 0;
       Picture.TabStop = false;
-      //
+      Picture.Click += Picture_Click;
+      // 
       // SatellitePhotoWidget
-      //
+      // 
       BorderStyle = BorderStyle.FixedSingle;
       Controls.Add(Picture);
       Name = "SatellitePhotoWidget";

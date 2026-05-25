@@ -32,18 +32,19 @@
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       Toolbar = new Panel();
       RotatorWidget = new RotatorWidget();
-      SatellitePhotoWidget = new SatellitePhotoWidget();
       panel7 = new Panel();
       GainWidget = new GainWidget();
       panel3 = new Panel();
       panel6 = new Panel();
       FrequencyWidget = new FrequencyWidget();
       panel1 = new Panel();
-      SatelliteSelecionWidget = new SatelliteSelectorWidget();
+      SatellitePhotoWidget = new SatellitePhotoWidget();
       ClockPanel = new Panel();
       Clock = new VE3NEA.Clock.ClockWidget();
       panel2 = new Panel();
       panel5 = new Panel();
+      SatellitePhotoSeparator = new Panel();
+      SatelliteSelecionWidget = new SatelliteSelectorWidget();
       DockHost = new WeifenLuo.WinFormsUI.Docking.DockPanel();
       vS2015LightTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015LightTheme();
       menuStrip1 = new MenuStrip();
@@ -123,38 +124,31 @@
       Toolbar.Controls.Add(FrequencyWidget);
       Toolbar.Controls.Add(panel1);
       Toolbar.Controls.Add(SatellitePhotoWidget);
-      Toolbar.Controls.Add(SatelliteSelecionWidget);
       Toolbar.Controls.Add(ClockPanel);
-      Toolbar.Controls.Add(panel2);
       Toolbar.Controls.Add(panel5);
+      Toolbar.Controls.Add(SatellitePhotoSeparator);
+      Toolbar.Controls.Add(SatelliteSelecionWidget);
+      Toolbar.Controls.Add(panel2);
       Toolbar.Dock = DockStyle.Top;
       Toolbar.Location = new Point(0, 24);
       Toolbar.Name = "Toolbar";
       Toolbar.Size = new Size(1834, 78);
       Toolbar.TabIndex = 0;
+      Toolbar.Resize += Toolbar_Resize;
       // 
       // RotatorWidget
       // 
       RotatorWidget.BorderStyle = BorderStyle.FixedSingle;
       RotatorWidget.Dock = DockStyle.Left;
-      RotatorWidget.Location = new Point(1248, 0);
+      RotatorWidget.Location = new Point(1342, 0);
       RotatorWidget.Name = "RotatorWidget";
       RotatorWidget.Size = new Size(210, 78);
       RotatorWidget.TabIndex = 8;
       // 
-      // SatellitePhotoWidget
-      // 
-      SatellitePhotoWidget.BorderStyle = BorderStyle.FixedSingle;
-      SatellitePhotoWidget.Dock = DockStyle.Left;
-      SatellitePhotoWidget.Location = new Point(4, 0);
-      SatellitePhotoWidget.Name = "SatellitePhotoWidget";
-      SatellitePhotoWidget.Size = new Size(90, 78);
-      SatellitePhotoWidget.TabIndex = 11;
-      // 
       // panel7
       // 
       panel7.Dock = DockStyle.Left;
-      panel7.Location = new Point(1244, 0);
+      panel7.Location = new Point(1338, 0);
       panel7.Name = "panel7";
       panel7.Size = new Size(4, 78);
       panel7.TabIndex = 10;
@@ -163,7 +157,7 @@
       // 
       GainWidget.BorderStyle = BorderStyle.FixedSingle;
       GainWidget.Dock = DockStyle.Left;
-      GainWidget.Location = new Point(1034, 0);
+      GainWidget.Location = new Point(1128, 0);
       GainWidget.Name = "GainWidget";
       GainWidget.Size = new Size(210, 78);
       GainWidget.TabIndex = 7;
@@ -172,7 +166,7 @@
       // 
       panel3.Controls.Add(panel6);
       panel3.Dock = DockStyle.Left;
-      panel3.Location = new Point(1030, 0);
+      panel3.Location = new Point(1124, 0);
       panel3.Name = "panel3";
       panel3.Size = new Size(4, 78);
       panel3.TabIndex = 6;
@@ -189,7 +183,7 @@
       // 
       FrequencyWidget.BorderStyle = BorderStyle.FixedSingle;
       FrequencyWidget.Dock = DockStyle.Left;
-      FrequencyWidget.Location = new Point(348, 0);
+      FrequencyWidget.Location = new Point(442, 0);
       FrequencyWidget.Name = "FrequencyWidget";
       FrequencyWidget.Size = new Size(682, 78);
       FrequencyWidget.TabIndex = 3;
@@ -197,23 +191,19 @@
       // panel1
       // 
       panel1.Dock = DockStyle.Left;
-      panel1.Location = new Point(344, 0);
+      panel1.Location = new Point(438, 0);
       panel1.Name = "panel1";
       panel1.Size = new Size(4, 78);
       panel1.TabIndex = 4;
       // 
-      // SatelliteSelecionWidget
+      // SatellitePhotoWidget
       // 
-      SatelliteSelecionWidget.BorderStyle = BorderStyle.FixedSingle;
-      SatelliteSelecionWidget.Dock = DockStyle.Left;
-      SatelliteSelecionWidget.Location = new Point(4, 0);
-      SatelliteSelecionWidget.Name = "SatelliteSelecionWidget";
-      SatelliteSelecionWidget.Size = new Size(340, 78);
-      SatelliteSelecionWidget.TabIndex = 2;
-      SatelliteSelecionWidget.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
-      SatelliteSelecionWidget.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
-      SatelliteSelecionWidget.SelectedTransmitterChanged += SatelliteSelector_SelectedTransmitterChanged;
-      SatelliteSelecionWidget.SelectedPassChanged += SatelliteSelector_SelectedPassChanged;
+      SatellitePhotoWidget.BorderStyle = BorderStyle.FixedSingle;
+      SatellitePhotoWidget.Dock = DockStyle.Left;
+      SatellitePhotoWidget.Location = new Point(348, 0);
+      SatellitePhotoWidget.Name = "SatellitePhotoWidget";
+      SatellitePhotoWidget.Size = new Size(90, 78);
+      SatellitePhotoWidget.TabIndex = 11;
       // 
       // ClockPanel
       // 
@@ -254,6 +244,27 @@
       panel5.Size = new Size(4, 78);
       panel5.TabIndex = 9;
       // 
+      // SatellitePhotoSeparator
+      // 
+      SatellitePhotoSeparator.Dock = DockStyle.Left;
+      SatellitePhotoSeparator.Location = new Point(344, 0);
+      SatellitePhotoSeparator.Name = "SatellitePhotoSeparator";
+      SatellitePhotoSeparator.Size = new Size(4, 78);
+      SatellitePhotoSeparator.TabIndex = 12;
+      // 
+      // SatelliteSelecionWidget
+      // 
+      SatelliteSelecionWidget.BorderStyle = BorderStyle.FixedSingle;
+      SatelliteSelecionWidget.Dock = DockStyle.Left;
+      SatelliteSelecionWidget.Location = new Point(4, 0);
+      SatelliteSelecionWidget.Name = "SatelliteSelecionWidget";
+      SatelliteSelecionWidget.Size = new Size(340, 78);
+      SatelliteSelecionWidget.TabIndex = 2;
+      SatelliteSelecionWidget.SelectedGroupChanged += SatelliteSelector_SelectedGroupChanged;
+      SatelliteSelecionWidget.SelectedSatelliteChanged += SatelliteSelector_SelectedSatelliteChanged;
+      SatelliteSelecionWidget.SelectedTransmitterChanged += SatelliteSelector_SelectedTransmitterChanged;
+      SatelliteSelecionWidget.SelectedPassChanged += SatelliteSelector_SelectedPassChanged;
+      // 
       // DockHost
       // 
       DockHost.DefaultFloatWindowSize = new Size(445, 445);
@@ -286,7 +297,7 @@
       // ExitMNU
       // 
       ExitMNU.Name = "ExitMNU";
-      ExitMNU.Size = new Size(93, 22);
+      ExitMNU.Size = new Size(92, 22);
       ExitMNU.Text = "E&xit";
       ExitMNU.Click += ExitMNU_Click;
       // 
@@ -300,89 +311,89 @@
       // GroupViewMNU
       // 
       GroupViewMNU.Name = "GroupViewMNU";
-      GroupViewMNU.Size = new Size(194, 22);
+      GroupViewMNU.Size = new Size(188, 22);
       GroupViewMNU.Text = "&Group";
       GroupViewMNU.Click += GroupViewMNU_Click;
       // 
       // SatelliteDetailsMNU
       // 
       SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
-      SatelliteDetailsMNU.Size = new Size(194, 22);
+      SatelliteDetailsMNU.Size = new Size(188, 22);
       SatelliteDetailsMNU.Text = "Satellite &Details";
       SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
       // 
       // TransmittersMNU
       // 
       TransmittersMNU.Name = "TransmittersMNU";
-      TransmittersMNU.Size = new Size(194, 22);
+      TransmittersMNU.Size = new Size(188, 22);
       TransmittersMNU.Text = "Satellite &Transmitters";
       TransmittersMNU.Click += TransmittersMNU_Click;
       // 
       // SatellitePassesMNU
       // 
       SatellitePassesMNU.Name = "SatellitePassesMNU";
-      SatellitePassesMNU.Size = new Size(194, 22);
+      SatellitePassesMNU.Size = new Size(188, 22);
       SatellitePassesMNU.Text = "Satellite &Passes";
       SatellitePassesMNU.Click += SatellitePassesMNU_Click;
       // 
       // WaterfallMNU
       // 
       WaterfallMNU.Name = "WaterfallMNU";
-      WaterfallMNU.Size = new Size(194, 22);
+      WaterfallMNU.Size = new Size(188, 22);
       WaterfallMNU.Text = "Wideband &Waterfall";
       WaterfallMNU.Click += WaterfallMNU_Click;
       // 
       // TimelineMNU
       // 
       TimelineMNU.Name = "TimelineMNU";
-      TimelineMNU.Size = new Size(194, 22);
+      TimelineMNU.Size = new Size(188, 22);
       TimelineMNU.Text = "T&imeline";
       TimelineMNU.Click += TimelineMNU_Click;
       // 
       // SkyViewMNU
       // 
       SkyViewMNU.Name = "SkyViewMNU";
-      SkyViewMNU.Size = new Size(194, 22);
+      SkyViewMNU.Size = new Size(188, 22);
       SkyViewMNU.Text = "&Sky View";
       SkyViewMNU.Click += SkyViewMNU_Click;
       // 
       // EarthViewMNU
       // 
       EarthViewMNU.Name = "EarthViewMNU";
-      EarthViewMNU.Size = new Size(194, 22);
+      EarthViewMNU.Size = new Size(188, 22);
       EarthViewMNU.Text = "&Earth View";
       EarthViewMNU.Click += EarthViewMNU_Click;
       // 
       // QsoEntryMNU
       // 
       QsoEntryMNU.Name = "QsoEntryMNU";
-      QsoEntryMNU.Size = new Size(194, 22);
+      QsoEntryMNU.Size = new Size(188, 22);
       QsoEntryMNU.Text = "&QSO Entry";
       QsoEntryMNU.Click += QsoEntryMNU_Click;
       // 
       // Ft4ConsoleMNU
       // 
       Ft4ConsoleMNU.Name = "Ft4ConsoleMNU";
-      Ft4ConsoleMNU.Size = new Size(194, 22);
+      Ft4ConsoleMNU.Size = new Size(188, 22);
       Ft4ConsoleMNU.Text = "&FT4 Console";
       Ft4ConsoleMNU.Click += Ft4ConsoleMNU_Click;
       // 
       // RecorderMNU
       // 
       RecorderMNU.Name = "RecorderMNU";
-      RecorderMNU.Size = new Size(194, 22);
+      RecorderMNU.Size = new Size(188, 22);
       RecorderMNU.Text = "&Recorder";
       RecorderMNU.Click += RecorderMNU_Click;
       // 
       // toolStripMenuItem4
       // 
       toolStripMenuItem4.Name = "toolStripMenuItem4";
-      toolStripMenuItem4.Size = new Size(191, 6);
+      toolStripMenuItem4.Size = new Size(185, 6);
       // 
       // ResetWindowLayoutMNU
       // 
       ResetWindowLayoutMNU.Name = "ResetWindowLayoutMNU";
-      ResetWindowLayoutMNU.Size = new Size(194, 22);
+      ResetWindowLayoutMNU.Size = new Size(188, 22);
       ResetWindowLayoutMNU.Text = "Reset Window &Layout";
       ResetWindowLayoutMNU.Click += ResetWindowLayoutMNU_Click;
       // 
@@ -390,7 +401,7 @@
       // 
       toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, DownloadSatDataMNU, DownloadTleMNU, DownloadAmsatMNU, toolStripMenuItem3, LoadTleMNU });
       toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-      toolsToolStripMenuItem.Size = new Size(46, 20);
+      toolsToolStripMenuItem.Size = new Size(47, 20);
       toolsToolStripMenuItem.Text = "&Tools";
       // 
       // SatelliteGroupsMNU
@@ -865,5 +876,6 @@
     public ToolStripMenuItem Ft4ConsoleMNU;
     public ToolStripMenuItem RecorderMNU;
     public FrequencyWidget FrequencyWidget;
+    private Panel SatellitePhotoSeparator;
   }
 }

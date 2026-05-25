@@ -1,6 +1,8 @@
-using System.Net.Http;
+using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Net.Http;
+using SGPdotNET.Observation;
 using VE3NEA;
 
 namespace SkyRoof
@@ -12,6 +14,7 @@ namespace SkyRoof
     private static readonly HttpClient Http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
     private CancellationTokenSource? Cts;
     private string? CurrentSatId;
+    private string? Url;
 
     public static readonly Size CacheImageSize = new(160, 160);
     private const int CacheVersion = 2;
@@ -23,6 +26,8 @@ namespace SkyRoof
 
     public void SetSatellite(SatnogsDbSatellite? sat)
     {
+      Url = null;
+
       if (sat == null)
       {
         CurrentSatId = null;
@@ -41,8 +46,8 @@ namespace SkyRoof
         return;
       }
 
-      var url = $"https://db-satnogs.freetls.fastly.net/media/{sat.image}";
-      LoadOrDownloadAsync(sat, url).DoNotAwait();
+      Url = $"https://db-satnogs.freetls.fastly.net/media/{sat.image}";
+      LoadOrDownloadAsync(sat, Url).DoNotAwait();
     }
 
     private async Task LoadOrDownloadAsync(SatnogsDbSatellite sat, string url)
@@ -138,6 +143,12 @@ namespace SkyRoof
       var old = Picture.Image;
       Picture.Image = img;
       old?.Dispose();
+    }
+
+    private void Picture_Click(object sender, EventArgs e)
+    {
+      if (Url != null)
+        Process.Start(new ProcessStartInfo(Url) { UseShellExecute = true });
     }
   }
 }

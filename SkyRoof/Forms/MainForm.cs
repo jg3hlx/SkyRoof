@@ -3,6 +3,7 @@ using System.Runtime;
 using CSCore.CoreAudioAPI;
 using MathNet.Numerics;
 using Serilog;
+using SGPdotNET.Observation;
 using VE3NEA;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -58,7 +59,6 @@ namespace SkyRoof
       ctx.CatControl.ApplySettings();
       ctx.RotatorControl.ApplySettings();
 
-      Resize += (s, e) => UpdateSatellitePhotoVisibility();
       UpdateSatellitePhotoVisibility();
     }
 
@@ -1100,6 +1100,12 @@ namespace SkyRoof
         ClockPanel.Width;
 
       SatellitePhotoWidget.Visible = Toolbar.ClientSize.Width >= required + 10;
+      SatellitePhotoSeparator.Visible = SatellitePhotoWidget.Visible;
+    }
+
+    private void Toolbar_Resize(object sender, EventArgs e)
+    {
+      UpdateSatellitePhotoVisibility();
     }
   }
 }
