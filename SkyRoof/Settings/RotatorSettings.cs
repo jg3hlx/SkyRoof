@@ -57,8 +57,8 @@ namespace SkyRoof
 
     [DisplayName("Step Size")]
     [Description("The tracking step size, in degrees")]
-    [DefaultValue(5)]
-    public int StepSize { get; set; } = 5;
+    [DefaultValue(5f)]
+    public float StepSize { get; set; } = 5f;
 
     [DisplayName("Parking Azimuth")]
     [Description("Azimuth of the parking position")]
