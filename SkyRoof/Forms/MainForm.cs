@@ -27,12 +27,14 @@ namespace SkyRoof
       ctx.SatelliteSelector = SatelliteSelecionWidget;
       ctx.FrequencyControl = FrequencyWidget;
       ctx.RotatorControl = RotatorWidget;
+      ctx.SatellitePhotoWidget = SatellitePhotoWidget;
       SatelliteSelecionWidget.ctx = ctx;
       FrequencyWidget.ctx = ctx;
       GainWidget.ctx = ctx;
       ctx.Announcer.ctx = ctx;
       ctx.CatControl.ctx = ctx;
       ctx.RotatorControl.ctx = ctx;
+      SatellitePhotoWidget.ctx = ctx;
       ctx.AmsatStatusLoader.ctx = ctx;
       ctx.UdpStreamSender.ctx = ctx;
 
@@ -55,6 +57,9 @@ namespace SkyRoof
       ApplyOutputStreamSettings();
       ctx.CatControl.ApplySettings();
       ctx.RotatorControl.ApplySettings();
+
+      Resize += (s, e) => UpdateSatellitePhotoVisibility();
+      UpdateSatellitePhotoVisibility();
     }
 
     private void MainForm_Load(object sender, EventArgs e)
@@ -986,6 +991,7 @@ namespace SkyRoof
       ctx.PassesPanel?.ShowPasses();
       ctx.SkyViewPanel?.ClearPass();
       ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
+      SatellitePhotoWidget.SetSatellite(ctx.SatelliteSelector.SelectedSatellite);
 
       ShowSatDataStatus();
     }
@@ -1042,6 +1048,7 @@ namespace SkyRoof
       ctx.TransmittersPanel?.SetSatellite();
       ctx.PassesPanel?.ShowPasses();
       ctx.QsoEntryPanel?.SetSatellite();
+      SatellitePhotoWidget.SetSatellite(ctx.SatelliteSelector.SelectedSatellite);
     }
 
     private void SatelliteSelector_SelectedTransmitterChanged(object sender, EventArgs e)
@@ -1071,6 +1078,28 @@ namespace SkyRoof
     private void RotatorTrackMNU_CheckedChanged(object sender, EventArgs e)
     {
       RotatorWidget.ToggleTracking();
+    }
+
+    private void UpdateSatellitePhotoVisibility()
+    {
+      if (SatellitePhotoWidget == null) return;
+
+      // show photo only if the toolbar can fit every widget; include the photo's own width
+      // unconditionally so the test answers "would it fit if shown", not "does it fit hidden"
+      int required =
+        panel2.Width +
+        SatellitePhotoWidget.Width +
+        SatelliteSelecionWidget.Width +
+        panel1.Width +
+        FrequencyWidget.Width +
+        panel3.Width +
+        GainWidget.Width +
+        panel7.Width +
+        RotatorWidget.Width +
+        panel5.Width +
+        ClockPanel.Width;
+
+      SatellitePhotoWidget.Visible = Toolbar.ClientSize.Width >= required + 10;
     }
   }
 }

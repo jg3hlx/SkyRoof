@@ -32,6 +32,7 @@
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       Toolbar = new Panel();
       RotatorWidget = new RotatorWidget();
+      SatellitePhotoWidget = new SatellitePhotoWidget();
       panel7 = new Panel();
       GainWidget = new GainWidget();
       panel3 = new Panel();
@@ -121,6 +122,7 @@
       Toolbar.Controls.Add(panel3);
       Toolbar.Controls.Add(FrequencyWidget);
       Toolbar.Controls.Add(panel1);
+      Toolbar.Controls.Add(SatellitePhotoWidget);
       Toolbar.Controls.Add(SatelliteSelecionWidget);
       Toolbar.Controls.Add(ClockPanel);
       Toolbar.Controls.Add(panel2);
@@ -139,6 +141,15 @@
       RotatorWidget.Name = "RotatorWidget";
       RotatorWidget.Size = new Size(210, 78);
       RotatorWidget.TabIndex = 8;
+      // 
+      // SatellitePhotoWidget
+      // 
+      SatellitePhotoWidget.BorderStyle = BorderStyle.FixedSingle;
+      SatellitePhotoWidget.Dock = DockStyle.Left;
+      SatellitePhotoWidget.Location = new Point(4, 0);
+      SatellitePhotoWidget.Name = "SatellitePhotoWidget";
+      SatellitePhotoWidget.Size = new Size(90, 78);
+      SatellitePhotoWidget.TabIndex = 11;
       // 
       // panel7
       // 
@@ -270,13 +281,13 @@
       fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ExitMNU });
       fileToolStripMenuItem.Name = "fileToolStripMenuItem";
       fileToolStripMenuItem.Size = new Size(37, 20);
-      fileToolStripMenuItem.Text = "File";
+      fileToolStripMenuItem.Text = "&File";
       // 
       // ExitMNU
       // 
       ExitMNU.Name = "ExitMNU";
       ExitMNU.Size = new Size(93, 22);
-      ExitMNU.Text = "Exit";
+      ExitMNU.Text = "E&xit";
       ExitMNU.Click += ExitMNU_Click;
       // 
       // GroupViewPanelMNU
@@ -284,83 +295,83 @@
       GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, TransmittersMNU, SatellitePassesMNU, WaterfallMNU, TimelineMNU, SkyViewMNU, EarthViewMNU, QsoEntryMNU, Ft4ConsoleMNU, RecorderMNU, toolStripMenuItem4, ResetWindowLayoutMNU });
       GroupViewPanelMNU.Name = "GroupViewPanelMNU";
       GroupViewPanelMNU.Size = new Size(44, 20);
-      GroupViewPanelMNU.Text = "View";
+      GroupViewPanelMNU.Text = "&View";
       // 
       // GroupViewMNU
       // 
       GroupViewMNU.Name = "GroupViewMNU";
       GroupViewMNU.Size = new Size(194, 22);
-      GroupViewMNU.Text = "Group";
+      GroupViewMNU.Text = "&Group";
       GroupViewMNU.Click += GroupViewMNU_Click;
       // 
       // SatelliteDetailsMNU
       // 
       SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
       SatelliteDetailsMNU.Size = new Size(194, 22);
-      SatelliteDetailsMNU.Text = "Satellite Details";
+      SatelliteDetailsMNU.Text = "Satellite &Details";
       SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
       // 
       // TransmittersMNU
       // 
       TransmittersMNU.Name = "TransmittersMNU";
       TransmittersMNU.Size = new Size(194, 22);
-      TransmittersMNU.Text = "Satellite Transmitters";
+      TransmittersMNU.Text = "Satellite &Transmitters";
       TransmittersMNU.Click += TransmittersMNU_Click;
       // 
       // SatellitePassesMNU
       // 
       SatellitePassesMNU.Name = "SatellitePassesMNU";
       SatellitePassesMNU.Size = new Size(194, 22);
-      SatellitePassesMNU.Text = "Satellite Passes";
+      SatellitePassesMNU.Text = "Satellite &Passes";
       SatellitePassesMNU.Click += SatellitePassesMNU_Click;
       // 
       // WaterfallMNU
       // 
       WaterfallMNU.Name = "WaterfallMNU";
       WaterfallMNU.Size = new Size(194, 22);
-      WaterfallMNU.Text = "Wideband Waterfall";
+      WaterfallMNU.Text = "Wideband &Waterfall";
       WaterfallMNU.Click += WaterfallMNU_Click;
       // 
       // TimelineMNU
       // 
       TimelineMNU.Name = "TimelineMNU";
       TimelineMNU.Size = new Size(194, 22);
-      TimelineMNU.Text = "Timeline";
+      TimelineMNU.Text = "T&imeline";
       TimelineMNU.Click += TimelineMNU_Click;
       // 
       // SkyViewMNU
       // 
       SkyViewMNU.Name = "SkyViewMNU";
       SkyViewMNU.Size = new Size(194, 22);
-      SkyViewMNU.Text = "SkyV iew";
+      SkyViewMNU.Text = "&Sky View";
       SkyViewMNU.Click += SkyViewMNU_Click;
       // 
       // EarthViewMNU
       // 
       EarthViewMNU.Name = "EarthViewMNU";
       EarthViewMNU.Size = new Size(194, 22);
-      EarthViewMNU.Text = "Earth View";
+      EarthViewMNU.Text = "&Earth View";
       EarthViewMNU.Click += EarthViewMNU_Click;
       // 
       // QsoEntryMNU
       // 
       QsoEntryMNU.Name = "QsoEntryMNU";
       QsoEntryMNU.Size = new Size(194, 22);
-      QsoEntryMNU.Text = "QSO Entry";
+      QsoEntryMNU.Text = "&QSO Entry";
       QsoEntryMNU.Click += QsoEntryMNU_Click;
       // 
       // Ft4ConsoleMNU
       // 
       Ft4ConsoleMNU.Name = "Ft4ConsoleMNU";
       Ft4ConsoleMNU.Size = new Size(194, 22);
-      Ft4ConsoleMNU.Text = "FT4 Console";
+      Ft4ConsoleMNU.Text = "&FT4 Console";
       Ft4ConsoleMNU.Click += Ft4ConsoleMNU_Click;
       // 
       // RecorderMNU
       // 
       RecorderMNU.Name = "RecorderMNU";
       RecorderMNU.Size = new Size(194, 22);
-      RecorderMNU.Text = "Recorder";
+      RecorderMNU.Text = "&Recorder";
       RecorderMNU.Click += RecorderMNU_Click;
       // 
       // toolStripMenuItem4
@@ -372,7 +383,7 @@
       // 
       ResetWindowLayoutMNU.Name = "ResetWindowLayoutMNU";
       ResetWindowLayoutMNU.Size = new Size(194, 22);
-      ResetWindowLayoutMNU.Text = "Reset Window Layaout";
+      ResetWindowLayoutMNU.Text = "Reset Window &Layout";
       ResetWindowLayoutMNU.Click += ResetWindowLayoutMNU_Click;
       // 
       // toolsToolStripMenuItem
@@ -380,27 +391,27 @@
       toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, toolStripMenuItem1, DownloadSatDataMNU, DownloadTleMNU, DownloadAmsatMNU, toolStripMenuItem3, LoadTleMNU });
       toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
       toolsToolStripMenuItem.Size = new Size(46, 20);
-      toolsToolStripMenuItem.Text = "Tools";
+      toolsToolStripMenuItem.Text = "&Tools";
       // 
       // SatelliteGroupsMNU
       // 
       SatelliteGroupsMNU.Name = "SatelliteGroupsMNU";
       SatelliteGroupsMNU.Size = new Size(216, 22);
-      SatelliteGroupsMNU.Text = "Satellites and Groups...";
+      SatelliteGroupsMNU.Text = "&Satellites and Groups...";
       SatelliteGroupsMNU.Click += EditGroupsMNU_Click;
       // 
       // SdrDevicesMNU
       // 
       SdrDevicesMNU.Name = "SdrDevicesMNU";
       SdrDevicesMNU.Size = new Size(216, 22);
-      SdrDevicesMNU.Text = "SDR Devices...";
+      SdrDevicesMNU.Text = "SD&R Devices...";
       SdrDevicesMNU.Click += SdrDevicesMNU_Click;
       // 
       // SettingsMNU
       // 
       SettingsMNU.Name = "SettingsMNU";
       SettingsMNU.Size = new Size(216, 22);
-      SettingsMNU.Text = "Settings...";
+      SettingsMNU.Text = "S&ettings...";
       SettingsMNU.Click += SettingsMNU_Click;
       // 
       // toolStripMenuItem1
@@ -412,21 +423,21 @@
       // 
       DownloadSatDataMNU.Name = "DownloadSatDataMNU";
       DownloadSatDataMNU.Size = new Size(216, 22);
-      DownloadSatDataMNU.Text = "Download All Satellite Data";
+      DownloadSatDataMNU.Text = "&Download All Satellite Data";
       DownloadSatDataMNU.Click += DownloadSatDataMNU_Click;
       // 
       // DownloadTleMNU
       // 
       DownloadTleMNU.Name = "DownloadTleMNU";
       DownloadTleMNU.Size = new Size(216, 22);
-      DownloadTleMNU.Text = "Download TLE Only";
+      DownloadTleMNU.Text = "Download &TLE Only";
       DownloadTleMNU.Click += DownloadTleMNU_Click;
       // 
       // DownloadAmsatMNU
       // 
       DownloadAmsatMNU.Name = "DownloadAmsatMNU";
       DownloadAmsatMNU.Size = new Size(216, 22);
-      DownloadAmsatMNU.Text = "Download AMSAT Statuses";
+      DownloadAmsatMNU.Text = "Download &AMSAT Statuses";
       DownloadAmsatMNU.Click += DownloadAmsatMNU_Click;
       // 
       // toolStripMenuItem3
@@ -438,7 +449,7 @@
       // 
       LoadTleMNU.Name = "LoadTleMNU";
       LoadTleMNU.Size = new Size(216, 22);
-      LoadTleMNU.Text = "Load TLE From File...";
+      LoadTleMNU.Text = "Load TLE From &File...";
       LoadTleMNU.Click += LoadTleMNU_Click;
       // 
       // helpToolStripMenuItem
@@ -446,27 +457,27 @@
       helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { OnlineHelpMNU, SupportGroupMNU, DataFolderMNU, toolStripMenuItem2, AboutMNU });
       helpToolStripMenuItem.Name = "helpToolStripMenuItem";
       helpToolStripMenuItem.Size = new Size(44, 20);
-      helpToolStripMenuItem.Text = "Help";
+      helpToolStripMenuItem.Text = "&Help";
       // 
       // OnlineHelpMNU
       // 
       OnlineHelpMNU.Name = "OnlineHelpMNU";
       OnlineHelpMNU.Size = new Size(161, 22);
-      OnlineHelpMNU.Text = "Online Help...";
+      OnlineHelpMNU.Text = "&Online Help...";
       OnlineHelpMNU.Click += WebsiteMNU_Click;
       // 
       // SupportGroupMNU
       // 
       SupportGroupMNU.Name = "SupportGroupMNU";
       SupportGroupMNU.Size = new Size(161, 22);
-      SupportGroupMNU.Text = "Support Group...";
+      SupportGroupMNU.Text = "&Support Group...";
       SupportGroupMNU.Click += SupportGroupMNU_Click;
       // 
       // DataFolderMNU
       // 
       DataFolderMNU.Name = "DataFolderMNU";
       DataFolderMNU.Size = new Size(161, 22);
-      DataFolderMNU.Text = "Data Folder...";
+      DataFolderMNU.Text = "&Data Folder...";
       DataFolderMNU.Click += DataFolderMNU_Click;
       // 
       // toolStripMenuItem2
@@ -478,7 +489,7 @@
       // 
       AboutMNU.Name = "AboutMNU";
       AboutMNU.Size = new Size(161, 22);
-      AboutMNU.Text = "About...";
+      AboutMNU.Text = "&About...";
       AboutMNU.Click += AboutMNU_Click;
       // 
       // timer
@@ -834,6 +845,7 @@
     private ToolStripStatusLabel RxCatLedLabel;
     private ToolStripStatusLabel RxCatStatusLabel;
     private RotatorWidget RotatorWidget;
+    public SatellitePhotoWidget SatellitePhotoWidget;
     private Panel panel5;
     private Panel panel4;
     private ToolStripStatusLabel RotatorLedLabel;
