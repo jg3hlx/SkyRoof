@@ -1084,7 +1084,8 @@ namespace SkyRoof
     {
       if (SatellitePhotoWidget == null) return;
 
-      // Show only when toolbar is wide enough to fit everything (keep existing widgets visible first).
+      // show photo only if the toolbar can fit every widget; include the photo's own width
+      // unconditionally so the test answers "would it fit if shown", not "does it fit hidden"
       int required =
         panel2.Width +
         SatellitePhotoWidget.Width +
