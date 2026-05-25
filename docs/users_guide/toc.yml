@@ -45,6 +45,8 @@ items:
     items:
     - name: Satellite Selector
       href: satellite_selector.md
+    - name: Satellite Photo
+      href: satellite_photo.md
     - name: Frequency Control
       href: frequency_control.md
     - name: Gain Control
