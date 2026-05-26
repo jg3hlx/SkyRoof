@@ -665,6 +665,14 @@ namespace SkyRoof
         ctx.RecorderPanel.Close();
     }
 
+    private void QsoSchedulerMNU_Click(object sender, EventArgs e)
+    {
+      if (ctx.QsoSchedulerPanel == null)
+        ShowFloatingPanel(new QsoSchedulerPanel(ctx));
+      else
+        ctx.QsoSchedulerPanel.Close();
+    }
+
     private void SettingsMNU_Click(object sender, EventArgs e)
     {
       new SettingsDialog(ctx).ShowDialog();
@@ -894,6 +902,7 @@ namespace SkyRoof
         case "SkyRoof.QsoEntryPanel": return new QsoEntryPanel(ctx);
         case "SkyRoof.Ft4ConsolePanel": return new Ft4ConsolePanel(ctx);
         case "SkyRoof.RecorderPanel": return new RecorderPanel(ctx);
+        case "SkyRoof.QsoSchedulerPanel": return new QsoSchedulerPanel(ctx);
 
         default: return null;
       }
@@ -984,6 +993,8 @@ namespace SkyRoof
       ctx.Settings.Satellites.DeleteInvalidData(ctx.SatnogsDb);
 
       SatelliteSelecionWidget.LoadSatelliteGroups();
+      SatellitePhotoWidget.SetSatellite(ctx.SatelliteSelector.SelectedSatellite);
+
       ctx.HamPasses.FullRebuild();
       ctx.GroupPasses.FullRebuild();
       ctx.SdrPasses.FullRebuild();
@@ -991,7 +1002,7 @@ namespace SkyRoof
       ctx.PassesPanel?.ShowPasses();
       ctx.SkyViewPanel?.ClearPass();
       ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
-      SatellitePhotoWidget.SetSatellite(ctx.SatelliteSelector.SelectedSatellite);
+      ctx.QsoSchedulerPanel?.SetSatelliteList();
 
       ShowSatDataStatus();
     }
@@ -1014,6 +1025,7 @@ namespace SkyRoof
       ctx.PassesPanel?.ShowPasses();
       ctx.EarthViewPanel?.SetGridSquare();
       ctx.SkyViewPanel?.ClearPass();
+      ctx.QsoSchedulerPanel?.UpdatePredictions();
     }
 
     private void SatnogsDb_TleUpdated(object? sender, EventArgs e)
@@ -1030,6 +1042,7 @@ namespace SkyRoof
       ctx.PassesPanel?.ShowPasses();
       ctx.SkyViewPanel?.ClearPass();
       ctx.WaterfallPanel?.ScaleControl?.BuildLabels();
+      ctx.QsoSchedulerPanel?.UpdatePredictions();
     }
 
     private void SatelliteSelector_SelectedGroupChanged(object sender, EventArgs e)
@@ -1038,6 +1051,7 @@ namespace SkyRoof
       ctx.GroupPasses.FullRebuild();
       ctx.PassesPanel?.ShowPasses();
       ctx.SkyViewPanel?.ClearPass();
+      ctx.QsoSchedulerPanel?.SetSatelliteList();
     }
 
     private void SatelliteSelector_SelectedSatelliteChanged(object sender, EventArgs e)

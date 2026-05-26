@@ -62,6 +62,7 @@
       QsoEntryMNU = new ToolStripMenuItem();
       Ft4ConsoleMNU = new ToolStripMenuItem();
       RecorderMNU = new ToolStripMenuItem();
+      QsoSchedulerMNU = new ToolStripMenuItem();
       toolStripMenuItem4 = new ToolStripSeparator();
       ResetWindowLayoutMNU = new ToolStripMenuItem();
       toolsToolStripMenuItem = new ToolStripMenuItem();
@@ -303,7 +304,7 @@
       // 
       // GroupViewPanelMNU
       // 
-      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, TransmittersMNU, SatellitePassesMNU, WaterfallMNU, TimelineMNU, SkyViewMNU, EarthViewMNU, QsoEntryMNU, Ft4ConsoleMNU, RecorderMNU, toolStripMenuItem4, ResetWindowLayoutMNU });
+      GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, TransmittersMNU, SatellitePassesMNU, WaterfallMNU, TimelineMNU, SkyViewMNU, EarthViewMNU, QsoEntryMNU, Ft4ConsoleMNU, RecorderMNU, QsoSchedulerMNU, toolStripMenuItem4, ResetWindowLayoutMNU });
       GroupViewPanelMNU.Name = "GroupViewPanelMNU";
       GroupViewPanelMNU.Size = new Size(44, 20);
       GroupViewPanelMNU.Text = "&View";
@@ -379,12 +380,19 @@
       Ft4ConsoleMNU.Click += Ft4ConsoleMNU_Click;
       // 
       // RecorderMNU
-      // 
+      //
       RecorderMNU.Name = "RecorderMNU";
       RecorderMNU.Size = new Size(188, 22);
       RecorderMNU.Text = "&Recorder";
       RecorderMNU.Click += RecorderMNU_Click;
-      // 
+      //
+      // QsoSchedulerMNU
+      //
+      QsoSchedulerMNU.Name = "QsoSchedulerMNU";
+      QsoSchedulerMNU.Size = new Size(188, 22);
+      QsoSchedulerMNU.Text = "QSO &Scheduler";
+      QsoSchedulerMNU.Click += QsoSchedulerMNU_Click;
+      //
       // toolStripMenuItem4
       // 
       toolStripMenuItem4.Name = "toolStripMenuItem4";
@@ -875,6 +883,7 @@
     private ToolStripMenuItem TrackRotatorMNU;
     public ToolStripMenuItem Ft4ConsoleMNU;
     public ToolStripMenuItem RecorderMNU;
+    public ToolStripMenuItem QsoSchedulerMNU;
     public FrequencyWidget FrequencyWidget;
     private Panel SatellitePhotoSeparator;
   }
