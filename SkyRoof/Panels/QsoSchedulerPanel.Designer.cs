@@ -102,6 +102,7 @@ namespace SkyRoof
       PredictionList.DrawSubItem += PredictionList_DrawSubItem;
       PredictionList.RetrieveVirtualItem += PredictionList_RetrieveVirtualItem;
       PredictionList.Resize += PredictionList_Resize;
+      PredictionList.MouseDown += PredictionList_MouseDown;
       // 
       // QsoSchedulerPanel
       // 

@@ -11,11 +11,13 @@ namespace SkyRoof
 {
   public partial class QsoSchedulerPanel : DockContent
   {
-    private class OverlapPass
+    internal class OverlapPass
     {
       public SatnogsDbSatellite Satellite;
       public SatellitePass MyPass;
       public SatellitePass DxPass;
+      public string MySquare = "";
+      public string DxSquare = "";
       public DateTime CommonStart;
       public DateTime CommonEnd;
       public double MyMaxElevation;
@@ -86,6 +88,16 @@ namespace SkyRoof
       e.Item = Items[e.ItemIndex];
     }
 
+    private void PredictionList_MouseDown(object sender, MouseEventArgs e)
+    {
+      if (e.Button != MouseButtons.Left) return;
+      var item = PredictionList.GetItemAt(e.X, e.Y);
+      if (item == null) return;
+
+      using var popup = new QsoScheduleForm((OverlapPass)item.Tag!);
+      popup.ShowDialog(this);
+    }
+
     public void SetSatelliteList()
     {
       SatelliteComboBox.Items.Clear();
@@ -114,8 +126,10 @@ namespace SkyRoof
       var endTime = now + TimeSpan.FromDays(14);
 
       // ground stations: me uses configured altitude, DX at sea level
-      var myStation = MakeStation(ctx.Settings.User.Square, ctx.Settings.User.Altitude);
-      var dxStation = MakeStation(DxSquareEdit.Text.Trim(), 0);
+      var mySquare = ctx.Settings.User.Square;
+      var dxSquare = DxSquareEdit.Text.Trim();
+      var myStation = MakeStation(mySquare, ctx.Settings.User.Altitude);
+      var dxStation = MakeStation(dxSquare, 0);
 
       // raw passes for both stations
       bool geo = satellite.Tracker.IsGeoStationary();
@@ -150,6 +164,8 @@ namespace SkyRoof
             Satellite = satellite,
             MyPass = my,
             DxPass = dx,
+            MySquare = mySquare,
+            DxSquare = dxSquare,
             CommonStart = start,
             CommonEnd = end,
             Geostationary = geo,
