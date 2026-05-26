@@ -99,6 +99,9 @@ namespace SkyRoof
       PredictionList.UseCompatibleStateImageBehavior = false;
       PredictionList.View = View.Details;
       PredictionList.VirtualMode = true;
+      PredictionList.DrawSubItem += PredictionList_DrawSubItem;
+      PredictionList.RetrieveVirtualItem += PredictionList_RetrieveVirtualItem;
+      PredictionList.Resize += PredictionList_Resize;
       // 
       // QsoSchedulerPanel
       // 
