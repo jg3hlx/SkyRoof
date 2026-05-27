@@ -75,6 +75,8 @@ items:
       href: earth_view_panel.md
     - name: QSO Entry
       href: qso_entry_panel.md
+    - name: QSO Scheduler
+      href: qso_scheduler_panel.md
     - name: FT4 Console
       href: ft4_console_panel.md
     - name: Recorder
