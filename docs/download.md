@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.31](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.31/SkyRoofSetup-v.1.31.zip)
+[SkyRoof v.1.32](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.32/SkyRoofSetup-v.1.32.zip)
 
 <br>
 
@@ -15,6 +15,13 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.32
+
+- added QSO Scheduler panel
+- added support of decimal comma on non-English systems
+- fixed item drawing in Passes panel
+- audio recording file names now contain recording start time
 
 #### v.1.31
 
