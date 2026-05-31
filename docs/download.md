@@ -18,9 +18,9 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 
 #### v.1.33
 
-- network resiliance improvements - contributed by [Stu](https://github.com/shs101)
-- labels and tuning commands on the frequency scale now work withoud an SCDR
-- fixed mouse click on the satellite image
+- network resilience improvements - contributed by [Stu](https://github.com/shs101)
+- labels and tuning commands on the frequency scale now work without an SDR
+- fixed mouse clicks on the satellite image
 
 #### v.1.32
 
