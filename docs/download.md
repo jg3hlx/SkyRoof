@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.32](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.32/SkyRoofSetup-v.1.32.zip)
+[SkyRoof v.1.33](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.33/SkyRoofSetup-v.1.33.zip)
 
 <br>
 
@@ -15,6 +15,12 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.33
+
+- network resiliance improvements - contributed by [Stu](https://github.com/shs101)
+- labels and tuning commands on the frequency scale now work withoud an SCDR
+- fixed mouse click on the satellite image
 
 #### v.1.32
 
