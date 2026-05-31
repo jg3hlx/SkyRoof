@@ -6,7 +6,9 @@ namespace SkyRoof
   public partial class WaterfallPanel : DockContent
   {
     public Context ctx;
-    private double SdrCenterFrequency => ctx?.FrequencyControl?.GetSdrRfCenter() ?? ctx?.Sdr?.Info?.Frequency ?? SdrConst.UHF_CENTER_FREQUENCY;
+    private double SdrCenterFrequency => ctx?.Sdr == null
+      ? DefaultNoSdrCenter()
+      : ctx.FrequencyControl.GetSdrRfCenter();
     private double MaxBandwidth => ctx?.Sdr?.Info?.MaxBandwidth ?? SdrConst.MAX_BANDWIDTH;
     private double SamplingRate => ctx?.Sdr?.Info?.SampleRate ?? SdrConst.MAX_BANDWIDTH;
 
@@ -32,6 +34,7 @@ namespace SkyRoof
 
       ScaleControl.ctx = ctx;
       ScaleControl.BuildLabels();
+      if (ctx.Sdr == null) InitScaleForNoSdr();
       ScaleControl.MouseMove += ScaleControl_MouseMove;
       ScaleControl.MouseDown += ScaleControl_MouseDown;
       ScaleControl.MouseUp += ScaleControl_MouseUp; 
@@ -79,6 +82,24 @@ namespace SkyRoof
 
       ctx.SdrPasses.UpdateFrequencyRange();
       ScaleControl.BuildLabels();
+    }
+
+    // center frequency to use for the scale when no SDR is configured;
+    // follows the selected downlink so its satellite labels stay in view
+    private double DefaultNoSdrCenter()
+    {
+      double downlink = ctx?.FrequencyControl?.RadioLink?.CorrectedDownlinkFrequency ?? 0;
+      return downlink > 1e6 ? downlink : SdrConst.UHF_CENTER_FREQUENCY;
+    }
+
+    // no SDR configured: ConfigureWaterfall/SetPassband never run, so set the scale
+    // to a default window centered on the selected downlink instead of leaving it at 0 Hz
+    private void InitScaleForNoSdr()
+    {
+      ScaleControl.CenterFrequency = SdrCenterFrequency;
+      ScaleControl.VisibleBandwidth = SdrConst.MAX_BANDWIDTH;
+      ValidateWaterfallViewport();
+      ScaleControl.Refresh();
     }
 
     public void SetCenterFrequency(double frequency)
