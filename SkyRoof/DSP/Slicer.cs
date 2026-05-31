@@ -37,7 +37,12 @@ namespace SkyRoof
    
 
     public double InputRate { get; private set; }
-    public double Bandwidth { get => Bandwidths[(int)CurrentMode]; }
+    public double Bandwidth { get => GetBandwidth(CurrentMode); }
+
+    // mode -> passband geometry, derived from the mode alone so the display can be
+    // computed from RadioLink (the source of truth) without a live Slicer instance
+    public static int GetBandwidth(Mode mode) => Bandwidths[(int)mode];
+    public static int GetModeOffset(Mode mode) => mode == Mode.CW ? 0 : ModeOffsets[(int)mode];
 
     public event EventHandler<DataEventArgs<float>>? AudioDataAvailable;
     public event EventHandler<DataEventArgs<Complex32>>? IqDataAvailable;
@@ -82,8 +87,7 @@ namespace SkyRoof
 
     public double GetModeoffset()
     {
-      if (CurrentMode == Mode.CW) return 0;
-      return ModeOffsets[(int)CurrentMode];
+      return GetModeOffset(CurrentMode);
     }
 
     public TimeSpan GetDelay()
