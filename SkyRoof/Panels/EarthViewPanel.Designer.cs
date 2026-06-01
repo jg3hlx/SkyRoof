@@ -46,7 +46,10 @@
       openglControl1.Name = "openglControl1";
       openglControl1.OpenGLVersion = SharpGL.Version.OpenGLVersion.OpenGL3_3;
       openglControl1.RenderContextType = SharpGL.RenderContextType.NativeWindow;
-      openglControl1.RenderTrigger = SharpGL.RenderTrigger.TimerBased;
+      // Manual (not TimerBased): SharpGL's autonomous render timer keeps drawing through the
+      // handle destroy/recreate that docking causes, corrupting the GL context. Render on
+      // demand via openglControl1.Invalidate() instead, matching WaterfallControl.
+      openglControl1.RenderTrigger = SharpGL.RenderTrigger.Manual;
       openglControl1.Size = new Size(400, 379);
       openglControl1.TabIndex = 1;
       openglControl1.OpenGLInitialized += openglControl1_OpenGLInitialized;

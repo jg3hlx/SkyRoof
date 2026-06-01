@@ -91,7 +91,7 @@ namespace SkyRoof
 
       ComputeSatLocation();
       Zoom = 0.9 * Math.PI / SatFootprint;
-      Invalidate();
+      openglControl1.Invalidate();
     }
     public void Advance()
     {
@@ -102,7 +102,7 @@ namespace SkyRoof
         RealTimeRadioBtn.Checked = true;
 
       ComputeSatLocation();
-      Invalidate();
+      openglControl1.Invalidate();
     }
 
     internal void SetPass(SatellitePass? pass)
@@ -113,18 +113,6 @@ namespace SkyRoof
       PassRadioBtn.Enabled = pass != null;
       PassRadioBtn.Text = pass == null ? "Selected Pass" : $"Orbit #{pass.OrbitNumber} of {pass.Satellite.name}";
 
-      // zoom to fit the whole coverage polygon (pass mode is centered on home)
-      if (CoveragePolygon != null && CoveragePolygon.Count > 0)
-      {
-        double maxDist = 0;
-        foreach (var g in CoveragePolygon)
-        {
-          double d = (g - Home).DistanceRad;
-          if (d > maxDist) maxDist = d;
-        }
-        if (maxDist > 1e-6) Zoom = 0.9 * Math.PI / maxDist;
-      }
-
       // real time mode if the pass is currently active, otherwise pass mode for the upcoming pass
       if (pass != null && !pass.IsActive())
         PassRadioBtn.Checked = true;
@@ -132,7 +120,38 @@ namespace SkyRoof
         RealTimeRadioBtn.Checked = true;
 
       ComputeSatLocation();
-      Invalidate();
+
+      // zoom so the whole coverage polygon fits the rectangular panel
+      ZoomToFitPolygon();
+
+      openglControl1.Invalidate();
+    }
+
+    // set the zoom so that every polygon vertex fits within the rectangular panel.
+    // the projection scales linearly with Zoom, so we project at Zoom = 1 and fit the
+    // x and y extents independently against the [-1, 1] clip space.
+    private void ZoomToFitPolygon()
+    {
+      if (CoveragePolygon == null || CoveragePolygon.Count == 0) return;
+
+      var size = openglControl1.ClientSize;
+      if (size.Width == 0 || size.Height == 0) return;
+      double diam = Math.Min(size.Width, size.Height);
+
+      double maxX = 0, maxY = 0;
+      foreach (var g in CoveragePolygon)
+      {
+        var path = g - Center;
+        double ro = path.DistanceRad / Math.PI;
+        double phi = Geo.HalfPi - path.AzimuthRad;
+        double x = Math.Abs(ro * Math.Cos(phi) * diam / size.Width);
+        double y = Math.Abs(ro * Math.Sin(phi) * diam / size.Height);
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+
+      double maxXY = Math.Max(maxX, maxY);
+      if (maxXY > 1e-6) Zoom = 0.9 / maxXY;
     }
 
     private void radioButton_CheckedChanged(object sender, EventArgs e)
@@ -143,7 +162,7 @@ namespace SkyRoof
       Mode = PassRadioBtn.Checked ? EarthViewMode.Pass : EarthViewMode.RealTime;
 
       ComputeSatLocation();
-      Invalidate();
+      openglControl1.Invalidate();
     }
 
     private void ComputeSatLocation()
@@ -367,9 +386,9 @@ namespace SkyRoof
       // in real time mode, only show the polygon while the pass is in progress
       if (Mode == EarthViewMode.RealTime && (Pass == null || !Pass.IsActive())) return;
 
-      // skip if any vertex is on the far side of the globe
+      // skip if any vertex is too close to the antipode, where the projection becomes singular
       foreach (var g in CoveragePolygon)
-        if ((g - Center).DistanceRad > Geo.HalfPi) return;
+        if ((g - Center).DistanceRad > 0.9 * Math.PI) return;
 
       var points = new PointF[CoveragePolygon.Count];
       for (int i = 0; i < CoveragePolygon.Count; i++)
