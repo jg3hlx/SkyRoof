@@ -60,9 +60,14 @@ namespace SkyRoof
       ScaleControl.BuildLabels();
     }
 
+    private WaterfallQuality lastAppliedQuality = WaterfallQuality.Auto;
+    private WaterfallSildersDlg? openSlidersDlg;
+
     public void ApplySettings()
     {
       var sett = ctx.Settings.Waterfall;
+      WaterfallControl.Quality = sett.Quality;
+      WaterfallControl.PerfCountersEnabled = sett.ShowPerformanceCounters;
       WaterfallControl.Brightness = sett.Brightness;
       WaterfallControl.Contrast = sett.Contrast;
       int paletteIndex = Math.Min(ctx.PaletteManager.Palettes.Count() - 1, sett.PaletteIndex);
@@ -70,6 +75,19 @@ namespace SkyRoof
       WaterfallControl.Refresh();
 
       ctx.MainForm.SetWaterfallSpeed();
+      openSlidersDlg?.SyncPerformanceCountersFromSettings();
+
+      if (sett.Quality != lastAppliedQuality)
+      {
+        lastAppliedQuality = sett.Quality;
+        if (WaterfallControl.RecreateTexturesIfNeeded())
+        {
+          // Spectrum analyzer depends on WaterfallControl.SpectraWidth.
+          ctx.MainForm.DestroySpectrumAnalyzer();
+          ctx.MainForm.CreateSpectrumAnalyzer();
+          ctx.MainForm.ConfigureWaterfall();
+        }
+      }
     }
 
     internal void SetPassband()
@@ -124,9 +142,22 @@ namespace SkyRoof
 
     private void SlidersBtn_Click(object sender, EventArgs e)
     {
-      var dlg = new WaterfallSildersDlg(ctx);
-      dlg.Location = WaterfallControl.PointToScreen(new Point(2, 2));
-      dlg.Show();
+      if (openSlidersDlg != null && !openSlidersDlg.IsDisposed && openSlidersDlg.Visible)
+      {
+        openSlidersDlg.Close();
+        return;
+      }
+
+      openSlidersDlg = new WaterfallSildersDlg(ctx);
+      openSlidersDlg.FormClosed += (_, _) => openSlidersDlg = null;
+      openSlidersDlg.Location = WaterfallControl.PointToScreen(new Point(2, 2));
+      openSlidersDlg.Show();
+    }
+
+    internal bool IsPointOnSlidersButton(Point screenPoint)
+    {
+      var bounds = new Rectangle(SlidersBtn.PointToScreen(Point.Empty), SlidersBtn.Size);
+      return bounds.Contains(screenPoint);
     }
 
     private const double MinHzPerPixel = 20;
