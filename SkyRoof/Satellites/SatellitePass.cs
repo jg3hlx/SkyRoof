@@ -178,8 +178,8 @@ namespace SkyRoof
       }
     }
 
-    // currently not used
-    public List<GeoPath> GetCoveragePolygon()
+    // boundary polygon of the area covered by the satellite during this pass, as absolute geo points
+    public List<GeoPoint> GetCoveragePolygon()
     {
       // only for LEO
       if (EndTime - StartTime > TimeSpan.FromHours(2)) return new();
@@ -188,7 +188,7 @@ namespace SkyRoof
       var rightPoints = new List<GeoPoint>();
 
       var predictions = Track.Select(t => Satellite.Tracker.Predict(t.Utc)).Where(p=>p != null).ToArray();
-      if (predictions.Length < 3) return new List<GeoPath>();
+      if (predictions.Length < 3) return new List<GeoPoint>();
 
       for (int i = 0; i < predictions.Length; i++)
       {
@@ -224,10 +224,7 @@ namespace SkyRoof
       // close the loop
       leftPoints.Add(leftPoints[0]);
 
-      // lat/lon to az/dist
-      var homeP = GroundStation.Location.ToGeodetic();
-      var homeG = new GeoPoint(homeP.Latitude.Degrees, homeP.Longitude.Degrees);
-      return leftPoints.Select(g => g - homeG).ToList();
+      return leftPoints;
     }
   }
 }

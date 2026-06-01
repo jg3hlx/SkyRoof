@@ -279,6 +279,26 @@ namespace SkyRoof.Properties {
                 return ((byte[])(obj));
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] PolylineVertexShader {
+            get {
+                object obj = ResourceManager.GetObject("PolylineVertexShader", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] PolylineFragmentShader {
+            get {
+                object obj = ResourceManager.GetObject("PolylineFragmentShader", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].

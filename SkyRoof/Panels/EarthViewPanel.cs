@@ -21,12 +21,20 @@ namespace SkyRoof
     private int VertexCount;
     private SpriteRenderer SpriteRenderer;
     private Sprite SatelliteSprite, HomeSprite, NorthSprite, SouthSprite;
-    private double Footprint;
+    private PolylineRenderer PolylineRenderer;
+    private double DimmingRadius;
+    private double SatFootprint;
     private double Azimuth;
 
-    public GeoPoint Home, Center;
+    public GeoPoint Home, Center, SatGeoPoint;
     public double Zoom = 1;
     public SatnogsDbSatellite Satellite;
+
+    public enum EarthViewMode { RealTime, Pass }
+    private EarthViewMode Mode = EarthViewMode.RealTime;
+    private SatellitePass? Pass;
+    private List<GeoPoint>? CoveragePolygon;
+    private readonly Color PolygonColor = Color.FromArgb(230, 0, 110, 255);
 
 
     public EarthViewPanel() { InitializeComponent(); }
@@ -82,12 +90,57 @@ namespace SkyRoof
       label1.Text = Satellite.name;
 
       ComputeSatLocation();
-      Zoom = 0.9 * Math.PI / Footprint;
+      Zoom = 0.9 * Math.PI / SatFootprint;
       Invalidate();
     }
     public void Advance()
     {
       if (Satellite == null) return;
+
+      // on AOS, switch from pass mode to real time
+      if (Mode == EarthViewMode.Pass && Pass != null && Pass.IsActive())
+        RealTimeRadioBtn.Checked = true;
+
+      ComputeSatLocation();
+      Invalidate();
+    }
+
+    internal void SetPass(SatellitePass? pass)
+    {
+      Pass = pass;
+      CoveragePolygon = pass?.GetCoveragePolygon();
+
+      PassRadioBtn.Enabled = pass != null;
+      PassRadioBtn.Text = pass == null ? "Selected Pass" : $"Orbit #{pass.OrbitNumber} of {pass.Satellite.name}";
+
+      // zoom to fit the whole coverage polygon (pass mode is centered on home)
+      if (CoveragePolygon != null && CoveragePolygon.Count > 0)
+      {
+        double maxDist = 0;
+        foreach (var g in CoveragePolygon)
+        {
+          double d = (g - Home).DistanceRad;
+          if (d > maxDist) maxDist = d;
+        }
+        if (maxDist > 1e-6) Zoom = 0.9 * Math.PI / maxDist;
+      }
+
+      // real time mode if the pass is currently active, otherwise pass mode for the upcoming pass
+      if (pass != null && !pass.IsActive())
+        PassRadioBtn.Checked = true;
+      else
+        RealTimeRadioBtn.Checked = true;
+
+      ComputeSatLocation();
+      Invalidate();
+    }
+
+    private void radioButton_CheckedChanged(object sender, EventArgs e)
+    {
+      var radioBtn = (RadioButton)sender;
+      if (!radioBtn.Checked) return;
+
+      Mode = PassRadioBtn.Checked ? EarthViewMode.Pass : EarthViewMode.RealTime;
 
       ComputeSatLocation();
       Invalidate();
@@ -100,18 +153,32 @@ namespace SkyRoof
 
       if (p == null || nextP == null)
       {
-        Center = Home;
-        Footprint = Math.PI;
+        SatGeoPoint = Home;
+        SatFootprint = Math.PI;
         Azimuth = 0;
         SatelliteSprite.Enabled = false;
       }
       else
       {
-        Center = new(p.Latitude.Degrees, p.Longitude.Degrees);
+        SatGeoPoint = new(p.Latitude.Degrees, p.Longitude.Degrees);
         var nextCenter = new GeoPoint(nextP.Latitude.Degrees, nextP.Longitude.Degrees);
-        Footprint = p.GetFootprintAngle().Radians;
-        Azimuth = (nextCenter - Center).AzimuthRad;
+        SatFootprint = p.GetFootprintAngle().Radians;
+        Azimuth = (nextCenter - SatGeoPoint).AzimuthRad;
         SatelliteSprite.Enabled = true;
+      }
+
+      if (Mode == EarthViewMode.Pass)
+      {
+        // center on the user, do not show the satellite footprint circle or the satellite
+        Center = Home;
+        DimmingRadius = Math.PI;
+        SatelliteSprite.Enabled = false;
+      }
+      else
+      {
+        // center on the satellite, show its footprint circle
+        Center = (p == null) ? Home : SatGeoPoint;
+        DimmingRadius = SatFootprint;
       }
     }
     
@@ -128,6 +195,8 @@ namespace SkyRoof
       CheckError(false);
 
       SpriteRenderer = new(gl);
+      CheckError(false);
+      PolylineRenderer = new(gl);
       CheckError(false);
       SatelliteSprite = new Sprite(gl, Properties.Resources.satellite);
       HomeSprite = new Sprite(gl, Properties.Resources.ant);
@@ -265,7 +334,7 @@ namespace SkyRoof
       CheckError();
       ShaderProgram.SetUniform1(gl, "in_homeLon", (float)Center.LongitudeRad);
       CheckError();
-      ShaderProgram.SetUniform1(gl, "in_footprint", (float)Footprint);
+      ShaderProgram.SetUniform1(gl, "in_footprint", (float)DimmingRadius);
       CheckError();
       ShaderProgram.SetUniform1(gl, "in_aspect", openglControl1.ClientSize.Width / (float)openglControl1.ClientSize.Height);
       CheckError();
@@ -287,6 +356,27 @@ namespace SkyRoof
       SetSpriteAttributes();
       SpriteRenderer.DrawSprites([SatelliteSprite, HomeSprite, NorthSprite, SouthSprite]);
       CheckError();
+
+      DrawCoveragePolygon();
+    }
+
+    private void DrawCoveragePolygon()
+    {
+      if (CoveragePolygon == null || CoveragePolygon.Count < 2) return;
+
+      // in real time mode, only show the polygon while the pass is in progress
+      if (Mode == EarthViewMode.RealTime && (Pass == null || !Pass.IsActive())) return;
+
+      // skip if any vertex is on the far side of the globe
+      foreach (var g in CoveragePolygon)
+        if ((g - Center).DistanceRad > Geo.HalfPi) return;
+
+      var points = new PointF[CoveragePolygon.Count];
+      for (int i = 0; i < CoveragePolygon.Count; i++)
+        points[i] = ComputeLocation(CoveragePolygon[i]);
+
+      PolylineRenderer.DrawPolyline(points, PolygonColor, 3f);
+      CheckError();
     }
 
     private void SetSpriteAttributes()
@@ -305,6 +395,9 @@ namespace SkyRoof
 
       // satellite points in the direction of the next position
       SatelliteSprite.Angle = (float)(-Azimuth + Math.PI / 4);
+
+      // satellite location (at the center in real-time mode, elsewhere in pass mode)
+      SatelliteSprite.Location = ComputeLocation(SatGeoPoint);
 
       // home location in the azimuthal projection
       HomeSprite.Location = ComputeLocation(Home);

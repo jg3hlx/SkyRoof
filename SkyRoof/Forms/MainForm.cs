@@ -1081,6 +1081,7 @@ namespace SkyRoof
     {
       SatellitePass? pass = ctx.SatelliteSelector.SelectedPass;
       ctx.SkyViewPanel?.SetPass(pass);
+      ctx.EarthViewPanel?.SetPass(pass);
       RotatorWidget.SetPass(pass);
     }
 
