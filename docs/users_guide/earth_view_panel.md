@@ -21,7 +21,7 @@ The blue contour outlines the entire area swept by the satellite footprint durin
 
 ![Earth View showing pass coverage](../images/earth_view_pass.png)
 
-While the pass is in progress, the panel switches back to Real Time mode so you can watch the satellite move across its footprint:
+While the pass is in progress, the panel switches back to Real Time mode so you can watch the satellite move across its coverage area:
 
 ![Earth View panel](../images/pass_coverage.png)
 
