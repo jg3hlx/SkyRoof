@@ -294,11 +294,15 @@ namespace SkyRoof
 
     private void AddGroupBtn_Click(object sender, EventArgs e)
     {
-      var node = new TreeNode("New Group");
+      // modal dialog instead of native in-place edit (node.BeginEdit): the TreeView/ListView
+      // in-place editors raise UI Automation events that access-violate in UIAutomationCore.dll
+      // when a UIA/accessibility client is active (dotnet/winforms #8867), crashing the app.
+      string? name = TextInputForm.PromptForText(this, "New Group", "Group name:", "New Group");
+      if (string.IsNullOrWhiteSpace(name)) return;
+
+      var node = new TreeNode(name);
       treeView1.Nodes.Add(node);
       treeView1.SelectedNode = node;
-      treeView1.LabelEdit = true;
-      node.BeginEdit();
 
       Changed = true;
     }
@@ -351,8 +355,22 @@ namespace SkyRoof
 
     private void RenameSatMNU_Click(object sender, EventArgs e)
     {
+      if (listView1.SelectedIndices.Count == 0) return;
       var item = FilteredItems[listView1.SelectedIndices[0]];
-      item.BeginEdit();
+      var sat = (SatnogsDbSatellite)item.Tag;
+
+      string? name = TextInputForm.PromptForText(this, "Rename Satellite", "Satellite name:", sat.name);
+      if (string.IsNullOrWhiteSpace(name)) return;
+
+      RenameSat(sat, name);
+      item.Text = sat.name;
+      listView1.Invalidate();
+
+      // update name in the treeview
+      var node = treeView1.Nodes.Cast<TreeNode>()
+        .SelectMany(n => n.Nodes.Cast<TreeNode>())
+        .FirstOrDefault(n => n.Tag == sat);
+      if (node != null) node.Text = sat.name;
     }
 
     private void DetailsMNU_Click(object sender, EventArgs e)
@@ -379,8 +397,26 @@ namespace SkyRoof
 
     private void RenameMNU2_Click(object sender, EventArgs e)
     {
-      treeView1.LabelEdit = true;
-      treeView1.SelectedNode?.BeginEdit();
+      var sel = treeView1.SelectedNode;
+      if (sel == null) return;
+
+      bool isGroup = sel.Level == 0;
+      string? name = TextInputForm.PromptForText(this, "Rename", isGroup ? "Group name:" : "Satellite name:", sel.Text);
+      if (string.IsNullOrWhiteSpace(name)) return;
+
+      if (isGroup)
+        sel.Text = name;
+      else
+      {
+        var sat = (SatnogsDbSatellite)sel.Tag;
+        RenameSat(sat, name);
+        sel.Text = sat.name;
+
+        // update name in the satellite list
+        var item = AllItems.FirstOrDefault(it => it.Tag == sat);
+        if (item != null) { item.Text = sat.name; listView1.Invalidate(); }
+      }
+
       Changed = true;
     }
 

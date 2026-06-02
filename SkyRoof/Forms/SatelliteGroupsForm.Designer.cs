@@ -342,7 +342,8 @@
       listView1.Dock = DockStyle.Fill;
       listView1.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
       listView1.FullRowSelect = true;
-      listView1.LabelEdit = true;
+      // LabelEdit disabled: native in-place editing crashes via UIAutomationCore; renaming uses a modal dialog
+      listView1.LabelEdit = false;
       listView1.Location = new Point(0, 127);
       listView1.Name = "listView1";
       listView1.ShowGroups = false;
