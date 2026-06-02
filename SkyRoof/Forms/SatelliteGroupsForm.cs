@@ -21,10 +21,11 @@ namespace SkyRoof
     List<ListViewItem> AllItems = new();
     List<ListViewItem> FilteredItems;
     private string TextToSearch = "";
-    private SatelliteFlags SearchFlags;
     private int SortColumn;
     private Context ctx;
     private bool Changed;
+    // shared, so we don't leak a GDI font handle per item/node (one per satellite in the whole db)
+    private Font ListBoldFont, ListStrikeoutFont, TreeRegularFont, TreeStrikeoutFont;
 
     public SatelliteGroupsForm()
     {
@@ -39,6 +40,12 @@ namespace SkyRoof
     {
       ctx = context;
       var updateTime = ctx.Settings.Satellites.LastDownloadTime;
+
+      // shared fonts, created once instead of per item/node
+      ListBoldFont = new Font(listView1.Font, FontStyle.Bold);
+      ListStrikeoutFont = new Font(listView1.Font, FontStyle.Strikeout);
+      TreeRegularFont = new Font(treeView1.Font, FontStyle.Regular);
+      TreeStrikeoutFont = new Font(treeView1.Font, FontStyle.Strikeout);
 
       // satellites to listview
       foreach (var sat in ctx.SatnogsDb.Satellites) AllItems.Add(ItemFromSat(sat));
@@ -99,9 +106,9 @@ namespace SkyRoof
       if (sat.Flags.HasFlag(SatelliteFlags.Uhf)) item.BackColor = Color.LightCyan;
       else if (sat.Flags.HasFlag(SatelliteFlags.Vhf)) item.BackColor = Color.LightGoldenrodYellow;
 
-      if (sat.Flags.HasFlag(SatelliteFlags.Ham)) item.Font = new(item.Font, FontStyle.Bold);
+      if (sat.Flags.HasFlag(SatelliteFlags.Ham)) item.Font = ListBoldFont;
       if (!sat.status.StartsWith("alive")) item.ForeColor = Color.Silver;
-      else if (sat.Tle == null) item.Font = new(item.Font, FontStyle.Strikeout);
+      else if (sat.Tle == null) item.Font = ListStrikeoutFont;
 
       return item;
     }
@@ -116,9 +123,9 @@ namespace SkyRoof
       if (sat.Flags.HasFlag(SatelliteFlags.Uhf)) node.BackColor = Color.LightCyan;
       else if (sat.Flags.HasFlag(SatelliteFlags.Vhf)) node.BackColor = Color.LightGoldenrodYellow;
 
-      if (!sat.Flags.HasFlag(SatelliteFlags.Ham)) node.NodeFont = new(treeView1.Font, FontStyle.Regular);
+      if (!sat.Flags.HasFlag(SatelliteFlags.Ham)) node.NodeFont = TreeRegularFont;
       if (!sat.status.StartsWith("alive")) node.ForeColor = Color.Silver;
-      else if (sat.Tle == null) node.NodeFont = new(treeView1.Font, FontStyle.Strikeout);
+      else if (sat.Tle == null) node.NodeFont = TreeStrikeoutFont;
 
       return node;
     }

@@ -25,9 +25,14 @@ namespace SkyRoof
     // or no SDR band matches the active RF). Updated by SetSlicerFrequency on band changes.
     private TransverterBand? ActiveSdrBand;
 
+    // cached so the Terrestrial/normal toggle does not allocate (and leak) a new font each update
+    private readonly Font DownlinkRegularFont, DownlinkBoldFont;
+
     public FrequencyWidget()
     {
       InitializeComponent();
+      DownlinkRegularFont = DownlinkLabel.Font;
+      DownlinkBoldFont = new Font(DownlinkLabel.Font, FontStyle.Bold);
       Changing = true;
       DownlinkModeCombobox.DataSource = Enum.GetValues(typeof(Slicer.Mode));
       UplinkModeCombobox.DataSource = Enum.GetValues(typeof(Slicer.Mode));
@@ -425,7 +430,7 @@ namespace SkyRoof
 
         DownlinkLabel.Text = "Terrestrial";
         DownlinkLabel.ForeColor = Color.Red;
-        DownlinkLabel.Font = new(DownlinkLabel.Font, FontStyle.Bold);
+        DownlinkLabel.Font = DownlinkBoldFont;
 
         DownlinkDopplerCheckbox.Visible = false;
         DownlinkDopplerLabel.BackColor = SystemColors.Control;
@@ -444,7 +449,7 @@ namespace SkyRoof
 
         DownlinkLabel.Text = "Downlink";
         DownlinkLabel.ForeColor = SystemColors.ControlText;
-        DownlinkLabel.Font = new(DownlinkLabel.Font, FontStyle.Regular);
+        DownlinkLabel.Font = DownlinkRegularFont;
 
         DownlinkDopplerCheckbox.Visible = true;
         DownlinkDopplerLabel.BackColor = SystemColors.Window;

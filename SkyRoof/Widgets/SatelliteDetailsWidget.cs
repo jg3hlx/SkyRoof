@@ -16,6 +16,8 @@ namespace SkyRoof
   public partial class SatelliteDetailsWidget : UserControl
   {
     private SatnogsDbSatellite? Satellite;
+    // shared, so we don't leak a GDI font handle per item on every rebuild
+    private Font? BoldFont;
 
     public SatelliteDetailsWidget()
     {
@@ -43,6 +45,8 @@ namespace SkyRoof
 
     private void CreateTransmitterItems()
     {
+      BoldFont ??= new Font(listView1.Font, FontStyle.Bold);
+
       listView1.BeginUpdate();
       listView1.Items.Clear();
       listView1.Groups.Clear();
@@ -63,7 +67,7 @@ namespace SkyRoof
         // highlighting
         if (tx.IsVhf()) item.BackColor = Color.LightGoldenrodYellow;
         if (tx.IsUhf()) item.BackColor = Color.LightCyan;
-        if (tx.service == "Amateur") item.Font = new(item.Font, FontStyle.Bold);
+        if (tx.service == "Amateur") item.Font = BoldFont;
         if (!tx.alive || tx.status != "active") item.ForeColor = Color.Silver; 
         
         // tooltip

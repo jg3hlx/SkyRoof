@@ -57,14 +57,12 @@
       listView1.ShowItemToolTips = true;
       listView1.Size = new Size(414, 383);
       listView1.SmallImageList = imageList1;
-      listView1.Sorting = SortOrder.Ascending;
+      listView1.Sorting = SortOrder.None;
       listView1.StateImageList = imageList1;
       listView1.TabIndex = 8;
       listView1.UseCompatibleStateImageBehavior = false;
       listView1.View = View.Details;
-      listView1.VirtualMode = true;
       listView1.ColumnClick += listView1_ColumnClick;
-      listView1.RetrieveVirtualItem += listView1_RetrieveVirtualItem;
       listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
       // 
       // columnHeader1

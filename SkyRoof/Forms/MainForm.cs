@@ -567,7 +567,8 @@ namespace SkyRoof
 
     private void EditGroupsMNU_Click(object sender, EventArgs e)
     {
-      var dlg = new SatelliteGroupsForm();
+      // using: ShowDialog does not auto-dispose the form; dispose it deterministically
+      using var dlg = new SatelliteGroupsForm();
       dlg.SetList(ctx);
       var rc = dlg.ShowDialog(this);
 

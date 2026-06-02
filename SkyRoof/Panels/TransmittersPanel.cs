@@ -19,6 +19,8 @@ namespace SkyRoof
   {
     private Context ctx;
     private SatnogsDbSatellite Satellite;
+    // shared, so we don't leak a GDI font handle per item on every rebuild
+    private Font? BoldFont;
 
     public TransmittersPanel()
     {
@@ -62,14 +64,16 @@ namespace SkyRoof
 
     private void CreateTransmitterItems()
     {
+      BoldFont ??= new Font(listView1.Font, FontStyle.Bold);
+
       listView1.BeginUpdate();
       listView1.Items.Clear();
       listView1.Groups.Clear();
       listView1.Groups.Add(new ListViewGroup("SatNOGS"));
       listView1.Groups.Add(new ListViewGroup("JE9PEL"));
 
-      // satnogs transmitters
-      foreach (var tx in Satellite.Transmitters)
+      // satnogs transmitters (pre-sorted: the ListView's own Sorting can't be used with Groups)
+      foreach (var tx in Satellite.Transmitters.OrderBy(tx => tx.description))
       {
         // columns
         var item = new ListViewItem([
@@ -83,7 +87,7 @@ namespace SkyRoof
         // highlighting
         if (tx.IsVhf()) item.BackColor = Color.LightGoldenrodYellow;
         if (tx.IsUhf()) item.BackColor = Color.LightCyan;
-        if (tx.service == "Amateur") item.Font = new(item.Font, FontStyle.Bold);
+        if (tx.service == "Amateur") item.Font = BoldFont;
         if (!tx.alive || tx.status != "active") item.ForeColor = Color.Silver; //item.Font = new(item.Font, FontStyle.Strikeout);
 
         // tooltip
@@ -93,7 +97,7 @@ namespace SkyRoof
       }
 
       // JE9PEL transmitters
-      foreach (var t in Satellite.JE9PELtransmitters)
+      foreach (var t in Satellite.JE9PELtransmitters.OrderBy(t => t.Mode))
       {
         var item = new ListViewItem([t.Mode, t.Downlink, t.Uplink]);
         item.Group = listView1.Groups[1];

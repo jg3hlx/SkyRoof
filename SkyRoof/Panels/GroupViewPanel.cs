@@ -17,6 +17,8 @@ namespace SkyRoof
     protected readonly Context ctx;
     private int SortColumn = 2;
     public ListViewItem[] Items;
+    // shared, so we don't leak a GDI font handle per item on every rebuild
+    private Font BoldFont, StrikeoutFont;
 
 
 
@@ -51,11 +53,19 @@ namespace SkyRoof
       Items = group.SatelliteIds.Select(id => ItemFromSat(ctx.SatnogsDb.GetSatellite(id))).ToArray();
       ShowAmsatStatuses();
 
-      listView1.VirtualListSize = Items.Length;
-      listView1.Invalidate();
+      PopulateListView();
 
       ShowSelectedSat();
       GroupNameLabel.Text = $"Group:   {group.Name}";
+    }
+
+    // fill the (non-virtual) list from the Items array, preserving its order
+    private void PopulateListView()
+    {
+      listView1.BeginUpdate();
+      listView1.Items.Clear();
+      listView1.Items.AddRange(Items);
+      listView1.EndUpdate();
     }
 
     private ListViewItem ItemFromSat(SatnogsDbSatellite sat)
@@ -73,9 +83,12 @@ namespace SkyRoof
       if (sat.Transmitters.Any(t => t.IsUhf() && t.HasUplink())) item.BackColor = Color.LightCyan;
       else if (sat.Transmitters.Any(t => t.IsVhf() && t.HasUplink())) item.BackColor = Color.LightGoldenrodYellow;
 
-      if (sat.Flags.HasFlag(SatelliteFlags.Ham)) item.Font = new(item.Font, FontStyle.Bold);
+      BoldFont ??= new Font(listView1.Font, FontStyle.Bold);
+      StrikeoutFont ??= new Font(listView1.Font, FontStyle.Strikeout);
+
+      if (sat.Flags.HasFlag(SatelliteFlags.Ham)) item.Font = BoldFont;
       if (!sat.status.StartsWith("alive")) item.ForeColor = Color.Silver;
-      else if (sat.Tle == null) item.Font = new(item.Font, FontStyle.Strikeout);
+      else if (sat.Tle == null) item.Font = StrikeoutFont;
 
       return item;
     }
@@ -160,7 +173,7 @@ namespace SkyRoof
         case 3: Items = Items.OrderBy(item => ((ItemData)item.Tag!).Pass?.MaxElevation).ToArray(); break;
       }
 
-      listView1.Invalidate();
+      PopulateListView();
     }
 
 
@@ -169,11 +182,6 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                        events
     //----------------------------------------------------------------------------------------------
-    private void listView1_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
-    {
-      e.Item = Items[e.ItemIndex];
-    }
-
     private void listView1_ColumnClick(object sender, ColumnClickEventArgs e)
     {
       SortColumn = e.Column;

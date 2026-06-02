@@ -255,7 +255,9 @@ namespace SkyRoof
     {
       LeftBmp.SetPixel(0, WriteRow, color);
       LeftBmp.SetPixel(1, WriteRow, color);
-      Graphics.FromImage(WaterfallBmp).DrawLine(new Pen(color), 0, WriteRow, WaterfallBmp.Width, WriteRow);
+      using (var g = Graphics.FromImage(WaterfallBmp))
+      using (var pen = new Pen(color))
+        g.DrawLine(pen, 0, WriteRow, WaterfallBmp.Width, WriteRow);
 
       if (--WriteRow < 0) WriteRow = WaterfallBmp.Height - 1;
     }
