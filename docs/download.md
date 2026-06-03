@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.33](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.33/SkyRoofSetup-v.1.33.zip)
+[SkyRoof v.1.34](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.34/SkyRoofSetup-v.1.34.zip)
 
 <br>
 
@@ -15,6 +15,12 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.34
+
+- pass coverage area is now plotted in EarthView
+- improved performance of the waterfall - contributed by [cozmogeek](https://github.com/cozmogeek)
+- fixed intermittent crashes on saving updated groups
 
 #### v.1.33
 
