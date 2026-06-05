@@ -4,12 +4,11 @@ using MathNet.Numerics;
 
 namespace VE3NEA
 {
-  internal class Fft<T> : IDisposable
+  public class Fft<T> : IDisposable
   {
     private IntPtr InputPtr;
     private IntPtr OutputPtr;
     private IntPtr Plan;
-    WaitBox WaitBox = new();
 
 
     public T[] InputData;
@@ -42,15 +41,10 @@ namespace VE3NEA
       // FFT plan
       NativeFftw.make_planner_thread_safe();
 
-      WaitBox.Show();
-      Application.DoEvents();
-
       if (typeof(T) == typeof(float))
         Plan = NativeFftw.dft_r2c_1d(InputData.Length, InputPtr, OutputPtr, flags);
       else
         Plan = NativeFftw.dft_1d(InputData.Length, InputPtr, OutputPtr, NativeFftw.FftwDirection.Forward, flags);
-
-      WaitBox.Hide();
     }
     
     public void Dispose()

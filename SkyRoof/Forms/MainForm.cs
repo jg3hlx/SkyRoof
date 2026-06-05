@@ -138,8 +138,10 @@ namespace SkyRoof
     {
       Fft<Complex32>.LoadWisdom(Path.Combine(Utils.GetUserDataFolder(), "wsjtx_wisdom.dat"));
 
-      WidebandSpectrumAnalyzer = new(ctx.WaterfallPanel!.WaterfallControl.SpectraWidth, 6_000_000);
-      WidebandSpectrumAnalyzer.SpectrumAvailable += Spect_SpectrumAvailable;
+      // Show a wait box while the analyzer (and its FFTW plan) is built.
+      WaitBox.Run(() =>
+        WidebandSpectrumAnalyzer = new(ctx.WaterfallPanel!.WaterfallControl.SpectraWidth, 6_000_000));
+      WidebandSpectrumAnalyzer!.SpectrumAvailable += Spect_SpectrumAvailable;
     }
 
     public void DestroySpectrumAnalyzer()

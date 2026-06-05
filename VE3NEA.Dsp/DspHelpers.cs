@@ -50,6 +50,25 @@ namespace VE3NEA
       return result;
     }
 
+    /// <summary>Generates the Gaussian window.</summary>
+    /// <param name="sigma">The standard deviation.</param>
+    /// <param name="length">The window length.</param>
+    /// <returns>The window coefficients.</returns>
+    public static float[] GaussianWindow(double sigma, int length)
+    {
+      float[] result = new float[length];
+      double mid = (length - 1) / 2d;
+      sigma = Math.Max(sigma, 1e-30);
+
+      for (int i = 0; i < length; i++)
+      {
+        double x = (i - mid) / (mid * sigma);
+        result[i] = (float)Math.Exp(-0.5 * x * x);
+      }
+
+      return result;
+    }
+
     /// <summary>Generates the Sinc filter kernel.</summary>
     /// <param name="Fc">The normalized cutoff frequency.</param>
     /// <param name="length">The kernel length.</param>
@@ -80,6 +99,19 @@ namespace VE3NEA
       return result;
     }
 
+    /// <summary>Generates the Blackman-Harris Sinc filter kernel.</summary>
+    /// <param name="Fc">The normalized cutoff frequency.</param>
+    /// <param name="length">The kernel length.</param>
+    /// <returns>The filter kernel.</returns>
+    internal static float[] BlackmanHarrisSincKernel(double Fc, int length)
+    {
+      float[] result = BlackmanHarrisWindow(length);
+      float[] sinc = Sinc((float)Fc, length);
+      for (int i = 0; i < length; i++) result[i] *= sinc[i];
+      Normalize(result);
+      return result;
+    }
+
     /// <summary>Normalizes the specified array of floating point data to unity sum.</summary>
     /// <param name="data">The data.</param>
     public static void Normalize(float[] data)
@@ -87,6 +119,25 @@ namespace VE3NEA
       float sum = 0;
       foreach (float d in data) sum += d;
       for (int i = 0; i < data.Length; i++) data[i] /= sum;
+    }
+
+    /// <summary>Normalizes a window to unity sum.</summary>
+    /// <param name="window">Input window coefficients.</param>
+    /// <returns>Normalized window with sum(w) = 1.</returns>
+    public static float[] NormalizeWindow(float[] window)
+    {
+      float windowSum = window.Sum();
+      return window.Select(w => w / windowSum).ToArray();
+    }
+
+    /// <summary>Computes the effective noise bandwidth of a window.</summary>
+    /// <param name="window">Window coefficients.</param>
+    /// <returns>Effective noise bandwidth in bins: sum(w²) / sum(w)².</returns>
+    public static float ComputeNoiseBandwidth(float[] window)
+    {
+      float windowSum = window.Sum();
+      float windowSumSq = window.Sum(w => w * w);
+      return windowSumSq / (windowSum * windowSum);
     }
 
     /// <summary>Converts power ratio to decibels.</summary>
@@ -340,6 +391,89 @@ namespace VE3NEA
     internal static float Clamp(float value)
     {
       return Math.Max(-1, Math.Min(1, value));
+    }
+
+
+    public static double RayleighPdf(double x, double sigma)
+    {
+      if (x <= 0) return 0;
+      double s2 = sigma * sigma;
+      return x / s2 * Math.Exp(-x * x / (2 * s2));
+    }
+
+    public static double RicianPdf(double x, double nu, double sigma)
+    {
+      if (x <= 0) return 0;
+      //double s2 = sigma * sigma;
+      //return x / s2 * Math.Exp(-(x * x + nu * nu) / (2 * s2)) * BesselI0(x * nu / s2);
+
+      double logRician = Math.Log(x) - 2 * Math.Log(sigma) - (x * x + nu * nu) / (2 * sigma * sigma) + LogBesselI0(x * nu / (sigma * sigma));
+      return Math.Exp(logRician);
+    }
+
+    // modified Bessel function of the first kind, order zero
+    // polynomial approximation from Numerical Recipes, accurate to 1e-7
+    public static double BesselI0(double x)
+    {
+      double ax = Math.Abs(x);
+      if (ax < 3.75)
+      {
+        double t = x / 3.75;
+        double t2 = t * t;
+        return 1 + t2 * (3.5156229 + t2 * (3.0899424 + t2 * (1.2067492
+          + t2 * (0.2659732 + t2 * (0.0360768 + t2 * 0.0045813)))));
+      }
+      double u = 3.75 / ax;
+      return Math.Exp(ax) / Math.Sqrt(ax) * (0.39894228 + u * (0.01328592
+        + u * (0.00225319 + u * (-0.00157565 + u * (0.00916281
+        + u * (-0.02057706 + u * (0.02635537 + u * (-0.01647633 + u * 0.00392377))))))));
+    }
+
+    // log I_n(x) for integer order n ≥ 0
+    // series for x ≤ 5(n+1); asymptotic with first-order correction for larger x
+    public static double LogBesselIn(int n, double x)
+    {
+      if (n == 0) return LogBesselI0(x);
+      if (x <= 0) return double.NegativeInfinity;
+      if (x > 5.0 * (n + 1))
+        // I_n(x) ~ e^x/sqrt(2πx) · (1 - (4n²-1)/(8x) + ...); first correction subtracts (4n²-1)/(8x)
+        return x - 0.5 * Math.Log(2 * Math.PI * x) - (4.0 * n * n - 1.0) / (8.0 * x);
+      // series: I_n(x) = (x/2)^n / n! · Σ_{k=0}^∞ (x²/4)^k / (k! · (n+k)!/n!)
+      double halfXsq = x * x / 4.0;
+      double term = 1.0, sum = 1.0;
+      for (int k = 1; k <= 400; k++) {
+        term *= halfXsq / (k * (n + k));
+        sum += term;
+        if (term < 1e-14 * sum) break;
+      }
+      double logNFact = 0;
+      for (int k = 2; k <= n; k++) logNFact += Math.Log(k);
+      return n * Math.Log(x / 2.0) - logNFact + Math.Log(sum);
+    }
+
+    internal static double LogBesselI0(double x)
+    {
+      double logI0;
+
+      if (x < 3.75)
+      {
+        // A&S 9.8.1: t = (x/3.75)², poly in t
+        double t = x / 3.75; 
+        t *= t;
+        logI0 = Math.Log(1.0 + t * (3.5156229 + t * (3.0899424 + t * (1.2067492
+                + t * (0.2659732 + t * (0.0360768 + t * 0.0045813))))));
+      }
+      else
+      {
+        // A&S 9.8.2: I₀_scaled(x) = poly(3.75/x)/sqrt(x); logI0 = x - 0.5·ln(x) + ln(poly)
+        double t = 3.75 / x;
+        double poly = 0.39894228 + t * (0.01328592 + t * (0.00225319 + t * (-0.00157565
+                    + t * (0.00916281 + t * (-0.02057706 + t * (0.02635537
+                    + t * (-0.01647633 + t * 0.00392377)))))));
+        logI0 = x - 0.5 * Math.Log(x) + Math.Log(poly);
+      }
+
+      return logI0;
     }
   }
 }

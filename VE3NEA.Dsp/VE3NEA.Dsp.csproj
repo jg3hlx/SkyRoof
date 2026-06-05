@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>x64</Platforms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>VE3NEA</RootNamespace>
+    <AssemblyName>VE3NEA.Dsp</AssemblyName>
+    <Title>VE3NEA.Dsp</Title>
+    <Description>Shared DSP primitives (liquid-dsp + FFTW wrappers, buffers, FFT, helpers) used by SkyRoof, MachineCW, FskDemod.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageReference Include="CSCore" Version="1.2.1.2" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
+  </ItemGroup>
+
+  <!-- Native libraries P/Invoked by NativeFftw / NativeLiquidDsp.
+       As None items with CopyToOutputDirectory, they flow to the output of any
+       project that references this library, so consumers need no DLL copy of their own. -->
+  <ItemGroup>
+    <None Include="Native\libfftw3f-3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libfftw3f-3.dll</Link>
+    </None>
+    <None Include="Native\libliquid.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libliquid.dll</Link>
+    </None>
+    <None Include="Native\libgcc_s_sjlj-1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libgcc_s_sjlj-1.dll</Link>
+    </None>
+    <None Include="Native\libquadmath-0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>libquadmath-0.dll</Link>
+    </None>
+  </ItemGroup>
+
+</Project>

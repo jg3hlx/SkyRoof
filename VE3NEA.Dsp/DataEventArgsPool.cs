@@ -9,7 +9,7 @@ namespace VE3NEA
   //------------------------------------------------------------------------------------------------------------------
   //                                      pool of DataEventArgs<T>
   //------------------------------------------------------------------------------------------------------------------
-  internal class DataEventArgsPool<T>
+  public class DataEventArgsPool<T>
   {
     private ConcurrentDictionary<int, FixedSizeArgsPool<T>> Pools = new();
     public DataEventArgs<T> Rent(int dataSize)

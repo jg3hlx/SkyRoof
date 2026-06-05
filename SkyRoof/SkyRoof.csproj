@@ -58,22 +58,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\Vendor\fftw-3.3.5\libfftw3f-3.dll" Link="libfftw3f-3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <!-- libfftw3f-3.dll, libliquid.dll, libgcc_s_sjlj-1.dll, libquadmath-0.dll are now
+         provided by the VE3NEA.Dsp project reference and copied to output automatically. -->
     <None Include="..\Vendor\ft4_coder\ft4_coder.dll" Link="ft4_coder.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="..\Vendor\ft4_coder\ft4_coder.pdb" Link="ft4_coder.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Vendor\gcc\libgcc_s_sjlj-1.dll" Link="libgcc_s_sjlj-1.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Vendor\gcc\libquadmath-0.dll" Link="libquadmath-0.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="..\Vendor\liquid-dsp\libliquid.dll" Link="libliquid.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="..\Vendor\SoapySDR\libusb-1.0.dll" Link="libusb-1.0.dll">
@@ -126,6 +116,10 @@
     </None>
     <None Include=".github\copilot-instructions.md" />
     <None Include="C:\Proj\DSP\SkyRoof\SkyRoof\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VE3NEA.Dsp\VE3NEA.Dsp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
