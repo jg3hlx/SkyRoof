@@ -69,6 +69,24 @@ namespace VE3NEA
       return result;
     }
 
+    /// <summary>Builds a symmetric Gaussian low-pass kernel of the given full width (in samples),
+    /// truncated to ±3σ and normalized to unit DC gain. A width below ~1e-3 returns the identity
+    /// kernel <c>{1}</c> (pass-through).</summary>
+    /// <param name="widthSamples">The kernel full width in samples (σ = width / 2).</param>
+    /// <returns>The normalized kernel coefficients.</returns>
+    public static float[] GaussianLowpass(double widthSamples)
+    {
+      double sigma = widthSamples / 2.0;
+      if (sigma < 1e-3) return new[] { 1f };
+      int half = Math.Max(1, (int)Math.Round(3 * sigma));
+      int m = 2 * half + 1;
+      var h = new float[m];
+      double sum = 0;
+      for (int i = 0; i < m; i++) { double t = i - half; double v = Math.Exp(-0.5 * t * t / (sigma * sigma)); h[i] = (float)v; sum += v; }
+      for (int i = 0; i < m; i++) h[i] /= (float)sum;
+      return h;
+    }
+
     /// <summary>Generates the Sinc filter kernel.</summary>
     /// <param name="Fc">The normalized cutoff frequency.</param>
     /// <param name="length">The kernel length.</param>
@@ -393,6 +411,50 @@ namespace VE3NEA
       return Math.Max(-1, Math.Min(1, value));
     }
 
+
+    /// <summary>Returns the median of the values (the upper-middle element for even counts).
+    /// Does not mutate the input; returns 0 for an empty sequence.</summary>
+    /// <param name="x">The values (e.g. a <c>float[]</c> or <c>List&lt;float&gt;</c>).</param>
+    public static double Median(IReadOnlyList<float> x)
+    {
+      if (x.Count == 0) return 0;
+      var copy = new float[x.Count];
+      for (int i = 0; i < x.Count; i++) copy[i] = x[i];
+      Array.Sort(copy);
+      return copy[copy.Length / 2];
+    }
+
+    /// <summary>The Gaussian Q-function, Q(x) = 0.5·erfc(x/√2).</summary>
+    public static double GaussianQ(double x) => 0.5 * Erfc(x / Math.Sqrt(2.0));
+
+    /// <summary>Complementary error function via the Abramowitz–Stegun 7.1.26 approximation (max error ~1.5e-7).</summary>
+    public static double Erfc(double x)
+    {
+      double z = Math.Abs(x);
+      double t = 1.0 / (1.0 + 0.5 * z);
+      double ans = t * Math.Exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 +
+        t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 +
+        t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+      return x >= 0 ? ans : 2.0 - ans;
+    }
+
+    /// <summary>4-point cubic (Catmull-Rom-style Lagrange) interpolation of <paramref name="y"/> at the
+    /// real index <paramref name="pos"/>. Taps outside the array are treated as 0 (see <see cref="SampleOrZero"/>).</summary>
+    public static float Interp(float[] y, double pos)
+    {
+      int i = (int)Math.Floor(pos);
+      double mu = pos - i;
+      float ym1 = SampleOrZero(y, i - 1), y0 = SampleOrZero(y, i), y1 = SampleOrZero(y, i + 1), y2 = SampleOrZero(y, i + 2);
+      // cubic Lagrange
+      double c0 = y0;
+      double c1 = y1 - (1.0 / 3) * ym1 - 0.5 * y0 - (1.0 / 6) * y2;
+      double c2 = 0.5 * (ym1 + y1) - y0;
+      double c3 = (1.0 / 6) * (y2 - ym1) + 0.5 * (y0 - y1);
+      return (float)(((c3 * mu + c2) * mu + c1) * mu + c0);
+    }
+
+    /// <summary>Returns <c>y[i]</c>, or 0 when <paramref name="i"/> is outside the array bounds.</summary>
+    public static float SampleOrZero(float[] y, int i) => (uint)i < (uint)y.Length ? y[i] : 0f;
 
     public static double RayleighPdf(double x, double sigma)
     {
