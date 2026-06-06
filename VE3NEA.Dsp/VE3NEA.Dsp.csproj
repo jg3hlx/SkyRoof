@@ -38,6 +38,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>libquadmath-0.dll</Link>
     </None>
+    <!-- libfec (KA9Q) x64, P/Invoked by NativeFec for the FskDemod USP FEC stack. -->
+    <None Include="Native\fec.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>fec.dll</Link>
+    </None>
   </ItemGroup>
 
 </Project>
