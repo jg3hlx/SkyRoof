@@ -9,7 +9,9 @@ namespace SkyRoof
       public DateTime Utc { get; set; }
       public string EventType { get; set; } = string.Empty;
       public string Satellite { get; set; } = string.Empty;
+      public int? NoradId { get; set; }
       public string Transmitter { get; set; } = string.Empty;
+      public string TransmitterId { get; set; } = string.Empty;
       public string Mode { get; set; } = string.Empty;
       public string Callsign { get; set; } = string.Empty;
 
@@ -65,22 +67,24 @@ namespace SkyRoof
 
       var utc = DateTime.UtcNow;
       if (!string.IsNullOrWhiteSpace(lastSatelliteValue))
-        Add(utc, "satellite", lastSatelliteValue, lastTransmitterValue ?? string.Empty, lastModeValue ?? string.Empty, string.Empty);
+        Add(utc, "satellite", lastSatelliteValue, GetSelectedNoradId(ctx), lastTransmitterValue ?? string.Empty, GetSelectedTransmitterId(ctx), lastModeValue ?? string.Empty, string.Empty);
     }
 
     public void Add(DateTime utc, string eventType)
     {
-      Add(utc, eventType, string.Empty, string.Empty, string.Empty, string.Empty);
+      Add(utc, eventType, string.Empty, null, string.Empty, string.Empty, string.Empty, string.Empty);
     }
 
-    public void Add(DateTime utc, string eventType, string satellite, string transmitter, string mode, string callsign)
+    public void Add(DateTime utc, string eventType, string satellite, int? noradId, string transmitter, string transmitterId, string mode, string callsign)
     {
       Events.Add(new RecordingEvent
       {
         Utc = DateTime.SpecifyKind(utc, DateTimeKind.Utc),
         EventType = eventType,
         Satellite = satellite,
+        NoradId = noradId,
         Transmitter = transmitter,
+        TransmitterId = transmitterId,
         Mode = mode,
         Callsign = callsign,
       });
@@ -101,7 +105,7 @@ namespace SkyRoof
         lastSatelliteValue = satelliteValue;
         lastTransmitterValue = transmitterValue;
         lastModeValue = modeValue;
-        Add(utc, "satellite", satelliteValue!, transmitterValue ?? string.Empty, modeValue ?? string.Empty, string.Empty);
+        Add(utc, "satellite", satelliteValue!, GetSelectedNoradId(ctx), transmitterValue ?? string.Empty, GetSelectedTransmitterId(ctx), modeValue ?? string.Empty, string.Empty);
         return true;
       }
 
@@ -109,14 +113,14 @@ namespace SkyRoof
       {
         lastTransmitterValue = transmitterValue;
         if (modeChanged) lastModeValue = modeValue;
-        Add(utc, "transmitter", string.Empty, transmitterValue!, modeValue ?? string.Empty, string.Empty);
+        Add(utc, "transmitter", string.Empty, null, transmitterValue!, GetSelectedTransmitterId(ctx), modeValue ?? string.Empty, string.Empty);
         return true;
       }
 
       if (modeChanged)
       {
         lastModeValue = modeValue;
-        Add(utc, "mode", string.Empty, string.Empty, modeValue!, string.Empty);
+        Add(utc, "mode", string.Empty, null, string.Empty, string.Empty, modeValue!, string.Empty);
         return true;
       }
 
@@ -128,7 +132,7 @@ namespace SkyRoof
       if (string.IsNullOrWhiteSpace(callsign)) return false;
 
       string call = callsign.Trim().ToUpperInvariant();
-      Add(DateTime.UtcNow, "qso", string.Empty, string.Empty, string.Empty, call);
+      Add(DateTime.UtcNow, "qso", string.Empty, null, string.Empty, string.Empty, string.Empty, call);
       return true;
     }
 
@@ -192,6 +196,16 @@ namespace SkyRoof
     private static string? GetSelectedTransmitterValue(Context ctx)
     {
       return ctx.SatelliteSelector.SelectedTransmitter?.description;
+    }
+
+    private static int? GetSelectedNoradId(Context ctx)
+    {
+      return ctx.SatelliteSelector.SelectedSatellite?.norad_cat_id;
+    }
+
+    private static string GetSelectedTransmitterId(Context ctx)
+    {
+      return ctx.SatelliteSelector.SelectedTransmitter?.uuid ?? string.Empty;
     }
 
     private static string? GetDownlinkModeValue(Context ctx)
