@@ -33,6 +33,9 @@
     // canonical downlink mode name mapped from mode_id at import (see ModeMnemonic.ToModeName)
     public string DownlinkMode { get; set; }
 
+    // Enrichment from the gr-satellites satyaml DB, matched by NORAD + nearest baud.
+    public GrSatsInfo? gr_sats { get; set; }
+
 
     internal SatnogsDbSatellite Satellite;
     internal long DownlinkLow => (long)downlink_low!;
@@ -50,6 +53,16 @@
       result += $"Downlink: {downlink}\nMode: {mode}\n";
       if (uplink_low != null) result += $"Inverted: {invert}\n";
       result += $"Service: {service}\nUpdated: {updated:yyyy-MM-dd}";
+
+      // gr-satellites satyaml enrichment (only the fields that are present)
+      if (gr_sats != null)
+      {
+        if (gr_sats.modulation != null) result += $"\nModulation: {gr_sats.modulation}";
+        if (gr_sats.baudrate != null) result += $"\nBaudrate: {gr_sats.baudrate} Bd";
+        if (gr_sats.deviation != null) result += $"\nDeviation: {gr_sats.deviation} Hz";
+        if (gr_sats.framing != null) result += $"\nFraming: {gr_sats.framing}";
+        if (gr_sats.telemetry != null) result += $"\nTelemetry: {gr_sats.telemetry}";
+      }
 
       return result;
     }
@@ -97,6 +110,18 @@
 
 
   public class ItuNotification { public List<string> urls { get; set; } = new(); }
+
+  // Fields sourced from the gr-satellites satyaml DB that the SatNOGS DB does not carry.
+  // 'deviation' is the key one (needed for FSK/GFSK demod); 'telemetry' is a decoder-name
+  // label only (decode logic lives in gr-satellites' Python construct modules, not here).
+  public class GrSatsInfo
+  {
+    public string? modulation { get; set; }
+    public double? baudrate { get; set; }
+    public double? deviation { get; set; }
+    public string? framing { get; set; }
+    public string? telemetry { get; set; }   // real decoder name; null for ax25/csp/none
+  }
 
   public class SatnogsDbTransmitterList : List<SatnogsDbTransmitter> { }
 
