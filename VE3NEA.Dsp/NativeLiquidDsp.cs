@@ -44,6 +44,7 @@ namespace VE3NEA
     public unsafe struct freqdem { };
     public unsafe struct iirfilt_rrrf { };
     public unsafe struct firfilt_rrrf { };
+    public unsafe struct firinterp_crcf { };
 
   // NCO
 
@@ -189,6 +190,12 @@ namespace VE3NEA
     [DllImport(LIBLIQUID, CallingConvention = cdecl)]
     public static extern unsafe int firfilt_crcf_push(firfilt_crcf* q, Complex32 x);
 
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe firfilt_crcf* firfilt_crcf_create(float* h, uint n);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int firfilt_crcf_execute_block(firfilt_crcf* q, Complex32* x, uint n, Complex32* y);
+
 
     [DllImport(LIBLIQUID, CallingConvention = cdecl)]
     public static extern unsafe firfilt_rrrf* firfilt_rrrf_create(float* h, uint n);
@@ -207,6 +214,17 @@ namespace VE3NEA
 
     [DllImport(LIBLIQUID, CallingConvention = cdecl)]
     public static extern unsafe int firfilt_rrrf_destroy(firfilt_rrrf* q);
+
+    // polyphase interpolator (complex signal, real coefficients)
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe firinterp_crcf* firinterp_crcf_create(uint M, float* h, uint h_len);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int firinterp_crcf_execute_block(firinterp_crcf* q, Complex32* x, uint n, Complex32* y);
+
+    [DllImport(LIBLIQUID, CallingConvention = cdecl)]
+    public static extern unsafe int firinterp_crcf_destroy(firinterp_crcf* q);
 
     // iir filter
 
