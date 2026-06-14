@@ -374,7 +374,11 @@ namespace SkyRoof
 
       if (ifFrequency >= low && ifFrequency <= high)
         if (ctx.Slicer?.Enabled == true)
-          ctx.Slicer.SetOffset(ifFrequency - ctx.Sdr.Frequency);
+        {
+          // terrestrial has no doppler ramp; otherwise extrapolate at the last estimated rate
+          double rate = RadioLink.IsTerrestrial ? 0 : RadioLink.DownlinkDopplerRate;
+          ctx.Slicer.SetOffset(ifFrequency - ctx.Sdr.Frequency, rate);
+        }
     }
 
     private bool BringToPassband(double frequency, double bandLow, double bandHigh)
