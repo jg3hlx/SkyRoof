@@ -81,7 +81,7 @@ namespace SkyRoof
     internal void SetTransponderOffset(SatnogsDbTransmitter transponder, double offset)
     {
       // set the offset first
-      var transponderCust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(transponder.uuid);
+      var transponderCust = ctx.Settings.Satellites.GetOrCreateTransmitterCustomization(transponder);
       Debug.Assert(offset >= 0 && offset <= transponder.uplink_high - transponder.uplink_low);
       transponderCust.TransponderOffset = offset;
 
@@ -212,7 +212,7 @@ namespace SkyRoof
         RadioLink.Sat = ctx.SatelliteSelector.SelectedSatellite;
         RadioLink.Tx = ctx.SatelliteSelector.SelectedTransmitter;
         RadioLink.SatCust = ctx.Settings.Satellites.SatelliteCustomizations.GetOrCreate(RadioLink.Sat.sat_id);
-        RadioLink.TxCust = ctx.Settings.Satellites.TransmitterCustomizations.GetOrCreate(RadioLink.Tx.uuid);
+        RadioLink.TxCust = ctx.Settings.Satellites.GetOrCreateTransmitterCustomization(RadioLink.Tx);
         RadioLink.ObserveSatellite(ctx.SdrPasses);
         isTerrestrial = RadioLink.IsTerrestrial; 
 

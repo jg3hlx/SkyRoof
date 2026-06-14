@@ -225,6 +225,7 @@ namespace SkyRoof
         var sat = SatelliteList.GetValueOrDefault(t.sat_id);
         if (sat != null)
         {
+          t.DownlinkMode = ModeMnemonic.ToModeName(t.mode_id, t.mode);
           sat.Transmitters.Add(t);
           t.Satellite = sat;
         }
