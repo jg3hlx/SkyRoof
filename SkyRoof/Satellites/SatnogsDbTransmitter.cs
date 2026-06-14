@@ -61,6 +61,9 @@
         if (gr_sats.baudrate != null) result += $"\nBaudrate: {gr_sats.baudrate} Bd";
         if (gr_sats.deviation != null) result += $"\nDeviation: {gr_sats.deviation} Hz";
         if (gr_sats.framing != null) result += $"\nFraming: {gr_sats.framing}";
+        if (gr_sats.precoding != null) result += $"\nPrecoding: {gr_sats.precoding}";
+        if (gr_sats.rs_basis != null) result += $"\nRS basis: {gr_sats.rs_basis}";
+        if (gr_sats.frame_size != null) result += $"\nFrame size: {gr_sats.frame_size}";
         if (gr_sats.telemetry != null) result += $"\nTelemetry: {gr_sats.telemetry}";
       }
 
@@ -121,6 +124,9 @@
     public double? deviation { get; set; }
     public string? framing { get; set; }
     public string? telemetry { get; set; }   // real decoder name; null for ax25/csp/none
+    public string? precoding { get; set; }    // e.g. "differential" (authoritative differential-vs-coherent)
+    public string? rs_basis { get; set; }     // Reed-Solomon field basis: "conventional" / "dual"
+    public int? frame_size { get; set; }      // RS/CCSDS frame length in bytes (e.g. 223)
   }
 
   public class SatnogsDbTransmitterList : List<SatnogsDbTransmitter> { }

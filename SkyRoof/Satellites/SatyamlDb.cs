@@ -6,8 +6,9 @@ namespace SkyRoof
   /// <summary>
   /// Parses the gr-satellites <c>satyaml/</c> files (downloaded and extracted into
   /// <c>Downloads\satyaml\</c>) into <see cref="GrSatsInfo"/> records indexed by NORAD.
-  /// Provides the modulation / baudrate / deviation / framing / telemetry that the SatNOGS DB
-  /// does not carry (deviation in particular). See <c>docs\satyaml_import_plan.md</c>.
+  /// Provides the modulation / baudrate / deviation / framing / precoding / RS basis / frame size /
+  /// telemetry that the SatNOGS DB does not carry (deviation and precoding in particular).
+  /// See <c>docs\satyaml_import_plan.md</c>.
   ///
   /// A tiny line-based parser (no YAML dependency): it reads the scalar transmitter fields and
   /// resolves each transmitter's <c>data:</c> anchor references against the file's top-level
@@ -52,7 +53,9 @@ namespace SkyRoof
       bool inTx = false, inData = false;
       bool inTxDataList = false, haveTx = false;
       string? curMod = null, curFraming = null, curTxName = null;
+      string? curPrecoding = null, curRsBasis = null;
       double? curBaud = null, curDev = null;
+      int? curFrameSize = null;
       var curDataRefs = new List<string>();
 
       void FlushTx()
@@ -64,10 +67,15 @@ namespace SkyRoof
             baudrate = curBaud,
             deviation = curDev,
             framing = curFraming,
+            precoding = curPrecoding,
+            rs_basis = curRsBasis,
+            frame_size = curFrameSize,
             telemetry = ResolveTelemetry(curDataRefs, dataAnchors, name, curTxName)
           });
         curMod = curFraming = curTxName = null;
+        curPrecoding = curRsBasis = null;
         curBaud = curDev = null;
+        curFrameSize = null;
         curDataRefs.Clear();
         inTxDataList = haveTx = false;
       }
@@ -143,6 +151,9 @@ namespace SkyRoof
           case "framing": curFraming = Unquote(val); break;
           case "baudrate": curBaud = ParseNum(val); break;
           case "deviation": curDev = ParseNum(val); break;
+          case "precoding": curPrecoding = Unquote(val); break;
+          case "RS basis": curRsBasis = Unquote(val); break;
+          case "frame size": curFrameSize = (int?)ParseNum(val); break;
         }
       }
       FlushTx();
