@@ -4,7 +4,7 @@ _layout: landing
 
 <center>
 
-# SkyRoof v.1.34
+# SkyRoof v.1.35
 
 A Windows application for Hams and satellite enthusiasts
 

@@ -4,7 +4,7 @@
 
 ### Current Version
 
-[SkyRoof v.1.34](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.34/SkyRoofSetup-v.1.34.zip)
+[SkyRoof v.1.35](https://github.com/VE3NEA/SkyRoof/releases/download/v.1.35/SkyRoofSetup-v.1.35.zip)
 
 <br>
 
@@ -15,6 +15,12 @@ See [All Releases](https://github.com/VE3NEA/SkyRoof/releases)
 <br>
 
 ### Release Notes
+
+#### v.1.35
+
+- the mode is guessed when a transmitter is selected for the first time
+- Doppler correction of the SDR receiver is interpolated instead of changing in steps
+- incorrect display of SDR gain on non-English windows is fixed
 
 #### v.1.34
 
