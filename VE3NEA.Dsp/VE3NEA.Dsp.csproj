@@ -22,24 +22,24 @@
        As None items with CopyToOutputDirectory, they flow to the output of any
        project that references this library, so consumers need no DLL copy of their own. -->
   <ItemGroup>
-    <None Include="Native\libfftw3f-3.dll">
+    <None Include="Vendor\fftw-3.3.5\libfftw3f-3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>libfftw3f-3.dll</Link>
     </None>
-    <None Include="Native\libliquid.dll">
+    <None Include="Vendor\liquid-dsp\libliquid.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>libliquid.dll</Link>
     </None>
-    <None Include="Native\libgcc_s_sjlj-1.dll">
+    <None Include="Vendor\mingw\libgcc_s_sjlj-1.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>libgcc_s_sjlj-1.dll</Link>
     </None>
-    <None Include="Native\libquadmath-0.dll">
+    <None Include="Vendor\mingw\libquadmath-0.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>libquadmath-0.dll</Link>
     </None>
     <!-- libfec (KA9Q) x64, P/Invoked by NativeFec for the FskDemod USP FEC stack. -->
-    <None Include="Native\fec.dll">
+    <None Include="Vendor\libfec\fec.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>fec.dll</Link>
     </None>
