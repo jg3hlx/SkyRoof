@@ -53,6 +53,7 @@ namespace SkyRoof
       dataGridView.SelectionMode = DataGridViewSelectionMode.FullColumnSelect;
       dataGridView.Size = new Size(405, 145);
       dataGridView.TabIndex = 0;
+      dataGridView.CellContentClick += dataGridView_CellContentClick;
       // 
       // CurrentDirection
       // 

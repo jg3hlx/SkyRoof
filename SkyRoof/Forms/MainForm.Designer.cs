@@ -41,10 +41,10 @@
       SatellitePhotoWidget = new SatellitePhotoWidget();
       ClockPanel = new Panel();
       Clock = new VE3NEA.Clock.ClockWidget();
-      panel2 = new Panel();
       panel5 = new Panel();
       SatellitePhotoSeparator = new Panel();
       SatelliteSelecionWidget = new SatelliteSelectorWidget();
+      panel2 = new Panel();
       DockHost = new WeifenLuo.WinFormsUI.Docking.DockPanel();
       menuStrip1 = new MenuStrip();
       fileToolStripMenuItem = new ToolStripMenuItem();
@@ -234,14 +234,6 @@
       Clock.TabIndex = 1;
       Clock.UtcMode = true;
       // 
-      // panel2
-      // 
-      panel2.Dock = DockStyle.Left;
-      panel2.Location = new Point(0, 0);
-      panel2.Name = "panel2";
-      panel2.Size = new Size(4, 78);
-      panel2.TabIndex = 5;
-      // 
       // panel5
       // 
       panel5.Dock = DockStyle.Right;
@@ -271,39 +263,45 @@
       SatelliteSelecionWidget.SelectedTransmitterChanged += SatelliteSelector_SelectedTransmitterChanged;
       SatelliteSelecionWidget.SelectedPassChanged += SatelliteSelector_SelectedPassChanged;
       // 
+      // panel2
+      // 
+      panel2.Dock = DockStyle.Left;
+      panel2.Location = new Point(0, 0);
+      panel2.Name = "panel2";
+      panel2.Size = new Size(4, 78);
+      panel2.TabIndex = 5;
+      // 
       // DockHost
       // 
       DockHost.DefaultFloatWindowSize = new Size(445, 445);
       DockHost.Dock = DockStyle.Fill;
       DockHost.Location = new Point(0, 102);
       DockHost.Name = "DockHost";
-      DockHost.Padding = new Padding(6);
       DockHost.ShowAutoHideContentOnHover = false;
       DockHost.Size = new Size(1834, 824);
       DockHost.TabIndex = 4;
-      // the DockHost.Theme is selected in the MainForm constructor, not here
-      //
+      // 
       // menuStrip1
       // 
       menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, GroupViewPanelMNU, toolsToolStripMenuItem, helpToolStripMenuItem });
       menuStrip1.Location = new Point(0, 0);
-      menuStrip1.Name = "menuStrip1";
+      menuStrip1.Name = "メニュー1";
       menuStrip1.Size = new Size(1834, 24);
       menuStrip1.TabIndex = 5;
-      menuStrip1.Text = "menuStrip1";
+      menuStrip1.Text = "メニュー1";
       // 
       // fileToolStripMenuItem
       // 
       fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { ExitMNU });
       fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-      fileToolStripMenuItem.Size = new Size(37, 20);
-      fileToolStripMenuItem.Text = "&File";
+      fileToolStripMenuItem.Size = new Size(53, 20);
+      fileToolStripMenuItem.Text = "ファイル";
       // 
       // ExitMNU
       // 
       ExitMNU.Name = "ExitMNU";
-      ExitMNU.Size = new Size(92, 22);
-      ExitMNU.Text = "E&xit";
+      ExitMNU.Size = new Size(180, 22);
+      ExitMNU.Text = "終了";
       ExitMNU.Click += ExitMNU_Click;
       // 
       // GroupViewPanelMNU
@@ -311,106 +309,106 @@
       GroupViewPanelMNU.DropDownItems.AddRange(new ToolStripItem[] { GroupViewMNU, SatelliteDetailsMNU, TransmittersMNU, SatellitePassesMNU, WaterfallMNU, TimelineMNU, SkyViewMNU, EarthViewMNU, QsoEntryMNU, Ft4ConsoleMNU, RecorderMNU, QsoSchedulerMNU, TelemetryMNU, AutoSelectionMNU, toolStripMenuItem4, ResetWindowLayoutMNU });
       GroupViewPanelMNU.Name = "GroupViewPanelMNU";
       GroupViewPanelMNU.Size = new Size(44, 20);
-      GroupViewPanelMNU.Text = "&View";
+      GroupViewPanelMNU.Text = "表示";
       // 
       // GroupViewMNU
       // 
       GroupViewMNU.Name = "GroupViewMNU";
       GroupViewMNU.Size = new Size(188, 22);
-      GroupViewMNU.Text = "&Group";
+      GroupViewMNU.Text = "グループ";
       GroupViewMNU.Click += GroupViewMNU_Click;
       // 
       // SatelliteDetailsMNU
       // 
       SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
       SatelliteDetailsMNU.Size = new Size(188, 22);
-      SatelliteDetailsMNU.Text = "Satellite &Details";
+      SatelliteDetailsMNU.Text = "衛星詳細";
       SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
       // 
       // TransmittersMNU
       // 
       TransmittersMNU.Name = "TransmittersMNU";
       TransmittersMNU.Size = new Size(188, 22);
-      TransmittersMNU.Text = "Satellite &Transmitters";
+      TransmittersMNU.Text = "衛星トランスミッター";
       TransmittersMNU.Click += TransmittersMNU_Click;
       // 
       // SatellitePassesMNU
       // 
       SatellitePassesMNU.Name = "SatellitePassesMNU";
       SatellitePassesMNU.Size = new Size(188, 22);
-      SatellitePassesMNU.Text = "Satellite &Passes";
+      SatellitePassesMNU.Text = "衛星パス";
       SatellitePassesMNU.Click += SatellitePassesMNU_Click;
       // 
       // WaterfallMNU
       // 
       WaterfallMNU.Name = "WaterfallMNU";
       WaterfallMNU.Size = new Size(188, 22);
-      WaterfallMNU.Text = "Wideband &Waterfall";
+      WaterfallMNU.Text = "ウォータフォール";
       WaterfallMNU.Click += WaterfallMNU_Click;
       // 
       // TimelineMNU
       // 
       TimelineMNU.Name = "TimelineMNU";
       TimelineMNU.Size = new Size(188, 22);
-      TimelineMNU.Text = "T&imeline";
+      TimelineMNU.Text = "タイムライン";
       TimelineMNU.Click += TimelineMNU_Click;
       // 
       // SkyViewMNU
       // 
       SkyViewMNU.Name = "SkyViewMNU";
       SkyViewMNU.Size = new Size(188, 22);
-      SkyViewMNU.Text = "&Sky View";
+      SkyViewMNU.Text = "スカイビュー";
       SkyViewMNU.Click += SkyViewMNU_Click;
       // 
       // EarthViewMNU
       // 
       EarthViewMNU.Name = "EarthViewMNU";
       EarthViewMNU.Size = new Size(188, 22);
-      EarthViewMNU.Text = "&Earth View";
+      EarthViewMNU.Text = "アースビュー";
       EarthViewMNU.Click += EarthViewMNU_Click;
       // 
       // QsoEntryMNU
       // 
       QsoEntryMNU.Name = "QsoEntryMNU";
       QsoEntryMNU.Size = new Size(188, 22);
-      QsoEntryMNU.Text = "&QSO Entry";
+      QsoEntryMNU.Text = "&QSO入力";
       QsoEntryMNU.Click += QsoEntryMNU_Click;
       // 
       // Ft4ConsoleMNU
       // 
       Ft4ConsoleMNU.Name = "Ft4ConsoleMNU";
       Ft4ConsoleMNU.Size = new Size(188, 22);
-      Ft4ConsoleMNU.Text = "&FT4 Console";
+      Ft4ConsoleMNU.Text = "&FT4コンソール";
       Ft4ConsoleMNU.Click += Ft4ConsoleMNU_Click;
       // 
       // RecorderMNU
-      //
+      // 
       RecorderMNU.Name = "RecorderMNU";
       RecorderMNU.Size = new Size(188, 22);
-      RecorderMNU.Text = "&Recorder";
+      RecorderMNU.Text = "録音";
       RecorderMNU.Click += RecorderMNU_Click;
-      //
+      // 
       // QsoSchedulerMNU
-      //
+      // 
       QsoSchedulerMNU.Name = "QsoSchedulerMNU";
       QsoSchedulerMNU.Size = new Size(188, 22);
-      QsoSchedulerMNU.Text = "QSO &Scheduler";
+      QsoSchedulerMNU.Text = "スケジュールQSO";
       QsoSchedulerMNU.Click += QsoSchedulerMNU_Click;
-      //
+      // 
       // TelemetryMNU
-      //
+      // 
       TelemetryMNU.Name = "TelemetryMNU";
       TelemetryMNU.Size = new Size(188, 22);
-      TelemetryMNU.Text = "Te&lemetry";
+      TelemetryMNU.Text = "テレメトリー";
       TelemetryMNU.Click += TelemetryMNU_Click;
-      //
+      // 
       // AutoSelectionMNU
-      //
+      // 
       AutoSelectionMNU.Name = "AutoSelectionMNU";
       AutoSelectionMNU.Size = new Size(188, 22);
-      AutoSelectionMNU.Text = "&Auto Selection";
+      AutoSelectionMNU.Text = "自動選択";
       AutoSelectionMNU.Click += AutoSelectionMNU_Click;
-      //
+      // 
       // toolStripMenuItem4
       // 
       toolStripMenuItem4.Name = "toolStripMenuItem4";
@@ -420,67 +418,67 @@
       // 
       ResetWindowLayoutMNU.Name = "ResetWindowLayoutMNU";
       ResetWindowLayoutMNU.Size = new Size(188, 22);
-      ResetWindowLayoutMNU.Text = "Reset Window &Layout";
+      ResetWindowLayoutMNU.Text = "ウィンドウ レイアウトのリセット";
       ResetWindowLayoutMNU.Click += ResetWindowLayoutMNU_Click;
       // 
       // toolsToolStripMenuItem
       // 
       toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { SatelliteGroupsMNU, SdrDevicesMNU, SettingsMNU, ThemeMNU, toolStripMenuItem1, DownloadSatDataMNU, DownloadTleMNU, DownloadAmsatMNU, toolStripMenuItem3, LoadTleMNU });
       toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-      toolsToolStripMenuItem.Size = new Size(47, 20);
-      toolsToolStripMenuItem.Text = "&Tools";
+      toolsToolStripMenuItem.Size = new Size(46, 20);
+      toolsToolStripMenuItem.Text = "ツール";
       // 
       // SatelliteGroupsMNU
       // 
       SatelliteGroupsMNU.Name = "SatelliteGroupsMNU";
       SatelliteGroupsMNU.Size = new Size(216, 22);
-      SatelliteGroupsMNU.Text = "&Satellites and Groups...";
+      SatelliteGroupsMNU.Text = "衛星とグループ...";
       SatelliteGroupsMNU.Click += EditGroupsMNU_Click;
       // 
       // SdrDevicesMNU
       // 
       SdrDevicesMNU.Name = "SdrDevicesMNU";
       SdrDevicesMNU.Size = new Size(216, 22);
-      SdrDevicesMNU.Text = "SD&R Devices...";
+      SdrDevicesMNU.Text = "SDR機器...";
       SdrDevicesMNU.Click += SdrDevicesMNU_Click;
       // 
       // SettingsMNU
       // 
       SettingsMNU.Name = "SettingsMNU";
       SettingsMNU.Size = new Size(216, 22);
-      SettingsMNU.Text = "S&ettings...";
+      SettingsMNU.Text = "設定...";
       SettingsMNU.Click += SettingsMNU_Click;
-      //
+      // 
       // ThemeMNU
-      //
+      // 
       ThemeMNU.DropDownItems.AddRange(new ToolStripItem[] { ThemeSystemMNU, ThemeLightMNU, ThemeDarkMNU });
       ThemeMNU.Name = "ThemeMNU";
       ThemeMNU.Size = new Size(216, 22);
-      ThemeMNU.Text = "T&heme";
-      //
+      ThemeMNU.Text = "テーマ";
+      // 
       // ThemeSystemMNU
-      //
+      // 
       ThemeSystemMNU.Name = "ThemeSystemMNU";
-      ThemeSystemMNU.Size = new Size(180, 22);
-      ThemeSystemMNU.Text = "&System";
+      ThemeSystemMNU.Size = new Size(111, 22);
+      ThemeSystemMNU.Text = "システム";
       ThemeSystemMNU.Click += ThemeSystemMNU_Click;
-      //
+      // 
       // ThemeLightMNU
-      //
+      // 
       ThemeLightMNU.Name = "ThemeLightMNU";
-      ThemeLightMNU.Size = new Size(180, 22);
-      ThemeLightMNU.Text = "&Light";
+      ThemeLightMNU.Size = new Size(111, 22);
+      ThemeLightMNU.Text = "ライト";
       ThemeLightMNU.Click += ThemeLightMNU_Click;
-      //
+      // 
       // ThemeDarkMNU
-      //
+      // 
       ThemeDarkMNU.Name = "ThemeDarkMNU";
-      ThemeDarkMNU.Size = new Size(180, 22);
-      ThemeDarkMNU.Text = "&Dark";
+      ThemeDarkMNU.Size = new Size(111, 22);
+      ThemeDarkMNU.Text = "ダーク";
       ThemeDarkMNU.Click += ThemeDarkMNU_Click;
-      //
+      // 
       // toolStripMenuItem1
-      //
+      // 
       toolStripMenuItem1.Name = "toolStripMenuItem1";
       toolStripMenuItem1.Size = new Size(213, 6);
       // 
@@ -488,23 +486,23 @@
       // 
       DownloadSatDataMNU.Name = "DownloadSatDataMNU";
       DownloadSatDataMNU.Size = new Size(216, 22);
-      DownloadSatDataMNU.Text = "&Download All Satellite Data";
+      DownloadSatDataMNU.Text = "全衛星データのダウンロード";
       DownloadSatDataMNU.Click += DownloadSatDataMNU_Click;
       // 
       // DownloadTleMNU
       // 
       DownloadTleMNU.Name = "DownloadTleMNU";
       DownloadTleMNU.Size = new Size(216, 22);
-      DownloadTleMNU.Text = "Download &TLE Only";
+      DownloadTleMNU.Text = "TLEのダウンロード";
       DownloadTleMNU.Click += DownloadTleMNU_Click;
       // 
       // DownloadAmsatMNU
       // 
       DownloadAmsatMNU.Name = "DownloadAmsatMNU";
       DownloadAmsatMNU.Size = new Size(216, 22);
-      DownloadAmsatMNU.Text = "Download &AMSAT Statuses";
+      DownloadAmsatMNU.Text = "AMSATステータスのダウンロード";
       DownloadAmsatMNU.Click += DownloadAmsatMNU_Click;
-      //
+      // 
       // toolStripMenuItem3
       // 
       toolStripMenuItem3.Name = "toolStripMenuItem3";
@@ -514,7 +512,7 @@
       // 
       LoadTleMNU.Name = "LoadTleMNU";
       LoadTleMNU.Size = new Size(216, 22);
-      LoadTleMNU.Text = "Load TLE From &File...";
+      LoadTleMNU.Text = "ファイルからTLEを読み込む...";
       LoadTleMNU.Click += LoadTleMNU_Click;
       // 
       // helpToolStripMenuItem
@@ -522,27 +520,27 @@
       helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { OnlineHelpMNU, SupportGroupMNU, DataFolderMNU, toolStripMenuItem2, AboutMNU });
       helpToolStripMenuItem.Name = "helpToolStripMenuItem";
       helpToolStripMenuItem.Size = new Size(44, 20);
-      helpToolStripMenuItem.Text = "&Help";
+      helpToolStripMenuItem.Text = "ヘルプ";
       // 
       // OnlineHelpMNU
       // 
       OnlineHelpMNU.Name = "OnlineHelpMNU";
       OnlineHelpMNU.Size = new Size(161, 22);
-      OnlineHelpMNU.Text = "&Online Help...";
+      OnlineHelpMNU.Text = "Webヘルプ...";
       OnlineHelpMNU.Click += WebsiteMNU_Click;
       // 
       // SupportGroupMNU
       // 
       SupportGroupMNU.Name = "SupportGroupMNU";
       SupportGroupMNU.Size = new Size(161, 22);
-      SupportGroupMNU.Text = "&Support Group...";
+      SupportGroupMNU.Text = "支援グループ...";
       SupportGroupMNU.Click += SupportGroupMNU_Click;
       // 
       // DataFolderMNU
       // 
       DataFolderMNU.Name = "DataFolderMNU";
       DataFolderMNU.Size = new Size(161, 22);
-      DataFolderMNU.Text = "&Data Folder...";
+      DataFolderMNU.Text = "データフォルダー...";
       DataFolderMNU.Click += DataFolderMNU_Click;
       // 
       // toolStripMenuItem2
@@ -554,7 +552,7 @@
       // 
       AboutMNU.Name = "AboutMNU";
       AboutMNU.Size = new Size(161, 22);
-      AboutMNU.Text = "&About...";
+      AboutMNU.Text = "概要...";
       AboutMNU.Click += AboutMNU_Click;
       // 
       // timer
@@ -572,7 +570,7 @@
       StatusStrip.ShowItemToolTips = true;
       StatusStrip.Size = new Size(1834, 35);
       StatusStrip.TabIndex = 6;
-      StatusStrip.Text = "statusStrip1";
+      StatusStrip.Text = "ステータス1";
       // 
       // toolStripStatusLabel2
       // 
@@ -593,7 +591,7 @@
       SatDataStatusLabel.Font = new Font("Segoe UI", 10F);
       SatDataStatusLabel.Name = "SatDataStatusLabel";
       SatDataStatusLabel.Size = new Size(89, 30);
-      SatDataStatusLabel.Text = "Satellite Data";
+      SatDataStatusLabel.Text = "衛星データ";
       SatDataStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
       SatDataStatusLabel.ToolTipText = "Network";
       // 
@@ -637,7 +635,7 @@
       SoundcardStatusLabel.Font = new Font("Segoe UI", 10F);
       SoundcardStatusLabel.Name = "SoundcardStatusLabel";
       SoundcardStatusLabel.Size = new Size(82, 30);
-      SoundcardStatusLabel.Text = "Soundcard  ";
+      SoundcardStatusLabel.Text = "サウンドカード ";
       SoundcardStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
       SoundcardStatusLabel.Click += SoundcardLabel_Click;
       SoundcardStatusLabel.MouseEnter += StatusLabel_MouseEnter;
@@ -648,7 +646,7 @@
       SoundcardDropdownBtn.DisplayStyle = ToolStripItemDisplayStyle.Image;
       SoundcardDropdownBtn.Name = "SoundcardDropdownBtn";
       SoundcardDropdownBtn.Size = new Size(13, 33);
-      SoundcardDropdownBtn.ToolTipText = "Select Audio Output Soundcard";
+      SoundcardDropdownBtn.ToolTipText = "オーディオ出力用サウンドカード";
       SoundcardDropdownBtn.DropDownOpening += SoundcardDropdownBtn_DropDownOpening;
       SoundcardDropdownBtn.MouseEnter += StatusLabel_MouseEnter;
       SoundcardDropdownBtn.MouseLeave += StatusLabel_MouseLeave;
@@ -669,7 +667,7 @@
       VacStatusLabel.Font = new Font("Segoe UI", 10F);
       VacStatusLabel.Name = "VacStatusLabel";
       VacStatusLabel.Size = new Size(101, 30);
-      VacStatusLabel.Text = "Output Stream";
+      VacStatusLabel.Text = "出力ストリーム";
       VacStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
       VacStatusLabel.Click += VacLabel_Click;
       VacStatusLabel.MouseEnter += StatusLabel_MouseEnter;
@@ -679,7 +677,7 @@
       // 
       RxCatLedLabel.Font = new Font("Webdings", 9F);
       RxCatLedLabel.ForeColor = SystemColors.GrayText;
-      RxCatLedLabel.Name = "RxCatLedLabel";
+      RxCatLedLabel.Name = "RxCatLedラベル";
       RxCatLedLabel.Size = new Size(21, 30);
       RxCatLedLabel.Text = "n";
       RxCatLedLabel.Click += RxCatLabel_Click;
@@ -733,7 +731,7 @@
       IqOutputStatusLabel.Font = new Font("Segoe UI", 10F);
       IqOutputStatusLabel.Name = "IqOutputStatusLabel";
       IqOutputStatusLabel.Size = new Size(78, 30);
-      IqOutputStatusLabel.Text = "I/Q Output";
+      IqOutputStatusLabel.Text = "I/Q 出力";
       IqOutputStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
       IqOutputStatusLabel.Visible = false;
       // 
@@ -753,7 +751,7 @@
       RotatorStatusLabel.Font = new Font("Segoe UI", 10F);
       RotatorStatusLabel.Name = "RotatorStatusLabel";
       RotatorStatusLabel.Size = new Size(55, 30);
-      RotatorStatusLabel.Text = "Rotator";
+      RotatorStatusLabel.Text = "ローテータ";
       RotatorStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
       RotatorStatusLabel.Click += RotLedLabel_Click;
       RotatorStatusLabel.MouseEnter += StatusLabel_MouseEnter;
@@ -775,21 +773,21 @@
       EnableRotatorMNU.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
       EnableRotatorMNU.Name = "EnableRotatorMNU";
       EnableRotatorMNU.Size = new Size(110, 22);
-      EnableRotatorMNU.Text = "Enable";
+      EnableRotatorMNU.Text = "有効";
       EnableRotatorMNU.Click += RotLedLabel_Click;
       // 
       // TrackRotatorMNU
       // 
       TrackRotatorMNU.Name = "TrackRotatorMNU";
       TrackRotatorMNU.Size = new Size(110, 22);
-      TrackRotatorMNU.Text = "Track";
+      TrackRotatorMNU.Text = "追跡";
       TrackRotatorMNU.Click += RotatorTrackMNU_CheckedChanged;
       // 
       // NoiseFloorLabel
       // 
       NoiseFloorLabel.Name = "NoiseFloorLabel";
       NoiseFloorLabel.Size = new Size(119, 30);
-      NoiseFloorLabel.Text = "Noise Floor: -100 dB  ";
+      NoiseFloorLabel.Text = "ノイズフロア: -100 dB  ";
       NoiseFloorLabel.TextAlign = ContentAlignment.MiddleLeft;
       NoiseFloorLabel.Visible = false;
       // 
@@ -797,8 +795,8 @@
       // 
       CpuLoadlabel.DisplayStyle = ToolStripItemDisplayStyle.Text;
       CpuLoadlabel.Name = "CpuLoadlabel";
-      CpuLoadlabel.Size = new Size(96, 30);
-      CpuLoadlabel.Text = "CPU Load: 00.0%";
+      CpuLoadlabel.Size = new Size(95, 30);
+      CpuLoadlabel.Text = "CPU負荷: 00.0%";
       CpuLoadlabel.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // UpdateLabel
@@ -810,11 +808,15 @@
       UpdateLabel.Name = "UpdateLabel";
       UpdateLabel.Padding = new Padding(10, 0, 10, 0);
       UpdateLabel.Size = new Size(81, 25);
-      UpdateLabel.Text = "Download";
+      UpdateLabel.Text = "ダウンロード";
       UpdateLabel.Visible = false;
       UpdateLabel.Click += UpdateLabel_Click;
       UpdateLabel.MouseEnter += StatusLabel_MouseEnter;
       UpdateLabel.MouseLeave += StatusLabel_MouseLeave;
+      // 
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
       // 
       // panel4
       // 

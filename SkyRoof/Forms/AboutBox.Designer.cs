@@ -41,7 +41,7 @@
       CloseBtn.Name = "CloseBtn";
       CloseBtn.Size = new Size(75, 23);
       CloseBtn.TabIndex = 0;
-      CloseBtn.Text = "Close";
+      CloseBtn.Text = "閉じる";
       CloseBtn.UseVisualStyleBackColor = true;
       // 
       // label1
@@ -53,7 +53,7 @@
       label1.Name = "label1";
       label1.Size = new Size(366, 37);
       label1.TabIndex = 1;
-      label1.Text = "Product";
+      label1.Text = "製品名";
       label1.TextAlign = ContentAlignment.MiddleCenter;
       // 
       // label2
@@ -62,7 +62,7 @@
       label2.Name = "label2";
       label2.Size = new Size(354, 17);
       label2.TabIndex = 2;
-      label2.Text = "Copyright";
+      label2.Text = "著作権";
       label2.TextAlign = ContentAlignment.MiddleCenter;
       // 
       // WebsiteLabel
@@ -74,7 +74,7 @@
       WebsiteLabel.Size = new Size(50, 15);
       WebsiteLabel.TabIndex = 3;
       WebsiteLabel.TabStop = true;
-      WebsiteLabel.Text = "web site";
+      WebsiteLabel.Text = "ウェブサイト";
       WebsiteLabel.LinkClicked += WebsiteLabel_LinkClicked;
       // 
       // AboutBox

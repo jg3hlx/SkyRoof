@@ -34,7 +34,7 @@
       label1.Name = "label1";
       label1.Size = new Size(82, 15);
       label1.TabIndex = 0;
-      label1.Text = "Frequency, Hz";
+      label1.Text = "周波数, Hz";
       // 
       // FrequencyComboBox
       // 
@@ -57,7 +57,7 @@
       TuneBtn.Name = "TuneBtn";
       TuneBtn.Size = new Size(72, 27);
       TuneBtn.TabIndex = 3;
-      TuneBtn.Text = "Tune";
+      TuneBtn.Text = "同調";
       TuneBtn.UseVisualStyleBackColor = true;
       // 
       // FrequencyEntryForm

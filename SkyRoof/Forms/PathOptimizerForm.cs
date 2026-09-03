@@ -27,7 +27,7 @@ namespace SkyRoof
         Close();
         return true;
       }
-      
+
       return base.ProcessCmdKey(ref msg, keyData);
     }
 
@@ -74,7 +74,7 @@ namespace SkyRoof
         row.Cells[2].Tag = firstPoint;
         row.Cells[3].Tag = lastPoint;
       }
-      
+
       dataGridView.ClearSelection();
     }
 
@@ -105,6 +105,11 @@ namespace SkyRoof
           e.CellStyle.SelectionForeColor = e.CellStyle.ForeColor;
         }
       }
+    }
+
+    private void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+    {
+
     }
   }
 }

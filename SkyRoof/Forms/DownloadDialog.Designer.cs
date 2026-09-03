@@ -56,7 +56,7 @@
       Button.Name = "Button";
       Button.Size = new Size(75, 23);
       Button.TabIndex = 2;
-      Button.Text = "Cancel";
+      Button.Text = "中止";
       Button.UseVisualStyleBackColor = true;
       Button.Click += Button_Click;
       // 

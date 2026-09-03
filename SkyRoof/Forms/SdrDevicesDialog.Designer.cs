@@ -66,7 +66,7 @@ namespace SkyRoof
       cancelBtn.Name = "cancelBtn";
       cancelBtn.Size = new Size(88, 27);
       cancelBtn.TabIndex = 7;
-      cancelBtn.Text = "Cancel";
+      cancelBtn.Text = "中止";
       cancelBtn.UseVisualStyleBackColor = true;
       // 
       // label1

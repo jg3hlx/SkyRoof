@@ -61,7 +61,7 @@
       label1.Name = "label1";
       label1.Size = new Size(48, 15);
       label1.TabIndex = 2;
-      label1.Text = "Satellite";
+      label1.Text = "衛星";
       // 
       // label2
       // 
@@ -80,7 +80,7 @@
       cancelBtn.Name = "cancelBtn";
       cancelBtn.Size = new Size(88, 27);
       cancelBtn.TabIndex = 9;
-      cancelBtn.Text = "Cancel";
+      cancelBtn.Text = "中止";
       cancelBtn.UseVisualStyleBackColor = true;
       // 
       // okBtn

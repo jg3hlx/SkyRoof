@@ -54,8 +54,8 @@ namespace SkyRoof
       }
       catch (Exception ex)
       {
-        ErrorLabel.Text = "Download Failed";
-        Button.Text = "Close";
+        ErrorLabel.Text = "ダウンロード 失敗";
+        Button.Text = "閉じる";
         Log.Error(ex, ErrorLabel.Text);
         db = null;
         DialogResult = DialogResult.None;
@@ -71,8 +71,8 @@ namespace SkyRoof
       }
       catch (Exception ex)
       {
-        ErrorLabel.Text = "Data Import Failed";
-        Button.Text = "Close";
+        ErrorLabel.Text = "データのインポートに失敗しました";
+        Button.Text = "閉じる";
         Log.Error(ex, ErrorLabel.Text);
       }
     }

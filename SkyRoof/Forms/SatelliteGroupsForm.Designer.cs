@@ -211,7 +211,7 @@
       RenameMNU2.ShortcutKeyDisplayString = "";
       RenameMNU2.ShortcutKeys = Keys.F2;
       RenameMNU2.Size = new Size(182, 22);
-      RenameMNU2.Text = "Rename";
+      RenameMNU2.Text = "名前変更";
       RenameMNU2.Click += RenameMNU2_Click;
       // 
       // DeleteMNU2
@@ -219,7 +219,7 @@
       DeleteMNU2.Name = "DeleteMNU2";
       DeleteMNU2.ShortcutKeys = Keys.Delete;
       DeleteMNU2.Size = new Size(182, 22);
-      DeleteMNU2.Text = "Delete";
+      DeleteMNU2.Text = "削除";
       DeleteMNU2.Click += DeleteMNU2_Click;
       // 
       // DetailsMNU2
@@ -228,7 +228,7 @@
       DetailsMNU2.ShortcutKeyDisplayString = "";
       DetailsMNU2.ShortcutKeys = Keys.Control | Keys.D;
       DetailsMNU2.Size = new Size(182, 22);
-      DetailsMNU2.Text = "Details...";
+      DetailsMNU2.Text = "詳細...";
       DetailsMNU2.Click += DetailsMNU2_Click;
       // 
       // ClearGroupMNU
@@ -236,7 +236,7 @@
       ClearGroupMNU.Name = "ClearGroupMNU";
       ClearGroupMNU.ShortcutKeys = Keys.Control | Keys.W;
       ClearGroupMNU.Size = new Size(182, 22);
-      ClearGroupMNU.Text = "Clear Group";
+      ClearGroupMNU.Text = "グループの初期化";
       ClearGroupMNU.Click += ClearGroupMNU_Click;
       // 
       // panel3
@@ -256,7 +256,7 @@
       CancelBtn.Name = "CancelBtn";
       CancelBtn.Size = new Size(75, 23);
       CancelBtn.TabIndex = 1;
-      CancelBtn.Text = "Cancel";
+      CancelBtn.Text = "中止";
       CancelBtn.UseVisualStyleBackColor = true;
       // 
       // OkBtn
@@ -278,7 +278,7 @@
       label2.Name = "label2";
       label2.Size = new Size(219, 26);
       label2.TabIndex = 3;
-      label2.Text = " Satellite Groups";
+      label2.Text = "衛星グループ";
       // 
       // SatelliteListPopupMenu
       // 
@@ -292,7 +292,7 @@
       RenameSatMNU.ShortcutKeyDisplayString = "";
       RenameSatMNU.ShortcutKeys = Keys.F2;
       RenameSatMNU.Size = new Size(204, 22);
-      RenameSatMNU.Text = "Rename";
+      RenameSatMNU.Text = "名称変更";
       RenameSatMNU.Click += RenameSatMNU_Click;
       // 
       // AddToGroupMNU
@@ -301,7 +301,7 @@
       AddToGroupMNU.ShortcutKeyDisplayString = "";
       AddToGroupMNU.ShortcutKeys = Keys.Insert;
       AddToGroupMNU.Size = new Size(204, 22);
-      AddToGroupMNU.Text = "Add to Group";
+      AddToGroupMNU.Text = "グループに追加";
       AddToGroupMNU.Click += AddSatBtn_Click;
       // 
       // DetailsMNU
@@ -310,7 +310,7 @@
       DetailsMNU.ShortcutKeyDisplayString = "";
       DetailsMNU.ShortcutKeys = Keys.Control | Keys.D;
       DetailsMNU.Size = new Size(204, 22);
-      DetailsMNU.Text = "Satellite Details...";
+      DetailsMNU.Text = "衛星の詳細...";
       DetailsMNU.Click += DetailsMNU_Click;
       // 
       // toolStripMenuItem1
@@ -318,7 +318,7 @@
       toolStripMenuItem1.Name = "toolStripMenuItem1";
       toolStripMenuItem1.ShortcutKeys = Keys.Control | Keys.C;
       toolStripMenuItem1.Size = new Size(204, 22);
-      toolStripMenuItem1.Text = "Copy NORAD ID";
+      toolStripMenuItem1.Text = "NORAD IDをコピー";
       toolStripMenuItem1.Click += toolStripMenuItem1_Click;
       // 
       // panel5
@@ -362,7 +362,7 @@
       // 
       // columnHeader1
       // 
-      columnHeader1.Text = "Name";
+      columnHeader1.Text = "名称";
       columnHeader1.Width = 180;
       // 
       // columnHeader2
@@ -372,12 +372,12 @@
       // 
       // columnHeader3
       // 
-      columnHeader3.Text = "Launched";
+      columnHeader3.Text = "発足";
       columnHeader3.Width = 100;
       // 
       // columnHeader4
       // 
-      columnHeader4.Text = "Service";
+      columnHeader4.Text = "サービス";
       columnHeader4.Width = 170;
       // 
       // panel7
@@ -432,7 +432,7 @@
       label3.Name = "label3";
       label3.Size = new Size(45, 29);
       label3.TabIndex = 11;
-      label3.Text = "Search:";
+      label3.Text = "検索:";
       label3.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // FilterTextbox
@@ -462,7 +462,7 @@
       UpdatedDateLabel.Name = "UpdatedDateLabel";
       UpdatedDateLabel.Size = new Size(281, 23);
       UpdatedDateLabel.TabIndex = 13;
-      UpdatedDateLabel.Text = "Updated";
+      UpdatedDateLabel.Text = "更新";
       UpdatedDateLabel.TextAlign = ContentAlignment.BottomRight;
       // 
       // flowLayoutPanel4
@@ -511,7 +511,7 @@
       NonHamCheckbox.Name = "NonHamCheckbox";
       NonHamCheckbox.Size = new Size(80, 19);
       NonHamCheckbox.TabIndex = 8;
-      NonHamCheckbox.Text = "Non-Ham";
+      NonHamCheckbox.Text = "Ham以外";
       NonHamCheckbox.UseVisualStyleBackColor = true;
       NonHamCheckbox.CheckedChanged += FilterChanged;
       // 
@@ -536,7 +536,7 @@
       label4.Name = "label4";
       label4.Size = new Size(42, 25);
       label4.TabIndex = 5;
-      label4.Text = "Bands:";
+      label4.Text = "バンド:";
       label4.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // VhfCheckbox

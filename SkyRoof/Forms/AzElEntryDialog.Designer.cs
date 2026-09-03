@@ -58,7 +58,7 @@
       CancelBtn.Name = "CancelBtn";
       CancelBtn.Size = new Size(75, 23);
       CancelBtn.TabIndex = 5;
-      CancelBtn.Text = "Cancel";
+      CancelBtn.Text = "中止";
       CancelBtn.UseVisualStyleBackColor = true;
       // 
       // OkBtn
@@ -67,7 +67,7 @@
       OkBtn.Name = "OkBtn";
       OkBtn.Size = new Size(75, 23);
       OkBtn.TabIndex = 3;
-      OkBtn.Text = "Go";
+      OkBtn.Text = "実行";
       OkBtn.UseVisualStyleBackColor = true;
       OkBtn.Click += OkBtn_Click;
       // 
