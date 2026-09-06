@@ -88,7 +88,7 @@ namespace SkyRoof
 
     private void UpdateAvailable_handler(object? sender, EventArgs e)
     {
-      UpdateLabel.Text = $"Download {ctx.Settings.LatestVersion.Name}";
+      UpdateLabel.Text = $"ダウンロード {ctx.Settings.LatestVersion.Name}";
       UpdateLabel.Visible = true;
     }
 
@@ -411,8 +411,8 @@ namespace SkyRoof
     {
       var sett = ctx.Settings.Telemetry.KissServer;
 
-      ctx.KissServer.Stop(); 
-      if (sett.Enabled) ctx.KissServer.Start(sett.Port);      
+      ctx.KissServer.Stop();
+      if (sett.Enabled) ctx.KissServer.Start(sett.Port);
     }
 
     internal void ApplyOutputStreamSettings()
@@ -536,7 +536,7 @@ namespace SkyRoof
       try
       {
         SatDataLedLabel.ForeColor = SystemColors.GrayText;
-        SatDataStatusLabel.ToolTipText = SatDataLedLabel.ToolTipText = "Downloading TLE...";
+        SatDataStatusLabel.ToolTipText = SatDataLedLabel.ToolTipText = "ダウンロード中 TLE...";
 
 
         await ctx.SatnogsDb.DownloadTle();
@@ -1223,6 +1223,11 @@ namespace SkyRoof
       ctx.SkyViewPanel?.SetPass(pass);
       ctx.EarthViewPanel?.SetPass(pass);
       RotatorWidget.SetPass(pass);
+    }
+
+    private void SatelliteSelecionWidget_Load(object sender, EventArgs e)
+    {
+
     }
   }
 }

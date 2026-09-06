@@ -58,7 +58,7 @@
       label3.Name = "label3";
       label3.Size = new Size(66, 15);
       label3.TabIndex = 12;
-      label3.Text = "Transmitter";
+      label3.Text = "送信機";
       // 
       // SatelliteComboBox
       // 
@@ -91,7 +91,7 @@
       label1.Name = "label1";
       label1.Size = new Size(40, 15);
       label1.TabIndex = 8;
-      label1.Text = "Group";
+      label1.Text = "グループ";
       // 
       // label2
       // 
@@ -100,7 +100,7 @@
       label2.Name = "label2";
       label2.Size = new Size(48, 15);
       label2.TabIndex = 10;
-      label2.Text = "Satellite";
+      label2.Text = "人工衛星";
       // 
       // SatelliteSelector
       // 

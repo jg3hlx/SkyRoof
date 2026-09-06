@@ -60,17 +60,17 @@
       // 
       // columnHeader1
       // 
-      columnHeader1.Text = "Transmitter";
+      columnHeader1.Text = "送信機";
       columnHeader1.Width = 200;
       // 
       // columnHeader3
       // 
-      columnHeader3.Text = "Downlink";
+      columnHeader3.Text = "ダウンリンク";
       columnHeader3.Width = 120;
       // 
       // columnHeader2
       // 
-      columnHeader2.Text = "Uplink";
+      columnHeader2.Text = "アップリンク";
       columnHeader2.Width = 120;
       // 
       // imageList1

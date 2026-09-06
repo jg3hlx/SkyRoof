@@ -4,16 +4,16 @@ namespace SkyRoof
 {
   public class UserSettings
   {
-    [DisplayName("Callsign")]
-    [Description("Your callsign")]
+    [DisplayName("コールサイン")]
+    [Description("あなたのコールサイン")]
     public string Call { get; set; } = "";
 
-    [DisplayName("Grid Square")]
-    [Description("Your grid square")]
+    [DisplayName("グリッド・ロケーター")]
+    [Description("あなたのグリッド・ロケーター")]
     public string Square { get; set; } = "";
 
-    [DisplayName("Altitude")]
-    [Description("Your altitude above the sea level, in meters")]
+    [DisplayName("高度")]
+    [Description("あなたの海面からの高度、メートル単位")]
     public int Altitude { get; set; } = 0;
 
     public override string ToString() { return ""; }

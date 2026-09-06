@@ -59,7 +59,7 @@
       RealTimeRadioBtn.Size = new Size(76, 19);
       RealTimeRadioBtn.TabIndex = 0;
       RealTimeRadioBtn.TabStop = true;
-      RealTimeRadioBtn.Text = "Real Time";
+      RealTimeRadioBtn.Text = "リアルタイム";
       RealTimeRadioBtn.UseVisualStyleBackColor = true;
       RealTimeRadioBtn.CheckedChanged += radioButton_CheckedChanged;
       // 
@@ -71,7 +71,7 @@
       OrbitRadioBtn.Name = "OrbitRadioBtn";
       OrbitRadioBtn.Size = new Size(99, 19);
       OrbitRadioBtn.TabIndex = 1;
-      OrbitRadioBtn.Text = "Selected Orbit";
+      OrbitRadioBtn.Text = "選択された軌道";
       OrbitRadioBtn.UseVisualStyleBackColor = true;
       OrbitRadioBtn.CheckedChanged += radioButton_CheckedChanged;
       // 

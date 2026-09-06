@@ -63,7 +63,7 @@ namespace SkyRoof
       label1.Name = "label1";
       label1.Size = new Size(52, 15);
       label1.TabIndex = 29;
-      label1.Text = "Azimuth";
+      label1.Text = "方位角";
       // 
       // label2
       // 
@@ -72,7 +72,7 @@ namespace SkyRoof
       label2.Name = "label2";
       label2.Size = new Size(55, 15);
       label2.TabIndex = 31;
-      label2.Text = "Elevation";
+      label2.Text = "仰角";
       // 
       // SatelliteElevationLabel
       // 
@@ -96,7 +96,7 @@ namespace SkyRoof
       TrackCheckbox.Name = "TrackCheckbox";
       TrackCheckbox.Size = new Size(53, 19);
       TrackCheckbox.TabIndex = 32;
-      TrackCheckbox.Text = "Track";
+      TrackCheckbox.Text = "追跡";
       TrackCheckbox.UseVisualStyleBackColor = true;
       TrackCheckbox.CheckedChanged += TrackCheckbox_CheckedChanged;
       // 

@@ -191,21 +191,21 @@
       // 
       SaveImageMNU.Name = "SaveImageMNU";
       SaveImageMNU.Size = new Size(154, 22);
-      SaveImageMNU.Text = "Save As...";
+      SaveImageMNU.Text = "名前を付けて保存...";
       SaveImageMNU.Click += SaveImageMNU_Click;
       // 
       // CopyImageMNU
       // 
       CopyImageMNU.Name = "CopyImageMNU";
       CopyImageMNU.Size = new Size(154, 22);
-      CopyImageMNU.Text = "Copy";
+      CopyImageMNU.Text = "コピーy";
       CopyImageMNU.Click += CopyImageMNU_Click;
       // 
       // OpenImageMNU
       // 
       OpenImageMNU.Name = "OpenImageMNU";
       OpenImageMNU.Size = new Size(154, 22);
-      OpenImageMNU.Text = "Open in Viewer";
+      OpenImageMNU.Text = "Viewerで開く";
       OpenImageMNU.Click += OpenImageMNU_Click;
       //
       // ImageMenuSeparator
@@ -218,7 +218,7 @@
       CombineImageMNU.CheckOnClick = false;
       CombineImageMNU.Name = "CombineImageMNU";
       CombineImageMNU.Size = new Size(154, 22);
-      CombineImageMNU.Text = "Combine with Previous Passes";
+      CombineImageMNU.Text = "過去のパスを統合する";
       CombineImageMNU.Click += CombineImageMNU_Click;
       //
       // DenoiseImageMNU
@@ -239,28 +239,28 @@
       //
       PlayVoiceMNU.Name = "PlayVoiceMNU";
       PlayVoiceMNU.Size = new Size(154, 22);
-      PlayVoiceMNU.Text = "Play";
+      PlayVoiceMNU.Text = "再生";
       PlayVoiceMNU.Click += PlayVoiceMNU_Click;
       //
       // SaveVoiceMNU
       //
       SaveVoiceMNU.Name = "SaveVoiceMNU";
       SaveVoiceMNU.Size = new Size(154, 22);
-      SaveVoiceMNU.Text = "Save As...";
+      SaveVoiceMNU.Text = "名前を付けて保存...";
       SaveVoiceMNU.Click += SaveVoiceMNU_Click;
       //
       // OpenVoiceMNU
       //
       OpenVoiceMNU.Name = "OpenVoiceMNU";
       OpenVoiceMNU.Size = new Size(154, 22);
-      OpenVoiceMNU.Text = "Open in Player";
+      OpenVoiceMNU.Text = "プレイヤーで開く";
       OpenVoiceMNU.Click += OpenVoiceMNU_Click;
       //
       // ClearAllMNU
       // 
       ClearAllMNU.Name = "ClearAllMNU";
       ClearAllMNU.Size = new Size(180, 22);
-      ClearAllMNU.Text = "Clear All";
+      ClearAllMNU.Text = "すべてクリア";
       ClearAllMNU.Click += ClearAllMNU_Click;
       // 
       // TelemetryPanel

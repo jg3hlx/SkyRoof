@@ -36,15 +36,16 @@
       label1.AutoSize = true;
       label1.Location = new Point(117, 32);
       label1.Name = "label1";
-      label1.Size = new Size(92, 15);
+      label1.Size = new Size(80, 15);
       label1.TabIndex = 0;
-      label1.Text = "Setting Up FFT...";
+      label1.Text = "FFTの準備中...";
+      label1.Click += label1_Click;
       // 
       // WaitBox
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(327, 79);
+      ClientSize = new Size(315, 67);
       ControlBox = false;
       Controls.Add(label1);
       FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -55,8 +56,9 @@
       ShowInTaskbar = false;
       SizeGripStyle = SizeGripStyle.Hide;
       StartPosition = FormStartPosition.CenterScreen;
-      Text = "Please Wait";
+      Text = "少々お待ちください";
       TopMost = true;
+      Load += WaitBox_Load;
       ResumeLayout(false);
       PerformLayout();
     }

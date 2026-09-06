@@ -41,7 +41,7 @@
       label1.Name = "label1";
       label1.Size = new Size(158, 15);
       label1.TabIndex = 0;
-      label1.Text = "Downloading Satellite Data...";
+      label1.Text = "衛星データをダウンロード中...";
       // 
       // progressBar1
       // 

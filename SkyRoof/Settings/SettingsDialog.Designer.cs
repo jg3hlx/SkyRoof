@@ -62,7 +62,7 @@ namespace SkyRoof
       applyBtn.Name = "applyBtn";
       applyBtn.Size = new Size(88, 27);
       applyBtn.TabIndex = 1;
-      applyBtn.Text = "Apply";
+      applyBtn.Text = "適用";
       applyBtn.UseVisualStyleBackColor = true;
       applyBtn.Click += applyBtn_Click;
       // 

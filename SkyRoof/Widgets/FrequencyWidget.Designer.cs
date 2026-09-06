@@ -110,7 +110,7 @@
       label5.Name = "label5";
       label5.Size = new Size(47, 15);
       label5.TabIndex = 45;
-      label5.Text = "Manual";
+      label5.Text = "手動";
       // 
       // label6
       // 
@@ -119,7 +119,7 @@
       label6.Name = "label6";
       label6.Size = new Size(49, 15);
       label6.TabIndex = 44;
-      label6.Text = "Doppler";
+      label6.Text = "ドップラー";
       // 
       // label4
       // 
@@ -128,7 +128,7 @@
       label4.Name = "label4";
       label4.Size = new Size(47, 15);
       label4.TabIndex = 43;
-      label4.Text = "Manual";
+      label4.Text = "手動";
       // 
       // label3
       // 
@@ -137,7 +137,7 @@
       label3.Name = "label3";
       label3.Size = new Size(49, 15);
       label3.TabIndex = 42;
-      label3.Text = "Doppler";
+      label3.Text = "ドップラー ";
       // 
       // UplinkModeCombobox
       // 
@@ -268,7 +268,7 @@
       UplinkLabel.Name = "UplinkLabel";
       UplinkLabel.Size = new Size(62, 15);
       UplinkLabel.TabIndex = 32;
-      UplinkLabel.Text = "No Uplink";
+      UplinkLabel.Text = "アップリンクしない";
       // 
       // label2
       // 
@@ -335,7 +335,7 @@
       DownlinkLabel.Name = "DownlinkLabel";
       DownlinkLabel.Size = new Size(73, 15);
       DownlinkLabel.TabIndex = 26;
-      DownlinkLabel.Text = "Terrestrial";
+      DownlinkLabel.Text = "地上";
       // 
       // TxBtn
       // 
@@ -343,7 +343,7 @@
       TxBtn.Name = "TxBtn";
       TxBtn.Size = new Size(133, 21);
       TxBtn.TabIndex = 49;
-      TxBtn.Text = "Transmit";
+      TxBtn.Text = "送信";
       TxBtn.UseVisualStyleBackColor = true;
       TxBtn.Click += TxBtn_Click;
       // 
@@ -377,7 +377,7 @@
       CtcssEnabledMnu.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
       CtcssEnabledMnu.Name = "CtcssEnabledMnu";
       CtcssEnabledMnu.Size = new Size(180, 22);
-      CtcssEnabledMnu.Text = "Enabled";
+      CtcssEnabledMnu.Text = "有効";
       CtcssEnabledMnu.Click += CtcssEnabledMnu_Click;
       // 
       // CtcssSeparator
@@ -389,7 +389,7 @@
       // 
       SendArmingToneMnu.Name = "SendArmingToneMnu";
       SendArmingToneMnu.Size = new Size(233, 22);
-      SendArmingToneMnu.Text = "Send Arming Tone Now";
+      SendArmingToneMnu.Text = "安全装置を解除するトーンを送信";
       // 
       // FrequencyWidget
       // 

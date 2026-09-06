@@ -59,7 +59,7 @@
       label1.AutoSize = true;
       label1.Location = new Point(12, 9);
       label1.Name = "label1";
-      label1.Size = new Size(48, 15);
+      label1.Size = new Size(31, 15);
       label1.TabIndex = 2;
       label1.Text = "衛星";
       // 
@@ -68,9 +68,9 @@
       label2.AutoSize = true;
       label2.Location = new Point(12, 62);
       label2.Name = "label2";
-      label2.Size = new Size(77, 15);
+      label2.Size = new Size(86, 15);
       label2.TabIndex = 3;
-      label2.Text = "Status Report";
+      label2.Text = "ステータスレポート";
       // 
       // cancelBtn
       // 
@@ -80,7 +80,7 @@
       cancelBtn.Name = "cancelBtn";
       cancelBtn.Size = new Size(88, 27);
       cancelBtn.TabIndex = 9;
-      cancelBtn.Text = "中止";
+      cancelBtn.Text = "Cancel";
       cancelBtn.UseVisualStyleBackColor = true;
       // 
       // okBtn
@@ -112,7 +112,7 @@
       Name = "AmsatReportDialog";
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterScreen;
-      Text = "Report to AMSAT";
+      Text = "AMSATへ報告";
       Load += AmsatReportDialog_Load;
       ResumeLayout(false);
       PerformLayout();

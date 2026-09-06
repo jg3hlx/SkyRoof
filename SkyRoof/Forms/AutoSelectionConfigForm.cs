@@ -420,5 +420,10 @@ namespace SkyRoof
       int minDegrees = int.TryParse((sender as ToolStripMenuItem)?.Tag as string, out int result) ? result : 0;
       SelectAbove(minDegrees);
     }
+
+    private void ModeGroupBox_Enter(object sender, EventArgs e)
+    {
+
+    }
   }
 }

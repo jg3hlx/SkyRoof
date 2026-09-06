@@ -91,7 +91,7 @@
       localLabel.RightToLeft = RightToLeft.No;
       localLabel.Size = new Size(35, 12);
       localLabel.TabIndex = 3;
-      localLabel.Text = "Local";
+      localLabel.Text = "ローカル";
       localLabel.TextAlign = ContentAlignment.MiddleCenter;
       localLabel.Click += utcLabel_Click;
       // 

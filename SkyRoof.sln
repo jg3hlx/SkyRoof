@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.11.35327.3
+# Visual Studio Version 18
+VisualStudioVersion = 18.9.12120.119 stable
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyRoof", "SkyRoof\SkyRoof.csproj", "{182D01EA-5285-4A46-8F72-64112BABAB8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyRoof-J", "SkyRoof\SkyRoof-J.csproj", "{182D01EA-5285-4A46-8F72-64112BABAB8B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VE3NEA.Dsp.Tests", "VE3NEA.Dsp.Tests\VE3NEA.Dsp.Tests.csproj", "{21CB7DC7-9A78-430C-91F5-B43CF4950480}"
 EndProject

@@ -83,7 +83,7 @@
       ScrollMNU.Image = Properties.Resources.arrow_down_16;
       ScrollMNU.Name = "ScrollMNU";
       ScrollMNU.Size = new Size(180, 22);
-      ScrollMNU.Text = "Scroll to Bottom";
+      ScrollMNU.Text = "一番下へ";
       ScrollMNU.Click += ScrollMNU_Click;
       // 
       // toolStripMenuItem1
@@ -96,7 +96,7 @@
       FindOnQrzMNU.Image = Properties.Resources.qrz;
       FindOnQrzMNU.Name = "FindOnQrzMNU";
       FindOnQrzMNU.Size = new Size(180, 22);
-      FindOnQrzMNU.Text = "Find on QRZ";
+      FindOnQrzMNU.Text = "QRZで検索";
       FindOnQrzMNU.Click += FindOnQrzMNU_Click;
       // 
       // FindOnGoogleMNU
@@ -104,7 +104,7 @@
       FindOnGoogleMNU.Image = (Image)resources.GetObject("FindOnGoogleMNU.Image");
       FindOnGoogleMNU.Name = "FindOnGoogleMNU";
       FindOnGoogleMNU.Size = new Size(180, 22);
-      FindOnGoogleMNU.Text = "Find on Google";
+      FindOnGoogleMNU.Text = "Google検索";
       FindOnGoogleMNU.Click += FindOnGoogleMNU_Click;
       // 
       // settingsToolStripMenuItem

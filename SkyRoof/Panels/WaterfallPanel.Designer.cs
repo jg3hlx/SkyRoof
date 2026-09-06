@@ -112,26 +112,26 @@
       // 
       SelectTransmitterMNU.Name = "SelectTransmitterMNU";
       SelectTransmitterMNU.Size = new Size(173, 22);
-      SelectTransmitterMNU.Text = "Select Transmitter";
+      SelectTransmitterMNU.Text = "送信機を選択";
       // 
       // AddToGroupMNU
       // 
       AddToGroupMNU.Name = "AddToGroupMNU";
       AddToGroupMNU.Size = new Size(173, 22);
-      AddToGroupMNU.Text = "Add to Group";
+      AddToGroupMNU.Text = "グループに追加";
       // 
       // ReportToAmsatMNU
       // 
       ReportToAmsatMNU.Name = "ReportToAmsatMNU";
       ReportToAmsatMNU.Size = new Size(173, 22);
-      ReportToAmsatMNU.Text = "Report to AMSAT...";
+      ReportToAmsatMNU.Text = "AMSATへ報告...";
       ReportToAmsatMNU.Click += ReportToAmsatMNU_Click;
       // 
       // satelliteDetailsToolStripMenuItem
       // 
       satelliteDetailsToolStripMenuItem.Name = "satelliteDetailsToolStripMenuItem";
       satelliteDetailsToolStripMenuItem.Size = new Size(173, 22);
-      satelliteDetailsToolStripMenuItem.Text = "Satellite Details...";
+      satelliteDetailsToolStripMenuItem.Text = "衛星の詳細情報...";
       satelliteDetailsToolStripMenuItem.Click += satelliteDetailsToolStripMenuItem_Click;
       // 
       // WaterfallControl

@@ -615,7 +615,7 @@
       TransponderCheckbox.Name = "TransponderCheckbox";
       TransponderCheckbox.Size = new Size(91, 19);
       TransponderCheckbox.TabIndex = 5;
-      TransponderCheckbox.Text = "Transponder";
+      TransponderCheckbox.Text = "トランスポンダ";
       TransponderCheckbox.UseVisualStyleBackColor = true;
       TransponderCheckbox.CheckedChanged += FilterChanged;
       // 
@@ -628,7 +628,7 @@
       TransceiverCheckbox.Name = "TransceiverCheckbox";
       TransceiverCheckbox.Size = new Size(84, 19);
       TransceiverCheckbox.TabIndex = 6;
-      TransceiverCheckbox.Text = "Transceiver";
+      TransceiverCheckbox.Text = "トランスシーバ";
       TransceiverCheckbox.UseVisualStyleBackColor = true;
       TransceiverCheckbox.CheckedChanged += FilterChanged;
       // 
@@ -641,7 +641,7 @@
       TransmitterCheckbox.Name = "TransmitterCheckbox";
       TransmitterCheckbox.Size = new Size(85, 19);
       TransmitterCheckbox.TabIndex = 7;
-      TransmitterCheckbox.Text = "Transmitter";
+      TransmitterCheckbox.Text = "トランスミッタ";
       TransmitterCheckbox.UseVisualStyleBackColor = true;
       TransmitterCheckbox.CheckedChanged += FilterChanged;
       // 
@@ -666,7 +666,7 @@
       label7.Name = "label7";
       label7.Size = new Size(42, 25);
       label7.TabIndex = 4;
-      label7.Text = "Status:";
+      label7.Text = "ステータス:";
       label7.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // AliveCheckbox
@@ -714,7 +714,7 @@
       label1.Name = "label1";
       label1.Size = new Size(564, 21);
       label1.TabIndex = 2;
-      label1.Text = " Satellites";
+      label1.Text = " 人工衛星";
       // 
       // SatelliteGroupsForm
       // 

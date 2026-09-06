@@ -59,7 +59,7 @@
       WebsiteLabel.Size = new Size(49, 15);
       WebsiteLabel.TabIndex = 3;
       WebsiteLabel.TabStop = true;
-      WebsiteLabel.Text = "Website";
+      WebsiteLabel.Text = "ウェブサイト";
       WebsiteLabel.LinkClicked += WebsiteLabel_LinkClicked;
       // 
       // ImageLabel
@@ -70,7 +70,7 @@
       ImageLabel.Size = new Size(40, 15);
       ImageLabel.TabIndex = 0;
       ImageLabel.TabStop = true;
-      ImageLabel.Text = "Image";
+      ImageLabel.Text = "画像";
       ImageLabel.LinkClicked += ImageLabel_LinkClicked;
       // 
       // LinksPanel

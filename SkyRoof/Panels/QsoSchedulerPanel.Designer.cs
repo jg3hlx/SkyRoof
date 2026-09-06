@@ -52,7 +52,7 @@ namespace SkyRoof
       label1.Name = "label1";
       label1.Size = new Size(48, 15);
       label1.TabIndex = 1;
-      label1.Text = "Satellite";
+      label1.Text = "人工衛星";
       // 
       // label2
       // 

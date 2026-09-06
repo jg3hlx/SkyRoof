@@ -503,7 +503,7 @@ namespace SkyRoof
       {
         DownlinkManualSpinner.Value = 0;
 
-        DownlinkLabel.Text = "Terrestrial";
+        DownlinkLabel.Text = "地上";
         DownlinkLabel.ForeColor = Color.Red;
         DownlinkLabel.Font = DownlinkBoldFont;
 
@@ -522,7 +522,7 @@ namespace SkyRoof
         DownlinkManualCheckbox.Checked = RadioLink.DownlinkManualCorrectionEnabled;
         DownlinkManualSpinner.Value = (decimal)(RadioLink.DownlinkManualCorrection / 1000d);
 
-        DownlinkLabel.Text = "Downlink";
+        DownlinkLabel.Text = "ダウンリンク";
         DownlinkLabel.ForeColor = SystemColors.ControlText;
         DownlinkLabel.Font = DownlinkRegularFont;
 
@@ -542,7 +542,7 @@ namespace SkyRoof
       {
         UplinkManualSpinner.Value = 0;
 
-        UplinkLabel.Text = "No Uplink";
+        UplinkLabel.Text = "アップリンクしない";
 
         UplinkDopplerCheckbox.Visible = false;
         UplinkDopplerLabel.BackColor = SystemColors.Control;
@@ -559,7 +559,7 @@ namespace SkyRoof
         UplinkManualCheckbox.Checked = RadioLink.UplinkManualCorrectionEnabled;
         UplinkManualSpinner.Value = (decimal)(RadioLink.UplinkManualCorrection / 1000d);
 
-        UplinkLabel.Text = "Uplink";
+        UplinkLabel.Text = "アップリンク";
 
         UplinkDopplerCheckbox.Visible = true;
         UplinkDopplerLabel.BackColor = SystemColors.Window;
@@ -764,7 +764,7 @@ namespace SkyRoof
     {
       TxBtn.Visible = ctx.CatControl.Tx?.CanPtt() == true;
       var ptt = ctx.CatControl.Tx?.Ptt == true;
-      TxBtn.Text = ptt ? "Stop Transmitting" : "Transmit";
+      TxBtn.Text = ptt ? "運用を終了する" : "送信";
 
       // the tone applies to an FM uplink only, and both commands need the encoder on/off switch
       CtcssBtn.Visible = RadioLink.HasUplink &&

@@ -61,7 +61,7 @@ namespace SkyRoof
       PopulateListView();
 
       ShowSelectedSat();
-      GroupNameLabel.Text = $"Group:   {group.Name}";
+      GroupNameLabel.Text = $"グループ:   {group.Name}";
     }
 
     // fill the (non-virtual) list from the Items array, preserving its order
@@ -155,7 +155,7 @@ namespace SkyRoof
         }
         else if (data.Pass.StartTime < now)
         {
-          item.SubItems[2].Text = "Now";
+          item.SubItems[2].Text = "現在";
           item.SubItems[3].Text = $"{Math.Round(data.Pass.MaxElevation)}°";
         }
         else

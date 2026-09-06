@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SkyRoof\SkyRoof.csproj" />
+    <ProjectReference Include="..\SkyRoof\SkyRoof-J.csproj" />
   </ItemGroup>
 
   <!-- SkyRoof consumes VE3NEA.SkyTlm as a vendored assembly, and an assembly reference does not flow to a

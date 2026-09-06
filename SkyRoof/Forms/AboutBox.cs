@@ -20,5 +20,10 @@ namespace SkyRoof
       WebsiteLabel.LinkVisited = true;
       Process.Start(new ProcessStartInfo("https://ve3nea.github.io/SkyRoof") { UseShellExecute = true });
     }
+
+    private void AboutBox_Load(object sender, EventArgs e)
+    {
+
+    }
   }
 }

@@ -53,7 +53,7 @@
       label1.Name = "label1";
       label1.Size = new Size(366, 37);
       label1.TabIndex = 1;
-      label1.Text = "製品名";
+      label1.Text = "プログラム名";
       label1.TextAlign = ContentAlignment.MiddleCenter;
       // 
       // label2
@@ -68,10 +68,10 @@
       // WebsiteLabel
       // 
       WebsiteLabel.AutoSize = true;
-      WebsiteLabel.LinkColor = Color.Blue; // replaced by Theme.Link in the constructor
+      WebsiteLabel.LinkColor = Color.Blue;
       WebsiteLabel.Location = new Point(164, 79);
       WebsiteLabel.Name = "WebsiteLabel";
-      WebsiteLabel.Size = new Size(50, 15);
+      WebsiteLabel.Size = new Size(58, 15);
       WebsiteLabel.TabIndex = 3;
       WebsiteLabel.TabStop = true;
       WebsiteLabel.Text = "ウェブサイト";
@@ -93,7 +93,8 @@
       Name = "AboutBox";
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterParent;
-      Text = "About product";
+      Text = "情報";
+      Load += AboutBox_Load;
       ResumeLayout(false);
       PerformLayout();
     }

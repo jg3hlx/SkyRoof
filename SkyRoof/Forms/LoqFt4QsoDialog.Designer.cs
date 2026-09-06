@@ -60,7 +60,7 @@ namespace SkyRoof
       label1.Name = "label1";
       label1.Size = new Size(259, 23);
       label1.TabIndex = 1;
-      label1.Text = "Save FT4 QSO with ZZ0ZZ?";
+      label1.Text = "FT4のQSOを JX1XXX で保存しますか？";
       label1.TextAlign = ContentAlignment.MiddleCenter;
       // 
       // SaveBtn
@@ -69,7 +69,7 @@ namespace SkyRoof
       SaveBtn.Name = "SaveBtn";
       SaveBtn.Size = new Size(75, 23);
       SaveBtn.TabIndex = 2;
-      SaveBtn.Text = "Save";
+      SaveBtn.Text = "保存";
       SaveBtn.UseVisualStyleBackColor = true;
       SaveBtn.Click += SaveBtn_Click;
       // 
@@ -79,7 +79,7 @@ namespace SkyRoof
       EditBtn.Name = "EditBtn";
       EditBtn.Size = new Size(75, 23);
       EditBtn.TabIndex = 3;
-      EditBtn.Text = "Edit";
+      EditBtn.Text = "編集";
       EditBtn.UseVisualStyleBackColor = true;
       EditBtn.Click += EditBtn_Click;
       // 

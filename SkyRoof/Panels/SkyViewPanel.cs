@@ -96,7 +96,7 @@ namespace SkyRoof
     {
       Pass = null;
       OrbitRadioBtn.Enabled = false;
-      OrbitRadioBtn.Text = "Selected Orbit";
+      OrbitRadioBtn.Text = "選択された軌道";
       RealTimeRadioBtn.Checked = true;
     }
 

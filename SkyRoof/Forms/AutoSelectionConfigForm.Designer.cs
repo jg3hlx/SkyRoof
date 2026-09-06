@@ -77,7 +77,7 @@ namespace SkyRoof
       MoveUpBtn.Name = "MoveUpBtn";
       MoveUpBtn.Size = new Size(90, 26);
       MoveUpBtn.TabIndex = 1;
-      MoveUpBtn.Text = "Move Up";
+      MoveUpBtn.Text = "上へ";
       MoveUpBtn.UseVisualStyleBackColor = true;
       MoveUpBtn.Click += MoveUpBtn_Click;
       // 
@@ -88,7 +88,7 @@ namespace SkyRoof
       MoveDownBtn.Name = "MoveDownBtn";
       MoveDownBtn.Size = new Size(90, 26);
       MoveDownBtn.TabIndex = 2;
-      MoveDownBtn.Text = "Move Down";
+      MoveDownBtn.Text = "下へ";
       MoveDownBtn.UseVisualStyleBackColor = true;
       MoveDownBtn.Click += MoveDownBtn_Click;
       // 
@@ -102,16 +102,16 @@ namespace SkyRoof
       SatGroupBox.Size = new Size(200, 76);
       SatGroupBox.TabIndex = 3;
       SatGroupBox.TabStop = false;
-      SatGroupBox.Text = "Satellite";
+      SatGroupBox.Text = "サテライト";
       // 
       // TxLabel
       // 
       TxLabel.AutoSize = true;
       TxLabel.Location = new Point(10, 24);
       TxLabel.Name = "TxLabel";
-      TxLabel.Size = new Size(70, 15);
+      TxLabel.Size = new Size(84, 15);
       TxLabel.TabIndex = 0;
-      TxLabel.Text = "Transmitter:";
+      TxLabel.Text = "トランスミッター:";
       // 
       // TransmitterCombo
       // 
@@ -121,9 +121,28 @@ namespace SkyRoof
       TransmitterCombo.Size = new Size(180, 23);
       TransmitterCombo.TabIndex = 0;
       TransmitterCombo.SelectedIndexChanged += TransmitterCombo_SelectedIndexChanged;
-      //
+      // 
+      // RecLabel
+      // 
+      RecLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      RecLabel.AutoSize = true;
+      RecLabel.Location = new Point(399, 292);
+      RecLabel.Name = "RecLabel";
+      RecLabel.Size = new Size(121, 15);
+      RecLabel.TabIndex = 5;
+      RecLabel.Text = "通過データを記録する";
+      // 
+      // RecordCombo
+      // 
+      RecordCombo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      RecordCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+      RecordCombo.Location = new Point(398, 310);
+      RecordCombo.Name = "RecordCombo";
+      RecordCombo.Size = new Size(180, 23);
+      RecordCombo.TabIndex = 6;
+      // 
       // ModeGroupBox
-      //
+      // 
       ModeGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       ModeGroupBox.Controls.Add(FinishCurrentRadio);
       ModeGroupBox.Controls.Add(HighestElevationRadio);
@@ -133,17 +152,18 @@ namespace SkyRoof
       ModeGroupBox.Size = new Size(200, 108);
       ModeGroupBox.TabIndex = 4;
       ModeGroupBox.TabStop = false;
-      ModeGroupBox.Text = "Overlapping Passes";
+      ModeGroupBox.Text = "重複パス";
+      ModeGroupBox.Enter += ModeGroupBox_Enter;
       // 
       // FinishCurrentRadio
       // 
       FinishCurrentRadio.AutoSize = true;
       FinishCurrentRadio.Location = new Point(10, 24);
       FinishCurrentRadio.Name = "FinishCurrentRadio";
-      FinishCurrentRadio.Size = new Size(97, 19);
+      FinishCurrentRadio.Size = new Size(72, 19);
       FinishCurrentRadio.TabIndex = 0;
       FinishCurrentRadio.TabStop = true;
-      FinishCurrentRadio.Text = "Finish current";
+      FinishCurrentRadio.Text = "完了する";
       FinishCurrentRadio.UseVisualStyleBackColor = true;
       // 
       // HighestElevationRadio
@@ -151,10 +171,10 @@ namespace SkyRoof
       HighestElevationRadio.AutoSize = true;
       HighestElevationRadio.Location = new Point(10, 50);
       HighestElevationRadio.Name = "HighestElevationRadio";
-      HighestElevationRadio.Size = new Size(117, 19);
+      HighestElevationRadio.Size = new Size(77, 19);
       HighestElevationRadio.TabIndex = 1;
       HighestElevationRadio.TabStop = true;
-      HighestElevationRadio.Text = "Highest elevation";
+      HighestElevationRadio.Text = "最高仰角";
       HighestElevationRadio.UseVisualStyleBackColor = true;
       // 
       // PriorityRadio
@@ -162,40 +182,21 @@ namespace SkyRoof
       PriorityRadio.AutoSize = true;
       PriorityRadio.Location = new Point(10, 76);
       PriorityRadio.Name = "PriorityRadio";
-      PriorityRadio.Size = new Size(63, 19);
+      PriorityRadio.Size = new Size(51, 19);
       PriorityRadio.TabIndex = 2;
       PriorityRadio.TabStop = true;
-      PriorityRadio.Text = "Priority";
+      PriorityRadio.Text = "優先";
       PriorityRadio.UseVisualStyleBackColor = true;
-      //
-      // RecLabel
-      //
-      RecLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      RecLabel.AutoSize = true;
-      RecLabel.Location = new Point(399, 292);
-      RecLabel.Name = "RecLabel";
-      RecLabel.Size = new Size(115, 15);
-      RecLabel.TabIndex = 5;
-      RecLabel.Text = "Record selected passes:";
-      //
-      // RecordCombo
-      //
-      RecordCombo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      RecordCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-      RecordCombo.Location = new Point(398, 310);
-      RecordCombo.Name = "RecordCombo";
-      RecordCombo.Size = new Size(180, 23);
-      RecordCombo.TabIndex = 6;
-      //
+      // 
       // TrackAntennaCheckbox
-      //
+      // 
       TrackAntennaCheckbox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       TrackAntennaCheckbox.AutoSize = true;
-      TrackAntennaCheckbox.Location = new Point(399, 345);
+      TrackAntennaCheckbox.Location = new Point(391, 345);
       TrackAntennaCheckbox.Name = "TrackAntennaCheckbox";
-      TrackAntennaCheckbox.Size = new Size(175, 19);
+      TrackAntennaCheckbox.Size = new Size(183, 19);
       TrackAntennaCheckbox.TabIndex = 7;
-      TrackAntennaCheckbox.Text = "Track antenna during passes";
+      TrackAntennaCheckbox.Text = "アンテナの向きを自動追跡する";
       TrackAntennaCheckbox.UseVisualStyleBackColor = true;
       // 
       // OkBtn
@@ -227,7 +228,7 @@ namespace SkyRoof
       ClearBtn.Name = "ClearBtn";
       ClearBtn.Size = new Size(90, 26);
       ClearBtn.TabIndex = 11;
-      ClearBtn.Text = "Clear";
+      ClearBtn.Text = "選択解除";
       ClearBtn.UseVisualStyleBackColor = true;
       ClearBtn.Click += ClearBtn_Click;
       // 
@@ -238,7 +239,7 @@ namespace SkyRoof
       SelectAllBtn.Name = "SelectAllBtn";
       SelectAllBtn.Size = new Size(78, 26);
       SelectAllBtn.TabIndex = 10;
-      SelectAllBtn.Text = "Select All";
+      SelectAllBtn.Text = "衛星の選択";
       SelectAllBtn.UseVisualStyleBackColor = true;
       SelectAllBtn.Click += SelectAllBtn_Click;
       // 
@@ -265,7 +266,7 @@ namespace SkyRoof
       SelectAllMnu.Name = "SelectAllMnu";
       SelectAllMnu.Size = new Size(136, 22);
       SelectAllMnu.Tag = "0";
-      SelectAllMnu.Text = "Select All";
+      SelectAllMnu.Text = "全選択";
       SelectAllMnu.Click += SelectAllBtn_Click;
       // 
       // toolStripSeparator1
@@ -330,7 +331,7 @@ namespace SkyRoof
       Name = "AutoSelectionConfigForm";
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterParent;
-      Text = "Auto Selection Schedule";
+      Text = "自動選択スケジュール";
       SatGroupBox.ResumeLayout(false);
       SatGroupBox.PerformLayout();
       ModeGroupBox.ResumeLayout(false);

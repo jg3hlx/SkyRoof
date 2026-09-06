@@ -58,5 +58,15 @@ namespace SkyRoof
 
       okBtn.Enabled = ok;
     }
+
+    private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
+    {
+
+    }
+
+    private void UserDetailsDialog_Load(object sender, EventArgs e)
+    {
+
+    }
   }
 }

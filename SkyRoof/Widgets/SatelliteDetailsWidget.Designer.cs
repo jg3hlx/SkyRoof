@@ -114,17 +114,17 @@
       // 
       // columnHeader1
       // 
-      columnHeader1.Text = "Transmitter";
+      columnHeader1.Text = "送信機";
       columnHeader1.Width = 200;
       // 
       // columnHeader2
       // 
-      columnHeader2.Text = "Uplink";
+      columnHeader2.Text = "アップリンク";
       columnHeader2.Width = 120;
       // 
       // columnHeader3
       // 
-      columnHeader3.Text = "Downlink";
+      columnHeader3.Text = "ダウンリンク";
       columnHeader3.Width = 120;
       // 
       // LinksPanel
@@ -146,7 +146,7 @@
       ImageLabel.Size = new Size(40, 15);
       ImageLabel.TabIndex = 0;
       ImageLabel.TabStop = true;
-      ImageLabel.Text = "Image";
+      ImageLabel.Text = "画像";
       ImageLabel.LinkClicked += ImageLabel_LinkClicked;
       // 
       // WebsiteLabel
@@ -157,7 +157,7 @@
       WebsiteLabel.Size = new Size(49, 15);
       WebsiteLabel.TabIndex = 3;
       WebsiteLabel.TabStop = true;
-      WebsiteLabel.Text = "Website";
+      WebsiteLabel.Text = "Webサイト";
       WebsiteLabel.LinkClicked += WebsiteLabel_LinkClicked;
       // 
       // SatnogsLabel
@@ -179,7 +179,7 @@
       label2.Name = "label2";
       label2.Size = new Size(477, 23);
       label2.TabIndex = 1;
-      label2.Text = "Transmitters";
+      label2.Text = "送信機";
       label2.TextAlign = ContentAlignment.MiddleCenter;
       // 
       // SatNameLabel

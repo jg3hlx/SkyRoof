@@ -97,6 +97,7 @@
       flowLayoutPanel1.Padding = new Padding(12);
       flowLayoutPanel1.Size = new Size(231, 188);
       flowLayoutPanel1.TabIndex = 1;
+      flowLayoutPanel1.Paint += flowLayoutPanel1_Paint;
       // 
       // label1
       // 
@@ -106,7 +107,7 @@
       label1.Name = "label1";
       label1.Size = new Size(202, 27);
       label1.TabIndex = 99;
-      label1.Text = "User Details";
+      label1.Text = "ユーザー情報";
       label1.TextAlign = ContentAlignment.MiddleCenter;
       // 
       // label2
@@ -115,9 +116,9 @@
       label2.Location = new Point(16, 39);
       label2.Margin = new Padding(4, 0, 4, 0);
       label2.Name = "label2";
-      label2.Size = new Size(49, 15);
+      label2.Size = new Size(61, 15);
       label2.TabIndex = 98;
-      label2.Text = "Callsign";
+      label2.Text = "コールサイン";
       // 
       // textBox1
       // 
@@ -136,9 +137,9 @@
       label3.Location = new Point(16, 83);
       label3.Margin = new Padding(4, 0, 4, 0);
       label3.Name = "label3";
-      label3.Size = new Size(131, 15);
+      label3.Size = new Size(117, 15);
       label3.TabIndex = 3;
-      label3.Text = "6-character Grid Square";
+      label3.Text = "6桁のグリッド・ロケーター";
       // 
       // textBox2
       // 
@@ -156,9 +157,9 @@
       label4.Location = new Point(16, 127);
       label4.Margin = new Padding(4, 0, 4, 0);
       label4.Name = "label4";
-      label4.Size = new Size(91, 15);
+      label4.Size = new Size(49, 15);
       label4.TabIndex = 101;
-      label4.Text = "Altitude, meters";
+      label4.Text = "高度(m)";
       // 
       // numericUpDown1
       // 
@@ -181,7 +182,8 @@
       Margin = new Padding(4, 3, 4, 3);
       Name = "UserDetailsDialog";
       StartPosition = FormStartPosition.CenterParent;
-      Text = "User Details";
+      Text = "ユーザ情報";
+      Load += UserDetailsDialog_Load;
       panel1.ResumeLayout(false);
       flowLayoutPanel1.ResumeLayout(false);
       flowLayoutPanel1.PerformLayout();
@@ -197,10 +199,10 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox2;
     private Label label4;
     private NumericUpDown numericUpDown1;
+    private VE3NEA.TextBoxEx textBox1;
+    private VE3NEA.TextBoxEx textBox2;
   }
 }

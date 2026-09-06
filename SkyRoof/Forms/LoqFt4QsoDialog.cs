@@ -22,7 +22,7 @@ namespace SkyRoof
     internal static void PopUp(Context ctx, QsoInfo qso)
     {
       var dialog = new LoqFt4QsoDialog(ctx, qso);
-      dialog.label1.Text = $"Save FT4 QSO with {qso.Call}?";
+      dialog.label1.Text = $"FT4のQSOを {qso.Call} で保存しますか？";
       dialog.Show(ctx.MainForm);
     }
 

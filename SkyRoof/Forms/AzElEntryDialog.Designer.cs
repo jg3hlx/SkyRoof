@@ -79,7 +79,7 @@
       label1.Name = "label1";
       label1.Size = new Size(68, 21);
       label1.TabIndex = 1;
-      label1.Text = "Azimuth";
+      label1.Text = "方位角";
       // 
       // label2
       // 
@@ -89,7 +89,7 @@
       label2.Name = "label2";
       label2.Size = new Size(73, 21);
       label2.TabIndex = 2;
-      label2.Text = "Elevation";
+      label2.Text = "仰角";
       // 
       // AzimuthSpinner
       // 
@@ -113,7 +113,7 @@
       ParkBtn.Name = "ParkBtn";
       ParkBtn.Size = new Size(75, 23);
       ParkBtn.TabIndex = 6;
-      ParkBtn.Text = "Park";
+      ParkBtn.Text = "格納";
       ParkBtn.UseVisualStyleBackColor = true;
       ParkBtn.Click += ParkBtn_Click;
       // 

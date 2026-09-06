@@ -33,25 +33,25 @@ namespace SkyRoof
       okButton = new Button();
       cancelButton = new Button();
       SuspendLayout();
-      //
+      // 
       // promptLabel
-      //
+      // 
       promptLabel.AutoEllipsis = true;
       promptLabel.Location = new Point(12, 12);
       promptLabel.Name = "promptLabel";
       promptLabel.Size = new Size(308, 18);
       promptLabel.TabIndex = 3;
-      promptLabel.Text = "Name:";
-      //
+      promptLabel.Text = "名前";
+      // 
       // textBox
-      //
+      // 
       textBox.Location = new Point(12, 33);
       textBox.Name = "textBox";
       textBox.Size = new Size(308, 23);
       textBox.TabIndex = 0;
-      //
+      // 
       // okButton
-      //
+      // 
       okButton.DialogResult = DialogResult.OK;
       okButton.Location = new Point(164, 67);
       okButton.Name = "okButton";
@@ -59,9 +59,9 @@ namespace SkyRoof
       okButton.TabIndex = 1;
       okButton.Text = "OK";
       okButton.UseVisualStyleBackColor = true;
-      //
+      // 
       // cancelButton
-      //
+      // 
       cancelButton.DialogResult = DialogResult.Cancel;
       cancelButton.Location = new Point(245, 67);
       cancelButton.Name = "cancelButton";
@@ -69,9 +69,9 @@ namespace SkyRoof
       cancelButton.TabIndex = 2;
       cancelButton.Text = "Cancel";
       cancelButton.UseVisualStyleBackColor = true;
-      //
+      // 
       // TextInputForm
-      //
+      // 
       AcceptButton = okButton;
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
@@ -87,7 +87,7 @@ namespace SkyRoof
       Name = "TextInputForm";
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterParent;
-      Text = "Rename";
+      Text = "名前の変更";
       Shown += TextInputForm_Shown;
       ResumeLayout(false);
       PerformLayout();
