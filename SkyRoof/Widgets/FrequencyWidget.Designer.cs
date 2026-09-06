@@ -374,7 +374,6 @@
       // 
       // CtcssEnabledMnu
       // 
-      CtcssEnabledMnu.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
       CtcssEnabledMnu.Name = "CtcssEnabledMnu";
       CtcssEnabledMnu.Size = new Size(180, 22);
       CtcssEnabledMnu.Text = "有効";
