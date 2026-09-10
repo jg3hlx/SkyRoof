@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Security.Policy;
 using Serilog;
+using VE3NEA.Clock;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace SkyRoof
@@ -72,13 +73,16 @@ namespace SkyRoof
     {
       ValidateZoom();
       ValidateLeftSpan();
-      var now = DateTime.Now;
+      // the scale is drawn in the zone the clock widget is set to. DrawPasses converts back to
+      // UTC, so the humps land on the same pixels in either mode
+      var now = ClockWidget.Now;
 
       DrawBg(e.Graphics, now);
       DrawDateLabels(e.Graphics, now);
       DrawtimeLabels(e.Graphics, now);
       DrawElevationlabels(e.Graphics);
       DrawPasses(e.Graphics, now);
+      DrawZoneLabel(e.Graphics);
     }
 
     // todo: bg brightness for day/night
@@ -178,6 +182,14 @@ namespace SkyRoof
         time = time.Add(step);
         x = TimeToPixel(time, now);
       }
+    }
+
+    // names the zone the time scale is in, in the top right corner where no hump reaches
+    private void DrawZoneLabel(Graphics g)
+    {
+      string label = ClockWidget.Suffix;
+      var size = TextRenderer.MeasureText(label, Font, Size, TextFormatFlags.NoPadding);
+      g.DrawString(label, Font, SystemBrushes.WindowText, ClientSize.Width - size.Width - 5, 1);
     }
 
     private void DrawElevationlabels(Graphics g)
@@ -305,7 +317,7 @@ namespace SkyRoof
 
     private void SatelliteTimelineControl_MouseWheel(object? sender, MouseEventArgs e)
     {
-      var now = DateTime.Now;
+      var now = ClockWidget.Now;
       var timeUnderCursor = PixelToTime(e.X, now);
 
       int dZoom = e.Delta / 120;// WHEEL_DELTA;
