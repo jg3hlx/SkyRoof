@@ -780,7 +780,7 @@ namespace SkyRoof
         // source and SSTV events to the transmitter that advertises SSTV. In the unpaired case both are the
         // selection and this is exactly the single snapshot of before.
         var snapshot = new DecodeSnapshot(Satellite, telemetrySource?.Transmitter ?? Transmitter,
-          telemetrySource?.Params ?? SignalParams!, ctx.SdrPasses.GetNextPass(Satellite)?.OrbitNumber ?? -1,
+          telemetrySource?.Params ?? SignalParams!, ctx.SdrPasses.GetCurrentOrNextPass(Satellite)?.OrbitNumber ?? -1,
           TerrestrialHz);
         var sstvSnapshot = SstvSnapshot(snapshot);
         CurrentDecode = snapshot;
@@ -2647,7 +2647,11 @@ namespace SkyRoof
     internal void UpdateTxStatus()
     {
       bool wasAbove = SatAboveHorizon;
-      SatAboveHorizon = ctx.SdrPasses.GetNextPass(Satellite)?.IsAboveHorizon() ?? false;
+      // the horizon is an instantaneous property, so read the elevation rather than search for a pass to test:
+      // a search started at "now" is blind to the last seconds of the pass it is already inside (see
+      // GetCurrentOrNextPass) and would report LOS ~10 s early, tearing the pipeline down before the pass ends.
+      // this also keeps a 1-Hz tick from re-predicting a day of passes on the UI thread
+      SatAboveHorizon = ctx.SdrPasses.ObserveSatellite(Satellite, DateTime.UtcNow)?.Elevation.Degrees > 0;
       // LOS ends a running search (§4.6a): no further burst can arrive, so the session must not be left
       // running with the progress line sitting on "waiting" until the operator closes the dialog
       if (!Terrestrial && !SatAboveHorizon && Discovery != null) StopDiscoveryAtLos();

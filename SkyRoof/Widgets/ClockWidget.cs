@@ -67,6 +67,10 @@ namespace VE3NEA.Clock
     // the clock as the user reads it. For display only: all arithmetic stays in UTC
     public static DateTime Now => utcMode ? DateTime.UtcNow : DateTime.Now;
 
+    // the mode as the two clickable labels of this widget name it, for spelling the mode out
+    // where there is room for it
+    public static string ModeName => utcMode ? "UTC" : "Local";
+
     // short marker naming the zone a displayed time is in. Never empty, so that text kept
     // verbatim after the mode changes, such as the telemetry tree, remains unambiguous
     public static string Suffix => utcMode ? "Z" : "LT";

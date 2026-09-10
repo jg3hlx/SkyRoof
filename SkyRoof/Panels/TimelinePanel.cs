@@ -82,7 +82,6 @@ namespace SkyRoof
       DrawtimeLabels(e.Graphics, now);
       DrawElevationlabels(e.Graphics);
       DrawPasses(e.Graphics, now);
-      DrawZoneLabel(e.Graphics);
     }
 
     // todo: bg brightness for day/night
@@ -126,9 +125,18 @@ namespace SkyRoof
         x2 = Math.Min(ClientSize.Width, TimeToPixel(date2, now));
         g.DrawLine(SystemPens.ControlText, x2, ClientSize.Height - ScaleHeight, x2, ClientSize.Height);
 
-        string label = $"{date1:MMM dd}";
+        // the date names the zone the whole scale is drawn in. Where the day is too narrow for
+        // that, the date alone is shown rather than nothing
+        string label = $"{date1:MMM dd} ({ClockWidget.ModeName})";
         var size = TextRenderer.MeasureText(label, Font, Size, TextFormatFlags.NoPadding);
         size.Width += 3;
+
+        if (x2 - x1 <= size.Width + 15)
+        {
+          label = $"{date1:MMM dd}";
+          size = TextRenderer.MeasureText(label, Font, Size, TextFormatFlags.NoPadding);
+          size.Width += 3;
+        }
 
         if (x2 - x1 > size.Width + 15)
           g.DrawString(label, Font, SystemBrushes.ControlText, (x1 + x2 - size.Width) / 2, ClientSize.Height - size.Height - 1);
@@ -182,14 +190,6 @@ namespace SkyRoof
         time = time.Add(step);
         x = TimeToPixel(time, now);
       }
-    }
-
-    // names the zone the time scale is in, in the top right corner where no hump reaches
-    private void DrawZoneLabel(Graphics g)
-    {
-      string label = ClockWidget.Suffix;
-      var size = TextRenderer.MeasureText(label, Font, Size, TextFormatFlags.NoPadding);
-      g.DrawString(label, Font, SystemBrushes.WindowText, ClientSize.Width - size.Width - 5, 1);
     }
 
     private void DrawElevationlabels(Graphics g)
