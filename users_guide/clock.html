@@ -2,9 +2,9 @@
 <html>
   <head>
     <meta charset="utf-8">
-      <title>Time Line | SkyRoof </title>
+      <title>Clock | SkyRoof </title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Time Line | SkyRoof ">
+      <meta name="title" content="Clock | SkyRoof ">
       
       
       <link rel="icon" href="../images/SkyRoof.ico">
@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/jg3hlx/SkyRoof/blob/master/docs/users_guide/time_line_panel.md/#L1">
+      <meta name="docfx:docurl" content="https://github.com/jg3hlx/SkyRoof/blob/master/docs/users_guide/clock.md/#L1">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -92,20 +92,29 @@
         </div>
 
         <article data-uid="">
-<h1 id="time-line">Time Line</h1>
+<h1 id="clock">Clock</h1>
 
-<p>The TimeLine panel shows the satellite elevation chart as a function of time for all satellites in the selected group:</p>
-<p><img src="../images/time_line.png" alt="Timeline panel"></p>
+<p>The <strong>Clock</strong> widget at the right end of the toolbar shows the current time and date, and selects the
+time zone in which SkyRoof displays times:</p>
+<p><img src="../images/clock_widget.png" alt="Clock widget"></p>
+<p>The two small labels at the bottom of the widget, <strong>Local</strong> and <strong>UTC</strong>, show which mode is active: the
+selected one is highlighted in bright aqua, the other one in dark teal. Click either label, or the time
+display itself, to switch between the two modes. The selected mode is saved when the program closes and
+restored the next time it starts.</p>
+<h2 id="what-the-mode-affects">What The Mode Affects</h2>
+<p>The setting is application-wide: every wall-clock time in the program is displayed in the selected zone,
+and all panels update immediately when the mode is switched.</p>
+<p>Displayed times are marked with the zone they are in: <strong>Z</strong> for UTC and <strong>LT</strong> for local time.</p>
+<h2 id="what-does-not-change">What Does Not Change</h2>
+<p>A few times are tied to a particular zone by their purpose, and are not affected by this setting:</p>
 <ul>
-<li>Zoom in and out using the mouse wheel</li>
-<li>Pan by dragging the chart with your mouse</li>
-<li>Click on the satellite name to make it current, and to view the pass on the
-<a href="sky_view_panel.html">Sky View panel</a>.</li>
+<li>the <strong>UTC</strong> field of the <a href="qso_entry_panel.html">QSO Entry</a> panel is always in UTC, as required by the
+ADIF format;</li>
+<li>the slot times in the <a href="ft4_console_panel.html">FT4 Console</a> panel are always in UTC, marked with <strong>Z</strong>,
+because the FT4 time slots themselves are aligned to UTC;</li>
+<li>the names of the files that SkyRoof saves, such as the recordings and the decoded images and voice
+messages, are always built from the local time.</li>
 </ul>
-<p>The dark part of the chart represents the past time.</p>
-<p>The time scale is drawn in the time zone selected on the <a href="clock.html">Clock</a> widget. The date labels name
-the mode as <strong>(UTC)</strong> or <strong>(Local)</strong>, and the marker in the top right corner of the panel shows <strong>Z</strong> or
-<strong>LT</strong>.</p>
 
 </article>
 
