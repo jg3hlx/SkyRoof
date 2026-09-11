@@ -8,6 +8,7 @@ using Serilog;
 using SkyRoof.Satellites;
 using System.Globalization;
 using VE3NEA;
+using VE3NEA.Clock;
 using VE3NEA.SkyFM;
 using VE3NEA.SkySSTV;
 using VE3NEA.SkyTlm.Audio;
@@ -194,7 +195,7 @@ namespace SkyRoof
     private sealed class SstvImageInfo : IImageNodeInfo
     {
       internal readonly DecodeSnapshot Snapshot;
-      internal readonly DateTime FirstSeen = DateTime.Now;
+      internal readonly DateTime FirstSeen = DateTime.UtcNow;
       internal SstvImageEvent Event;
       public Bitmap? Bitmap { get; set; }
       public string? SavedPath { get; set; }
@@ -230,7 +231,8 @@ namespace SkyRoof
       }
 
       public string SaveFilter => "PNG Image|*.png";
-      public string SaveFileName => $"{FirstSeen:yyyyMMdd_HHmmss}_{Event.Mode}.png";
+      // saved file names stay in local time whatever the clock widget shows, see NameMatches
+      public string SaveFileName => $"{FirstSeen.ToLocalTime():yyyyMMdd_HHmmss}_{Event.Mode}.png";
       public void SaveAs(string path) => Rendering.SavePng(path);
     }
 
@@ -241,7 +243,7 @@ namespace SkyRoof
     private sealed class SsdvImageInfo : IImageNodeInfo
     {
       internal readonly DecodeSnapshot Snapshot;
-      internal readonly DateTime FirstSeen = DateTime.Now;
+      internal readonly DateTime FirstSeen = DateTime.UtcNow;
       // what this pass heard, and nothing else. It is what the tree label counts and what is written to
       // disk, so the sidecar stays a record of one reception rather than a record of a merge.
       internal ImageProduct PassProduct;
@@ -296,7 +298,8 @@ namespace SkyRoof
       }
 
       public string SaveFilter => "JPEG Image|*.jpg";
-      public string SaveFileName => $"{FirstSeen:yyyyMMdd_HHmmss}_{Product.ImageId}.jpg";
+      // saved file names stay in local time whatever the clock widget shows, see NameMatches
+      public string SaveFileName => $"{FirstSeen.ToLocalTime():yyyyMMdd_HHmmss}_{Product.ImageId}.jpg";
       public void SaveAs(string path) => File.WriteAllBytes(path, Product.Jpeg);
     }
 
@@ -307,7 +310,7 @@ namespace SkyRoof
     private sealed class VoiceMessageInfo
     {
       internal readonly DecodeSnapshot Snapshot;
-      internal readonly DateTime FirstSeen = DateTime.Now;
+      internal readonly DateTime FirstSeen = DateTime.UtcNow;
       internal VoiceProduct Product;
       // the assembler will send nothing further for this message. Off air the normal case is a message the
       // pass ended in the middle of, so this is not the same as having heard the whole thing — and unlike
@@ -338,8 +341,9 @@ namespace SkyRoof
           "\r\nClick here to play.";
       }
 
+      // saved file names stay in local time whatever the clock widget shows, see NameMatches
       internal string SaveFileName =>
-        $"{FirstSeen:yyyyMMdd_HHmmss}_{Snapshot.Satellite?.name ?? "Unknown"}_voice.wav";
+        $"{FirstSeen.ToLocalTime():yyyyMMdd_HHmmss}_{Snapshot.Satellite?.name ?? "Unknown"}_voice.wav";
     }
 
     // one FM-speech transcript, the Tag of the single "FM Speech" leaf node (§10.3): the pass's decoded
@@ -386,7 +390,7 @@ namespace SkyRoof
 
     internal class TxPassInfo
     {
-      internal DateTime StartTime = DateTime.Now;
+      internal DateTime StartTime = DateTime.UtcNow;
       internal SatnogsDbTransmitter? Transmitter;
       internal int Orbit;
       // the tuned frequency this terrestrial pass node is keyed on (§4.9); zero when Transmitter is set
@@ -425,7 +429,7 @@ namespace SkyRoof
             $"Uuid: {Transmitter.uuid}\n" +
             $"Orbit: {Orbit}\n";
         return
-          $"Start: {StartTime:yyyy-MM-dd HH:mm:ss}\n" +
+          $"Start: {ClockWidget.Stamp(StartTime, "yyyy-MM-dd HH:mm:ss")}\n" +
           identity +
           "\n" +
           $"Bursts: {BurstCount}\n" +
@@ -776,7 +780,7 @@ namespace SkyRoof
         // source and SSTV events to the transmitter that advertises SSTV. In the unpaired case both are the
         // selection and this is exactly the single snapshot of before.
         var snapshot = new DecodeSnapshot(Satellite, telemetrySource?.Transmitter ?? Transmitter,
-          telemetrySource?.Params ?? SignalParams!, ctx.SdrPasses.GetNextPass(Satellite)?.OrbitNumber ?? -1,
+          telemetrySource?.Params ?? SignalParams!, ctx.SdrPasses.GetCurrentOrNextPass(Satellite)?.OrbitNumber ?? -1,
           TerrestrialHz);
         var sstvSnapshot = SstvSnapshot(snapshot);
         CurrentDecode = snapshot;
@@ -1419,7 +1423,7 @@ namespace SkyRoof
       }
 
       var (addr, addrLen) = ExtractAddress(frame, snapshot);
-      string nodeText = $"{DateTime.Now:HH:mm:ss}  {frame.Length} bytes  {addr}";
+      string nodeText = $"{ClockWidget.Stamp(DateTime.UtcNow, "HH:mm:ss")}  {frame.Length} bytes  {addr}";
       var frameNode = new TreeNode(nodeText);
       string frameText = BuildFrameText(frame, snapshot, addr, addrLen);
       frameNode.Tag = frameText;
@@ -1463,7 +1467,7 @@ namespace SkyRoof
 
       string title = snapshot.Transmitter == null ? DescribeTerrestrial(snapshot.TerrestrialHz)
         : $"{snapshot.Transmitter.Satellite.name}  {snapshot.Transmitter.description}";
-      var passNode = new TreeNode($"{DateTime.Now:yyyy-MM-dd HH:mm} {title}");
+      var passNode = new TreeNode($"{ClockWidget.Stamp(DateTime.UtcNow, "yyyy-MM-dd HH:mm")} {title}");
       if (grayUntilContent) passNode.ForeColor = SystemColors.GrayText;
       var txPassInfo = new TxPassInfo(snapshot.Transmitter, orbit, snapshot.TerrestrialHz);
       txPassInfo.SignalParams = snapshot.SignalParams;
@@ -1652,7 +1656,7 @@ namespace SkyRoof
       info.Filter = null;
       info.Bitmap = evt.Image.ToBitmap();
       if (savedPath != null) info.SavedPath = savedPath;
-      node.Text = $"{info.FirstSeen:HH:mm:ss}  {evt.Mode}  {evt.ValidRows}/{evt.Image.Height} rows";
+      node.Text = $"{ClockWidget.Stamp(info.FirstSeen, "HH:mm:ss")}  {evt.Mode}  {evt.ValidRows}/{evt.Image.Height} rows";
       if (ImageBox.Image == oldBitmap) ImageBox.Image = info.Bitmap;
       oldBitmap?.Dispose();
 
@@ -1797,7 +1801,7 @@ namespace SkyRoof
       if (treeView1.SelectedNode?.Tag is not SstvImageInfo info || info.Event.Planes is not { } planes) return;
 
       using var dlg = new SstvDenoiseDialog();
-      string caption = $"{info.Snapshot.Satellite?.name ?? "Unknown"}  {info.FirstSeen:HH:mm:ss}  {info.Event.Mode}";
+      string caption = $"{info.Snapshot.Satellite?.name ?? "Unknown"}  {ClockWidget.Stamp(info.FirstSeen, "HH:mm:ss")}  {info.Event.Mode}";
       if (dlg.Open(planes, caption, this) != DialogResult.OK) return;
 
       info.Rendering = dlg.Result;
@@ -1947,7 +1951,7 @@ namespace SkyRoof
       if (savedPath != null) info.SavedPath = savedPath;
       // the tree label always counts what THIS pass heard, combined or not — it is the pass that the node
       // is a record of, and a label that changed under a toggle would make two nodes incomparable
-      node.Text = $"{info.FirstSeen:HH:mm:ss}  Image {product.ImageId}  " +
+      node.Text = $"{ClockWidget.Stamp(info.FirstSeen, "HH:mm:ss")}  Image {product.ImageId}  " +
         $"{product.FragmentsReceived}/{product.FragmentsExpected} fragments";
       RenderImage(info);
 
@@ -2132,7 +2136,7 @@ namespace SkyRoof
       if (savedPath != null) info.SavedPath = savedPath;
       // no "of N": nothing on air says how long a message is, so the label counts what arrived and how long
       // the reconstruction plays, and claims nothing more
-      node.Text = $"{info.FirstSeen:HH:mm:ss}  Voice  " +
+      node.Text = $"{ClockWidget.Stamp(info.FirstSeen, "HH:mm:ss")}  Voice  " +
         $"{product.SubFramesReceived} sub-frames, {product.DurationSeconds:0.0} s";
 
       // an accepted sub-frame is real content: un-gray the pass entry the way a valid frame does
@@ -2629,10 +2633,13 @@ namespace SkyRoof
     private static ILogger CreateFrameLogger()
     {
       string fileName = Path.Combine(Utils.GetUserDataFolder(), "TelemetryDecodes", "frames_.txt");
+      // both zones, so that a decode can be matched against the UTC-stamped system log and
+      // against the local-time file names of the images saved from the same pass
       return new LoggerConfiguration()
+        .Enrich.With<UtcTimeEnricher>()
         .WriteTo.File(fileName,
           rollingInterval: RollingInterval.Day,
-          outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss}  {Message:lj}{NewLine}",
+          outputTemplate: "{Utc:yyyy-MM-dd HH:mm:ss}Z  ({Timestamp:HH:mm:ss} LT)  {Message:lj}{NewLine}",
           shared: true)
         .CreateLogger();
     }
@@ -2640,7 +2647,11 @@ namespace SkyRoof
     internal void UpdateTxStatus()
     {
       bool wasAbove = SatAboveHorizon;
-      SatAboveHorizon = ctx.SdrPasses.GetNextPass(Satellite)?.IsAboveHorizon() ?? false;
+      // the horizon is an instantaneous property, so read the elevation rather than search for a pass to test:
+      // a search started at "now" is blind to the last seconds of the pass it is already inside (see
+      // GetCurrentOrNextPass) and would report LOS ~10 s early, tearing the pipeline down before the pass ends.
+      // this also keeps a 1-Hz tick from re-predicting a day of passes on the UI thread
+      SatAboveHorizon = ctx.SdrPasses.ObserveSatellite(Satellite, DateTime.UtcNow)?.Elevation.Degrees > 0;
       // LOS ends a running search (§4.6a): no further burst can arrive, so the session must not be left
       // running with the progress line sitting on "waiting" until the operator closes the dialog
       if (!Terrestrial && !SatAboveHorizon && Discovery != null) StopDiscoveryAtLos();
