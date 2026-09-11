@@ -204,7 +204,7 @@
       label10.Name = "label10";
       label10.Size = new Size(39, 15);
       label10.TabIndex = 21;
-      label10.Text = "BAND";
+      label10.Text = "バンド";
       label10.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel3
@@ -243,7 +243,7 @@
       label11.Name = "label11";
       label11.Size = new Size(41, 15);
       label11.TabIndex = 21;
-      label11.Text = "MODE";
+      label11.Text = "モード";
       label11.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel4
@@ -323,7 +323,7 @@
       label13.Name = "label13";
       label13.Size = new Size(35, 15);
       label13.TabIndex = 21;
-      label13.Text = "CALL";
+      label13.Text = "コールサイン";
       label13.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel6
@@ -442,7 +442,7 @@
       label15.Name = "label15";
       label15.Size = new Size(34, 15);
       label15.TabIndex = 21;
-      label15.Text = "SENT";
+      label15.Text = "送信";
       label15.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel8
@@ -482,7 +482,7 @@
       label16.Name = "label16";
       label16.Size = new Size(35, 15);
       label16.TabIndex = 21;
-      label16.Text = "RECV";
+      label16.Text = "受信";
       label16.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel9
@@ -521,7 +521,7 @@
       label17.Name = "label17";
       label17.Size = new Size(41, 15);
       label17.TabIndex = 21;
-      label17.Text = "NAME";
+      label17.Text = "名称";
       label17.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel12
@@ -580,7 +580,7 @@
       ClearBtn.Name = "ClearBtn";
       ClearBtn.Size = new Size(72, 23);
       ClearBtn.TabIndex = 24;
-      ClearBtn.Text = "Clear";
+      ClearBtn.Text = "クリア";
       ClearBtn.UseVisualStyleBackColor = true;
       ClearBtn.Click += ClearBtn_Click;
       // 
@@ -590,7 +590,7 @@
       SaveBtn.Name = "SaveBtn";
       SaveBtn.Size = new Size(72, 23);
       SaveBtn.TabIndex = 23;
-      SaveBtn.Text = "Save";
+      SaveBtn.Text = "保存";
       SaveBtn.UseVisualStyleBackColor = true;
       SaveBtn.Click += LogBtn_Click;
       // 

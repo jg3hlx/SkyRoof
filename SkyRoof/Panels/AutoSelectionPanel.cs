@@ -116,20 +116,20 @@ namespace SkyRoof
 
       var active = ctx.AutoSelector.ActivePass;
       if (active != null)
-        ActiveLabel.Text = $"Active:  {active.Satellite.name}   LOS in {Utils.TimespanToString(active.EndTime - now, true)}";
+        ActiveLabel.Text = $"有効:  {active.Satellite.name}   LOS in {Utils.TimespanToString(active.EndTime - now, true)}";
       else
-        ActiveLabel.Text = "Active:  none";
+        ActiveLabel.Text = "有効: なし";
 
       var next = ctx.AutoSelector.GetNextSelection();
       if (next != null)
-        NextLabel.Text = $"Next:  {next.Value.Pass.Satellite.name}   in {Utils.TimespanToString(next.Value.When - now, true)}";
+        NextLabel.Text = $"次:  {next.Value.Pass.Satellite.name}   in {Utils.TimespanToString(next.Value.When - now, true)}";
       else
-        NextLabel.Text = "Next:  none";
+        NextLabel.Text = "次: なし";
 
       if (ctx.AutoSelector.IsRecording)
         RecLabel.Text = $"Recording:  {RecordModeText(ctx.AutoSelector.SegmentRecordMode)}  ● {DateTime.Now - ctx.AutoSelector.SegmentStartLocal:mm\\:ss}";
       else
-        RecLabel.Text = "Recording:  Off";
+        RecLabel.Text = "録音中:  Off";
 
       updating = false;
     }

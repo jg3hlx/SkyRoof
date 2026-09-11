@@ -61,7 +61,7 @@
       CurrentSatBtn.Size = new Size(109, 19);
       CurrentSatBtn.TabIndex = 0;
       CurrentSatBtn.TabStop = true;
-      CurrentSatBtn.Text = "Current Satellite";
+      CurrentSatBtn.Text = "追跡中の衛星";
       CurrentSatBtn.UseVisualStyleBackColor = true;
       CurrentSatBtn.CheckedChanged += radioButton_CheckedChanged;
       // 
@@ -72,7 +72,7 @@
       GroupBtn.Name = "GroupBtn";
       GroupBtn.Size = new Size(58, 19);
       GroupBtn.TabIndex = 1;
-      GroupBtn.Text = "Group";
+      GroupBtn.Text = "グループ";
       GroupBtn.UseVisualStyleBackColor = true;
       GroupBtn.CheckedChanged += radioButton_CheckedChanged;
       // 

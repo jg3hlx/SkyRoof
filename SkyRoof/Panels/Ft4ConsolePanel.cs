@@ -303,12 +303,12 @@ namespace SkyRoof
       if (Sender.TxOdd)
       {
         OddRadioBtn.Checked = true;
-        OddEvenGroupBox.Text = "TX Odd";
+        OddEvenGroupBox.Text = "送信（奇数）";
       }
       else
       {
         EvenRadioBtn.Checked = true;
-        OddEvenGroupBox.Text = "TX Even";
+        OddEvenGroupBox.Text = "送信（偶数）";
       }
 
       RxSpinner.Value = AudioWaterfall.RxAudioFrequency;

@@ -79,7 +79,7 @@ namespace SkyRoof
       EditBtn.Name = "EditBtn";
       EditBtn.Size = new Size(75, 27);
       EditBtn.TabIndex = 0;
-      EditBtn.Text = "Edit";
+      EditBtn.Text = "編集";
       EditBtn.UseVisualStyleBackColor = true;
       EditBtn.Click += EditBtn_Click;
       // 
@@ -102,7 +102,7 @@ namespace SkyRoof
       EnableCheck.Name = "EnableCheck";
       EnableCheck.Size = new Size(140, 30);
       EnableCheck.TabIndex = 0;
-      EnableCheck.Text = "Auto Selection: OFF";
+      EnableCheck.Text = "自動選択: OFF";
       EnableCheck.TextAlign = ContentAlignment.MiddleCenter;
       EnableCheck.UseVisualStyleBackColor = true;
       EnableCheck.CheckedChanged += EnableCheck_CheckedChanged;
@@ -124,7 +124,7 @@ namespace SkyRoof
       ActiveLabel.Name = "ActiveLabel";
       ActiveLabel.Size = new Size(43, 15);
       ActiveLabel.TabIndex = 0;
-      ActiveLabel.Text = "Active:";
+      ActiveLabel.Text = "有効:";
       // 
       // NextPanel
       // 
@@ -143,7 +143,7 @@ namespace SkyRoof
       NextLabel.Name = "NextLabel";
       NextLabel.Size = new Size(34, 15);
       NextLabel.TabIndex = 0;
-      NextLabel.Text = "Next:";
+      NextLabel.Text = "次:";
       // 
       // RecPanel
       // 
@@ -162,7 +162,7 @@ namespace SkyRoof
       RecLabel.Name = "RecLabel";
       RecLabel.Size = new Size(29, 15);
       RecLabel.TabIndex = 0;
-      RecLabel.Text = "Rec:";
+      RecLabel.Text = "録音中:";
       // 
       // AutoSelectionPanel
       // 

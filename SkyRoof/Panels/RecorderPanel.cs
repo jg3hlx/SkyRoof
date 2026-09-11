@@ -235,7 +235,7 @@ namespace SkyRoof
     private void HandleBufferFull()
     {
       StopRecording();
-      StatusLabel.Text = "Recording stopped - Buffer full (30 min)";
+      StatusLabel.Text = "録音が停止しました - バッファが満杯です（30分）";
     }
 
 
@@ -271,7 +271,7 @@ namespace SkyRoof
 
       PlaybackBtn.BackColor = Color.Transparent;
       toolTip1.SetToolTip(PlaybackBtn, "Start Playback");
-      StatusLabel.Text = "Playback stopped";
+      StatusLabel.Text = "再生が停止しました";
       Log.Information("Playback stopped");
 
       RecordBtn.Enabled = true;

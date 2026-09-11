@@ -87,7 +87,7 @@
       RealTimeRadioBtn.Size = new Size(76, 19);
       RealTimeRadioBtn.TabIndex = 0;
       RealTimeRadioBtn.TabStop = true;
-      RealTimeRadioBtn.Text = "Real Time";
+      RealTimeRadioBtn.Text = "リアルタイム";
       RealTimeRadioBtn.UseVisualStyleBackColor = true;
       RealTimeRadioBtn.CheckedChanged += radioButton_CheckedChanged;
       //
@@ -99,7 +99,7 @@
       PassRadioBtn.Name = "PassRadioBtn";
       PassRadioBtn.Size = new Size(99, 19);
       PassRadioBtn.TabIndex = 1;
-      PassRadioBtn.Text = "Selected Pass";
+      PassRadioBtn.Text = "選択されたパス";
       PassRadioBtn.UseVisualStyleBackColor = true;
       PassRadioBtn.CheckedChanged += radioButton_CheckedChanged;
       //

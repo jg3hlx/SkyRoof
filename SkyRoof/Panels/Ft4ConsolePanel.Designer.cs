@@ -427,7 +427,7 @@
       HaltTxBtn.Name = "HaltTxBtn";
       HaltTxBtn.Size = new Size(74, 28);
       HaltTxBtn.TabIndex = 2;
-      HaltTxBtn.Text = "Halt TX";
+      HaltTxBtn.Text = "送信停止";
       HaltTxBtn.UseVisualStyleBackColor = true;
       HaltTxBtn.MouseDown += HaltTxBtn_MouseDown;
       // 
@@ -437,7 +437,7 @@
       EnableTxBtn.Name = "EnableTxBtn";
       EnableTxBtn.Size = new Size(74, 28);
       EnableTxBtn.TabIndex = 1;
-      EnableTxBtn.Text = "Enable TX";
+      EnableTxBtn.Text = "送信有効";
       EnableTxBtn.UseVisualStyleBackColor = true;
       EnableTxBtn.MouseDown += EnableTxBtn_MouseDown;
       // 
@@ -447,7 +447,7 @@
       TuneBtn.Name = "TuneBtn";
       TuneBtn.Size = new Size(44, 28);
       TuneBtn.TabIndex = 0;
-      TuneBtn.Text = "Tune";
+      TuneBtn.Text = "調整";
       TuneBtn.UseVisualStyleBackColor = true;
       TuneBtn.MouseDown += TuneBtn_MouseDown;
       // 

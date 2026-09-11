@@ -68,7 +68,7 @@ namespace SkyRoof
       ModulationLabel.Name = "ModulationLabel";
       ModulationLabel.Size = new Size(69, 15);
       ModulationLabel.TabIndex = 0;
-      ModulationLabel.Text = "Modulation";
+      ModulationLabel.Text = "変調方式";
       // 
       // FramingLabel
       // 
@@ -77,7 +77,7 @@ namespace SkyRoof
       FramingLabel.Name = "FramingLabel";
       FramingLabel.Size = new Size(51, 15);
       FramingLabel.TabIndex = 0;
-      FramingLabel.Text = "Framing";
+      FramingLabel.Text = "フレーミング";
       // 
       // BaudLabel
       // 
@@ -86,7 +86,7 @@ namespace SkyRoof
       BaudLabel.Name = "BaudLabel";
       BaudLabel.Size = new Size(57, 15);
       BaudLabel.TabIndex = 0;
-      BaudLabel.Text = "Baud rate";
+      BaudLabel.Text = "通信速度";
       // 
       // DeviationLabel
       // 
@@ -95,7 +95,7 @@ namespace SkyRoof
       DeviationLabel.Name = "DeviationLabel";
       DeviationLabel.Size = new Size(77, 15);
       DeviationLabel.TabIndex = 0;
-      DeviationLabel.Text = "Deviation, Hz";
+      DeviationLabel.Text = "ドップラー偏差, Hz";
       // 
       // AfCarrierLabel
       // 
@@ -104,7 +104,7 @@ namespace SkyRoof
       AfCarrierLabel.Name = "AfCarrierLabel";
       AfCarrierLabel.Size = new Size(77, 15);
       AfCarrierLabel.TabIndex = 0;
-      AfCarrierLabel.Text = "AF carrier, Hz";
+      AfCarrierLabel.Text = "AFキャリア, Hz";
       // 
       // ManchesterLabel
       // 
@@ -113,7 +113,7 @@ namespace SkyRoof
       ManchesterLabel.Name = "ManchesterLabel";
       ManchesterLabel.Size = new Size(69, 15);
       ManchesterLabel.TabIndex = 0;
-      ManchesterLabel.Text = "Manchester";
+      ManchesterLabel.Text = "マンチェスター符号";
       // 
       // DifferentialLabel
       // 
@@ -122,7 +122,7 @@ namespace SkyRoof
       DifferentialLabel.Name = "DifferentialLabel";
       DifferentialLabel.Size = new Size(93, 15);
       DifferentialLabel.TabIndex = 0;
-      DifferentialLabel.Text = "Precoding (diff.)";
+      DifferentialLabel.Text = "差動前符号化";
       // 
       // TelemetryFormatLabel
       // 
@@ -131,7 +131,7 @@ namespace SkyRoof
       TelemetryFormatLabel.Name = "TelemetryFormatLabel";
       TelemetryFormatLabel.Size = new Size(98, 15);
       TelemetryFormatLabel.TabIndex = 0;
-      TelemetryFormatLabel.Text = "Telemetry format";
+      TelemetryFormatLabel.Text = "テレメトリ形式";
       // 
       // ModulationCombo
       // 
@@ -256,7 +256,7 @@ namespace SkyRoof
       DiscoverBtn.Name = "DiscoverBtn";
       DiscoverBtn.Size = new Size(110, 23);
       DiscoverBtn.TabIndex = 9;
-      DiscoverBtn.Text = "Discover";
+      DiscoverBtn.Text = "検出";
       DiscoverBtn.UseVisualStyleBackColor = true;
       DiscoverBtn.Click += DiscoverBtn_Click;
       // 
@@ -285,7 +285,7 @@ namespace SkyRoof
       SaveOverrideBtn.Name = "SaveOverrideBtn";
       SaveOverrideBtn.Size = new Size(110, 23);
       SaveOverrideBtn.TabIndex = 2;
-      SaveOverrideBtn.Text = "Save to Overrides";
+      SaveOverrideBtn.Text = "上書き保存";
       SaveOverrideBtn.UseVisualStyleBackColor = true;
       SaveOverrideBtn.Click += SaveOverrideBtn_Click;
       // 
@@ -296,7 +296,7 @@ namespace SkyRoof
       CancelBtn.Name = "CancelBtn";
       CancelBtn.Size = new Size(75, 23);
       CancelBtn.TabIndex = 1;
-      CancelBtn.Text = "Cancel";
+      CancelBtn.Text = "中止";
       CancelBtn.UseVisualStyleBackColor = true;
       // 
       // OkBtn

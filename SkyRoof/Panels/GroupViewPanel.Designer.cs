@@ -66,7 +66,7 @@
       // 
       // columnHeader1
       // 
-      columnHeader1.Text = "Name";
+      columnHeader1.Text = "名称";
       columnHeader1.Width = 180;
       // 
       // columnHeader2
@@ -76,13 +76,13 @@
       // 
       // columnHeader3
       // 
-      columnHeader3.Text = "Next Pass";
+      columnHeader3.Text = "次のパス";
       columnHeader3.TextAlign = HorizontalAlignment.Right;
       columnHeader3.Width = 85;
       // 
       // columnHeader4
       // 
-      columnHeader4.Text = "Max";
+      columnHeader4.Text = "最大";
       columnHeader4.TextAlign = HorizontalAlignment.Right;
       columnHeader4.Width = 40;
       // 
@@ -97,7 +97,7 @@
       // 
       SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
       SatelliteDetailsMNU.Size = new Size(159, 22);
-      SatelliteDetailsMNU.Text = "SatelltieDetails...";
+      SatelliteDetailsMNU.Text = "衛星情報...";
       SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
       // 
       // imageList1

@@ -67,7 +67,7 @@ namespace SkyRoof
       cancelButton.Name = "cancelButton";
       cancelButton.Size = new Size(75, 25);
       cancelButton.TabIndex = 2;
-      cancelButton.Text = "Cancel";
+      cancelButton.Text = "中止";
       cancelButton.UseVisualStyleBackColor = true;
       // 
       // TextInputForm

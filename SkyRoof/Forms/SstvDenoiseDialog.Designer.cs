@@ -115,7 +115,7 @@ namespace SkyRoof
       SkipNoiseBandsCheckBox.Name = "SkipNoiseBandsCheckBox";
       SkipNoiseBandsCheckBox.Size = new Size(146, 19);
       SkipNoiseBandsCheckBox.TabIndex = 3;
-      SkipNoiseBandsCheckBox.Text = "Skip Noise-Only Bands";
+      SkipNoiseBandsCheckBox.Text = "ノイズしか含まれていない周波数帯を除外";
       SkipNoiseBandsCheckBox.UseVisualStyleBackColor = true;
       // 
       // NlmGroupBox
@@ -130,7 +130,7 @@ namespace SkyRoof
       NlmGroupBox.Size = new Size(230, 128);
       NlmGroupBox.TabIndex = 4;
       NlmGroupBox.TabStop = false;
-      NlmGroupBox.Text = "Non-Local Means";
+      NlmGroupBox.Text = "ノイズ除去(NLM)";
       // 
       // NlmTwoPassCheckBox
       // 
@@ -139,7 +139,7 @@ namespace SkyRoof
       NlmTwoPassCheckBox.Name = "NlmTwoPassCheckBox";
       NlmTwoPassCheckBox.Size = new Size(143, 19);
       NlmTwoPassCheckBox.TabIndex = 8;
-      NlmTwoPassCheckBox.Text = "Remove Residual Dots";
+      NlmTwoPassCheckBox.Text = "ドット状ノイズ除去";
       NlmTwoPassCheckBox.UseVisualStyleBackColor = true;
       // 
       // NlmPatchSpinner
@@ -159,7 +159,7 @@ namespace SkyRoof
       NlmPatchLabel.Name = "NlmPatchLabel";
       NlmPatchLabel.Size = new Size(60, 15);
       NlmPatchLabel.TabIndex = 2;
-      NlmPatchLabel.Text = "Patch Size";
+      NlmPatchLabel.Text = "パッチサイズ";
       // 
       // NlmStrengthSpinner
       // 
@@ -180,7 +180,7 @@ namespace SkyRoof
       NlmStrengthLabel.Name = "NlmStrengthLabel";
       NlmStrengthLabel.Size = new Size(52, 15);
       NlmStrengthLabel.TabIndex = 0;
-      NlmStrengthLabel.Text = "Strength";
+      NlmStrengthLabel.Text = "強度";
       // 
       // WienerGroupBox
       // 
@@ -193,7 +193,7 @@ namespace SkyRoof
       WienerGroupBox.Size = new Size(230, 92);
       WienerGroupBox.TabIndex = 3;
       WienerGroupBox.TabStop = false;
-      WienerGroupBox.Text = "Wiener";
+      WienerGroupBox.Text = "ウィーナー";
       // 
       // WienerHeightSpinner
       // 
@@ -213,7 +213,7 @@ namespace SkyRoof
       WienerHeightLabel.Name = "WienerHeightLabel";
       WienerHeightLabel.Size = new Size(90, 15);
       WienerHeightLabel.TabIndex = 2;
-      WienerHeightLabel.Text = "Window Height";
+      WienerHeightLabel.Text = "ウィンドウの高さ";
       // 
       // WienerWidthSpinner
       // 
@@ -233,7 +233,7 @@ namespace SkyRoof
       WienerWidthLabel.Name = "WienerWidthLabel";
       WienerWidthLabel.Size = new Size(86, 15);
       WienerWidthLabel.TabIndex = 0;
-      WienerWidthLabel.Text = "Window Width";
+      WienerWidthLabel.Text = "ウィンドウの幅";
       // 
       // AlgorithmGroupBox
       // 
@@ -245,7 +245,7 @@ namespace SkyRoof
       AlgorithmGroupBox.Size = new Size(230, 104);
       AlgorithmGroupBox.TabIndex = 0;
       AlgorithmGroupBox.TabStop = false;
-      AlgorithmGroupBox.Text = "Algorithm";
+      AlgorithmGroupBox.Text = "アルゴリズム";
       // 
       // NlmRadio
       // 
@@ -254,7 +254,7 @@ namespace SkyRoof
       NlmRadio.Name = "NlmRadio";
       NlmRadio.Size = new Size(119, 19);
       NlmRadio.TabIndex = 2;
-      NlmRadio.Text = "Non-Local Means";
+      NlmRadio.Text = "非局所平均法";
       NlmRadio.UseVisualStyleBackColor = true;
       NlmRadio.CheckedChanged += MethodRadio_CheckedChanged;
       // 
@@ -265,7 +265,7 @@ namespace SkyRoof
       WienerRadio.Name = "WienerRadio";
       WienerRadio.Size = new Size(62, 19);
       WienerRadio.TabIndex = 1;
-      WienerRadio.Text = "Wiener";
+      WienerRadio.Text = "ワイナー";
       WienerRadio.UseVisualStyleBackColor = true;
       WienerRadio.CheckedChanged += MethodRadio_CheckedChanged;
       // 
@@ -278,7 +278,7 @@ namespace SkyRoof
       NoneRadio.Size = new Size(54, 19);
       NoneRadio.TabIndex = 0;
       NoneRadio.TabStop = true;
-      NoneRadio.Text = "None";
+      NoneRadio.Text = "なし";
       NoneRadio.UseVisualStyleBackColor = true;
       NoneRadio.CheckedChanged += MethodRadio_CheckedChanged;
       // 
@@ -301,7 +301,7 @@ namespace SkyRoof
       CancelBtn.Name = "CancelBtn";
       CancelBtn.Size = new Size(75, 25);
       CancelBtn.TabIndex = 3;
-      CancelBtn.Text = "Cancel";
+      CancelBtn.Text = "中止";
       CancelBtn.UseVisualStyleBackColor = true;
       // 
       // OkBtn

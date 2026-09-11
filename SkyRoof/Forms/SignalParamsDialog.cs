@@ -609,7 +609,7 @@ namespace SkyRoof
       if (InvokeRequired) { BeginInvoke(() => ShowDiscoveryStopped(reason)); return; }
 
       Discovering = false;
-      DiscoverBtn.Text = "Discover";
+      DiscoverBtn.Text = "検出";
       StoppedExplicitly = true;
       EndSearchDisplay(true);
       CountdownText = null;
@@ -638,7 +638,7 @@ namespace SkyRoof
       if (InvokeRequired) { BeginInvoke(() => ShowDiscovered(found, need)); return; }
 
       Discovering = false;
-      DiscoverBtn.Text = "Discover";
+      DiscoverBtn.Text = "検出";
       Original = found;
       Quiet(() =>
       {
@@ -712,7 +712,7 @@ namespace SkyRoof
     public void ShowDiscoveryEnded(bool found)
     {
       Discovering = false;
-      DiscoverBtn.Text = "Discover";
+      DiscoverBtn.Text = "検出";
       if (StoppedExplicitly) { StoppedExplicitly = false; return; }
       if (!found)
       {
@@ -744,7 +744,7 @@ namespace SkyRoof
       HasDiscovered = false;
       Discovering = false;
       StoppedExplicitly = false;
-      DiscoverBtn.Text = "Discover";
+      DiscoverBtn.Text = "検出";
 
       TelemetryFormatCombo.DataSource = new List<string>(view.FormatIds);
       // the co-channel switch is the caller writing the dialog, not an operator edit, and it ends whatever

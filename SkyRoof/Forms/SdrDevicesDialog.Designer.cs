@@ -99,14 +99,14 @@ namespace SkyRoof
       // 
       SelectSdrMNU.Name = "SelectSdrMNU";
       SelectSdrMNU.Size = new Size(107, 22);
-      SelectSdrMNU.Text = "Select";
+      SelectSdrMNU.Text = "選択";
       SelectSdrMNU.Click += SelectSdrMNU_Click;
       // 
       // DeleteSdrMNU
       // 
       DeleteSdrMNU.Name = "DeleteSdrMNU";
       DeleteSdrMNU.Size = new Size(107, 22);
-      DeleteSdrMNU.Text = "Delete";
+      DeleteSdrMNU.Text = "削除";
       DeleteSdrMNU.Click += DeleteSdrMNU_Click;
       // 
       // imageList1
@@ -135,7 +135,7 @@ namespace SkyRoof
       label2.Name = "label2";
       label2.Size = new Size(111, 15);
       label2.TabIndex = 10;
-      label2.Text = "SDR Device Settings";
+      label2.Text = "SDR Deviceの設定";
       // 
       // SdrDevicesDialog
       // 

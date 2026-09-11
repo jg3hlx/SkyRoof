@@ -61,7 +61,7 @@ namespace SkyRoof
       label2.Name = "label2";
       label2.Size = new Size(86, 15);
       label2.TabIndex = 2;
-      label2.Text = "DX Grid Square";
+      label2.Text = "DX グリッド・スクエア";
       // 
       // SatelliteComboBox
       // 
