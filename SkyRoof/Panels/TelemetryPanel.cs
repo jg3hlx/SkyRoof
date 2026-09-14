@@ -482,6 +482,19 @@ namespace SkyRoof
       }
     }
 
+    /// <summary>Where one decoded frame's tree leaf belongs, and whether the assembler kept it. Both
+    /// questions can only be answered on the decode thread — the type tests read the live assemblers, and
+    /// the accept flag is what their <c>Push</c> calls set as they run — so the answer travels to the UI
+    /// thread with the frame rather than being worked out again there.</summary>
+    private readonly record struct FrameRouting(bool ToImage, bool ToVoice, bool Accepted);
+
+    /// <summary>The one-frame scratch the assembler subscriptions write and the frame handler reads the
+    /// moment <c>Push</c> returns. A plain cell is enough: one decoder pushes one frame at a time, on one
+    /// thread, and the events fire synchronously inside the call. It lives in the subscription closure
+    /// rather than in a field so that a disposed decoder's flush can never write where the next decoder's
+    /// frame handler reads — the same reason the node maps live there.</summary>
+    private sealed class PushOutcome { internal bool Accepted; }
+
     internal class TxPassInfo
     {
       internal DateTime StartTime = DateTime.UtcNow;
@@ -495,6 +508,13 @@ namespace SkyRoof
       internal int ImageCount = 0;
       internal double MaxSnrDb = double.NaN;
       internal bool HasValidFrame = false;
+      // The picture and the voice message this pass's fragments are filed under: the last one opened, which
+      // is the one the assemblers are filling — both are single-transfer-at-a-time by construction, so the
+      // last node opened and the transfer in progress are the same thing. Kept here rather than found by
+      // walking the pass node's children, which on a pass of thousands of frames would cost a scan each.
+      // Null until the pass's first picture or message, and fragments arriving before that stay at pass level.
+      internal TreeNode? LastImageNode;
+      internal TreeNode? LastVoiceNode;
 
       internal TxPassInfo(SatnogsDbTransmitter? transmitter, int orbit, double terrestrialHz = 0)
       {
@@ -879,6 +899,9 @@ namespace SkyRoof
         var sstvSnapshot = SstvSnapshot(snapshot);
         CurrentDecode = snapshot;
         Decoder = new(snapshot.SignalParams, snapshot.Satellite?.norad_cat_id, telemetry, sstv, fmEngine, detectParams);
+        // shared by the frame handler and the two assembler subscriptions below, all of which run on the
+        // decode thread and none of which outlive this decoder
+        var pushed = new PushOutcome();
         if (Decoder.Pipeline != null)
         {
           // the image assembler is fed from the frame handler, and is captured here rather than read off
@@ -886,7 +909,7 @@ namespace SkyRoof
           // transmitter's decoder, and this decoder's frames must never reach that one's assembler.
           var images = Decoder.Images;
           var voice = Decoder.Voice;
-          Decoder.Pipeline.FrameDecoded += frame => FrameDecodedHandler(frame, snapshot, images, voice);
+          Decoder.Pipeline.FrameDecoded += frame => FrameDecodedHandler(frame, snapshot, images, voice, pushed);
           Decoder.Pipeline.BurstDecoded += report => BurstDecodedHandler(report, snapshot);
         }
         if (Decoder.Images != null)
@@ -896,7 +919,11 @@ namespace SkyRoof
           // next decoder's images. Images ride the telemetry frames, so they carry the TELEMETRY
           // snapshot's identity — there is no third snapshot here.
           var imageNodes = new Dictionary<int, TreeNode>();
-          Decoder.Images.ImageUpdated += product => SsdvImageHandler(product, snapshot, imageNodes, false);
+          // ImageUpdated fires once per fragment the assembler took in, synchronously inside the Push the
+          // frame handler is sitting in, which is what makes the flag readable there. ImageCompleted does
+          // not set it: it also fires for the image the sender has just moved off, which this frame did
+          // not go into.
+          Decoder.Images.ImageUpdated += product => { pushed.Accepted = true; SsdvImageHandler(product, snapshot, imageNodes, false); };
           Decoder.Images.ImageCompleted += product => SsdvImageHandler(product, snapshot, imageNodes, true);
         }
         if (Decoder.Voice != null)
@@ -906,7 +933,8 @@ namespace SkyRoof
           // is stable for the life of a message. The closure keeps a disposed decoder's flush out of the
           // next decoder's nodes, exactly as above.
           var voiceNodes = new Dictionary<int, TreeNode>();
-          Decoder.Voice.VoiceUpdated += product => VoiceMessageHandler(product, snapshot, voiceNodes, false);
+          // sets the accept flag on the same terms as the image subscription above
+          Decoder.Voice.VoiceUpdated += product => { pushed.Accepted = true; VoiceMessageHandler(product, snapshot, voiceNodes, false); };
           Decoder.Voice.VoiceCompleted += product => VoiceMessageHandler(product, snapshot, voiceNodes, true);
         }
         // the detection-only branch exists for the search alone: its bursts go to the session and nowhere
@@ -1026,12 +1054,20 @@ namespace SkyRoof
     }
 
     private void FrameDecodedHandler(Frame frame, DecodeSnapshot snapshot, IImageAssembler? images,
-      IAudioAssembler? voice)
+      IAudioAssembler? voice, PushOutcome pushed)
     {
       ctx.KissServer.SendToAll(frame);
       // held frames are dropped, not queued: uploading starts at the Save click and runs forward from there
       // (§4.6). Parameters that were never edited are never held — the plain database path is untouched.
       if (!UploadHeld && snapshot.Satellite?.norad_cat_id is int norad) SatnogsUploader?.Submit(frame, norad);
+      // Which tree node the frame's leaf will go under, asked BEFORE the Push that may answer it: these are
+      // the assemblers' own structural gates, and they are true for a fragment the Push then throws away —
+      // a failed checksum, a duplicate, an offset that cannot be placed. Those are exactly the frames a
+      // picture's child list would otherwise be missing, and nothing downstream can recover them, since
+      // only the fragments that survived raise an event.
+      bool toImage = images?.IsImageFrame(frame) == true;
+      bool toVoice = voice?.IsVoiceFrame(frame) == true;
+      pushed.Accepted = false;
       // Images ride the telemetry frames, so every frame is offered unconditionally and the assembler's
       // own source parser drops the ones that are not image fragments — on HADES-SA, where the SSDV
       // packets are interleaved with telemetry on one downlink, that is most of them. Re-transcoding the
@@ -1041,12 +1077,17 @@ namespace SkyRoof
       // drops everything that is not a codec2 sub-frame, which on this downlink is most frames. Re-decoding
       // the whole message per sub-frame is under a millisecond, so it too stays on the decode thread.
       voice?.Push(frame);
+      // Read after both Pushes and before the marshal below, which is what puts the tree in the right order:
+      // a fragment that opens a picture reaches ShowSsdvImage through a BeginInvoke queued INSIDE the Push
+      // above, so the node it is filed under is already on the tree by the time AddFrame runs. Moving either
+      // Push below this marshal would silently leave every first fragment parentless.
+      var routing = new FrameRouting(toImage, toVoice, pushed.Accepted);
       BeginInvoke(() =>
       {
         // read before AddFrame, which may set DemodValidated on this very frame: that frame is the one that
         // made the parameters found, and what the save gate asks for is 2 MORE of them (§4.2).
         bool wasValidated = DemodValidated;
-        AddFrame(frame, snapshot);
+        AddFrame(frame, snapshot, routing);
         // frames decoded AFTER the parameters went green are the evidence the save decision rests on (§2).
         // The increment is kept out of the null-conditional call so that it also runs with the dialog closed
         // — the count must survive the operator closing the dialog and letting the pass run. Gated on the
@@ -1287,7 +1328,10 @@ namespace SkyRoof
       foreach (var frame in found.Frames)
       {
         ctx.KissServer.SendToAll(frame);
-        AddFrame(frame, decode);
+        // no routing: the search decodes these inside BurstDiscovery with no assembler wired to it at all,
+        // so nothing has been offered a fragment of them and none of them can be filed under a picture or a
+        // message. They go to the pass node, which is where every frame went before there was a choice.
+        AddFrame(frame, decode, default);
       }
     }
 
@@ -1496,7 +1540,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                       treeview
     //----------------------------------------------------------------------------------------------
-    private void AddFrame(Frame frame, DecodeSnapshot snapshot)
+    private void AddFrame(Frame frame, DecodeSnapshot snapshot, FrameRouting routing)
     {
       var (passNode, txPassInfo) = EnsureCurrentPassNode(snapshot);
 
@@ -1517,9 +1561,15 @@ namespace SkyRoof
       }
 
       var (addr, addrLen) = ExtractAddress(frame, snapshot);
-      string nodeText = $"{ClockWidget.Stamp(DateTime.UtcNow, "HH:mm:ss")}  {frame.Length} bytes  {addr}";
+      // the SSDV packet's own verdict, taken once here and used twice: it labels the tree leaf and it goes
+      // into the detail text. Null on every frame that is not an SSDV packet, the whole raw-JPEG family
+      // included, which is why it is not the thing that decides where the leaf is filed.
+      var imageCheck = ImageAssemblerFactory.CheckImagePacket(
+        snapshot.SignalParams, snapshot.Satellite?.norad_cat_id, frame);
+      string nodeText = $"{ClockWidget.Stamp(DateTime.UtcNow, "HH:mm:ss")}  {frame.Length} bytes  {addr}" +
+        DescribeFragmentOutcome(routing, imageCheck);
       var frameNode = new TreeNode(nodeText);
-      string frameText = BuildFrameText(frame, snapshot, addr, addrLen);
+      string frameText = BuildFrameText(frame, snapshot, addr, addrLen, imageCheck);
       frameNode.Tag = frameText;
       txPassInfo.FrameCount++;
 
@@ -1534,9 +1584,39 @@ namespace SkyRoof
         UpdateGearButton();
       }
 
-      AddLeaf(passNode, frameNode);
+      // An image or voice frame is filed under the picture or the message it belongs to rather than beside
+      // it, which is what lets a pass of thousands of fragments read as a handful of lines. The parent is
+      // the last one opened in this pass, not one looked up by id: a duplicate and a rejected fragment
+      // carry no id anybody can trust, and the assemblers only ever fill one transfer at a time anyway.
+      // A type-matching frame that arrives before any such node exists — the opening fragment of a picture
+      // failing its CRC, say — falls back to the pass node, which is where it would have gone before.
+      var parent = routing.ToImage ? txPassInfo.LastImageNode
+        : routing.ToVoice ? txPassInfo.LastVoiceNode : null;
+      if (parent != null) AddFragment(parent, frameNode);
+      else AddLeaf(passNode, frameNode);
       if (treeView1.SelectedNode == passNode) richTextBox1.Text = txPassInfo.Describe(DescribeSignalParamsOrUnknown(txPassInfo.SignalParams));
     }
+
+    /// <summary>The suffix that says what became of an image or voice fragment, empty for an ordinary frame.
+    /// Every frame of the type is filed under the picture, so without this its children cannot be read
+    /// against its "n of m fragments" label — the ones that changed nothing are the whole of the difference
+    /// between the two counts, and they are indistinguishable from the rest by time and length alone.</summary>
+    private static string DescribeFragmentOutcome(FrameRouting routing, ImagePacketCheck? check) => routing switch
+    {
+      // the packet's own CRC-32 failed, so it was read and thrown away. Off air this is the difference
+      // between "the satellite sent no picture" and "none of its packets survived the pass".
+      { ToImage: true } when check is { Ok: false } => "  CRC FAIL",
+      // it parsed, and the assembler still took nothing from it: on the SSDV family, where the CRC has
+      // already spoken, a duplicate is the only thing left that it can be.
+      { ToImage: true, Accepted: false } when check != null => "  duplicate",
+      // the raw-JPEG family, whose fragments carry no checksum. Here the same silence may be a duplicate,
+      // an offset too far out to be believed, or a transfer that is not a picture at all — USP moves logs
+      // and configs down the channel it moves images down. Nothing here can separate those, so the label
+      // claims no more than it knows.
+      { ToImage: true, Accepted: false } => "  not used",
+      { ToVoice: true, Accepted: false } => "  duplicate",
+      _ => ""
+    };
 
     /// <summary>Returns the pass node this snapshot's content belongs to, and its info, creating the node
     /// when this is the first burst or frame of a new transmitter+orbit pass. New telemetry/SSTV pass nodes
@@ -1597,6 +1677,16 @@ namespace SkyRoof
       if (track) TrackNewNode(leaf);
     }
 
+    /// <summary>Adds a fragment leaf under the picture or message it belongs to. Deliberately not
+    /// <see cref="AddLeaf"/>: it neither expands the parent nor offers the leaf the selection, because a
+    /// picture is meant to stay one line in the tree with its fragments folded away underneath. Expanding
+    /// here would unfold it on every fragment — nine a second on a Geoscan pass — and selecting a child
+    /// would do the same indirectly, since WinForms expands a node's ancestors to bring it into view.
+    /// <para>The picture's own node keeps the selection instead, which <c>ShowSsdvImage</c> gives it once
+    /// there is something to look at. Selecting THAT leaves it collapsed: only ancestors are expanded.</para>
+    /// </summary>
+    private static void AddFragment(TreeNode parent, TreeNode leaf) => parent.Nodes.Add(leaf);
+
     // the header source/destination address and the byte length of the address field, so the caller can label the
     // frame and drop those bytes from the ASCII/HEX payload views. AX.25 G3RUH frames, and USP frames (which
     // encapsulate an AX.25 UI frame), both begin with an AX.25 callsign address field. ("", 0) when none parses.
@@ -1618,7 +1708,8 @@ namespace SkyRoof
       }
     }
 
-    private string BuildFrameText(Frame frame, DecodeSnapshot snapshot, string addr, int addrLen)
+    private string BuildFrameText(Frame frame, DecodeSnapshot snapshot, string addr, int addrLen,
+      ImagePacketCheck? imageCheck)
     {
       // telemetry section: the extracted address (when any) followed by the parsed telemetry fields (when a
       // format matches). Only emitted when there is something to show.
@@ -1650,8 +1741,7 @@ namespace SkyRoof
       // FEC — carry no frame CRC at all, so the "CRC:" line below reads "n/a" on precisely the frames whose
       // payload can be checked. Off air that is the difference between "no image because the satellite sent
       // none" and "no image because none of the packets survived the pass", which the frame list cannot show.
-      string ssdvMeta = ImageAssemblerFactory.CheckImagePacket(
-        snapshot.SignalParams, snapshot.Satellite?.norad_cat_id, frame) switch
+      string ssdvMeta = imageCheck switch
       {
         { Ok: true, CorrectedBytes: 0 } => "  SSDV packet: CRC OK\n",
         { Ok: true } check => $"  SSDV packet: CRC OK, {check.CorrectedBytes} RS corrections\n",
@@ -2083,6 +2173,9 @@ namespace SkyRoof
         // this capture the tree followed it anyway — which is how a good picture was replaced on screen
         // by a blank rectangle at the exact instant it was written to disk. See TrackNewNode below.
         AddLeaf(passNode, node, track: false);
+        // from here on this pass's image fragments are filed under this node — see AddFrame. Set for the
+        // SSDV and raw-JPEG families only: an SSTV image is built from audio and has no frames to adopt.
+        txPassInfo.LastImageNode = node;
       }
 
       // take in the new reconstruction of this pass; RenderImage below swaps the picture on screen for it
@@ -2312,6 +2405,8 @@ namespace SkyRoof
         node.Tag = new VoiceMessageInfo(snapshot, product);
         voiceNodes[product.FirstNumber] = node;
         AddLeaf(passNode, node);
+        // from here on this pass's voice sub-frames are filed under this node — see AddFrame
+        txPassInfo.LastVoiceNode = node;
       }
 
       var info = (VoiceMessageInfo)node!.Tag;
