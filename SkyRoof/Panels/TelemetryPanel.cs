@@ -193,6 +193,9 @@ namespace SkyRoof
       string SaveFilter { get; }
       string SaveFileName { get; }
       void SaveAs(string path);
+      // whether there is anything to write. False grays "Save As..." rather than letting it produce an
+      // empty file, which is what an SSDV transfer whose file header never arrived has to offer.
+      bool CanSave { get; }
     }
 
     // one progressively-built SSTV image: the tree node's Tag, updated in place as ImageUpdated events
@@ -241,6 +244,8 @@ namespace SkyRoof
       // saved file names stay in local time whatever the clock widget shows, see NameMatches
       public string SaveFileName => $"{FirstSeen.ToLocalTime():yyyyMMdd_HHmmss}_{Event.Mode}.png";
       public void SaveAs(string path) => Rendering.SavePng(path);
+      // a node exists only once the decoder has a reconstruction, so there is always a picture to write
+      public bool CanSave => true;
     }
 
     // one progressively-built SSDV / raw-JPEG image: the tree node's Tag, updated in place as fragments
@@ -257,12 +262,20 @@ namespace SkyRoof
       // the same picture rebuilt from this pass plus the archived receptions in Archived, or null when
       // the operator has not asked for that. Recomputed as fragments arrive, so it keeps filling in live.
       internal ImageProduct? MergedProduct;
+      // the displayed reconstruction rebuilt with the entropy repair switched off, or null when the
+      // operator has not asked for that. A third product rather than a flag on the other two, because the
+      // repair happens inside emission: the unrepaired picture can only be produced by building it again
+      // from the fragments, and it therefore goes stale exactly where MergedProduct does.
+      internal ImageProduct? UnrepairedProduct;
       // earlier receptions of this picture, read out of their sidecars and cached on the first combine so
       // that re-merging on every arriving fragment costs no disk
       internal List<ArchivedPass>? Archived;
       // whether the merged reconstruction is the one on display. Everything that shows or saves the image
       // reads Product, so this one flag is the whole toggle.
       internal bool Combined;
+      // whether the entropy repair's answer is the one on display. On by default, because the repair is
+      // automatic and runs inside emission — this is the escape hatch for a wrong resync, not an opt-in.
+      internal bool Repaired = true;
       // the assembler has announced this image as over. Not the same as Product.Complete: a pass that ends
       // mid-image finalizes what arrived, which off air is the normal case rather than the exception.
       internal bool Final;
@@ -272,7 +285,14 @@ namespace SkyRoof
       internal bool Tracked;
       public Bitmap? Bitmap { get; set; }
       public string? Text => Product.Text;
+      // the auto-saved .jpg, or null when this reception had no picture to write. "Open in Viewer" and
+      // the Saved: line both key off it, so both stay silent rather than pointing at a file that is not
+      // a picture — which is how the 2026-09-13 header-loss defect reached the operator.
       public string? SavedPath { get; set; }
+      // the auto-saved .json, which is written whenever there are fragments to archive and so can be
+      // present with no SavedPath beside it. Kept rather than derived from SavedPath by extension for
+      // exactly that reason — see FindArchivedPasses, which has to know its own sidecar.
+      internal string? SidecarPath;
 
       internal SsdvImageInfo(DecodeSnapshot snapshot, ImageProduct product)
       {
@@ -280,9 +300,16 @@ namespace SkyRoof
         PassProduct = product;
       }
 
-      /// <summary>The reconstruction currently on display: the merge when combining is on, this pass's
-      /// otherwise. Toggling off is exact rather than approximate — the pass product was never altered.</summary>
-      internal ImageProduct Product => Combined && MergedProduct != null ? MergedProduct : PassProduct;
+      /// <summary>The repaired reconstruction: the merge when combining is on, this pass's otherwise.
+      /// Toggling off is exact rather than approximate — the pass product was never altered.
+      /// <para>Kept apart from <see cref="Product"/> because the repair switch has to be judged against
+      /// what the repair found, which the unrepaired product by definition does not carry.</para></summary>
+      internal ImageProduct RepairedProduct => Combined && MergedProduct != null ? MergedProduct : PassProduct;
+
+      /// <summary>The reconstruction currently on display. The unrepaired rebuild wins when the operator
+      /// has asked for it, and a rebuild that yielded nothing falls back to the repaired picture rather
+      /// than to an empty pane — the same rule MergedProduct follows.</summary>
+      internal ImageProduct Product => !Repaired && UnrepairedProduct != null ? UnrepairedProduct : RepairedProduct;
 
       public string Describe()
       {
@@ -315,14 +342,54 @@ namespace SkyRoof
           // -1 means the concept does not apply, which is SSDV, where a lost packet costs its own MCUs
           // and nothing else.
           (Product.FirstGapOffset >= 0 ? $"Intact to: {Product.FirstGapOffset} bytes\r\n" : "") +
+          // what the entropy repair recovered past that boundary, which is the whole reason the boundary
+          // is no longer where the picture stops being useful
+          DescribeRepair(Product.Repair) +
           $"Status: {(Product.Complete ? "complete" : Final ? "incomplete" : "receiving...")}\r\n" +
-          (SavedPath != null ? $"Saved: {SavedPath}\r\n" : "");
+          (SavedPath != null ? $"Saved: {SavedPath}\r\n" : "") +
+          // saying which of the two files was written, because they are two decisions. A reception whose
+          // JPEG header did not arrive has nothing a decoder could open, and the fragments are still
+          // worth keeping — the next pass over this picture is what turns them into one.
+          (SavedPath == null && SidecarPath != null
+            ? $"No picture: the file header did not arrive.\r\nFragments archived: {SidecarPath}\r\n"
+            : "");
+      }
+
+      /// <summary>
+      /// What the entropy repair made of this reception, or nothing at all when it did not run — a
+      /// complete file, a progressive one, an SSDV picture, or the repair switched off. Runs are reported
+      /// separately from the total because they are different facts: a run is a piece of the scan put back
+      /// where the encoder wrote it, and a declined run is one whose MCU count is known exactly and whose
+      /// position is not, which is a refusal rather than a failure and is worth saying out loud.
+      /// </summary>
+      private static string DescribeRepair(JpegRepair? repair)
+      {
+        if (repair == null) return "";
+
+        string counts = repair.PlacedMcus.Count == 2
+          ? $"{repair.PlacedMcus[0]} and {repair.PlacedMcus[1]}"
+          : string.Join(", ", repair.PlacedMcus);
+
+        string placed = repair.PlacedMcus.Count switch
+        {
+          0 => "nothing placed",
+          1 => $"1 run placed ({counts} MCUs)",
+          _ => $"{repair.PlacedMcus.Count} runs placed ({counts} MCUs)"
+        };
+
+        return $"Repair: {repair.Gaps} {(repair.Gaps == 1 ? "gap" : "gaps")}, {placed}" +
+          (repair.DeclinedRuns > 0 ? $", {repair.DeclinedRuns} declined" : "") +
+          $" — {repair.RecoveredMcus} of {repair.McuCount} MCUs recovered\r\n";
       }
 
       public string SaveFilter => Product.Text != null ? "Text File|*.txt" : "JPEG Image|*.jpg";
       // saved file names stay in local time whatever the clock widget shows, see NameMatches
       public string SaveFileName =>
         $"{FirstSeen.ToLocalTime():yyyyMMdd_HHmmss}_{Product.ImageId}{(Product.Text != null ? ".txt" : ".jpg")}";
+      // nothing to write when the reconstruction on display has no picture and no text: the emitter
+      // returns no bytes at all for a transfer whose header did not arrive, and a zero-byte .jpg on disk
+      // is worse than a grayed menu item. Reads Product, so it follows the Combine toggle.
+      public bool CanSave => Product.Text != null || Product.Jpeg.Length > 0;
       public void SaveAs(string path)
       {
         if (Product.Text != null) File.WriteAllText(path, Product.Text);
@@ -1879,10 +1946,12 @@ namespace SkyRoof
 
     // gray the "Open in Viewer" item until the selected image has been auto-saved to a file on disk, and
     // the "Combine with Previous Passes" item until this picture has actually been heard before — the
-    // archive is searched here, on demand, rather than kept indexed
+    // archive is searched here, on demand, rather than kept indexed. "Save As..." is grayed when there is
+    // nothing to write at all, which follows the Combine toggle - see CanSave.
     private void ImageMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
     {
       var info = treeView1.SelectedNode?.Tag as IImageNodeInfo;
+      SaveImageMNU.Enabled = info?.CanSave == true;
       OpenImageMNU.Enabled = info?.SavedPath != null && File.Exists(info.SavedPath);
 
       // denoising needs the raw reconstruction, which rides only on the FINAL image event: a picture still
@@ -1896,6 +1965,13 @@ namespace SkyRoof
       CombineImageMNU.Text = canCombine
         ? $"Combine with Previous Passes ({ssdv!.Archived!.Count})"
         : "Combine with Previous Passes";
+
+      // offered only where the walker actually found something to put back — a complete file, an SSDV
+      // picture and a refusal all have nothing to switch off. Judged on the REPAIRED product, which is the
+      // one that carries the finding: reading it off Product would gray the item out as soon as it was
+      // unchecked, and leave the operator with no way back.
+      RepairImageMNU.Enabled = ssdv?.RepairedProduct.Repair != null;
+      RepairImageMNU.Checked = ssdv != null && ssdv.Repaired;
     }
 
     private void OpenImageMNU_Click(object sender, EventArgs e)
@@ -1923,9 +1999,16 @@ namespace SkyRoof
     // same as the image being whole, and off air it usually is not.
     private void SsdvImageHandler(ImageProduct product, DecodeSnapshot snapshot, Dictionary<int, TreeNode> imageNodes, bool final)
     {
-      string? savedPath = final && ShouldSaveImage(product) ? SaveImageToFile(product, snapshot) : null;
-      BeginInvoke(() => ShowSsdvImage(product, snapshot, imageNodes, savedPath, final));
+      var saved = final && ShouldSaveImage(product) ? SaveImageToFile(product, snapshot) : default;
+      BeginInvoke(() => ShowSsdvImage(product, snapshot, imageNodes, saved, final));
     }
+
+    /// <summary>What actually reached the disk for one finalized image. The <c>.jpg</c> and the
+    /// <c>.json</c> stopped being one decision on 2026-09-13: a reception whose JPEG header was lost has
+    /// no picture to write — three such images were auto-saved as unopenable <c>.jpg</c> files that day —
+    /// but its fragments are exactly what a later pass merges against, so the sidecar still goes out.
+    /// Either path may be null; both null means nothing was written.</summary>
+    private readonly record struct SavedImage(string? JpegPath, string? SidecarPath);
 
     // fragments an image must carry before it is written to disk — see ShouldSaveImage for why two is
     // the right number and why a coverage fraction is deliberately not used
@@ -1969,9 +2052,15 @@ namespace SkyRoof
     /// has no off-air validation, hands out no fragments and so keeps the test.</para></summary>
     private static bool ShouldSaveImage(ImageProduct product)
     {
-      if (product.Jpeg.Length == 0) return false;
-
       bool rawJpeg = product.FragmentFormat == RawJpegMerge.Format;
+
+      // something has to reach the disk: a picture to write, or fragments to archive. Until 2026-09-13
+      // this read "no picture, nothing saved", which threw the fragments away with it — and the
+      // receptions that emit no picture, the ones whose header was lost, are precisely the ones whose
+      // fragments a later pass needs. SaveImageToFile decides which of the two files it writes.
+      if (product.Jpeg.Length == 0 && (product.FragmentFormat == null || product.Fragments.Count == 0))
+        return false;
+
       int floor = product.FragmentFormat != null && !rawJpeg ? 1 : MinFragmentsToSave;
 
       return product.FragmentsReceived >= floor
@@ -1979,7 +2068,7 @@ namespace SkyRoof
     }
 
     private void ShowSsdvImage(ImageProduct product, DecodeSnapshot snapshot, Dictionary<int, TreeNode> imageNodes,
-      string? savedPath, bool final)
+      SavedImage saved, bool final)
     {
       var (passNode, txPassInfo) = EnsureCurrentPassNode(snapshot);
 
@@ -2000,7 +2089,8 @@ namespace SkyRoof
       var info = (SsdvImageInfo)node!.Tag;
       info.PassProduct = product;
       info.Final |= final;
-      if (savedPath != null) info.SavedPath = savedPath;
+      if (saved.JpegPath != null) info.SavedPath = saved.JpegPath;
+      if (saved.SidecarPath != null) info.SidecarPath = saved.SidecarPath;
       // the tree label always counts what THIS pass heard, combined or not — it is the pass that the node
       // is a record of, and a label that changed under a toggle would make two nodes incomparable
       node.Text = product.Text != null
@@ -2020,6 +2110,8 @@ namespace SkyRoof
         // other. It is inside the gate because it costs more than the decode does — a raw-JPEG merge
         // rewrites every fragment of every reception — and there is no point merging what is not shown.
         if (info.Combined) Recombine(info);
+        // and the unrepaired rebuild goes stale on the same fragments, so it fills in live beside them
+        if (!info.Repaired) RebuildUnrepaired(info);
         RenderImage(info);
       }
 
@@ -2049,13 +2141,18 @@ namespace SkyRoof
     // dispose the bitmap it replaces, but only after the PictureBox has let go of it. A JPEG the OS decoder
     // refuses, which the first fragments of an image legitimately can be, leaves the previous rendering on
     // screen rather than blanking it, and leaves its bitmap undisposed.
-    private void RenderImage(SsdvImageInfo info)
+    // That rule is for a picture filling in, where the next arrival can only improve what is on screen. It
+    // is wrong when the reconstruction being shown is swapped for a different one, because then a refused
+    // JPEG is the answer rather than a hiccup: turning Combine off on an image whose own pass never carried
+    // a file header left the combined picture on screen, beside the text saying there was no picture. Such
+    // a caller passes keepOnFailure: false and gets the empty pane that this pass alone actually has.
+    private void RenderImage(SsdvImageInfo info, bool keepOnFailure = true)
     {
       var oldBitmap = info.Bitmap;
       var bitmap = DecodeJpeg(info.Product.Jpeg);
-      if (bitmap != null) info.Bitmap = bitmap;
+      if (bitmap != null || !keepOnFailure) info.Bitmap = bitmap;
       if (ImageBox.Image == oldBitmap) ImageBox.Image = info.Bitmap;
-      if (bitmap != null) oldBitmap?.Dispose();
+      if (bitmap != null || !keepOnFailure) oldBitmap?.Dispose();
     }
 
     // The received JPEG as a Bitmap. Copied out of the stream rather than handed the stream directly: GDI+
@@ -2083,7 +2180,7 @@ namespace SkyRoof
     /// lets a later pass of the same picture be combined with this one. They are the fragments of
     /// <b>this</b> reception only, never of a combination — a sidecar that recorded a merge would be
     /// re-merged next time, and the archive would slowly stop meaning anything.</para></summary>
-    private static string? SaveImageToFile(ImageProduct product, DecodeSnapshot snapshot)
+    private static SavedImage SaveImageToFile(ImageProduct product, DecodeSnapshot snapshot)
     {
       try
       {
@@ -2091,7 +2188,14 @@ namespace SkyRoof
         Directory.CreateDirectory(folder);
         string sat = string.Concat((snapshot.Satellite?.name ?? "Unknown").Split(Path.GetInvalidFileNameChars()));
         string path = Path.Combine(folder, $"{DateTime.Now:yyyyMMdd_HHmmss}_{sat}_{product.ImageId}.jpg");
-        File.WriteAllBytes(path, product.Jpeg);
+        // only when there is a picture: emission withholds one whose JPEG header was lost, and writing
+        // those bytes anyway is what put three files that open in no decoder into this folder
+        string? jpegPath = null;
+        if (product.Jpeg.Length > 0)
+        {
+          File.WriteAllBytes(path, product.Jpeg);
+          jpegPath = path;
+        }
 
         var meta = new
         {
@@ -2111,13 +2215,16 @@ namespace SkyRoof
         };
         var json = JObject.FromObject(meta);
         if (product.FragmentFormat != null) WriteFragments(json, product);
-        File.WriteAllText(Path.ChangeExtension(path, ".json"), json.ToString(Formatting.Indented));
-        return path;
+        // the sidecar goes out either way — it is the record of the reception, and when there is no
+        // picture it is the only thing worth keeping
+        string sidecarPath = Path.ChangeExtension(path, ".json")!;
+        File.WriteAllText(sidecarPath, json.ToString(Formatting.Indented));
+        return new SavedImage(jpegPath, sidecarPath);
       }
       catch (Exception e)
       {
         Log.Error(e, "Failed to save the received image");
-        return null;
+        return default;
       }
     }
 
@@ -2345,8 +2452,10 @@ namespace SkyRoof
       string folder = Path.Combine(Utils.GetUserDataFolder(), "SsdvImages");
       if (!Directory.Exists(folder)) return found;
 
-      // this node's own sidecar is not an earlier pass; it is this one, written at finalization
-      string ownSidecar = info.SavedPath != null ? Path.ChangeExtension(info.SavedPath, ".json")! : "";
+      // this node's own sidecar is not an earlier pass; it is this one, written at finalization. Read
+      // from SidecarPath rather than derived from SavedPath: since the two writes split, a reception can
+      // have archived its fragments without having written a picture to hang the name off.
+      string ownSidecar = info.SidecarPath ?? "";
       DateTime oldest = DateTime.Now - CombineWindow;
 
       try
@@ -2437,6 +2546,21 @@ namespace SkyRoof
         : SsdvMerge.Build(receptions, format, info.PassProduct.Source);
     }
 
+    // Rebuild the displayed reconstruction with the entropy repair switched off, from the same receptions
+    // the repaired one was built from. There is no second copy to go back to and there deliberately is not
+    // one: the repair happens during emission, and the fragments are the record, so either answer can be
+    // produced from them at any time. Null for any family the raw-JPEG merge does not read, which is every
+    // family the repair never ran on anyway.
+    private static void RebuildUnrepaired(SsdvImageInfo info)
+    {
+      var receptions = new List<IReadOnlyList<ImageFragment>> { info.PassProduct.Fragments };
+      if (info.Combined && info.Archived != null)
+        foreach (var pass in info.Archived) receptions.Add(pass.Fragments);
+
+      info.UnrepairedProduct = RawJpegMerge.Build(receptions, info.PassProduct.FragmentFormat,
+        info.PassProduct.ImageId, info.PassProduct.Source, repair: false);
+    }
+
     private void CombineImageMNU_Click(object sender, EventArgs e)
     {
       if (treeView1.SelectedNode?.Tag is not SsdvImageInfo info) return;
@@ -2449,8 +2573,44 @@ namespace SkyRoof
         Recombine(info);
       }
 
-      RenderImage(info);
+      // the unrepaired rebuild is of the receptions now on display, so it is stale the moment that set
+      // changes — exactly as MergedProduct is
+      if (!info.Repaired) RebuildUnrepaired(info);
+
+      RenderImage(info, keepOnFailure: false);
       DisplayImageInfo(info);
+    }
+
+    // The escape hatch for a resync the walker got wrong (B6): the repair is automatic and has no tunable,
+    // so what the operator judges is the result rather than any parameter, and the switch is a plain
+    // checkable item rather than a dialog. The auto-saved .jpg follows the display the way
+    // DenoiseImageMNU_Click's PNG does, so the file on disk stays the picture that was accepted.
+    private void RepairImageMNU_Click(object sender, EventArgs e)
+    {
+      if (treeView1.SelectedNode?.Tag is not SsdvImageInfo info) return;
+
+      info.Repaired = !info.Repaired;
+      if (!info.Repaired)
+      {
+        RebuildUnrepaired(info);
+        // nothing came of the rebuild, so there is no unrepaired picture to switch to. Put the switch back
+        // rather than leave the repaired one on screen under an unchecked menu item.
+        if (info.UnrepairedProduct == null) info.Repaired = true;
+      }
+
+      RenderImage(info, keepOnFailure: false);
+      ResaveImage(info);
+      DisplayImageInfo(info);
+    }
+
+    // Rewrite the auto-saved .jpg with the reconstruction now on display. The sidecar is not rewritten: it
+    // records the fragments this pass heard, which no switch on screen changes.
+    private static void ResaveImage(SsdvImageInfo info)
+    {
+      if (info.SavedPath == null || info.Product.Jpeg.Length == 0) return;
+
+      try { File.WriteAllBytes(info.SavedPath, info.Product.Jpeg); }
+      catch (Exception ex) { Log.Error(ex, "Failed to re-save the received image"); }
     }
 
 
