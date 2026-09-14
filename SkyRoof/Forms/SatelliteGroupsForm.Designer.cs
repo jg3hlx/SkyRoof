@@ -202,7 +202,7 @@
       // 
       GroupsTreePopupMenu.Items.AddRange(new ToolStripItem[] { RenameMNU2, DeleteMNU2, DetailsMNU2, ClearGroupMNU });
       GroupsTreePopupMenu.Name = "SatelliteListPopupMenu";
-      GroupsTreePopupMenu.Size = new Size(183, 92);
+      GroupsTreePopupMenu.Size = new Size(200, 92);
       GroupsTreePopupMenu.Opening += contextMenuStrip1_Opening;
       // 
       // RenameMNU2
@@ -210,7 +210,7 @@
       RenameMNU2.Name = "RenameMNU2";
       RenameMNU2.ShortcutKeyDisplayString = "";
       RenameMNU2.ShortcutKeys = Keys.F2;
-      RenameMNU2.Size = new Size(182, 22);
+      RenameMNU2.Size = new Size(199, 22);
       RenameMNU2.Text = "名前変更";
       RenameMNU2.Click += RenameMNU2_Click;
       // 
@@ -218,7 +218,7 @@
       // 
       DeleteMNU2.Name = "DeleteMNU2";
       DeleteMNU2.ShortcutKeys = Keys.Delete;
-      DeleteMNU2.Size = new Size(182, 22);
+      DeleteMNU2.Size = new Size(199, 22);
       DeleteMNU2.Text = "削除";
       DeleteMNU2.Click += DeleteMNU2_Click;
       // 
@@ -227,7 +227,7 @@
       DetailsMNU2.Name = "DetailsMNU2";
       DetailsMNU2.ShortcutKeyDisplayString = "";
       DetailsMNU2.ShortcutKeys = Keys.Control | Keys.D;
-      DetailsMNU2.Size = new Size(182, 22);
+      DetailsMNU2.Size = new Size(199, 22);
       DetailsMNU2.Text = "詳細...";
       DetailsMNU2.Click += DetailsMNU2_Click;
       // 
@@ -235,7 +235,7 @@
       // 
       ClearGroupMNU.Name = "ClearGroupMNU";
       ClearGroupMNU.ShortcutKeys = Keys.Control | Keys.W;
-      ClearGroupMNU.Size = new Size(182, 22);
+      ClearGroupMNU.Size = new Size(199, 22);
       ClearGroupMNU.Text = "グループの初期化";
       ClearGroupMNU.Click += ClearGroupMNU_Click;
       // 
@@ -284,14 +284,14 @@
       // 
       SatelliteListPopupMenu.Items.AddRange(new ToolStripItem[] { RenameSatMNU, AddToGroupMNU, DetailsMNU, toolStripMenuItem1 });
       SatelliteListPopupMenu.Name = "SatelliteListPopupMenu";
-      SatelliteListPopupMenu.Size = new Size(205, 114);
+      SatelliteListPopupMenu.Size = new Size(204, 92);
       // 
       // RenameSatMNU
       // 
       RenameSatMNU.Name = "RenameSatMNU";
       RenameSatMNU.ShortcutKeyDisplayString = "";
       RenameSatMNU.ShortcutKeys = Keys.F2;
-      RenameSatMNU.Size = new Size(204, 22);
+      RenameSatMNU.Size = new Size(203, 22);
       RenameSatMNU.Text = "名称変更";
       RenameSatMNU.Click += RenameSatMNU_Click;
       // 
@@ -300,7 +300,7 @@
       AddToGroupMNU.Name = "AddToGroupMNU";
       AddToGroupMNU.ShortcutKeyDisplayString = "";
       AddToGroupMNU.ShortcutKeys = Keys.Insert;
-      AddToGroupMNU.Size = new Size(204, 22);
+      AddToGroupMNU.Size = new Size(203, 22);
       AddToGroupMNU.Text = "グループに追加";
       AddToGroupMNU.Click += AddSatBtn_Click;
       // 
@@ -309,7 +309,7 @@
       DetailsMNU.Name = "DetailsMNU";
       DetailsMNU.ShortcutKeyDisplayString = "";
       DetailsMNU.ShortcutKeys = Keys.Control | Keys.D;
-      DetailsMNU.Size = new Size(204, 22);
+      DetailsMNU.Size = new Size(203, 22);
       DetailsMNU.Text = "衛星の詳細...";
       DetailsMNU.Click += DetailsMNU_Click;
       // 
@@ -317,7 +317,7 @@
       // 
       toolStripMenuItem1.Name = "toolStripMenuItem1";
       toolStripMenuItem1.ShortcutKeys = Keys.Control | Keys.C;
-      toolStripMenuItem1.Size = new Size(204, 22);
+      toolStripMenuItem1.Size = new Size(203, 22);
       toolStripMenuItem1.Text = "NORAD IDをコピー";
       toolStripMenuItem1.Click += toolStripMenuItem1_Click;
       // 
@@ -342,8 +342,6 @@
       listView1.Dock = DockStyle.Fill;
       listView1.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
       listView1.FullRowSelect = true;
-      // LabelEdit disabled: native in-place editing crashes via UIAutomationCore; renaming uses a modal dialog
-      listView1.LabelEdit = false;
       listView1.Location = new Point(0, 127);
       listView1.Name = "listView1";
       listView1.ShowGroups = false;
@@ -430,14 +428,14 @@
       label3.Dock = DockStyle.Left;
       label3.Location = new Point(3, 0);
       label3.Name = "label3";
-      label3.Size = new Size(45, 29);
+      label3.Size = new Size(34, 29);
       label3.TabIndex = 11;
       label3.Text = "検索:";
       label3.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // FilterTextbox
       // 
-      FilterTextbox.Location = new Point(54, 3);
+      FilterTextbox.Location = new Point(43, 3);
       FilterTextbox.Name = "FilterTextbox";
       FilterTextbox.Size = new Size(167, 23);
       FilterTextbox.TabIndex = 1;
@@ -447,7 +445,7 @@
       // 
       ClearSearchBtn.Font = new Font("Wingdings 2", 9F, FontStyle.Regular, GraphicsUnit.Point, 2);
       ClearSearchBtn.ForeColor = SystemColors.ControlDarkDark;
-      ClearSearchBtn.Location = new Point(227, 3);
+      ClearSearchBtn.Location = new Point(216, 3);
       ClearSearchBtn.Name = "ClearSearchBtn";
       ClearSearchBtn.Size = new Size(23, 22);
       ClearSearchBtn.TabIndex = 12;
@@ -458,7 +456,7 @@
       // 
       // UpdatedDateLabel
       // 
-      UpdatedDateLabel.Location = new Point(256, 0);
+      UpdatedDateLabel.Location = new Point(245, 0);
       UpdatedDateLabel.Name = "UpdatedDateLabel";
       UpdatedDateLabel.Size = new Size(281, 23);
       UpdatedDateLabel.TabIndex = 13;
@@ -509,7 +507,7 @@
       NonHamCheckbox.CheckState = CheckState.Checked;
       NonHamCheckbox.Location = new Point(114, 3);
       NonHamCheckbox.Name = "NonHamCheckbox";
-      NonHamCheckbox.Size = new Size(80, 19);
+      NonHamCheckbox.Size = new Size(75, 19);
       NonHamCheckbox.TabIndex = 8;
       NonHamCheckbox.Text = "Ham以外";
       NonHamCheckbox.UseVisualStyleBackColor = true;
@@ -534,7 +532,7 @@
       label4.Dock = DockStyle.Left;
       label4.Location = new Point(3, 0);
       label4.Name = "label4";
-      label4.Size = new Size(42, 25);
+      label4.Size = new Size(37, 25);
       label4.TabIndex = 5;
       label4.Text = "バンド:";
       label4.TextAlign = ContentAlignment.MiddleLeft;
@@ -542,10 +540,10 @@
       // VhfCheckbox
       // 
       VhfCheckbox.AutoSize = true;
-      VhfCheckbox.BackColor = Theme.VhfTint;
+      VhfCheckbox.BackColor = Color.LightGoldenrodYellow;
       VhfCheckbox.Checked = true;
       VhfCheckbox.CheckState = CheckState.Checked;
-      VhfCheckbox.Location = new Point(51, 3);
+      VhfCheckbox.Location = new Point(46, 3);
       VhfCheckbox.Name = "VhfCheckbox";
       VhfCheckbox.Size = new Size(48, 19);
       VhfCheckbox.TabIndex = 6;
@@ -557,10 +555,10 @@
       // UhfCheckbox
       // 
       UhfCheckbox.AutoSize = true;
-      UhfCheckbox.BackColor = Theme.UhfTint;
+      UhfCheckbox.BackColor = Color.LightCyan;
       UhfCheckbox.Checked = true;
       UhfCheckbox.CheckState = CheckState.Checked;
-      UhfCheckbox.Location = new Point(105, 3);
+      UhfCheckbox.Location = new Point(100, 3);
       UhfCheckbox.Name = "UhfCheckbox";
       UhfCheckbox.Size = new Size(49, 19);
       UhfCheckbox.TabIndex = 7;
@@ -574,7 +572,7 @@
       OtherBandsCheckbox.AutoSize = true;
       OtherBandsCheckbox.Checked = true;
       OtherBandsCheckbox.CheckState = CheckState.Checked;
-      OtherBandsCheckbox.Location = new Point(160, 3);
+      OtherBandsCheckbox.Location = new Point(155, 3);
       OtherBandsCheckbox.Name = "OtherBandsCheckbox";
       OtherBandsCheckbox.Size = new Size(56, 19);
       OtherBandsCheckbox.TabIndex = 8;
@@ -613,7 +611,7 @@
       TransponderCheckbox.CheckState = CheckState.Checked;
       TransponderCheckbox.Location = new Point(49, 3);
       TransponderCheckbox.Name = "TransponderCheckbox";
-      TransponderCheckbox.Size = new Size(91, 19);
+      TransponderCheckbox.Size = new Size(88, 19);
       TransponderCheckbox.TabIndex = 5;
       TransponderCheckbox.Text = "トランスポンダ";
       TransponderCheckbox.UseVisualStyleBackColor = true;
@@ -624,9 +622,9 @@
       TransceiverCheckbox.AutoSize = true;
       TransceiverCheckbox.Checked = true;
       TransceiverCheckbox.CheckState = CheckState.Checked;
-      TransceiverCheckbox.Location = new Point(146, 3);
+      TransceiverCheckbox.Location = new Point(143, 3);
       TransceiverCheckbox.Name = "TransceiverCheckbox";
-      TransceiverCheckbox.Size = new Size(84, 19);
+      TransceiverCheckbox.Size = new Size(88, 19);
       TransceiverCheckbox.TabIndex = 6;
       TransceiverCheckbox.Text = "トランスシーバ";
       TransceiverCheckbox.UseVisualStyleBackColor = true;
@@ -637,9 +635,9 @@
       TransmitterCheckbox.AutoSize = true;
       TransmitterCheckbox.Checked = true;
       TransmitterCheckbox.CheckState = CheckState.Checked;
-      TransmitterCheckbox.Location = new Point(236, 3);
+      TransmitterCheckbox.Location = new Point(237, 3);
       TransmitterCheckbox.Name = "TransmitterCheckbox";
-      TransmitterCheckbox.Size = new Size(85, 19);
+      TransmitterCheckbox.Size = new Size(84, 19);
       TransmitterCheckbox.TabIndex = 7;
       TransmitterCheckbox.Text = "トランスミッタ";
       TransmitterCheckbox.UseVisualStyleBackColor = true;
@@ -664,7 +662,7 @@
       label7.Dock = DockStyle.Left;
       label7.Location = new Point(3, 0);
       label7.Name = "label7";
-      label7.Size = new Size(42, 25);
+      label7.Size = new Size(54, 25);
       label7.TabIndex = 4;
       label7.Text = "ステータス:";
       label7.TextAlign = ContentAlignment.MiddleLeft;
@@ -674,7 +672,7 @@
       AliveCheckbox.AutoSize = true;
       AliveCheckbox.Checked = true;
       AliveCheckbox.CheckState = CheckState.Checked;
-      AliveCheckbox.Location = new Point(51, 3);
+      AliveCheckbox.Location = new Point(63, 3);
       AliveCheckbox.Name = "AliveCheckbox";
       AliveCheckbox.Size = new Size(52, 19);
       AliveCheckbox.TabIndex = 0;
@@ -687,9 +685,9 @@
       FutureCheckbox.AutoSize = true;
       FutureCheckbox.Checked = true;
       FutureCheckbox.CheckState = CheckState.Checked;
-      FutureCheckbox.Location = new Point(109, 3);
+      FutureCheckbox.Location = new Point(121, 3);
       FutureCheckbox.Name = "FutureCheckbox";
-      FutureCheckbox.Size = new Size(60, 19);
+      FutureCheckbox.Size = new Size(59, 19);
       FutureCheckbox.TabIndex = 2;
       FutureCheckbox.Text = "Future";
       FutureCheckbox.UseVisualStyleBackColor = true;
@@ -698,7 +696,7 @@
       // ReEnteredCheckbox
       // 
       ReEnteredCheckbox.AutoSize = true;
-      ReEnteredCheckbox.Location = new Point(175, 3);
+      ReEnteredCheckbox.Location = new Point(3, 28);
       ReEnteredCheckbox.Name = "ReEnteredCheckbox";
       ReEnteredCheckbox.Size = new Size(84, 19);
       ReEnteredCheckbox.TabIndex = 3;
@@ -715,6 +713,10 @@
       label1.Size = new Size(564, 21);
       label1.TabIndex = 2;
       label1.Text = " 人工衛星";
+      // 
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
       // 
       // SatelliteGroupsForm
       // 
@@ -733,8 +735,7 @@
       ShowIcon = false;
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterParent;
-      Text = "Satellites and Groups";
-      ActiveControl = FilterTextbox;
+      Text = "人口衛星とグループ";
       FormClosing += SatelliteGroupsForm_FormClosing;
       panel1.ResumeLayout(false);
       panel8.ResumeLayout(false);

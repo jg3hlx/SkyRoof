@@ -59,7 +59,7 @@ namespace SkyRoof
       Name = "QsoScheduleForm";
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterScreen;
-      Text = "QSO Schedule";
+      Text = "交信予定";
       ResumeLayout(false);
       PerformLayout();
     }

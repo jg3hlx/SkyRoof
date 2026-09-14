@@ -335,7 +335,7 @@
       DownlinkLabel.Name = "DownlinkLabel";
       DownlinkLabel.Size = new Size(73, 15);
       DownlinkLabel.TabIndex = 26;
-      DownlinkLabel.Text = "地上";
+      DownlinkLabel.Text = "ダウンリンク";
       // 
       // TxBtn
       // 

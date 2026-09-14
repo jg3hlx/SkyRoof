@@ -503,7 +503,7 @@ namespace SkyRoof
       {
         DownlinkManualSpinner.Value = 0;
 
-        DownlinkLabel.Text = "地上";
+        DownlinkLabel.Text = "ダウンリンク";
         DownlinkLabel.ForeColor = Color.Red;
         DownlinkLabel.Font = DownlinkBoldFont;
 

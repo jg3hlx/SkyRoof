@@ -61,7 +61,7 @@
       satelliteDetailsControl1.Size = new Size(471, 575);
       satelliteDetailsControl1.TabIndex = 1;
       // 
-      // SatelliteDetailsDialog
+      // SatelliteDetailsForm
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
@@ -70,13 +70,13 @@
       Controls.Add(satelliteDetailsControl1);
       Controls.Add(panel1);
       FormBorderStyle = FormBorderStyle.SizableToolWindow;
-      Name = "SatelliteDetailsDialog";
+      Name = "SatelliteDetailsForm";
       ShowIcon = false;
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterParent;
-      Text = "Satellite Details";
-      Shown += SatelliteDetailsForm_Shown;
+      Text = "衛星の詳細";
       FormClosing += SatelliteDetailsForm_FormClosing;
+      Shown += SatelliteDetailsForm_Shown;
       panel1.ResumeLayout(false);
       ResumeLayout(false);
     }

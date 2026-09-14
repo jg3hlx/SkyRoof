@@ -57,7 +57,7 @@ namespace SkyRoof
       // 
       // CurrentDirection
       // 
-      CurrentDirection.HeaderText = "Current Point";
+      CurrentDirection.HeaderText = "現在の進行方向";
       CurrentDirection.MinimumWidth = 6;
       CurrentDirection.Name = "CurrentDirection";
       CurrentDirection.ReadOnly = true;
@@ -65,7 +65,7 @@ namespace SkyRoof
       // 
       // RotationTime
       // 
-      RotationTime.HeaderText = "Initial Rotation";
+      RotationTime.HeaderText = "回転方向のズレ";
       RotationTime.MinimumWidth = 6;
       RotationTime.Name = "RotationTime";
       RotationTime.ReadOnly = true;
@@ -73,7 +73,7 @@ namespace SkyRoof
       // 
       // FirstPoint
       // 
-      FirstPoint.HeaderText = "First Point";
+      FirstPoint.HeaderText = "ファーストポイント";
       FirstPoint.MinimumWidth = 6;
       FirstPoint.Name = "FirstPoint";
       FirstPoint.ReadOnly = true;
@@ -81,7 +81,7 @@ namespace SkyRoof
       // 
       // LastPoint
       // 
-      LastPoint.HeaderText = "Last Point";
+      LastPoint.HeaderText = "ラストポイント";
       LastPoint.MinimumWidth = 6;
       LastPoint.Name = "LastPoint";
       LastPoint.ReadOnly = true;
@@ -98,8 +98,9 @@ namespace SkyRoof
       MinimizeBox = false;
       Name = "PathOptimizerForm";
       StartPosition = FormStartPosition.CenterScreen;
-      Text = "Path Optimizer Details";
+      Text = "経路最適化の詳細";
       TopMost = true;
+      Load += PathOptimizerForm_Load;
       ((System.ComponentModel.ISupportInitialize)dataGridView).EndInit();
       ResumeLayout(false);
     }

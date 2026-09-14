@@ -43,8 +43,8 @@
       Clock = new VE3NEA.Clock.ClockWidget();
       panel5 = new Panel();
       SatellitePhotoSeparator = new Panel();
-      SatelliteSelecionWidget = new SatelliteSelectorWidget();
       panel2 = new Panel();
+      SatelliteSelecionWidget = new SatelliteSelectorWidget();
       DockHost = new WeifenLuo.WinFormsUI.Docking.DockPanel();
       menuStrip1 = new MenuStrip();
       fileToolStripMenuItem = new ToolStripMenuItem();
@@ -150,6 +150,7 @@
       RotatorWidget.Name = "RotatorWidget";
       RotatorWidget.Size = new Size(210, 78);
       RotatorWidget.TabIndex = 8;
+      RotatorWidget.Load += RotatorWidget_Load;
       // 
       // panel7
       // 
@@ -193,6 +194,7 @@
       FrequencyWidget.Name = "FrequencyWidget";
       FrequencyWidget.Size = new Size(682, 78);
       FrequencyWidget.TabIndex = 3;
+      FrequencyWidget.Load += FrequencyWidget_Load;
       // 
       // panel1
       // 
@@ -250,6 +252,14 @@
       SatellitePhotoSeparator.Size = new Size(4, 78);
       SatellitePhotoSeparator.TabIndex = 12;
       // 
+      // panel2
+      // 
+      panel2.Dock = DockStyle.Left;
+      panel2.Location = new Point(340, 0);
+      panel2.Name = "panel2";
+      panel2.Size = new Size(4, 78);
+      panel2.TabIndex = 5;
+      // 
       // SatelliteSelecionWidget
       // 
       SatelliteSelecionWidget.BorderStyle = BorderStyle.FixedSingle;
@@ -263,14 +273,6 @@
       SatelliteSelecionWidget.SelectedTransmitterChanged += SatelliteSelector_SelectedTransmitterChanged;
       SatelliteSelecionWidget.SelectedPassChanged += SatelliteSelector_SelectedPassChanged;
       SatelliteSelecionWidget.Load += SatelliteSelecionWidget_Load;
-      // 
-      // panel2
-      // 
-      panel2.Dock = DockStyle.Left;
-      panel2.Location = new Point(340, 0);
-      panel2.Name = "panel2";
-      panel2.Size = new Size(4, 78);
-      panel2.TabIndex = 5;
       // 
       // DockHost
       // 

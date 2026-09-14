@@ -1251,5 +1251,15 @@ namespace SkyRoof
     {
 
     }
+
+    private void RotatorWidget_Load(object sender, EventArgs e)
+    {
+
+    }
+
+    private void FrequencyWidget_Load(object sender, EventArgs e)
+    {
+
+    }
   }
 }

@@ -30,6 +30,7 @@ namespace SkyRoof
     private void InitializeComponent()
     {
       components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoqFt4QsoDialog));
       imageList1 = new ImageList(components);
       pictureBox1 = new PictureBox();
       label1 = new Label();
@@ -47,7 +48,7 @@ namespace SkyRoof
       // 
       // pictureBox1
       // 
-      pictureBox1.Image = Properties.Resources.database_plus_48;
+      pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
       pictureBox1.Location = new Point(12, 12);
       pictureBox1.Name = "pictureBox1";
       pictureBox1.Size = new Size(48, 48);
@@ -89,7 +90,7 @@ namespace SkyRoof
       CancelBtn.Name = "CancelBtn";
       CancelBtn.Size = new Size(75, 23);
       CancelBtn.TabIndex = 4;
-      CancelBtn.Text = "Cancel";
+      CancelBtn.Text = "中止";
       CancelBtn.UseVisualStyleBackColor = true;
       CancelBtn.Click += CancelBtn_Click;
       // 
@@ -113,7 +114,7 @@ namespace SkyRoof
       ShowInTaskbar = false;
       SizeGripStyle = SizeGripStyle.Hide;
       StartPosition = FormStartPosition.Manual;
-      Text = "Save QSO";
+      Text = "QSOの保存";
       TopMost = true;
       FormClosing += LoqFt4QsoDialog_FormClosing;
       Move += LoqFt4QsoDialog_Move;

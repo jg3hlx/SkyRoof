@@ -111,5 +111,10 @@ namespace SkyRoof
     {
 
     }
+
+    private void PathOptimizerForm_Load(object sender, EventArgs e)
+    {
+
+    }
   }
 }
