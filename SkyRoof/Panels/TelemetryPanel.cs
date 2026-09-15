@@ -2061,7 +2061,9 @@ namespace SkyRoof
       // one that carries the finding: reading it off Product would gray the item out as soon as it was
       // unchecked, and leave the operator with no way back.
       RepairImageMNU.Enabled = ssdv?.RepairedProduct.Repair != null;
-      RepairImageMNU.Checked = ssdv != null && ssdv.Repaired;
+      // and unchecked wherever it is grayed, because a grayed check mark reads as "repaired, and you
+      // cannot undo it" on a picture the repair never ran on at all
+      RepairImageMNU.Checked = RepairImageMNU.Enabled && ssdv!.Repaired;
     }
 
     private void OpenImageMNU_Click(object sender, EventArgs e)
