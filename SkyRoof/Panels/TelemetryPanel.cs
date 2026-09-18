@@ -16,6 +16,7 @@ using VE3NEA.SkyTlm.Core;
 using VE3NEA.SkyTlm.Deframing;
 using VE3NEA.SkyTlm.Discovery;
 using VE3NEA.SkyTlm.Imaging;
+using VE3NEA.SkyTlm.Imaging.RawJpeg;
 using VE3NEA.SkyTlm.Imaging.Ssdv;
 using VE3NEA.SkyTlm.Telemetry;
 using WeifenLuo.WinFormsUI.Docking;
@@ -181,6 +182,10 @@ namespace SkyRoof
     private interface IImageNodeInfo
     {
       Bitmap? Bitmap { get; }
+      // The transfer read as text, when it is text rather than a picture — the Geoscan playlist
+      // interleaves photographs with one-fragment ASCII slides. Such a node has no bitmap and never
+      // will, so it is shown as text instead of as an empty picture box. Null for everything else.
+      string? Text { get; }
       string? SavedPath { get; }
       string Describe();
       // "Save Image As...": the dialog's filter and suggested name, and the write itself. SSTV saves the
@@ -188,6 +193,9 @@ namespace SkyRoof
       string SaveFilter { get; }
       string SaveFileName { get; }
       void SaveAs(string path);
+      // whether there is anything to write. False grays "Save As..." rather than letting it produce an
+      // empty file, which is what an SSDV transfer whose file header never arrived has to offer.
+      bool CanSave { get; }
     }
 
     // one progressively-built SSTV image: the tree node's Tag, updated in place as ImageUpdated events
@@ -198,6 +206,8 @@ namespace SkyRoof
       internal readonly DateTime FirstSeen = DateTime.UtcNow;
       internal SstvImageEvent Event;
       public Bitmap? Bitmap { get; set; }
+      // SSTV is always a picture: there is no text-carrying flavour of it
+      public string? Text => null;
       public string? SavedPath { get; set; }
 
       // The picture currently on display, which is the decoder's own image until the denoise dialog
@@ -234,6 +244,8 @@ namespace SkyRoof
       // saved file names stay in local time whatever the clock widget shows, see NameMatches
       public string SaveFileName => $"{FirstSeen.ToLocalTime():yyyyMMdd_HHmmss}_{Event.Mode}.png";
       public void SaveAs(string path) => Rendering.SavePng(path);
+      // a node exists only once the decoder has a reconstruction, so there is always a picture to write
+      public bool CanSave => true;
     }
 
     // one progressively-built SSDV / raw-JPEG image: the tree node's Tag, updated in place as fragments
@@ -250,17 +262,37 @@ namespace SkyRoof
       // the same picture rebuilt from this pass plus the archived receptions in Archived, or null when
       // the operator has not asked for that. Recomputed as fragments arrive, so it keeps filling in live.
       internal ImageProduct? MergedProduct;
+      // the displayed reconstruction rebuilt with the entropy repair switched off, or null when the
+      // operator has not asked for that. A third product rather than a flag on the other two, because the
+      // repair happens inside emission: the unrepaired picture can only be produced by building it again
+      // from the fragments, and it therefore goes stale exactly where MergedProduct does.
+      internal ImageProduct? UnrepairedProduct;
       // earlier receptions of this picture, read out of their sidecars and cached on the first combine so
       // that re-merging on every arriving fragment costs no disk
       internal List<ArchivedPass>? Archived;
       // whether the merged reconstruction is the one on display. Everything that shows or saves the image
       // reads Product, so this one flag is the whole toggle.
       internal bool Combined;
+      // whether the entropy repair's answer is the one on display. On by default, because the repair is
+      // automatic and runs inside emission — this is the escape hatch for a wrong resync, not an opt-in.
+      internal bool Repaired = true;
       // the assembler has announced this image as over. Not the same as Product.Complete: a pass that ends
       // mid-image finalizes what arrived, which off air is the normal case rather than the exception.
       internal bool Final;
+      // when the picture on screen was last decoded, so the renders can be coalesced — see ShowSsdvImage
+      internal DateTime LastRendered;
+      // whether this node has ever had something to show, and so has been offered the tree selection
+      internal bool Tracked;
       public Bitmap? Bitmap { get; set; }
+      public string? Text => Product.Text;
+      // the auto-saved .jpg, or null when this reception had no picture to write. "Open in Viewer" and
+      // the Saved: line both key off it, so both stay silent rather than pointing at a file that is not
+      // a picture — which is how the 2026-09-13 header-loss defect reached the operator.
       public string? SavedPath { get; set; }
+      // the auto-saved .json, which is written whenever there are fragments to archive and so can be
+      // present with no SavedPath beside it. Kept rather than derived from SavedPath by extension for
+      // exactly that reason — see FindArchivedPasses, which has to know its own sidecar.
+      internal string? SidecarPath;
 
       internal SsdvImageInfo(DecodeSnapshot snapshot, ImageProduct product)
       {
@@ -268,12 +300,29 @@ namespace SkyRoof
         PassProduct = product;
       }
 
-      /// <summary>The reconstruction currently on display: the merge when combining is on, this pass's
-      /// otherwise. Toggling off is exact rather than approximate — the pass product was never altered.</summary>
-      internal ImageProduct Product => Combined && MergedProduct != null ? MergedProduct : PassProduct;
+      /// <summary>The repaired reconstruction: the merge when combining is on, this pass's otherwise.
+      /// Toggling off is exact rather than approximate — the pass product was never altered.
+      /// <para>Kept apart from <see cref="Product"/> because the repair switch has to be judged against
+      /// what the repair found, which the unrepaired product by definition does not carry.</para></summary>
+      internal ImageProduct RepairedProduct => Combined && MergedProduct != null ? MergedProduct : PassProduct;
+
+      /// <summary>The reconstruction currently on display. The unrepaired rebuild wins when the operator
+      /// has asked for it, and a rebuild that yielded nothing falls back to the repaired picture rather
+      /// than to an empty pane — the same rule MergedProduct follows.</summary>
+      internal ImageProduct Product => !Repaired && UnrepairedProduct != null ? UnrepairedProduct : RepairedProduct;
 
       public string Describe()
       {
+        // a text transfer has no geometry, no gap boundary and nothing to render, so none of the lines
+        // below say anything about it. The content is the point, and it is short enough to just show.
+        if (Product.Text != null)
+          return
+            $"Sat: {Snapshot.Transmitter?.Satellite?.name ?? "Unknown"}\r\n" +
+            $"Tx: {Snapshot.Transmitter?.description}\r\n" +
+            $"Message: {Product.ImageId}\r\n" +
+            (Product.Source != null ? $"Source: {Product.Source}\r\n" : "") +
+            $"\r\n{Product.Text}\r\n";
+
         return
           $"Sat: {Snapshot.Transmitter?.Satellite?.name ?? "Unknown"}\r\n" +
           $"Tx: {Snapshot.Transmitter?.description}\r\n" +
@@ -293,14 +342,59 @@ namespace SkyRoof
           // -1 means the concept does not apply, which is SSDV, where a lost packet costs its own MCUs
           // and nothing else.
           (Product.FirstGapOffset >= 0 ? $"Intact to: {Product.FirstGapOffset} bytes\r\n" : "") +
+          // what the entropy repair recovered past that boundary, which is the whole reason the boundary
+          // is no longer where the picture stops being useful
+          DescribeRepair(Product.Repair) +
           $"Status: {(Product.Complete ? "complete" : Final ? "incomplete" : "receiving...")}\r\n" +
-          (SavedPath != null ? $"Saved: {SavedPath}\r\n" : "");
+          (SavedPath != null ? $"Saved: {SavedPath}\r\n" : "") +
+          // saying which of the two files was written, because they are two decisions. A reception whose
+          // JPEG header did not arrive has nothing a decoder could open, and the fragments are still
+          // worth keeping — the next pass over this picture is what turns them into one.
+          (SavedPath == null && SidecarPath != null
+            ? $"No picture: the file header did not arrive.\r\nFragments archived: {SidecarPath}\r\n"
+            : "");
       }
 
-      public string SaveFilter => "JPEG Image|*.jpg";
+      /// <summary>
+      /// What the entropy repair made of this reception, or nothing at all when it did not run — a
+      /// complete file, a progressive one, an SSDV picture, or the repair switched off. Runs are reported
+      /// separately from the total because they are different facts: a run is a piece of the scan put back
+      /// where the encoder wrote it, and a declined run is one whose MCU count is known exactly and whose
+      /// position is not, which is a refusal rather than a failure and is worth saying out loud.
+      /// </summary>
+      private static string DescribeRepair(JpegRepair? repair)
+      {
+        if (repair == null) return "";
+
+        string counts = repair.PlacedMcus.Count == 2
+          ? $"{repair.PlacedMcus[0]} and {repair.PlacedMcus[1]}"
+          : string.Join(", ", repair.PlacedMcus);
+
+        string placed = repair.PlacedMcus.Count switch
+        {
+          0 => "nothing placed",
+          1 => $"1 run placed ({counts} MCUs)",
+          _ => $"{repair.PlacedMcus.Count} runs placed ({counts} MCUs)"
+        };
+
+        return $"Repair: {repair.Gaps} {(repair.Gaps == 1 ? "gap" : "gaps")}, {placed}" +
+          (repair.DeclinedRuns > 0 ? $", {repair.DeclinedRuns} declined" : "") +
+          $" — {repair.RecoveredMcus} of {repair.McuCount} MCUs recovered\r\n";
+      }
+
+      public string SaveFilter => Product.Text != null ? "Text File|*.txt" : "JPEG Image|*.jpg";
       // saved file names stay in local time whatever the clock widget shows, see NameMatches
-      public string SaveFileName => $"{FirstSeen.ToLocalTime():yyyyMMdd_HHmmss}_{Product.ImageId}.jpg";
-      public void SaveAs(string path) => File.WriteAllBytes(path, Product.Jpeg);
+      public string SaveFileName =>
+        $"{FirstSeen.ToLocalTime():yyyyMMdd_HHmmss}_{Product.ImageId}{(Product.Text != null ? ".txt" : ".jpg")}";
+      // nothing to write when the reconstruction on display has no picture and no text: the emitter
+      // returns no bytes at all for a transfer whose header did not arrive, and a zero-byte .jpg on disk
+      // is worse than a grayed menu item. Reads Product, so it follows the Combine toggle.
+      public bool CanSave => Product.Text != null || Product.Jpeg.Length > 0;
+      public void SaveAs(string path)
+      {
+        if (Product.Text != null) File.WriteAllText(path, Product.Text);
+        else File.WriteAllBytes(path, Product.Jpeg);
+      }
     }
 
     // One received codec2 voice message: the tree node's Tag, updated in place as sub-frames arrive and
@@ -388,6 +482,19 @@ namespace SkyRoof
       }
     }
 
+    /// <summary>Where one decoded frame's tree leaf belongs, and whether the assembler kept it. Both
+    /// questions can only be answered on the decode thread — the type tests read the live assemblers, and
+    /// the accept flag is what their <c>Push</c> calls set as they run — so the answer travels to the UI
+    /// thread with the frame rather than being worked out again there.</summary>
+    private readonly record struct FrameRouting(bool ToImage, bool ToVoice, bool Accepted);
+
+    /// <summary>The one-frame scratch the assembler subscriptions write and the frame handler reads the
+    /// moment <c>Push</c> returns. A plain cell is enough: one decoder pushes one frame at a time, on one
+    /// thread, and the events fire synchronously inside the call. It lives in the subscription closure
+    /// rather than in a field so that a disposed decoder's flush can never write where the next decoder's
+    /// frame handler reads — the same reason the node maps live there.</summary>
+    private sealed class PushOutcome { internal bool Accepted; }
+
     internal class TxPassInfo
     {
       internal DateTime StartTime = DateTime.UtcNow;
@@ -401,6 +508,13 @@ namespace SkyRoof
       internal int ImageCount = 0;
       internal double MaxSnrDb = double.NaN;
       internal bool HasValidFrame = false;
+      // The picture and the voice message this pass's fragments are filed under: the last one opened, which
+      // is the one the assemblers are filling — both are single-transfer-at-a-time by construction, so the
+      // last node opened and the transfer in progress are the same thing. Kept here rather than found by
+      // walking the pass node's children, which on a pass of thousands of frames would cost a scan each.
+      // Null until the pass's first picture or message, and fragments arriving before that stay at pass level.
+      internal TreeNode? LastImageNode;
+      internal TreeNode? LastVoiceNode;
 
       internal TxPassInfo(SatnogsDbTransmitter? transmitter, int orbit, double terrestrialHz = 0)
       {
@@ -785,6 +899,9 @@ namespace SkyRoof
         var sstvSnapshot = SstvSnapshot(snapshot);
         CurrentDecode = snapshot;
         Decoder = new(snapshot.SignalParams, snapshot.Satellite?.norad_cat_id, telemetry, sstv, fmEngine, detectParams);
+        // shared by the frame handler and the two assembler subscriptions below, all of which run on the
+        // decode thread and none of which outlive this decoder
+        var pushed = new PushOutcome();
         if (Decoder.Pipeline != null)
         {
           // the image assembler is fed from the frame handler, and is captured here rather than read off
@@ -792,7 +909,7 @@ namespace SkyRoof
           // transmitter's decoder, and this decoder's frames must never reach that one's assembler.
           var images = Decoder.Images;
           var voice = Decoder.Voice;
-          Decoder.Pipeline.FrameDecoded += frame => FrameDecodedHandler(frame, snapshot, images, voice);
+          Decoder.Pipeline.FrameDecoded += frame => FrameDecodedHandler(frame, snapshot, images, voice, pushed);
           Decoder.Pipeline.BurstDecoded += report => BurstDecodedHandler(report, snapshot);
         }
         if (Decoder.Images != null)
@@ -802,7 +919,11 @@ namespace SkyRoof
           // next decoder's images. Images ride the telemetry frames, so they carry the TELEMETRY
           // snapshot's identity — there is no third snapshot here.
           var imageNodes = new Dictionary<int, TreeNode>();
-          Decoder.Images.ImageUpdated += product => SsdvImageHandler(product, snapshot, imageNodes, false);
+          // ImageUpdated fires once per fragment the assembler took in, synchronously inside the Push the
+          // frame handler is sitting in, which is what makes the flag readable there. ImageCompleted does
+          // not set it: it also fires for the image the sender has just moved off, which this frame did
+          // not go into.
+          Decoder.Images.ImageUpdated += product => { pushed.Accepted = true; SsdvImageHandler(product, snapshot, imageNodes, false); };
           Decoder.Images.ImageCompleted += product => SsdvImageHandler(product, snapshot, imageNodes, true);
         }
         if (Decoder.Voice != null)
@@ -812,7 +933,8 @@ namespace SkyRoof
           // is stable for the life of a message. The closure keeps a disposed decoder's flush out of the
           // next decoder's nodes, exactly as above.
           var voiceNodes = new Dictionary<int, TreeNode>();
-          Decoder.Voice.VoiceUpdated += product => VoiceMessageHandler(product, snapshot, voiceNodes, false);
+          // sets the accept flag on the same terms as the image subscription above
+          Decoder.Voice.VoiceUpdated += product => { pushed.Accepted = true; VoiceMessageHandler(product, snapshot, voiceNodes, false); };
           Decoder.Voice.VoiceCompleted += product => VoiceMessageHandler(product, snapshot, voiceNodes, true);
         }
         // the detection-only branch exists for the search alone: its bursts go to the session and nowhere
@@ -932,12 +1054,20 @@ namespace SkyRoof
     }
 
     private void FrameDecodedHandler(Frame frame, DecodeSnapshot snapshot, IImageAssembler? images,
-      IAudioAssembler? voice)
+      IAudioAssembler? voice, PushOutcome pushed)
     {
       ctx.KissServer.SendToAll(frame);
       // held frames are dropped, not queued: uploading starts at the Save click and runs forward from there
       // (§4.6). Parameters that were never edited are never held — the plain database path is untouched.
       if (!UploadHeld && snapshot.Satellite?.norad_cat_id is int norad) SatnogsUploader?.Submit(frame, norad);
+      // Which tree node the frame's leaf will go under, asked BEFORE the Push that may answer it: these are
+      // the assemblers' own structural gates, and they are true for a fragment the Push then throws away —
+      // a failed checksum, a duplicate, an offset that cannot be placed. Those are exactly the frames a
+      // picture's child list would otherwise be missing, and nothing downstream can recover them, since
+      // only the fragments that survived raise an event.
+      bool toImage = images?.IsImageFrame(frame) == true;
+      bool toVoice = voice?.IsVoiceFrame(frame) == true;
+      pushed.Accepted = false;
       // Images ride the telemetry frames, so every frame is offered unconditionally and the assembler's
       // own source parser drops the ones that are not image fragments — on HADES-SA, where the SSDV
       // packets are interleaved with telemetry on one downlink, that is most of them. Re-transcoding the
@@ -947,12 +1077,17 @@ namespace SkyRoof
       // drops everything that is not a codec2 sub-frame, which on this downlink is most frames. Re-decoding
       // the whole message per sub-frame is under a millisecond, so it too stays on the decode thread.
       voice?.Push(frame);
+      // Read after both Pushes and before the marshal below, which is what puts the tree in the right order:
+      // a fragment that opens a picture reaches ShowSsdvImage through a BeginInvoke queued INSIDE the Push
+      // above, so the node it is filed under is already on the tree by the time AddFrame runs. Moving either
+      // Push below this marshal would silently leave every first fragment parentless.
+      var routing = new FrameRouting(toImage, toVoice, pushed.Accepted);
       BeginInvoke(() =>
       {
         // read before AddFrame, which may set DemodValidated on this very frame: that frame is the one that
         // made the parameters found, and what the save gate asks for is 2 MORE of them (§4.2).
         bool wasValidated = DemodValidated;
-        AddFrame(frame, snapshot);
+        AddFrame(frame, snapshot, routing);
         // frames decoded AFTER the parameters went green are the evidence the save decision rests on (§2).
         // The increment is kept out of the null-conditional call so that it also runs with the dialog closed
         // — the count must survive the operator closing the dialog and letting the pass run. Gated on the
@@ -1193,7 +1328,10 @@ namespace SkyRoof
       foreach (var frame in found.Frames)
       {
         ctx.KissServer.SendToAll(frame);
-        AddFrame(frame, decode);
+        // no routing: the search decodes these inside BurstDiscovery with no assembler wired to it at all,
+        // so nothing has been offered a fragment of them and none of them can be filed under a picture or a
+        // message. They go to the pass node, which is where every frame went before there was a choice.
+        AddFrame(frame, decode, default);
       }
     }
 
@@ -1402,7 +1540,7 @@ namespace SkyRoof
     //----------------------------------------------------------------------------------------------
     //                                       treeview
     //----------------------------------------------------------------------------------------------
-    private void AddFrame(Frame frame, DecodeSnapshot snapshot)
+    private void AddFrame(Frame frame, DecodeSnapshot snapshot, FrameRouting routing)
     {
       var (passNode, txPassInfo) = EnsureCurrentPassNode(snapshot);
 
@@ -1423,9 +1561,15 @@ namespace SkyRoof
       }
 
       var (addr, addrLen) = ExtractAddress(frame, snapshot);
-      string nodeText = $"{ClockWidget.Stamp(DateTime.UtcNow, "HH:mm:ss")}  {frame.Length} bytes  {addr}";
+      // the SSDV packet's own verdict, taken once here and used twice: it labels the tree leaf and it goes
+      // into the detail text. Null on every frame that is not an SSDV packet, the whole raw-JPEG family
+      // included, which is why it is not the thing that decides where the leaf is filed.
+      var imageCheck = ImageAssemblerFactory.CheckImagePacket(
+        snapshot.SignalParams, snapshot.Satellite?.norad_cat_id, frame);
+      string nodeText = $"{ClockWidget.Stamp(DateTime.UtcNow, "HH:mm:ss")}  {frame.Length} bytes  {addr}" +
+        DescribeFragmentOutcome(routing, imageCheck);
       var frameNode = new TreeNode(nodeText);
-      string frameText = BuildFrameText(frame, snapshot, addr, addrLen);
+      string frameText = BuildFrameText(frame, snapshot, addr, addrLen, imageCheck);
       frameNode.Tag = frameText;
       txPassInfo.FrameCount++;
 
@@ -1440,9 +1584,39 @@ namespace SkyRoof
         UpdateGearButton();
       }
 
-      AddLeaf(passNode, frameNode);
+      // An image or voice frame is filed under the picture or the message it belongs to rather than beside
+      // it, which is what lets a pass of thousands of fragments read as a handful of lines. The parent is
+      // the last one opened in this pass, not one looked up by id: a duplicate and a rejected fragment
+      // carry no id anybody can trust, and the assemblers only ever fill one transfer at a time anyway.
+      // A type-matching frame that arrives before any such node exists — the opening fragment of a picture
+      // failing its CRC, say — falls back to the pass node, which is where it would have gone before.
+      var parent = routing.ToImage ? txPassInfo.LastImageNode
+        : routing.ToVoice ? txPassInfo.LastVoiceNode : null;
+      if (parent != null) AddFragment(parent, frameNode);
+      else AddLeaf(passNode, frameNode);
       if (treeView1.SelectedNode == passNode) richTextBox1.Text = txPassInfo.Describe(DescribeSignalParamsOrUnknown(txPassInfo.SignalParams));
     }
+
+    /// <summary>The suffix that says what became of an image or voice fragment, empty for an ordinary frame.
+    /// Every frame of the type is filed under the picture, so without this its children cannot be read
+    /// against its "n of m fragments" label — the ones that changed nothing are the whole of the difference
+    /// between the two counts, and they are indistinguishable from the rest by time and length alone.</summary>
+    private static string DescribeFragmentOutcome(FrameRouting routing, ImagePacketCheck? check) => routing switch
+    {
+      // the packet's own CRC-32 failed, so it was read and thrown away. Off air this is the difference
+      // between "the satellite sent no picture" and "none of its packets survived the pass".
+      { ToImage: true } when check is { Ok: false } => "  CRC FAIL",
+      // it parsed, and the assembler still took nothing from it: on the SSDV family, where the CRC has
+      // already spoken, a duplicate is the only thing left that it can be.
+      { ToImage: true, Accepted: false } when check != null => "  duplicate",
+      // the raw-JPEG family, whose fragments carry no checksum. Here the same silence may be a duplicate,
+      // an offset too far out to be believed, or a transfer that is not a picture at all — USP moves logs
+      // and configs down the channel it moves images down. Nothing here can separate those, so the label
+      // claims no more than it knows.
+      { ToImage: true, Accepted: false } => "  not used",
+      { ToVoice: true, Accepted: false } => "  duplicate",
+      _ => ""
+    };
 
     /// <summary>Returns the pass node this snapshot's content belongs to, and its info, creating the node
     /// when this is the first burst or frame of a new transmitter+orbit pass. New telemetry/SSTV pass nodes
@@ -1490,14 +1664,28 @@ namespace SkyRoof
 
     /// <summary>Adds a leaf under the given pass node. Expands the pass node so the new leaf is visible, unless
     /// the user deliberately collapsed it while it already had leaves and is still looking at its summary —
-    /// popping it open on every new frame/image would fight that choice.</summary>
-    private void AddLeaf(TreeNode passNode, TreeNode leaf)
+    /// popping it open on every new frame/image would fight that choice.
+    /// <para><paramref name="track"/> false adds the leaf without offering it the selection, for a node that
+    /// has nothing to show yet: an image node is created on its first fragment, long before it can render,
+    /// and following it there replaces whatever is on screen with a blank rectangle. Such a node is tracked
+    /// later, on the first update that gives it content — see <c>ShowSsdvImage</c>.</para></summary>
+    private void AddLeaf(TreeNode passNode, TreeNode leaf, bool track = true)
     {
       bool keepCollapsed = !passNode.IsExpanded && passNode.Nodes.Count > 0 && treeView1.SelectedNode == passNode;
       passNode.Nodes.Add(leaf);
       if (!keepCollapsed) passNode.Expand();
-      TrackNewNode(leaf);
+      if (track) TrackNewNode(leaf);
     }
+
+    /// <summary>Adds a fragment leaf under the picture or message it belongs to. Deliberately not
+    /// <see cref="AddLeaf"/>: it neither expands the parent nor offers the leaf the selection, because a
+    /// picture is meant to stay one line in the tree with its fragments folded away underneath. Expanding
+    /// here would unfold it on every fragment — nine a second on a Geoscan pass — and selecting a child
+    /// would do the same indirectly, since WinForms expands a node's ancestors to bring it into view.
+    /// <para>The picture's own node keeps the selection instead, which <c>ShowSsdvImage</c> gives it once
+    /// there is something to look at. Selecting THAT leaves it collapsed: only ancestors are expanded.</para>
+    /// </summary>
+    private static void AddFragment(TreeNode parent, TreeNode leaf) => parent.Nodes.Add(leaf);
 
     // the header source/destination address and the byte length of the address field, so the caller can label the
     // frame and drop those bytes from the ASCII/HEX payload views. AX.25 G3RUH frames, and USP frames (which
@@ -1520,7 +1708,8 @@ namespace SkyRoof
       }
     }
 
-    private string BuildFrameText(Frame frame, DecodeSnapshot snapshot, string addr, int addrLen)
+    private string BuildFrameText(Frame frame, DecodeSnapshot snapshot, string addr, int addrLen,
+      ImagePacketCheck? imageCheck)
     {
       // telemetry section: the extracted address (when any) followed by the parsed telemetry fields (when a
       // format matches). Only emitted when there is something to show.
@@ -1552,8 +1741,7 @@ namespace SkyRoof
       // FEC — carry no frame CRC at all, so the "CRC:" line below reads "n/a" on precisely the frames whose
       // payload can be checked. Off air that is the difference between "no image because the satellite sent
       // none" and "no image because none of the packets survived the pass", which the frame list cannot show.
-      string ssdvMeta = ImageAssemblerFactory.CheckImagePacket(
-        snapshot.SignalParams, snapshot.Satellite?.norad_cat_id, frame) switch
+      string ssdvMeta = imageCheck switch
       {
         { Ok: true, CorrectedBytes: 0 } => "  SSDV packet: CRC OK\n",
         { Ok: true } check => $"  SSDV packet: CRC OK, {check.CorrectedBytes} RS corrections\n",
@@ -1707,6 +1895,15 @@ namespace SkyRoof
 
     private void DisplayImageInfo(IImageNodeInfo info)
     {
+      // A transfer that is text has no picture and never will, so the image pane would only be an empty
+      // rectangle beside it. Show it the way a decoded frame is shown instead.
+      if (info.Text != null)
+      {
+        ShowTelemetryText();
+        richTextBox1.Text = info.Describe();
+        return;
+      }
+
       if (richTextBox1.Parent != ImageSplitContainer.Panel2)
       {
         richTextBox1.Parent = ImageSplitContainer.Panel2;
@@ -1839,10 +2036,12 @@ namespace SkyRoof
 
     // gray the "Open in Viewer" item until the selected image has been auto-saved to a file on disk, and
     // the "Combine with Previous Passes" item until this picture has actually been heard before — the
-    // archive is searched here, on demand, rather than kept indexed
+    // archive is searched here, on demand, rather than kept indexed. "Save As..." is grayed when there is
+    // nothing to write at all, which follows the Combine toggle - see CanSave.
     private void ImageMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
     {
       var info = treeView1.SelectedNode?.Tag as IImageNodeInfo;
+      SaveImageMNU.Enabled = info?.CanSave == true;
       OpenImageMNU.Enabled = info?.SavedPath != null && File.Exists(info.SavedPath);
 
       // denoising needs the raw reconstruction, which rides only on the FINAL image event: a picture still
@@ -1856,6 +2055,15 @@ namespace SkyRoof
       CombineImageMNU.Text = canCombine
         ? $"Combine with Previous Passes ({ssdv!.Archived!.Count})"
         : "Combine with Previous Passes";
+
+      // offered only where the walker actually found something to put back — a complete file, an SSDV
+      // picture and a refusal all have nothing to switch off. Judged on the REPAIRED product, which is the
+      // one that carries the finding: reading it off Product would gray the item out as soon as it was
+      // unchecked, and leave the operator with no way back.
+      RepairImageMNU.Enabled = ssdv?.RepairedProduct.Repair != null;
+      // and unchecked wherever it is grayed, because a grayed check mark reads as "repaired, and you
+      // cannot undo it" on a picture the repair never ran on at all
+      RepairImageMNU.Checked = RepairImageMNU.Enabled && ssdv!.Repaired;
     }
 
     private void OpenImageMNU_Click(object sender, EventArgs e)
@@ -1883,13 +2091,23 @@ namespace SkyRoof
     // same as the image being whole, and off air it usually is not.
     private void SsdvImageHandler(ImageProduct product, DecodeSnapshot snapshot, Dictionary<int, TreeNode> imageNodes, bool final)
     {
-      string? savedPath = final && ShouldSaveImage(product) ? SaveImageToFile(product, snapshot) : null;
-      BeginInvoke(() => ShowSsdvImage(product, snapshot, imageNodes, savedPath, final));
+      var saved = final && ShouldSaveImage(product) ? SaveImageToFile(product, snapshot) : default;
+      BeginInvoke(() => ShowSsdvImage(product, snapshot, imageNodes, saved, final));
     }
+
+    /// <summary>What actually reached the disk for one finalized image. The <c>.jpg</c> and the
+    /// <c>.json</c> stopped being one decision on 2026-09-13: a reception whose JPEG header was lost has
+    /// no picture to write — three such images were auto-saved as unopenable <c>.jpg</c> files that day —
+    /// but its fragments are exactly what a later pass merges against, so the sidecar still goes out.
+    /// Either path may be null; both null means nothing was written.</summary>
+    private readonly record struct SavedImage(string? JpegPath, string? SidecarPath);
 
     // fragments an image must carry before it is written to disk — see ShouldSaveImage for why two is
     // the right number and why a coverage fraction is deliberately not used
     private const int MinFragmentsToSave = 2;
+
+    // how often a filling-in image is re-decoded and put back on screen — see ShowSsdvImage
+    private static readonly TimeSpan RenderInterval = TimeSpan.FromSeconds(1);
 
     /// <summary>Whether a finalized image is worth writing to disk. Deliberately harder to satisfy than
     /// showing it is: a stray tree node costs nothing and goes away with the session, but a file in
@@ -1916,18 +2134,33 @@ namespace SkyRoof
     /// single misread frame, and a CRC-32 already does that far better than a coincidence argument can —
     /// a false accept is a 1-in-4-billion event. Such a fragment is also worth keeping for its own sake:
     /// it is archived in the sidecar and can complete this picture on a later pass, which a fragment
-    /// thrown away cannot.</para></summary>
+    /// thrown away cannot. It does <b>not</b> drop for the raw-JPEG format, whose fragments are
+    /// re-identifiable but carry no checksum, so the coincidence argument is all there is there.</para>
+    /// <para>The <b>geometry</b> test is likewise dropped for that format, and only for it. A run that
+    /// joined a transfer after its head went past has no frame header and reports 0 x 0 — 282 fragments
+    /// of the 2026-09-12/13 Geoscan capture arrived that way — and those fragments are exactly what a
+    /// later pass needs to finish the picture. Withholding them makes the archive unable to do the one
+    /// thing it is for. USP, which is what the geometry test was written to guard because its front end
+    /// has no off-air validation, hands out no fragments and so keeps the test.</para></summary>
     private static bool ShouldSaveImage(ImageProduct product)
     {
-      int floor = product.FragmentFormat != null ? 1 : MinFragmentsToSave;
+      bool rawJpeg = product.FragmentFormat == RawJpegMerge.Format;
+
+      // something has to reach the disk: a picture to write, or fragments to archive. Until 2026-09-13
+      // this read "no picture, nothing saved", which threw the fragments away with it — and the
+      // receptions that emit no picture, the ones whose header was lost, are precisely the ones whose
+      // fragments a later pass needs. SaveImageToFile decides which of the two files it writes.
+      if (product.Jpeg.Length == 0 && (product.FragmentFormat == null || product.Fragments.Count == 0))
+        return false;
+
+      int floor = product.FragmentFormat != null && !rawJpeg ? 1 : MinFragmentsToSave;
 
       return product.FragmentsReceived >= floor
-        && product.Width > 0 && product.Height > 0
-        && product.Jpeg.Length > 0;
+        && (rawJpeg || product.Width > 0 && product.Height > 0);
     }
 
     private void ShowSsdvImage(ImageProduct product, DecodeSnapshot snapshot, Dictionary<int, TreeNode> imageNodes,
-      string? savedPath, bool final)
+      SavedImage saved, bool final)
     {
       var (passNode, txPassInfo) = EnsureCurrentPassNode(snapshot);
 
@@ -1938,22 +2171,53 @@ namespace SkyRoof
         node.Tag = new SsdvImageInfo(snapshot, product);
         imageNodes[product.ImageId] = node;
         txPassInfo.ImageCount++;
-        AddLeaf(passNode, node);
+        // added but not followed: a node created on its first fragment has nothing to show, and until
+        // this capture the tree followed it anyway — which is how a good picture was replaced on screen
+        // by a blank rectangle at the exact instant it was written to disk. See TrackNewNode below.
+        AddLeaf(passNode, node, track: false);
+        // from here on this pass's image fragments are filed under this node — see AddFrame. Set for the
+        // SSDV and raw-JPEG families only: an SSTV image is built from audio and has no frames to adopt.
+        txPassInfo.LastImageNode = node;
       }
 
       // take in the new reconstruction of this pass; RenderImage below swaps the picture on screen for it
       var info = (SsdvImageInfo)node!.Tag;
       info.PassProduct = product;
       info.Final |= final;
-      // combining stays live: the archived fragments are already cached, so the merge is redone with the
-      // fragment that just arrived and the combined picture fills in during the pass like any other
-      if (info.Combined) Recombine(info);
-      if (savedPath != null) info.SavedPath = savedPath;
+      if (saved.JpegPath != null) info.SavedPath = saved.JpegPath;
+      if (saved.SidecarPath != null) info.SidecarPath = saved.SidecarPath;
       // the tree label always counts what THIS pass heard, combined or not — it is the pass that the node
       // is a record of, and a label that changed under a toggle would make two nodes incomparable
-      node.Text = $"{ClockWidget.Stamp(info.FirstSeen, "HH:mm:ss")}  Image {product.ImageId}  " +
-        $"{product.FragmentsReceived}/{product.FragmentsExpected} fragments";
-      RenderImage(info);
+      node.Text = product.Text != null
+        ? $"{ClockWidget.Stamp(info.FirstSeen, "HH:mm:ss")}  Message {product.ImageId}"
+        : $"{ClockWidget.Stamp(info.FirstSeen, "HH:mm:ss")}  Image {product.ImageId}  " +
+          $"{product.FragmentsReceived}/{product.FragmentsExpected} fragments";
+
+      // Coalesce the decodes. A Geoscan pass delivers around nine fragments a second and every one of
+      // them used to cost a full 800x600 JPEG decode on the UI thread. One picture a second is as fast
+      // as a filling-in image can be read, and the final reconstruction is rendered whatever the clock
+      // says, so nothing is ever left showing a stale picture.
+      if (final || DateTime.UtcNow - info.LastRendered >= RenderInterval)
+      {
+        info.LastRendered = DateTime.UtcNow;
+        // combining stays live: the archived fragments are already cached, so the merge is redone with
+        // the fragments that just arrived and the combined picture fills in during the pass like any
+        // other. It is inside the gate because it costs more than the decode does — a raw-JPEG merge
+        // rewrites every fragment of every reception — and there is no point merging what is not shown.
+        if (info.Combined) Recombine(info);
+        // and the unrepaired rebuild goes stale on the same fragments, so it fills in live beside them
+        if (!info.Repaired) RebuildUnrepaired(info);
+        RenderImage(info);
+      }
+
+      // now that it has been rendered, offer it the selection — once, and only if there is something to
+      // see. A picture joined mid-transfer and an ASCII slide both reach here with no bitmap; the slide
+      // has its text instead, and the mid-transfer run has nothing until a later pass fills in its head.
+      if (!info.Tracked && (info.Bitmap != null || product.Text != null))
+      {
+        info.Tracked = true;
+        TrackNewNode(node);
+      }
 
       // an accepted image fragment is real content: un-gray the pass entry the way a valid frame does
       if (!txPassInfo.HasValidFrame)
@@ -1972,13 +2236,18 @@ namespace SkyRoof
     // dispose the bitmap it replaces, but only after the PictureBox has let go of it. A JPEG the OS decoder
     // refuses, which the first fragments of an image legitimately can be, leaves the previous rendering on
     // screen rather than blanking it, and leaves its bitmap undisposed.
-    private void RenderImage(SsdvImageInfo info)
+    // That rule is for a picture filling in, where the next arrival can only improve what is on screen. It
+    // is wrong when the reconstruction being shown is swapped for a different one, because then a refused
+    // JPEG is the answer rather than a hiccup: turning Combine off on an image whose own pass never carried
+    // a file header left the combined picture on screen, beside the text saying there was no picture. Such
+    // a caller passes keepOnFailure: false and gets the empty pane that this pass alone actually has.
+    private void RenderImage(SsdvImageInfo info, bool keepOnFailure = true)
     {
       var oldBitmap = info.Bitmap;
       var bitmap = DecodeJpeg(info.Product.Jpeg);
-      if (bitmap != null) info.Bitmap = bitmap;
+      if (bitmap != null || !keepOnFailure) info.Bitmap = bitmap;
       if (ImageBox.Image == oldBitmap) ImageBox.Image = info.Bitmap;
-      if (bitmap != null) oldBitmap?.Dispose();
+      if (bitmap != null || !keepOnFailure) oldBitmap?.Dispose();
     }
 
     // The received JPEG as a Bitmap. Copied out of the stream rather than handed the stream directly: GDI+
@@ -2006,7 +2275,7 @@ namespace SkyRoof
     /// lets a later pass of the same picture be combined with this one. They are the fragments of
     /// <b>this</b> reception only, never of a combination — a sidecar that recorded a merge would be
     /// re-merged next time, and the archive would slowly stop meaning anything.</para></summary>
-    private static string? SaveImageToFile(ImageProduct product, DecodeSnapshot snapshot)
+    private static SavedImage SaveImageToFile(ImageProduct product, DecodeSnapshot snapshot)
     {
       try
       {
@@ -2014,7 +2283,14 @@ namespace SkyRoof
         Directory.CreateDirectory(folder);
         string sat = string.Concat((snapshot.Satellite?.name ?? "Unknown").Split(Path.GetInvalidFileNameChars()));
         string path = Path.Combine(folder, $"{DateTime.Now:yyyyMMdd_HHmmss}_{sat}_{product.ImageId}.jpg");
-        File.WriteAllBytes(path, product.Jpeg);
+        // only when there is a picture: emission withholds one whose JPEG header was lost, and writing
+        // those bytes anyway is what put three files that open in no decoder into this folder
+        string? jpegPath = null;
+        if (product.Jpeg.Length > 0)
+        {
+          File.WriteAllBytes(path, product.Jpeg);
+          jpegPath = path;
+        }
 
         var meta = new
         {
@@ -2034,13 +2310,16 @@ namespace SkyRoof
         };
         var json = JObject.FromObject(meta);
         if (product.FragmentFormat != null) WriteFragments(json, product);
-        File.WriteAllText(Path.ChangeExtension(path, ".json"), json.ToString(Formatting.Indented));
-        return path;
+        // the sidecar goes out either way — it is the record of the reception, and when there is no
+        // picture it is the only thing worth keeping
+        string sidecarPath = Path.ChangeExtension(path, ".json")!;
+        File.WriteAllText(sidecarPath, json.ToString(Formatting.Indented));
+        return new SavedImage(jpegPath, sidecarPath);
       }
       catch (Exception e)
       {
         Log.Error(e, "Failed to save the received image");
-        return null;
+        return default;
       }
     }
 
@@ -2128,6 +2407,8 @@ namespace SkyRoof
         node.Tag = new VoiceMessageInfo(snapshot, product);
         voiceNodes[product.FirstNumber] = node;
         AddLeaf(passNode, node);
+        // from here on this pass's voice sub-frames are filed under this node — see AddFrame
+        txPassInfo.LastVoiceNode = node;
       }
 
       var info = (VoiceMessageInfo)node!.Tag;
@@ -2268,8 +2549,10 @@ namespace SkyRoof
       string folder = Path.Combine(Utils.GetUserDataFolder(), "SsdvImages");
       if (!Directory.Exists(folder)) return found;
 
-      // this node's own sidecar is not an earlier pass; it is this one, written at finalization
-      string ownSidecar = info.SavedPath != null ? Path.ChangeExtension(info.SavedPath, ".json")! : "";
+      // this node's own sidecar is not an earlier pass; it is this one, written at finalization. Read
+      // from SidecarPath rather than derived from SavedPath: since the two writes split, a reception can
+      // have archived its fragments without having written a picture to hang the name off.
+      string ownSidecar = info.SidecarPath ?? "";
       DateTime oldest = DateTime.Now - CombineWindow;
 
       try
@@ -2320,7 +2603,14 @@ namespace SkyRoof
         var json = JObject.Parse(File.ReadAllText(file));
         if ((int?)json["Format"] != SidecarFormat) return null;
         if ((string?)json["Variant"] != info.PassProduct.FragmentFormat) return null;
-        if ((int?)json["Norad"] != info.Snapshot.Satellite?.norad_cat_id) return null;
+        // A different satellite is normally a different picture, and for SSDV that is the end of it. The
+        // Geoscan fleet is the exception: it transmits one shared playlist, and Geoscan-4 and Geoscan-5
+        // sent the byte-identical file for every fnum they had in common on 2026-09-12/13. So a sibling's
+        // sidecar is let through and RawJpegMerge validates it on the bytes — a reception that disagrees
+        // anywhere it overlaps is dropped whole. If the playlist ever diverges that check fires on its
+        // own, which is why there is no version negotiation here and no list of which birds match.
+        if ((int?)json["Norad"] != info.Snapshot.Satellite?.norad_cat_id
+            && info.PassProduct.FragmentFormat != RawJpegMerge.Format) return null;
         if (json["Packets"] is not JArray packets || packets.Count == 0) return null;
 
         var fragments = new List<ImageFragment>(packets.Count);
@@ -2345,7 +2635,27 @@ namespace SkyRoof
       var receptions = new List<IReadOnlyList<ImageFragment>> { info.PassProduct.Fragments };
       foreach (var pass in info.Archived!) receptions.Add(pass.Fragments);
 
-      info.MergedProduct = SsdvMerge.Build(receptions, info.PassProduct.FragmentFormat, info.PassProduct.Source);
+      string? format = info.PassProduct.FragmentFormat;
+      // The raw-JPEG merge needs the image ID and the sender handed to it: an SSDV packet repeats both
+      // in every header, a raw-JPEG fragment is a byte range and repeats neither.
+      info.MergedProduct = format == RawJpegMerge.Format
+        ? RawJpegMerge.Build(receptions, format, info.PassProduct.ImageId, info.PassProduct.Source)
+        : SsdvMerge.Build(receptions, format, info.PassProduct.Source);
+    }
+
+    // Rebuild the displayed reconstruction with the entropy repair switched off, from the same receptions
+    // the repaired one was built from. There is no second copy to go back to and there deliberately is not
+    // one: the repair happens during emission, and the fragments are the record, so either answer can be
+    // produced from them at any time. Null for any family the raw-JPEG merge does not read, which is every
+    // family the repair never ran on anyway.
+    private static void RebuildUnrepaired(SsdvImageInfo info)
+    {
+      var receptions = new List<IReadOnlyList<ImageFragment>> { info.PassProduct.Fragments };
+      if (info.Combined && info.Archived != null)
+        foreach (var pass in info.Archived) receptions.Add(pass.Fragments);
+
+      info.UnrepairedProduct = RawJpegMerge.Build(receptions, info.PassProduct.FragmentFormat,
+        info.PassProduct.ImageId, info.PassProduct.Source, repair: false);
     }
 
     private void CombineImageMNU_Click(object sender, EventArgs e)
@@ -2360,8 +2670,44 @@ namespace SkyRoof
         Recombine(info);
       }
 
-      RenderImage(info);
+      // the unrepaired rebuild is of the receptions now on display, so it is stale the moment that set
+      // changes — exactly as MergedProduct is
+      if (!info.Repaired) RebuildUnrepaired(info);
+
+      RenderImage(info, keepOnFailure: false);
       DisplayImageInfo(info);
+    }
+
+    // The escape hatch for a resync the walker got wrong (B6): the repair is automatic and has no tunable,
+    // so what the operator judges is the result rather than any parameter, and the switch is a plain
+    // checkable item rather than a dialog. The auto-saved .jpg follows the display the way
+    // DenoiseImageMNU_Click's PNG does, so the file on disk stays the picture that was accepted.
+    private void RepairImageMNU_Click(object sender, EventArgs e)
+    {
+      if (treeView1.SelectedNode?.Tag is not SsdvImageInfo info) return;
+
+      info.Repaired = !info.Repaired;
+      if (!info.Repaired)
+      {
+        RebuildUnrepaired(info);
+        // nothing came of the rebuild, so there is no unrepaired picture to switch to. Put the switch back
+        // rather than leave the repaired one on screen under an unchecked menu item.
+        if (info.UnrepairedProduct == null) info.Repaired = true;
+      }
+
+      RenderImage(info, keepOnFailure: false);
+      ResaveImage(info);
+      DisplayImageInfo(info);
+    }
+
+    // Rewrite the auto-saved .jpg with the reconstruction now on display. The sidecar is not rewritten: it
+    // records the fragments this pass heard, which no switch on screen changes.
+    private static void ResaveImage(SsdvImageInfo info)
+    {
+      if (info.SavedPath == null || info.Product.Jpeg.Length == 0) return;
+
+      try { File.WriteAllBytes(info.SavedPath, info.Product.Jpeg); }
+      catch (Exception ex) { Log.Error(ex, "Failed to re-save the received image"); }
     }
 
 
