@@ -29,12 +29,14 @@
     private void InitializeComponent()
     {
       components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TelemetryPanel));
       SatNameLabel = new Label();
       toolTip1 = new VE3NEA.ToolTipEx(components);
       SettingsButton = new Button();
       StatusLabel = new Label();
       treeView1 = new TreeView();
       MenuStrip = new ContextMenuStrip(components);
+      ClearAllMNU = new ToolStripMenuItem();
       richTextBox1 = new RichTextBox();
       splitContainer1 = new SplitContainer();
       ImageSplitContainer = new SplitContainer();
@@ -51,7 +53,6 @@
       PlayVoiceMNU = new ToolStripMenuItem();
       SaveVoiceMNU = new ToolStripMenuItem();
       OpenVoiceMNU = new ToolStripMenuItem();
-      ClearAllMNU = new ToolStripMenuItem();
       MenuStrip.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
@@ -76,12 +77,16 @@
       SatNameLabel.Text = "___";
       SatNameLabel.TextAlign = ContentAlignment.MiddleCenter;
       // 
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
+      // 
       // SettingsButton
       // 
       SettingsButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       SettingsButton.BackColor = SystemColors.ButtonFace;
       SettingsButton.Cursor = Cursors.Hand;
-      SettingsButton.Image = Properties.Resources.gear_1_;
+      SettingsButton.Image = (Image)resources.GetObject("SettingsButton.Image");
       SettingsButton.Location = new Point(637, 0);
       SettingsButton.Name = "SettingsButton";
       SettingsButton.Size = new Size(32, 32);
@@ -119,7 +124,14 @@
       // 
       MenuStrip.Items.AddRange(new ToolStripItem[] { ClearAllMNU });
       MenuStrip.Name = "ClearAllMNU";
-      MenuStrip.Size = new Size(181, 48);
+      MenuStrip.Size = new Size(130, 26);
+      // 
+      // ClearAllMNU
+      // 
+      ClearAllMNU.Name = "ClearAllMNU";
+      ClearAllMNU.Size = new Size(129, 22);
+      ClearAllMNU.Text = "すべてクリア";
+      ClearAllMNU.Click += ClearAllMNU_Click;
       // 
       // richTextBox1
       // 
@@ -185,92 +197,83 @@
       // 
       ImageMenu.Items.AddRange(new ToolStripItem[] { SaveImageMNU, CopyImageMNU, OpenImageMNU, ImageMenuSeparator, CombineImageMNU, RepairImageMNU, DenoiseImageMNU });
       ImageMenu.Name = "ImageMenu";
-      ImageMenu.Size = new Size(155, 114);
+      ImageMenu.Size = new Size(196, 142);
       ImageMenu.Opening += ImageMenu_Opening;
       // 
       // SaveImageMNU
       // 
       SaveImageMNU.Name = "SaveImageMNU";
-      SaveImageMNU.Size = new Size(154, 22);
+      SaveImageMNU.Size = new Size(195, 22);
       SaveImageMNU.Text = "名前を付けて保存...";
       SaveImageMNU.Click += SaveImageMNU_Click;
       // 
       // CopyImageMNU
       // 
       CopyImageMNU.Name = "CopyImageMNU";
-      CopyImageMNU.Size = new Size(154, 22);
+      CopyImageMNU.Size = new Size(195, 22);
       CopyImageMNU.Text = "コピーy";
       CopyImageMNU.Click += CopyImageMNU_Click;
       // 
       // OpenImageMNU
       // 
       OpenImageMNU.Name = "OpenImageMNU";
-      OpenImageMNU.Size = new Size(154, 22);
+      OpenImageMNU.Size = new Size(195, 22);
       OpenImageMNU.Text = "Viewerで開く";
       OpenImageMNU.Click += OpenImageMNU_Click;
-      //
+      // 
       // ImageMenuSeparator
-      //
+      // 
       ImageMenuSeparator.Name = "ImageMenuSeparator";
-      ImageMenuSeparator.Size = new Size(151, 6);
-      //
+      ImageMenuSeparator.Size = new Size(192, 6);
+      // 
       // CombineImageMNU
-      //
-      CombineImageMNU.CheckOnClick = false;
+      // 
       CombineImageMNU.Name = "CombineImageMNU";
-      CombineImageMNU.Size = new Size(154, 22);
+      CombineImageMNU.Size = new Size(195, 22);
       CombineImageMNU.Text = "過去のパスを統合する";
       CombineImageMNU.Click += CombineImageMNU_Click;
-      //
+      // 
       // RepairImageMNU
-      //
-      RepairImageMNU.CheckOnClick = false;
+      // 
       RepairImageMNU.Name = "RepairImageMNU";
-      RepairImageMNU.Size = new Size(154, 22);
+      RepairImageMNU.Size = new Size(195, 22);
       RepairImageMNU.Text = "Repair Damaged Image";
       RepairImageMNU.Click += RepairImageMNU_Click;
-      //
+      // 
       // DenoiseImageMNU
-      //
+      // 
       DenoiseImageMNU.Name = "DenoiseImageMNU";
-      DenoiseImageMNU.Size = new Size(154, 22);
+      DenoiseImageMNU.Size = new Size(195, 22);
       DenoiseImageMNU.Text = "Denoise Image...";
       DenoiseImageMNU.Click += DenoiseImageMNU_Click;
-      //
+      // 
       // VoiceMenu
-      //
+      // 
       VoiceMenu.Items.AddRange(new ToolStripItem[] { PlayVoiceMNU, SaveVoiceMNU, OpenVoiceMNU });
       VoiceMenu.Name = "VoiceMenu";
-      VoiceMenu.Size = new Size(155, 70);
+      VoiceMenu.Size = new Size(171, 70);
       VoiceMenu.Opening += VoiceMenu_Opening;
-      //
+      // 
       // PlayVoiceMNU
-      //
+      // 
       PlayVoiceMNU.Name = "PlayVoiceMNU";
-      PlayVoiceMNU.Size = new Size(154, 22);
+      PlayVoiceMNU.Size = new Size(170, 22);
       PlayVoiceMNU.Text = "再生";
       PlayVoiceMNU.Click += PlayVoiceMNU_Click;
-      //
+      // 
       // SaveVoiceMNU
-      //
+      // 
       SaveVoiceMNU.Name = "SaveVoiceMNU";
-      SaveVoiceMNU.Size = new Size(154, 22);
+      SaveVoiceMNU.Size = new Size(170, 22);
       SaveVoiceMNU.Text = "名前を付けて保存...";
       SaveVoiceMNU.Click += SaveVoiceMNU_Click;
-      //
+      // 
       // OpenVoiceMNU
-      //
+      // 
       OpenVoiceMNU.Name = "OpenVoiceMNU";
-      OpenVoiceMNU.Size = new Size(154, 22);
+      OpenVoiceMNU.Size = new Size(170, 22);
       OpenVoiceMNU.Text = "プレイヤーで開く";
       OpenVoiceMNU.Click += OpenVoiceMNU_Click;
-      //
-      // ClearAllMNU
-      // 
-      ClearAllMNU.Name = "ClearAllMNU";
-      ClearAllMNU.Size = new Size(180, 22);
-      ClearAllMNU.Text = "すべてクリア";
-      ClearAllMNU.Click += ClearAllMNU_Click;
       // 
       // TelemetryPanel
       // 
@@ -283,7 +286,7 @@
       Controls.Add(SatNameLabel);
       Name = "TelemetryPanel";
       StartPosition = FormStartPosition.CenterParent;
-      Text = "Telemetry";
+      Text = "テレメトリ";
       FormClosing += TelemetryPanel_FormClosing;
       Shown += TelemetryPanel_Shown;
       MenuStrip.ResumeLayout(false);

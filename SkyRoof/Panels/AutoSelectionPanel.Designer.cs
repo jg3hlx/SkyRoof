@@ -114,7 +114,7 @@ namespace SkyRoof
       ActivePanel.Controls.Add(ActiveLabel);
       ActivePanel.Location = new Point(252, 9);
       ActivePanel.Name = "ActivePanel";
-      ActivePanel.Size = new Size(49, 24);
+      ActivePanel.Size = new Size(42, 24);
       ActivePanel.TabIndex = 2;
       // 
       // ActiveLabel
@@ -122,7 +122,7 @@ namespace SkyRoof
       ActiveLabel.AutoSize = true;
       ActiveLabel.Location = new Point(3, 9);
       ActiveLabel.Name = "ActiveLabel";
-      ActiveLabel.Size = new Size(43, 15);
+      ActiveLabel.Size = new Size(36, 15);
       ActiveLabel.TabIndex = 0;
       ActiveLabel.Text = "有効:";
       // 
@@ -131,9 +131,9 @@ namespace SkyRoof
       NextPanel.AutoSize = true;
       NextPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
       NextPanel.Controls.Add(NextLabel);
-      NextPanel.Location = new Point(307, 9);
+      NextPanel.Location = new Point(300, 9);
       NextPanel.Name = "NextPanel";
-      NextPanel.Size = new Size(40, 24);
+      NextPanel.Size = new Size(29, 24);
       NextPanel.TabIndex = 3;
       // 
       // NextLabel
@@ -141,7 +141,7 @@ namespace SkyRoof
       NextLabel.AutoSize = true;
       NextLabel.Location = new Point(3, 9);
       NextLabel.Name = "NextLabel";
-      NextLabel.Size = new Size(34, 15);
+      NextLabel.Size = new Size(23, 15);
       NextLabel.TabIndex = 0;
       NextLabel.Text = "次:";
       // 
@@ -150,9 +150,9 @@ namespace SkyRoof
       RecPanel.AutoSize = true;
       RecPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
       RecPanel.Controls.Add(RecLabel);
-      RecPanel.Location = new Point(353, 9);
+      RecPanel.Location = new Point(335, 9);
       RecPanel.Name = "RecPanel";
-      RecPanel.Size = new Size(35, 24);
+      RecPanel.Size = new Size(55, 24);
       RecPanel.TabIndex = 4;
       // 
       // RecLabel
@@ -160,7 +160,7 @@ namespace SkyRoof
       RecLabel.AutoSize = true;
       RecLabel.Location = new Point(3, 9);
       RecLabel.Name = "RecLabel";
-      RecLabel.Size = new Size(29, 15);
+      RecLabel.Size = new Size(49, 15);
       RecLabel.TabIndex = 0;
       RecLabel.Text = "録音中:";
       // 
@@ -172,7 +172,7 @@ namespace SkyRoof
       Controls.Add(MainLayout);
       Font = new Font("Segoe UI", 9F);
       Name = "AutoSelectionPanel";
-      Text = "Auto Selection";
+      Text = "自動選択";
       FormClosing += AutoSelectionPanel_FormClosing;
       MainLayout.ResumeLayout(false);
       MainLayout.PerformLayout();

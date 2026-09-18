@@ -54,9 +54,9 @@
       // WebsiteLabel
       // 
       WebsiteLabel.AutoSize = true;
-      WebsiteLabel.Location = new Point(49, 0);
+      WebsiteLabel.Location = new Point(40, 0);
       WebsiteLabel.Name = "WebsiteLabel";
-      WebsiteLabel.Size = new Size(49, 15);
+      WebsiteLabel.Size = new Size(58, 15);
       WebsiteLabel.TabIndex = 3;
       WebsiteLabel.TabStop = true;
       WebsiteLabel.Text = "ウェブサイト";
@@ -67,7 +67,7 @@
       ImageLabel.AutoSize = true;
       ImageLabel.Location = new Point(3, 0);
       ImageLabel.Name = "ImageLabel";
-      ImageLabel.Size = new Size(40, 15);
+      ImageLabel.Size = new Size(31, 15);
       ImageLabel.TabIndex = 0;
       ImageLabel.TabStop = true;
       ImageLabel.Text = "画像";
@@ -92,7 +92,7 @@
       SatAkaLabel.Size = new Size(356, 23);
       SatAkaLabel.TabIndex = 7;
       SatAkaLabel.Text = "___";
-      SatAkaLabel.TextAlign = ContentAlignment.MiddleCenter;      
+      SatAkaLabel.TextAlign = ContentAlignment.MiddleCenter;
       // 
       // SatellitePropertyGrid
       // 
@@ -118,6 +118,10 @@
       SatNameLabel.Text = "___";
       SatNameLabel.TextAlign = ContentAlignment.MiddleCenter;
       // 
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
+      // 
       // SatelliteDetailsPanel
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -129,7 +133,7 @@
       Controls.Add(SatNameLabel);
       Name = "SatelliteDetailsPanel";
       StartPosition = FormStartPosition.CenterParent;
-      Text = "Satellite Details";
+      Text = "衛星情報";
       FormClosing += SatelliteDetailsPanel_FormClosing;
       Shown += SatelliteDetailsPanel_Shown;
       LinksPanel.ResumeLayout(false);

@@ -58,7 +58,7 @@
       CurrentSatBtn.Checked = true;
       CurrentSatBtn.Location = new Point(3, 3);
       CurrentSatBtn.Name = "CurrentSatBtn";
-      CurrentSatBtn.Size = new Size(109, 19);
+      CurrentSatBtn.Size = new Size(95, 19);
       CurrentSatBtn.TabIndex = 0;
       CurrentSatBtn.TabStop = true;
       CurrentSatBtn.Text = "追跡中の衛星";
@@ -68,9 +68,9 @@
       // GroupBtn
       // 
       GroupBtn.AutoSize = true;
-      GroupBtn.Location = new Point(118, 3);
+      GroupBtn.Location = new Point(104, 3);
       GroupBtn.Name = "GroupBtn";
-      GroupBtn.Size = new Size(58, 19);
+      GroupBtn.Size = new Size(60, 19);
       GroupBtn.TabIndex = 1;
       GroupBtn.Text = "グループ";
       GroupBtn.UseVisualStyleBackColor = true;
@@ -79,7 +79,7 @@
       // AllBtn
       // 
       AllBtn.AutoSize = true;
-      AllBtn.Location = new Point(182, 3);
+      AllBtn.Location = new Point(170, 3);
       AllBtn.Name = "AllBtn";
       AllBtn.Size = new Size(92, 19);
       AllBtn.TabIndex = 2;
@@ -114,9 +114,9 @@
       listViewEx1.View = View.Details;
       listViewEx1.VirtualMode = true;
       listViewEx1.DrawSubItem += listViewEx1_DrawSubItem;
-      listViewEx1.MouseMove += listViewEx1_MouseMove;
       listViewEx1.RetrieveVirtualItem += listViewEx1_RetrieveVirtualItem;
       listViewEx1.MouseDown += listViewEx1_MouseDown;
+      listViewEx1.MouseMove += listViewEx1_MouseMove;
       listViewEx1.Resize += listViewEx1_Resize;
       // 
       // PassesPanel
@@ -127,7 +127,7 @@
       Controls.Add(panel1);
       Controls.Add(flowLayoutPanel1);
       Name = "PassesPanel";
-      Text = "Satellite Passes";
+      Text = "パス一覧";
       FormClosing += PassesPanel_FormClosing;
       flowLayoutPanel1.ResumeLayout(false);
       flowLayoutPanel1.PerformLayout();

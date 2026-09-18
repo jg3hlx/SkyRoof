@@ -75,7 +75,7 @@
       label7.AutoSize = true;
       label7.Location = new Point(210, 56);
       label7.Name = "label7";
-      label7.Size = new Size(24, 15);
+      label7.Size = new Size(23, 15);
       label7.TabIndex = 48;
       label7.Text = "RIT";
       // 
@@ -108,7 +108,7 @@
       label5.AutoSize = true;
       label5.Location = new Point(545, 32);
       label5.Name = "label5";
-      label5.Size = new Size(47, 15);
+      label5.Size = new Size(31, 15);
       label5.TabIndex = 45;
       label5.Text = "手動";
       // 
@@ -117,7 +117,7 @@
       label6.AutoSize = true;
       label6.Location = new Point(545, 9);
       label6.Name = "label6";
-      label6.Size = new Size(49, 15);
+      label6.Size = new Size(48, 15);
       label6.TabIndex = 44;
       label6.Text = "ドップラー";
       // 
@@ -126,7 +126,7 @@
       label4.AutoSize = true;
       label4.Location = new Point(210, 32);
       label4.Name = "label4";
-      label4.Size = new Size(47, 15);
+      label4.Size = new Size(31, 15);
       label4.TabIndex = 43;
       label4.Text = "手動";
       // 
@@ -135,7 +135,7 @@
       label3.AutoSize = true;
       label3.Location = new Point(210, 9);
       label3.Name = "label3";
-      label3.Size = new Size(49, 15);
+      label3.Size = new Size(51, 15);
       label3.TabIndex = 42;
       label3.Text = "ドップラー ";
       // 
@@ -187,7 +187,7 @@
       // 
       label1.AutoSize = true;
       label1.Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Bold);
-      label1.Location = new Point(342, 1);
+      label1.Location = new Point(342, 6);
       label1.Name = "label1";
       label1.Size = new Size(21, 24);
       label1.TabIndex = 37;
@@ -244,31 +244,31 @@
       // 
       contextMenuStrip1.Items.AddRange(new ToolStripItem[] { ShowNominalFrequencyMNU, ShowCorrectedFrequencyMNU });
       contextMenuStrip1.Name = "contextMenuStrip1";
-      contextMenuStrip1.Size = new Size(217, 48);
+      contextMenuStrip1.Size = new Size(215, 48);
       contextMenuStrip1.Opening += contextMenuStrip1_Opening;
       // 
       // ShowNominalFrequencyMNU
       // 
       ShowNominalFrequencyMNU.Name = "ShowNominalFrequencyMNU";
-      ShowNominalFrequencyMNU.Size = new Size(216, 22);
+      ShowNominalFrequencyMNU.Size = new Size(214, 22);
       ShowNominalFrequencyMNU.Text = "Show Nominal Frequency";
       ShowNominalFrequencyMNU.Click += ShowNominalFrequencyMNU_Click;
       // 
       // ShowCorrectedFrequencyMNU
       // 
       ShowCorrectedFrequencyMNU.Name = "ShowCorrectedFrequencyMNU";
-      ShowCorrectedFrequencyMNU.Size = new Size(216, 22);
+      ShowCorrectedFrequencyMNU.Size = new Size(214, 22);
       ShowCorrectedFrequencyMNU.Text = "Show Corrected Frequency";
       ShowCorrectedFrequencyMNU.Click += ShowCorrectedFrequencyMNU_Click;
       // 
       // UplinkLabel
       // 
       UplinkLabel.AutoEllipsis = true;
-      UplinkLabel.Location = new Point(360, 10);
+      UplinkLabel.Location = new Point(364, 14);
       UplinkLabel.Name = "UplinkLabel";
-      UplinkLabel.Size = new Size(62, 15);
+      UplinkLabel.Size = new Size(74, 14);
       UplinkLabel.TabIndex = 32;
-      UplinkLabel.Text = "アップリンクしない";
+      UplinkLabel.Text = "アップリンク";
       // 
       // label2
       // 
@@ -331,7 +331,7 @@
       // 
       // DownlinkLabel
       // 
-      DownlinkLabel.Location = new Point(25, 12);
+      DownlinkLabel.Location = new Point(25, 13);
       DownlinkLabel.Name = "DownlinkLabel";
       DownlinkLabel.Size = new Size(73, 15);
       DownlinkLabel.TabIndex = 26;
@@ -362,33 +362,37 @@
       // 
       CtcssMenu.Items.AddRange(new ToolStripItem[] { SendToneMnu, SendArmingToneMnu });
       CtcssMenu.Name = "CtcssMenu";
-      CtcssMenu.Size = new Size(234, 70);
+      CtcssMenu.Size = new Size(233, 48);
       CtcssMenu.Opening += CtcssMenu_Opening;
       // 
       // SendToneMnu
       // 
       SendToneMnu.DropDownItems.AddRange(new ToolStripItem[] { CtcssEnabledMnu, CtcssSeparator });
       SendToneMnu.Name = "SendToneMnu";
-      SendToneMnu.Size = new Size(233, 22);
+      SendToneMnu.Size = new Size(232, 22);
       SendToneMnu.Text = "Send Tone When Transmitting";
       // 
       // CtcssEnabledMnu
       // 
       CtcssEnabledMnu.Name = "CtcssEnabledMnu";
-      CtcssEnabledMnu.Size = new Size(180, 22);
+      CtcssEnabledMnu.Size = new Size(98, 22);
       CtcssEnabledMnu.Text = "有効";
       CtcssEnabledMnu.Click += CtcssEnabledMnu_Click;
       // 
       // CtcssSeparator
       // 
       CtcssSeparator.Name = "CtcssSeparator";
-      CtcssSeparator.Size = new Size(113, 6);
+      CtcssSeparator.Size = new Size(95, 6);
       // 
       // SendArmingToneMnu
       // 
       SendArmingToneMnu.Name = "SendArmingToneMnu";
-      SendArmingToneMnu.Size = new Size(233, 22);
+      SendArmingToneMnu.Size = new Size(232, 22);
       SendArmingToneMnu.Text = "安全装置を解除するトーンを送信";
+      // 
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
       // 
       // FrequencyWidget
       // 

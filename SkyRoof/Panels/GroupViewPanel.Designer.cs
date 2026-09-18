@@ -90,13 +90,13 @@
       // 
       contextMenuStrip1.Items.AddRange(new ToolStripItem[] { SatelliteDetailsMNU });
       contextMenuStrip1.Name = "contextMenuStrip1";
-      contextMenuStrip1.Size = new Size(160, 26);
+      contextMenuStrip1.Size = new Size(132, 26);
       contextMenuStrip1.Opening += contextMenuStrip1_Opening;
       // 
       // SatelliteDetailsMNU
       // 
       SatelliteDetailsMNU.Name = "SatelliteDetailsMNU";
-      SatelliteDetailsMNU.Size = new Size(159, 22);
+      SatelliteDetailsMNU.Size = new Size(131, 22);
       SatelliteDetailsMNU.Text = "衛星情報...";
       SatelliteDetailsMNU.Click += SatelliteDetailsMNU_Click;
       // 
@@ -129,7 +129,7 @@
       Controls.Add(listView1);
       Controls.Add(GroupNameLabel);
       Name = "GroupViewPanel";
-      Text = "Current Satellite Group";
+      Text = "現在の衛星グループ";
       FormClosing += GroupViewPanel_FormClosing;
       MouseClick += GroupViewPanel_MouseClick;
       contextMenuStrip1.ResumeLayout(false);

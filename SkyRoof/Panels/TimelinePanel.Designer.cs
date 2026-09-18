@@ -37,6 +37,7 @@
       toolTip1.AutomaticDelay = 1500;
       toolTip1.AutoPopDelay = 15000;
       toolTip1.InitialDelay = 500;
+      toolTip1.OwnerDraw = true;
       toolTip1.ReshowDelay = 300;
       toolTip1.ShowAlways = true;
       // 
@@ -47,7 +48,7 @@
       ClientSize = new Size(966, 185);
       DoubleBuffered = true;
       Name = "TimelinePanel";
-      Text = "Timeline";
+      Text = "タイムライン";
       FormClosing += TimelinePanel_FormClosing;
       Paint += TimelinePanel_Paint;
       MouseDown += SatelliteTimelineControl_MouseDown;

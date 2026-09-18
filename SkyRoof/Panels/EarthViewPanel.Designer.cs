@@ -36,28 +36,25 @@
       ((System.ComponentModel.ISupportInitialize)openglControl1).BeginInit();
       ModePanel.SuspendLayout();
       SuspendLayout();
-      //
+      // 
       // openglControl1
-      //
+      // 
       openglControl1.Dock = DockStyle.Fill;
       openglControl1.DrawFPS = false;
-      openglControl1.Location = new Point(0, 0);
+      openglControl1.Location = new Point(0, 25);
       openglControl1.Margin = new Padding(4, 3, 4, 3);
       openglControl1.Name = "openglControl1";
       openglControl1.OpenGLVersion = SharpGL.Version.OpenGLVersion.OpenGL3_3;
       openglControl1.RenderContextType = SharpGL.RenderContextType.NativeWindow;
-      // Manual (not TimerBased): SharpGL's autonomous render timer keeps drawing through the
-      // handle destroy/recreate that docking causes, corrupting the GL context. Render on
-      // demand via openglControl1.Invalidate() instead, matching WaterfallControl.
       openglControl1.RenderTrigger = SharpGL.RenderTrigger.Manual;
-      openglControl1.Size = new Size(400, 379);
+      openglControl1.Size = new Size(400, 354);
       openglControl1.TabIndex = 1;
       openglControl1.OpenGLInitialized += openglControl1_OpenGLInitialized;
       openglControl1.OpenGLDraw += openglControl1_OpenGLDraw;
       openglControl1.Resize += openglControl1_Resize;
-      //
+      // 
       // label1
-      //
+      // 
       label1.AutoSize = true;
       label1.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
       label1.Location = new Point(4, 30);
@@ -65,9 +62,9 @@
       label1.Size = new Size(27, 19);
       label1.TabIndex = 2;
       label1.Text = "___";
-      //
+      // 
       // ModePanel
-      //
+      // 
       ModePanel.AutoSize = true;
       ModePanel.Controls.Add(RealTimeRadioBtn);
       ModePanel.Controls.Add(PassRadioBtn);
@@ -77,34 +74,34 @@
       ModePanel.Name = "ModePanel";
       ModePanel.Size = new Size(400, 25);
       ModePanel.TabIndex = 3;
-      //
+      // 
       // RealTimeRadioBtn
-      //
+      // 
       RealTimeRadioBtn.AutoSize = true;
       RealTimeRadioBtn.Checked = true;
       RealTimeRadioBtn.Location = new Point(3, 3);
       RealTimeRadioBtn.Name = "RealTimeRadioBtn";
-      RealTimeRadioBtn.Size = new Size(76, 19);
+      RealTimeRadioBtn.Size = new Size(79, 19);
       RealTimeRadioBtn.TabIndex = 0;
       RealTimeRadioBtn.TabStop = true;
       RealTimeRadioBtn.Text = "リアルタイム";
       RealTimeRadioBtn.UseVisualStyleBackColor = true;
       RealTimeRadioBtn.CheckedChanged += radioButton_CheckedChanged;
-      //
+      // 
       // PassRadioBtn
-      //
+      // 
       PassRadioBtn.AutoSize = true;
       PassRadioBtn.Enabled = false;
-      PassRadioBtn.Location = new Point(85, 3);
+      PassRadioBtn.Location = new Point(88, 3);
       PassRadioBtn.Name = "PassRadioBtn";
-      PassRadioBtn.Size = new Size(99, 19);
+      PassRadioBtn.Size = new Size(96, 19);
       PassRadioBtn.TabIndex = 1;
       PassRadioBtn.Text = "選択されたパス";
       PassRadioBtn.UseVisualStyleBackColor = true;
       PassRadioBtn.CheckedChanged += radioButton_CheckedChanged;
-      //
+      // 
       // EarthViewPanel
-      //
+      // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       ClientSize = new Size(400, 379);
@@ -112,7 +109,7 @@
       Controls.Add(openglControl1);
       Controls.Add(ModePanel);
       Name = "EarthViewPanel";
-      Text = "Earth View";
+      Text = "アースビュー";
       FormClosing += EarthViewPanel_FormClosing;
       ((System.ComponentModel.ISupportInitialize)openglControl1).EndInit();
       ModePanel.ResumeLayout(false);

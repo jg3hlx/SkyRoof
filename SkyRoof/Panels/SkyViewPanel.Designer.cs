@@ -56,7 +56,7 @@
       RealTimeRadioBtn.Checked = true;
       RealTimeRadioBtn.Location = new Point(3, 3);
       RealTimeRadioBtn.Name = "RealTimeRadioBtn";
-      RealTimeRadioBtn.Size = new Size(76, 19);
+      RealTimeRadioBtn.Size = new Size(79, 19);
       RealTimeRadioBtn.TabIndex = 0;
       RealTimeRadioBtn.TabStop = true;
       RealTimeRadioBtn.Text = "リアルタイム";
@@ -67,9 +67,9 @@
       // 
       OrbitRadioBtn.AutoSize = true;
       OrbitRadioBtn.Enabled = false;
-      OrbitRadioBtn.Location = new Point(85, 3);
+      OrbitRadioBtn.Location = new Point(88, 3);
       OrbitRadioBtn.Name = "OrbitRadioBtn";
-      OrbitRadioBtn.Size = new Size(99, 19);
+      OrbitRadioBtn.Size = new Size(101, 19);
       OrbitRadioBtn.TabIndex = 1;
       OrbitRadioBtn.Text = "選択された軌道";
       OrbitRadioBtn.UseVisualStyleBackColor = true;
@@ -88,6 +88,10 @@
       DrawPanel.MouseLeave += DrawPanel_MouseLeave;
       DrawPanel.MouseMove += DrawPanel_MouseMove;
       DrawPanel.Resize += panel_Resize;
+      // 
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
       // 
       // FlowPanel
       // 
@@ -108,7 +112,7 @@
       Controls.Add(FlowPanel);
       Controls.Add(RadioButtonsPanel);
       Name = "SkyViewPanel";
-      Text = "Sky View";
+      Text = "空の風景";
       FormClosing += SkyViewPanel_FormClosing;
       RadioButtonsPanel.ResumeLayout(false);
       RadioButtonsPanel.PerformLayout();

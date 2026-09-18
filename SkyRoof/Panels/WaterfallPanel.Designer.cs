@@ -105,32 +105,32 @@
       // 
       SatDetailsMNU.Items.AddRange(new ToolStripItem[] { SelectTransmitterMNU, AddToGroupMNU, ReportToAmsatMNU, satelliteDetailsToolStripMenuItem });
       SatDetailsMNU.Name = "contextMenuStrip1";
-      SatDetailsMNU.Size = new Size(174, 92);
+      SatDetailsMNU.Size = new Size(166, 92);
       SatDetailsMNU.Opening += contextMenuStrip1_Opening;
       // 
       // SelectTransmitterMNU
       // 
       SelectTransmitterMNU.Name = "SelectTransmitterMNU";
-      SelectTransmitterMNU.Size = new Size(173, 22);
+      SelectTransmitterMNU.Size = new Size(165, 22);
       SelectTransmitterMNU.Text = "送信機を選択";
       // 
       // AddToGroupMNU
       // 
       AddToGroupMNU.Name = "AddToGroupMNU";
-      AddToGroupMNU.Size = new Size(173, 22);
+      AddToGroupMNU.Size = new Size(165, 22);
       AddToGroupMNU.Text = "グループに追加";
       // 
       // ReportToAmsatMNU
       // 
       ReportToAmsatMNU.Name = "ReportToAmsatMNU";
-      ReportToAmsatMNU.Size = new Size(173, 22);
+      ReportToAmsatMNU.Size = new Size(165, 22);
       ReportToAmsatMNU.Text = "AMSATへ報告...";
       ReportToAmsatMNU.Click += ReportToAmsatMNU_Click;
       // 
       // satelliteDetailsToolStripMenuItem
       // 
       satelliteDetailsToolStripMenuItem.Name = "satelliteDetailsToolStripMenuItem";
-      satelliteDetailsToolStripMenuItem.Size = new Size(173, 22);
+      satelliteDetailsToolStripMenuItem.Size = new Size(165, 22);
       satelliteDetailsToolStripMenuItem.Text = "衛星の詳細情報...";
       satelliteDetailsToolStripMenuItem.Click += satelliteDetailsToolStripMenuItem_Click;
       // 
@@ -143,6 +143,10 @@
       WaterfallControl.TabIndex = 0;
       WaterfallControl.Resize += WaterfallControl_Resize;
       // 
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
+      // 
       // WaterfallPanel
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -150,7 +154,7 @@
       ClientSize = new Size(800, 450);
       Controls.Add(SplitContainer);
       Name = "WaterfallPanel";
-      Text = "Waterfall";
+      Text = "ウォータフォール";
       FormClosing += WaterfallPanel_FormClosing;
       SplitContainer.Panel1.ResumeLayout(false);
       SplitContainer.Panel1.PerformLayout();

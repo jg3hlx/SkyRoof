@@ -50,7 +50,7 @@ namespace SkyRoof
       label1.AutoSize = true;
       label1.Location = new Point(8, 8);
       label1.Name = "label1";
-      label1.Size = new Size(48, 15);
+      label1.Size = new Size(55, 15);
       label1.TabIndex = 1;
       label1.Text = "人工衛星";
       // 
@@ -59,7 +59,7 @@ namespace SkyRoof
       label2.AutoSize = true;
       label2.Location = new Point(211, 9);
       label2.Name = "label2";
-      label2.Size = new Size(86, 15);
+      label2.Size = new Size(100, 15);
       label2.TabIndex = 2;
       label2.Text = "DX グリッド・スクエア";
       // 
@@ -101,8 +101,8 @@ namespace SkyRoof
       PredictionList.VirtualMode = true;
       PredictionList.DrawSubItem += PredictionList_DrawSubItem;
       PredictionList.RetrieveVirtualItem += PredictionList_RetrieveVirtualItem;
-      PredictionList.Resize += PredictionList_Resize;
       PredictionList.MouseDown += PredictionList_MouseDown;
+      PredictionList.Resize += PredictionList_Resize;
       // 
       // QsoSchedulerPanel
       // 
@@ -116,7 +116,7 @@ namespace SkyRoof
       Controls.Add(label1);
       Controls.Add(dockPanel1);
       Name = "QsoSchedulerPanel";
-      Text = "QSO Scheduler";
+      Text = "衛星交信スケジューラー";
       FormClosing += QsoScheduler_FormClosing;
       ResumeLayout(false);
       PerformLayout();

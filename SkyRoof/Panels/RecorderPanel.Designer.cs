@@ -95,7 +95,7 @@
       RecordBtn.Name = "RecordBtn";
       RecordBtn.Size = new Size(57, 27);
       RecordBtn.TabIndex = 0;
-      RecordBtn.Text = "Record";
+      RecordBtn.Text = "録音";
       toolTip1.SetToolTip(RecordBtn, "Record Audio");
       RecordBtn.UseVisualStyleBackColor = true;
       RecordBtn.Click += RecordBtn_Click;
@@ -117,7 +117,7 @@
       SaveBtn.Name = "SaveBtn";
       SaveBtn.Size = new Size(57, 27);
       SaveBtn.TabIndex = 2;
-      SaveBtn.Text = "Save";
+      SaveBtn.Text = "保存";
       toolTip1.SetToolTip(SaveBtn, "Save Recording");
       SaveBtn.UseVisualStyleBackColor = true;
       SaveBtn.Click += SaveBtn_Click;
@@ -139,7 +139,7 @@
       LoadBtn.Name = "LoadBtn";
       LoadBtn.Size = new Size(84, 27);
       LoadBtn.TabIndex = 4;
-      LoadBtn.Text = "Load";
+      LoadBtn.Text = "読み込み";
       toolTip1.SetToolTip(LoadBtn, "Load Recording");
       LoadBtn.UseVisualStyleBackColor = true;
       LoadBtn.Click += LoadBtn_Click;
@@ -150,10 +150,14 @@
       PlaybackBtn.Name = "PlaybackBtn";
       PlaybackBtn.Size = new Size(84, 27);
       PlaybackBtn.TabIndex = 5;
-      PlaybackBtn.Text = "Play Back";
+      PlaybackBtn.Text = "再生";
       toolTip1.SetToolTip(PlaybackBtn, "Play Back");
       PlaybackBtn.UseVisualStyleBackColor = true;
       PlaybackBtn.Click += PlaybackBtn_Click;
+      // 
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
       // 
       // GainSlider
       // 
@@ -193,19 +197,19 @@
       // 
       SaveMenu.Items.AddRange(new ToolStripItem[] { SaveMp3MNU, SaveWavMNU });
       SaveMenu.Name = "SaveMenu";
-      SaveMenu.Size = new Size(129, 48);
+      SaveMenu.Size = new Size(128, 48);
       // 
       // SaveMp3MNU
       // 
       SaveMp3MNU.Name = "SaveMp3MNU";
-      SaveMp3MNU.Size = new Size(128, 22);
+      SaveMp3MNU.Size = new Size(127, 22);
       SaveMp3MNU.Text = "Save .mp3";
       SaveMp3MNU.Click += SaveMp3MNU_Click;
       // 
       // SaveWavMNU
       // 
       SaveWavMNU.Name = "SaveWavMNU";
-      SaveWavMNU.Size = new Size(128, 22);
+      SaveWavMNU.Size = new Size(127, 22);
       SaveWavMNU.Text = "Save .wav";
       SaveWavMNU.Click += SaveWavMNU_Click;
       // 
@@ -221,7 +225,7 @@
       // 
       // WaveformWidget
       // 
-      WaveformWidget.BackColor = Color.Black; // fixed: instrument display
+      WaveformWidget.BackColor = Color.Black;
       WaveformWidget.Dock = DockStyle.Fill;
       WaveformWidget.Location = new Point(0, 0);
       WaveformWidget.Name = "WaveformWidget";
@@ -249,7 +253,7 @@
       Controls.Add(StatusBar);
       Font = new Font("Segoe UI", 9F);
       Name = "RecorderPanel";
-      Text = "Recorder";
+      Text = "録音機能";
       FormClosing += RecorderPanel_FormClosing;
       Shown += RecorderPanel_Shown;
       StatusBar.ResumeLayout(false);

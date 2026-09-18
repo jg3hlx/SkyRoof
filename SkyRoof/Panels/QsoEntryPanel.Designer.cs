@@ -127,7 +127,7 @@
       // 
       // panel1
       // 
-      panel1.BackColor = Theme.QsoCard;
+      panel1.BackColor = Color.LightSkyBlue;
       panel1.Controls.Add(UtcFrame);
       panel1.Controls.Add(UtcLabel);
       panel1.Location = new Point(3, 3);
@@ -137,7 +137,7 @@
       // 
       // UtcFrame
       // 
-      UtcFrame.BackColor = Theme.QsoFieldEdited;
+      UtcFrame.BackColor = Color.Blue;
       UtcFrame.Controls.Add(UtcPicker);
       UtcFrame.Location = new Point(43, 6);
       UtcFrame.Name = "UtcFrame";
@@ -169,7 +169,7 @@
       // 
       // panel2
       // 
-      panel2.BackColor = Theme.QsoCard;
+      panel2.BackColor = Color.LightSkyBlue;
       panel2.Controls.Add(BandFrame);
       panel2.Controls.Add(label10);
       panel2.Location = new Point(186, 3);
@@ -179,7 +179,7 @@
       // 
       // BandFrame
       // 
-      BandFrame.BackColor = Theme.QsoFieldEdited;
+      BandFrame.BackColor = Color.Blue;
       BandFrame.Controls.Add(BandComboBox);
       BandFrame.Location = new Point(43, 4);
       BandFrame.Name = "BandFrame";
@@ -202,14 +202,14 @@
       label10.AutoSize = true;
       label10.Location = new Point(3, 11);
       label10.Name = "label10";
-      label10.Size = new Size(39, 15);
+      label10.Size = new Size(34, 15);
       label10.TabIndex = 21;
       label10.Text = "バンド";
       label10.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel3
       // 
-      panel3.BackColor = Theme.QsoCard;
+      panel3.BackColor = Color.LightSkyBlue;
       panel3.Controls.Add(ModeFrame);
       panel3.Controls.Add(label11);
       panel3.Location = new Point(369, 3);
@@ -219,7 +219,7 @@
       // 
       // ModeFrame
       // 
-      ModeFrame.BackColor = Theme.QsoFieldEdited;
+      ModeFrame.BackColor = Color.Blue;
       ModeFrame.Controls.Add(ModeComboBox);
       ModeFrame.Location = new Point(43, 4);
       ModeFrame.Name = "ModeFrame";
@@ -241,14 +241,14 @@
       label11.AutoSize = true;
       label11.Location = new Point(3, 11);
       label11.Name = "label11";
-      label11.Size = new Size(41, 15);
+      label11.Size = new Size(32, 15);
       label11.TabIndex = 21;
       label11.Text = "モード";
       label11.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel4
       // 
-      panel4.BackColor = Theme.QsoCard;
+      panel4.BackColor = Color.LightSkyBlue;
       panel4.Controls.Add(SatFrame);
       panel4.Controls.Add(label12);
       panel4.Location = new Point(552, 3);
@@ -258,7 +258,7 @@
       // 
       // SatFrame
       // 
-      SatFrame.BackColor = Theme.QsoFieldEdited;
+      SatFrame.BackColor = Color.Blue;
       SatFrame.Controls.Add(SatComboBox);
       SatFrame.Location = new Point(43, 4);
       SatFrame.Name = "SatFrame";
@@ -280,14 +280,14 @@
       label12.AutoSize = true;
       label12.Location = new Point(3, 11);
       label12.Name = "label12";
-      label12.Size = new Size(26, 15);
+      label12.Size = new Size(27, 15);
       label12.TabIndex = 21;
       label12.Text = "SAT";
       label12.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel5
       // 
-      panel5.BackColor = Theme.QsoCard;
+      panel5.BackColor = Color.LightSkyBlue;
       panel5.Controls.Add(CallFrame);
       panel5.Controls.Add(label13);
       panel5.Location = new Point(3, 45);
@@ -297,7 +297,7 @@
       // 
       // CallFrame
       // 
-      CallFrame.BackColor = Theme.QsoFieldEdited;
+      CallFrame.BackColor = Color.Blue;
       CallFrame.Controls.Add(CallEdit);
       CallFrame.Location = new Point(43, 4);
       CallFrame.Name = "CallFrame";
@@ -321,14 +321,14 @@
       label13.Location = new Point(3, 11);
       label13.Margin = new Padding(6);
       label13.Name = "label13";
-      label13.Size = new Size(35, 15);
+      label13.Size = new Size(61, 15);
       label13.TabIndex = 21;
       label13.Text = "コールサイン";
       label13.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel6
       // 
-      panel6.BackColor = Theme.QsoCard;
+      panel6.BackColor = Color.LightSkyBlue;
       panel6.Controls.Add(GridFrame);
       panel6.Controls.Add(label14);
       panel6.Location = new Point(186, 45);
@@ -338,7 +338,7 @@
       // 
       // GridFrame
       // 
-      GridFrame.BackColor = Theme.QsoFieldEdited;
+      GridFrame.BackColor = Color.Blue;
       GridFrame.Controls.Add(GridEdit);
       GridFrame.Location = new Point(43, 4);
       GridFrame.Name = "GridFrame";
@@ -368,7 +368,7 @@
       // 
       // panel11
       // 
-      panel11.BackColor = Theme.QsoCard;
+      panel11.BackColor = Color.LightSkyBlue;
       panel11.Controls.Add(StateFrame);
       panel11.Controls.Add(label1);
       panel11.Location = new Point(369, 45);
@@ -378,7 +378,7 @@
       // 
       // StateFrame
       // 
-      StateFrame.BackColor = Theme.QsoFieldEdited;
+      StateFrame.BackColor = Color.Blue;
       StateFrame.Controls.Add(StateComboBox);
       StateFrame.Location = new Point(43, 4);
       StateFrame.Name = "StateFrame";
@@ -400,14 +400,14 @@
       label1.AutoSize = true;
       label1.Location = new Point(3, 11);
       label1.Name = "label1";
-      label1.Size = new Size(37, 15);
+      label1.Size = new Size(39, 15);
       label1.TabIndex = 21;
       label1.Text = "STATE";
       label1.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel7
       // 
-      panel7.BackColor = Theme.QsoCard;
+      panel7.BackColor = Color.LightSkyBlue;
       panel7.Controls.Add(SentFrame);
       panel7.Controls.Add(label15);
       panel7.Location = new Point(552, 45);
@@ -417,7 +417,7 @@
       // 
       // SentFrame
       // 
-      SentFrame.BackColor = Theme.QsoFieldEdited;
+      SentFrame.BackColor = Color.Blue;
       SentFrame.Controls.Add(SentEdit);
       SentFrame.Location = new Point(43, 4);
       SentFrame.Name = "SentFrame";
@@ -440,14 +440,14 @@
       label15.AutoSize = true;
       label15.Location = new Point(3, 11);
       label15.Name = "label15";
-      label15.Size = new Size(34, 15);
+      label15.Size = new Size(31, 15);
       label15.TabIndex = 21;
       label15.Text = "送信";
       label15.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel8
       // 
-      panel8.BackColor = Theme.QsoCard;
+      panel8.BackColor = Color.LightSkyBlue;
       panel8.Controls.Add(RecvFrame);
       panel8.Controls.Add(label16);
       panel8.Location = new Point(3, 87);
@@ -457,7 +457,7 @@
       // 
       // RecvFrame
       // 
-      RecvFrame.BackColor = Theme.QsoFieldEdited;
+      RecvFrame.BackColor = Color.Blue;
       RecvFrame.Controls.Add(RecvEdit);
       RecvFrame.Location = new Point(43, 4);
       RecvFrame.Name = "RecvFrame";
@@ -480,14 +480,14 @@
       label16.AutoSize = true;
       label16.Location = new Point(3, 11);
       label16.Name = "label16";
-      label16.Size = new Size(35, 15);
+      label16.Size = new Size(31, 15);
       label16.TabIndex = 21;
       label16.Text = "受信";
       label16.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel9
       // 
-      panel9.BackColor = Theme.QsoCard;
+      panel9.BackColor = Color.LightSkyBlue;
       panel9.Controls.Add(NameFrame);
       panel9.Controls.Add(label17);
       panel9.Location = new Point(186, 87);
@@ -497,7 +497,7 @@
       // 
       // NameFrame
       // 
-      NameFrame.BackColor = Theme.QsoFieldEdited;
+      NameFrame.BackColor = Color.Blue;
       NameFrame.Controls.Add(NameEdit);
       NameFrame.Location = new Point(43, 4);
       NameFrame.Name = "NameFrame";
@@ -519,14 +519,14 @@
       label17.AutoSize = true;
       label17.Location = new Point(3, 11);
       label17.Name = "label17";
-      label17.Size = new Size(41, 15);
+      label17.Size = new Size(31, 15);
       label17.TabIndex = 21;
       label17.Text = "名称";
       label17.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // panel12
       // 
-      panel12.BackColor = Theme.QsoCard;
+      panel12.BackColor = Color.LightSkyBlue;
       panel12.Controls.Add(NotesFrame);
       panel12.Controls.Add(label2);
       panel12.Location = new Point(369, 87);
@@ -536,7 +536,7 @@
       // 
       // NotesFrame
       // 
-      NotesFrame.BackColor = Theme.QsoFieldEdited;
+      NotesFrame.BackColor = Color.Blue;
       NotesFrame.Controls.Add(NotesEdit);
       NotesFrame.Location = new Point(43, 4);
       NotesFrame.Name = "NotesFrame";
@@ -558,14 +558,14 @@
       label2.AutoSize = true;
       label2.Location = new Point(3, 11);
       label2.Name = "label2";
-      label2.Size = new Size(42, 15);
+      label2.Size = new Size(43, 15);
       label2.TabIndex = 21;
       label2.Text = "NOTES";
       label2.TextAlign = ContentAlignment.MiddleLeft;
       // 
       // ButtonsPanel
       // 
-      ButtonsPanel.BackColor = Theme.QsoCard;
+      ButtonsPanel.BackColor = Color.LightSkyBlue;
       ButtonsPanel.Controls.Add(ClearBtn);
       ButtonsPanel.Controls.Add(SaveBtn);
       ButtonsPanel.Location = new Point(552, 87);
@@ -594,6 +594,10 @@
       SaveBtn.UseVisualStyleBackColor = true;
       SaveBtn.Click += LogBtn_Click;
       // 
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
+      // 
       // QsoEntryPanel
       // 
       AcceptButton = SaveBtn;
@@ -602,7 +606,7 @@
       ClientSize = new Size(734, 128);
       Controls.Add(flowLayoutPanel1);
       Name = "QsoEntryPanel";
-      Text = "QSO Entry";
+      Text = "QSO入力";
       FormClosing += QsoEntryPanel_FormClosing;
       flowLayoutPanel1.ResumeLayout(false);
       panel1.ResumeLayout(false);

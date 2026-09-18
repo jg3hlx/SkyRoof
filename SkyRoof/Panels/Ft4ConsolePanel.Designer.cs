@@ -355,7 +355,7 @@
       label2.Location = new Point(5, 18);
       label2.Margin = new Padding(4, 0, 4, 0);
       label2.Name = "label2";
-      label2.Size = new Size(21, 15);
+      label2.Size = new Size(20, 15);
       label2.TabIndex = 19;
       label2.Text = "TX";
       // 
@@ -453,6 +453,7 @@
       // 
       // toolTip1
       // 
+      toolTip1.OwnerDraw = true;
       toolTip1.Popup += toolTip1_Popup;
       // 
       // Ft4ConsolePanel
@@ -462,7 +463,7 @@
       ClientSize = new Size(800, 533);
       Controls.Add(SplitContainer);
       Name = "Ft4ConsolePanel";
-      Text = "FT4 Console";
+      Text = "FT4 コンソール";
       FormClosing += Ft4ConsolePanel_FormClosing;
       Shown += Ft4ConsolePanel_Shown;
       SplitContainer.Panel1.ResumeLayout(false);

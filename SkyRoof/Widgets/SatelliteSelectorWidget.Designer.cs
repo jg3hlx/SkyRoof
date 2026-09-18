@@ -54,9 +54,9 @@
       // label3
       // 
       label3.AutoSize = true;
-      label3.Location = new Point(128, 45);
+      label3.Location = new Point(142, 45);
       label3.Name = "label3";
-      label3.Size = new Size(66, 15);
+      label3.Size = new Size(43, 15);
       label3.TabIndex = 12;
       label3.Text = "送信機";
       // 
@@ -87,22 +87,26 @@
       // label1
       // 
       label1.AutoSize = true;
-      label1.Location = new Point(8, 15);
+      label1.Location = new Point(17, 18);
       label1.Name = "label1";
-      label1.Size = new Size(40, 15);
+      label1.Size = new Size(42, 15);
       label1.TabIndex = 8;
       label1.Text = "グループ";
+      // 
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
       // 
       // label2
       // 
       label2.AutoSize = true;
-      label2.Location = new Point(146, 15);
+      label2.Location = new Point(137, 15);
       label2.Name = "label2";
-      label2.Size = new Size(48, 15);
+      label2.Size = new Size(55, 15);
       label2.TabIndex = 10;
       label2.Text = "人工衛星";
       // 
-      // SatelliteSelector
+      // SatelliteSelectorWidget
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
@@ -113,7 +117,7 @@
       Controls.Add(label2);
       Controls.Add(GroupComboBox);
       Controls.Add(label1);
-      Name = "SatelliteSelector";
+      Name = "SatelliteSelectorWidget";
       Size = new Size(339, 78);
       ResumeLayout(false);
       PerformLayout();

@@ -59,18 +59,18 @@ namespace SkyRoof
       // label1
       // 
       label1.AutoSize = true;
-      label1.Location = new Point(8, 1);
+      label1.Location = new Point(15, 1);
       label1.Name = "label1";
-      label1.Size = new Size(52, 15);
+      label1.Size = new Size(43, 15);
       label1.TabIndex = 29;
       label1.Text = "方位角";
       // 
       // label2
       // 
       label2.AutoSize = true;
-      label2.Location = new Point(75, 1);
+      label2.Location = new Point(87, 1);
       label2.Name = "label2";
-      label2.Size = new Size(55, 15);
+      label2.Size = new Size(31, 15);
       label2.TabIndex = 31;
       label2.Text = "仰角";
       // 
@@ -94,7 +94,7 @@ namespace SkyRoof
       TrackCheckbox.AutoSize = true;
       TrackCheckbox.Location = new Point(146, 13);
       TrackCheckbox.Name = "TrackCheckbox";
-      TrackCheckbox.Size = new Size(53, 19);
+      TrackCheckbox.Size = new Size(50, 19);
       TrackCheckbox.TabIndex = 32;
       TrackCheckbox.Text = "追跡";
       TrackCheckbox.UseVisualStyleBackColor = true;
@@ -128,11 +128,15 @@ namespace SkyRoof
       StopBtn.Name = "StopBtn";
       StopBtn.Size = new Size(53, 22);
       StopBtn.TabIndex = 35;
-      StopBtn.Text = "STOP";
+      StopBtn.Text = "停止";
       StopBtn.UseVisualStyleBackColor = true;
       StopBtn.Click += StopBtn_Click;
       // 
-      // RotatorControl
+      // toolTip1
+      // 
+      toolTip1.OwnerDraw = true;
+      // 
+      // RotatorWidget
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
@@ -145,7 +149,7 @@ namespace SkyRoof
       Controls.Add(SatelliteElevationLabel);
       Controls.Add(label1);
       Controls.Add(SatelliteAzimuthLabel);
-      Name = "RotatorControl";
+      Name = "RotatorWidget";
       Size = new Size(210, 73);
       ResumeLayout(false);
       PerformLayout();

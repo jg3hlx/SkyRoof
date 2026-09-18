@@ -118,12 +118,32 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>135, 17</value>
+    <value>247, 17</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="SettingsButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAAAKUAAAClAXDE3lUAAAAZdEVYdFNvZnR3YXJlAHd3dy5pbmtzY2FwZS5vcmeb7jwa
+        AAACDElEQVRIS7WWPU/bUBSGkwWhDnyI39AFkBgQEpStQ9du3YEBwQ9gYENiZ4MYx76+JvFXEgK2hZAY
+        mBAjQkJM8AdaqVurCjVy70nt6Pj4kECkDI9k31w/b3LvObkuJUkyEClPZ2w3epZulBxV3UQzvZeKqH/k
+        5lLYQYrlhN9AngUAutU44OZSCgO2F8/bTvg5N+ZGhzTgWAQP2edBEIzpVnPfPDn7hJ8DcjcgVpJfXZkX
+        XZ540YJ0wk11/4MGVAyvo6R+1W7tVEz/d3fccDtGrf0FO3sX0olWevI+ZAGvoYL/6vX2YiHAdqIdTkjh
+        pJSq3dwrBNTr8bQSfKdCCifEwHLBnhQCANsNNzip4lG68bqqpjldNr7qVsusGP4fLgD2BDtzAWpDt6lc
+        LZ0U4noczwOEaE+pSnqiAbDxeF63iaDO01LsVUvKIyfPgBD6S6C6oIShT6AZoca7HcoTr3NiDCwXDsBA
+        x5d48X9gzTkpBvaEk2eMPmD0SzTqTcYPWF68RQLeXabHVsPF83IPpf9HuYCUNzeaIVu72IkDykp0Q8QF
+        OCkGgjUt+lAI6PPtc3BSCpwNhQAtuJpUgnsqpHBCjNrkF9MMZgsBAFSUOmjuUtmt5Z+v9j1wRNNT1bKm
+        Cf9nJheitYSduQCgVruYEF64rK7L2digIxOAIO5FIHfzGtAnNGDoQ59j+NeWpPQPWRthPndp9zwAAAAA
+        SUVORK5CYII=
+</value>
+  </data>
   <metadata name="MenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>233, 17</value>
+    <value>344, 17</value>
   </metadata>
   <metadata name="ImageMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>130, 17</value>
+  </metadata>
+  <metadata name="VoiceMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
 </root>
