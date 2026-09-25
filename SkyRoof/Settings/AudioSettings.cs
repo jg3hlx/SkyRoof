@@ -10,12 +10,12 @@ namespace SkyRoof
     public int SoundcardVolume = -25;
     public bool SpeakerEnabled = true;
 
-    [DisplayName("Speaker Audio Device")]
+    [DisplayName("スピーカ")]
     [Description("Soundcard for audio output")]
     [TypeConverter(typeof(OutputSoundcardNameConverter))]
     public string? SpeakerSoundcard { get; set; } = Soundcard.GetDefaultSoundcardId(DataFlow.Render);
 
-    [DisplayName("FM Squelch")]
+    [DisplayName("FMスケルチ")]
     [Description("Enable Squelch in the FM mode")]
     [DefaultValue(true)]
     public bool Squelch { get; set; } = true;

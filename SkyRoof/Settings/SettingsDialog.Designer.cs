@@ -131,9 +131,9 @@ namespace SkyRoof
       Name = "SettingsDialog";
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterParent;
-      Text = "Settings";
-      Shown += SettingsDialog_Shown;
+      Text = "設定";
       FormClosing += SettingsDialog_FormClosing;
+      Shown += SettingsDialog_Shown;
       panel1.ResumeLayout(false);
       PropertyGridMenu.ResumeLayout(false);
       ResumeLayout(false);

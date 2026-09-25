@@ -12,12 +12,12 @@ namespace SkyRoof
 {
   public class AnnouncerSettings
   {
-    [DisplayName("Audio Device")]
+    [DisplayName("オーディオ　デバイス")]
     [Description("Soundcard for voice announcements")]
     [TypeConverter(typeof(OutputSoundcardNameConverter))]
     public string? Soundcard { get; set; } = VE3NEA.Soundcard.GetDefaultSoundcardId(DataFlow.Render);
 
-    [DisplayName("Voice")]
+    [DisplayName("音声")]
     [Description("The voice to use for announcments")]
     [TypeConverter(typeof(VoiceNameConverter))]
     public string? Voice { get; set; }
