@@ -45,6 +45,7 @@ folder and are also in [the repository](https://github.com/VE3NEA/SkyRoof/tree/m
 - [SoapyRTLSDR](https://github.com/pothosware/SoapyRTLSDR) — MIT
 - [SoapyRemote](https://github.com/pothosware/SoapyRemote) — BSL-1.0
 - [SoapySDRPlay3](https://github.com/pothosware/SoapySDRPlay3) — MIT
+- [LimeSuite](https://github.com/myriadrf/LimeSuite) — `LimeSuite.dll` and `LMS7Support.dll`, Apache-2.0
 
 - [Inno Setup](https://jrsoftware.org/isinfo.php) — build tool, Inno Setup License
 - [ISTool](http://www.istool.net/) — build tool, not redistributed
