@@ -115,6 +115,20 @@
     <None Include="..\Vendor\SoapySDR\SDR\libiio.dll" Link="lib\SoapySDR\modules0.8\libiio.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <!-- LimeSDR: LMS7Support.dll is the Soapy module, LimeSuite.dll the driver it links against, and
+         libusb-1.0.dll is the build (1.0.27) LimeSuite was compiled against, newer than the 1.0.24 copy
+         in the app folder. Soapy loads a module with LOAD_WITH_ALTERED_SEARCH_PATH, so a dependency
+         sitting next to the module wins over the app folder; this is the combination reported working,
+         and it makes 1.0.27 the libusb that every USB SDR here binds to. -->
+    <None Include="..\Vendor\SoapySDR\SDR\LimeSuite.dll" Link="lib\SoapySDR\modules0.8\LimeSuite.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SDR\LMS7Support.dll" Link="lib\SoapySDR\modules0.8\LMS7Support.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Vendor\SoapySDR\SDR\libusb-1.0.dll" Link="lib\SoapySDR\modules0.8\libusb-1.0.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="..\Vendor\SoapySDR\SDR\remoteSupport.dll" Link="lib\SoapySDR\modules0.8\remoteSupport.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
