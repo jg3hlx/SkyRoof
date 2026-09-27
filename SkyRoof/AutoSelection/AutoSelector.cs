@@ -30,6 +30,10 @@ namespace SkyRoof
     // as a manual override (plan §2.4)
     private bool selecting;
 
+    // set once the program is closing, so neither the stop in MainForm_FormClosing nor the Auto Selection
+    // panel closing right after it records auto-selection as having been off when it was in fact running
+    private bool closing;
+
     // the upcoming pass the idle-gap pre-roll has already been applied to; keeps UpdateIdleTracking from
     // running on every idle tick, so the user is free to stop the rotator during the pre-roll window
     private SatellitePass? idleTrackedPass;
@@ -89,6 +93,16 @@ namespace SkyRoof
       SetEnabled(true);
     }
 
+    // stops the engine as the program closes, flushing any recording segment in progress, without recording
+    // auto-selection as switched off - Settings.WasEnabled must survive to the save that follows, since it
+    // is what the restore option reads at the next start. A flag rather than an assignment here because the
+    // Auto Selection panel closing in ClosePanels calls SetEnabled(false) again, after this returns.
+    public void Shutdown()
+    {
+      closing = true;
+      SetEnabled(false);
+    }
+
     // Settings.WasEnabled mirrors Enabled here rather than being written once as the program closes, so a
     // shutdown that never reaches MainForm_FormClosing - Windows killing the app at a reboot, a power loss -
     // still leaves the correct state behind for RestoreEnabledIfRequested to read. The two flags change
@@ -114,7 +128,7 @@ namespace SkyRoof
         if (CurrentSchedule?.TrackAntenna == true && ctx.RotatorControl.IsTracking)
           ctx.RotatorControl.StopRotation();
         Enabled = false;
-        Settings.WasEnabled = false;
+        if (!closing) Settings.WasEnabled = false;
         ActivePass = null;
         idleTrackedPass = null;
         if (wasEnabled) Log.Information("Auto-selection stopped");

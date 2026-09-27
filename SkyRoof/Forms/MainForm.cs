@@ -104,8 +104,9 @@ namespace SkyRoof
       timer.Enabled = false;
       if (ctx.Slicer != null) ctx.Slicer.Enabled = false;
 
-      // stop auto-selection and flush any recording segment in progress (plan §1.8)
-      ctx.AutoSelector.SetEnabled(false);
+      // stop auto-selection and flush any recording segment in progress (plan §1.8), keeping the
+      // WasEnabled flag that the save below persists for the restore option
+      ctx.AutoSelector.Shutdown();
 
       // save settings
       ctx.Settings.Ui.StoreDockingLayout(DockHost);
