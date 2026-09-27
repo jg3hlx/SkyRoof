@@ -216,9 +216,10 @@ Font Awesome Free 6.4.2     Copyright (c) Fonticons, Inc.
 Installer
 ---------
 
-InnoDependencyInstaller     DomGries and contributors
-                            CPOL 1.02 - part of the SkyRoof setup program, not
-                            installed with the application.
+InnoDependencyInstaller     Copyright (c) 2009-2026 DomGries
+                            MIT ..................................... MIT.txt
+                            Part of the SkyRoof setup program, not installed with
+                            the application.
                             https://github.com/DomGries/InnoDependencyInstaller
 
 

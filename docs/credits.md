@@ -49,7 +49,7 @@ folder and are also in [the repository](https://github.com/VE3NEA/SkyRoof/tree/m
 
 - [Inno Setup](https://jrsoftware.org/isinfo.php) — build tool, Inno Setup License
 - [ISTool](http://www.istool.net/) — build tool, not redistributed
-- [InnoDependencyInstaller](https://github.com/DomGries/InnoDependencyInstaller) — CPOL 1.02
+- [InnoDependencyInstaller](https://github.com/DomGries/InnoDependencyInstaller) — MIT
 - [cv2pdb](https://github.com/rainers/cv2pdb) — build tool, Artistic License 2.0 / GPL
 - [Multimedia Timer](https://github.com/MikeCodesDotNET/Multimedia-Timer) — MIT
 - [NAudio](https://github.com/naudio/NAudio) — MIT
