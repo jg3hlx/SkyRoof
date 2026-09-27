@@ -81,6 +81,9 @@ namespace SkyRoof
       ctx.Settings.Ui.RestoreDockingLayout(this);
       Clock.UtcMode = ctx.Settings.Ui.ClockUtcMode;
 
+      // the layout is back, so the Auto Selection panel exists again if it was open at the last shutdown
+      ctx.AutoSelector.RestoreEnabledIfRequested();
+
       StartSdrIfEnabled();
 
       VersionChecker = new VersionChecker(ctx.Settings.LatestVersion);
