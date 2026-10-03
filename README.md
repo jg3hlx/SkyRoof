@@ -1,6 +1,8 @@
-# SkyRoof
+# SkyRoof-j
+日本語化をしています。
+表記に気なる事があれば教えてください
 
-Please see:
+下記内容を見てください:
 
 - [SkyRoof Website](https://ve3nea.github.io/SkyRoof)
 - [SkyRoof Discussion Group](https://groups.google.com/g/skyroof)
