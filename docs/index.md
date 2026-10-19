@@ -56,6 +56,10 @@ The main features of SkyRoof are:
 
 The program can work without an SDR, or even without any radio at all, but many useful functions are not available in this mode.
 
+## Discussion Group
+
+- [SkyRoof](https://groups.google.com/g/skyroof) at Google Groups
+
 ## See Also
 
 - [System Requirements](users_guide/system_requirements.md)
@@ -64,8 +68,6 @@ The program can work without an SDR, or even without any radio at all, but many 
 
 - [Setting Up Remote Access to SDR](https://groups.google.com/g/skyroof/c/ru5Pc9mim0w) TNX Paolo IZ1MLL
 
-- [SkyRoof + QSSTV](https://github.com/Acuantico/QSSTV-over-SkyRoof) TNX Acuántico Power
+- [SkyRoof / ACLog plugin](https://github.com/KV5J/SkyRoof-ACLog-Plugin) TNX Keith KV5J
 
-## Discussion Group
-
-- [SkyRoof](https://groups.google.com/g/skyroof) at Google Groups
+- [SoapySDR driver for FUNcube pro+](https://github.com/Zl9x/SOAPYFCDPP-Windows) TNX Mark ZL3AB
