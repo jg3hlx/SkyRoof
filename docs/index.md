@@ -71,3 +71,5 @@ The program can work without an SDR, or even without any radio at all, but many 
 - [SkyRoof / ACLog plugin](https://github.com/KV5J/SkyRoof-ACLog-Plugin) TNX Keith KV5J
 
 - [SoapySDR driver for FUNcube pro+](https://github.com/Zl9x/SOAPYFCDPP-Windows) TNX Mark ZL3AB
+
+- [SoapySDR driver for FlexRadio 6600](https://github.com/ea5wa/FlexSkyBridge) TNX EA5WA
