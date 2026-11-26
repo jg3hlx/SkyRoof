@@ -1375,13 +1375,13 @@ namespace SkyRoof
         ParamsDialog.MarkSaved();
         // no frame is due to redraw the line, and it is still counting toward a decision now taken
         ParamsDialog.ShowConfirmingFrames(ConfirmingFrames, ConfirmFrames);
-        MessageBox.Show(ParamsDialog, "Saved to transmitters-override.json.", "Signal Details",
+        MessageBox.Show(ParamsDialog, "transmitters-override.json に保存されました。", "信号の詳細",
           MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
       catch (Exception ex)
       {
         Log.Error(ex, "saving the transmitter override failed");
-        MessageBox.Show(ParamsDialog, "Could not save the override: " + ex.Message, "Signal Details",
+        MessageBox.Show(ParamsDialog, "上書き保存できませんでした： " + ex.Message, "信号の詳細",
           MessageBoxButtons.OK, MessageBoxIcon.Warning);
       }
     }
@@ -3080,7 +3080,7 @@ namespace SkyRoof
         // reached only via the ladder's FM branch, i.e. the modulation is supported but the model is absent
         Modulation.FM => "FM decoding not supported",
         null => "signal parameters unknown",
-        _ => "telemetry format not supported"
+        _ => "テレメトリ形式がサポートされていません"
       };
     }
 

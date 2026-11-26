@@ -350,7 +350,7 @@ namespace SkyRoof
       Name = "SignalParamsDialog";
       ShowInTaskbar = false;
       StartPosition = FormStartPosition.CenterParent;
-      Text = "Signal Details";
+      Text = "信号の詳細";
       panel1.ResumeLayout(false);
       ResumeLayout(false);
       PerformLayout();
